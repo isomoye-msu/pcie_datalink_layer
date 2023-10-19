@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1697385505" />
+    <testcase name="run_test" classname="test_dllp_transmit" file="/home/idris/projects/pcie/pcie_datalink_layer/src/dllp_transmit/test_dllp_transmit.py" lineno="57" time="0.06903743743896484" sim_time_ns="60.001" ratio_time="869.1081567598181" />
+  </testsuite>
+</testsuites>
