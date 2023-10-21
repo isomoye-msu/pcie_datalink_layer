@@ -17,10 +17,10 @@ VERILOG_SOURCES = \
     ../crc/Crc16Gen.sv  \
     ../crc/pcie_datalink_crc.sv   \
     ../bram/bram_dp.sv  \
-    ../../../verilog-axis/rtl/priority_encoder.v  \
-    ../../../verilog-axis/rtl/arbiter.v  \
-    ../../../verilog-axis/rtl/axis_arb_mux.v \
-	../../../verilog-axis/rtl/axis_register.v   \
+    ../../verilog-axis/rtl/priority_encoder.v  \
+    ../../verilog-axis/rtl/arbiter.v  \
+    ../../verilog-axis/rtl/axis_arb_mux.v \
+	../../verilog-axis/rtl/axis_register.v   \
     src/dllp_handler.sv \
     src/dllp2tlp.sv \
     src/dllp_recieve.sv \

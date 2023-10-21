@@ -256,14 +256,15 @@ package pcie_datalink_pkg;
   endfunction
 
 
-  function automatic dll_packet_t send_fc_init(input dllp_type_t dllp_type, input logic [2:0] vcd);
+  function automatic dll_packet_t send_fc_init(input dllp_type_t dllp_type, 
+  input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] hdrfc);
     begin
       dll_packet_t dll_packet;
       dll_packet = '0;
-      dll_packet.dllp_type.type_byte = dllp_type;
+      dll_packet.dllp_type.type_byte = dllp_type & 8'hF0;
       dll_packet.dllp_type.type_vc.vcd = vcd;
-      dll_packet.header.hdr = HdrFc;
-      dll_packet.seq_datafc.data_fc = DataFc;
+      dll_packet.header.hdr = hdrfc;
+      dll_packet.seq_datafc.data_fc = hdrfc;
 
       send_fc_init = dll_packet;
     end

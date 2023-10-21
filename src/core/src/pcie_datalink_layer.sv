@@ -4,12 +4,13 @@ module pcie_datalink_layer
 #(
     // Parameters
     parameter int DATA_WIDTH = 32,
-    parameter int STRB_WIDTH = DATA_WIDTH/8,
+    parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 3,
-    parameter int S_COUNT = 1,
+    parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
-    parameter  int RETRY_TLP_SIZE = 3,
+    parameter int RETRY_TLP_SIZE = 3,
+    parameter int MAX_PAYLOAD_SIZE = 0,
     parameter int RAM_DATA_WIDTH = 0,
     parameter int RAM_ADDR_WIDTH = 0
 ) (
@@ -18,10 +19,10 @@ module pcie_datalink_layer
     //TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_axis_tlp_tdata_i,
     input  logic [KEEP_WIDTH-1:0] s_axis_tlp_tkeep_i,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tlast_i,
+    input  logic                  s_axis_tlp_tvalid_i,
+    input  logic                  s_axis_tlp_tlast_i,
     input  logic [USER_WIDTH-1:0] s_axis_tlp_tuser_i,
-    output logic [   S_COUNT-1:0] s_axis_tlp_tready_o,
+    output logic                  s_axis_tlp_tready_o,
     //TLP AXIS output
     output logic [DATA_WIDTH-1:0] m_axis_tlp_tdata_o,
     output logic [KEEP_WIDTH-1:0] m_axis_tlp_tkeep_o,
@@ -32,10 +33,10 @@ module pcie_datalink_layer
     //DLLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_axis_phy2dllp_tdata_i,
     input  logic [KEEP_WIDTH-1:0] s_axis_phy2dllp_tkeep_i,
-    input  logic [   S_COUNT-1:0] s_axis_phy2dllp_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_phy2dllp_tlast_i,
+    input  logic                  s_axis_phy2dllp_tvalid_i,
+    input  logic                  s_axis_phy2dllp_tlast_i,
     input  logic [USER_WIDTH-1:0] s_axis_phy2dllp_tuser_i,
-    output logic [   S_COUNT-1:0] s_axis_phy2dllp_tready_o,
+    output logic                  s_axis_phy2dllp_tready_o,
     //PHY -> DLLP AXIS output
     output logic [DATA_WIDTH-1:0] m_axis_dllp2phy_tdata_o,
     output logic [KEEP_WIDTH-1:0] m_axis_dllp2phy_tkeep_o,
@@ -46,10 +47,10 @@ module pcie_datalink_layer
     //PHY -> TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_axis_phy2tlp_tdata_i,
     input  logic [KEEP_WIDTH-1:0] s_axis_phy2tlp_tkeep_i,
-    input  logic [   S_COUNT-1:0] s_axis_phy2tlp_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_phy2tlp_tlast_i,
+    input  logic                  s_axis_phy2tlp_tvalid_i,
+    input  logic                  s_axis_phy2tlp_tlast_i,
     input  logic [USER_WIDTH-1:0] s_axis_phy2tlp_tuser_i,
-    output logic [   S_COUNT-1:0] s_axis_phy2tlp_tready_o,
+    output logic                  s_axis_phy2tlp_tready_o,
     //TLP -> DLLP AXIS output
     output logic [DATA_WIDTH-1:0] m_axis_tlp2phy_tdata_o,
     output logic [KEEP_WIDTH-1:0] m_axis_tlp2phy_tkeep_o,
@@ -85,6 +86,7 @@ module pcie_datalink_layer
   parameter int LAST_ENABLE = 1;
   parameter int ARB_TYPE_ROUND_ROBIN = 0;
   parameter int ARB_LSB_HIGH_PRIORITY = 1;
+  parameter int M_COUNT = 2;
 
 
   //RETRY AXIS output
@@ -122,9 +124,9 @@ module pcie_datalink_layer
   logic                    fc2_values_stored;
 
 
-  logic                    link_status;
+  pcie_dl_status_e                    link_status;
 
-  pcie_datalink_init #( ) pcie_datalink_init_inst (
+  pcie_datalink_init #() pcie_datalink_init_inst (
       .clk_i(clk_i),
       .rst_i(rst_i),
       .phy_link_up_i(phy_link_up_i),
@@ -160,36 +162,32 @@ module pcie_datalink_layer
       .init_ack_o(init_ack)
   );
 
-
+  //dllp transmit
   dllp_transmit #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
       .S_COUNT(S_COUNT),
-      .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
-      .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
   ) dllp_transmit_inst (
       .clk_i(clk_i),
       .rst_i(rst_i || soft_reset),
-      //tlp axis in
       .s_axis_tlp_tdata_i(s_axis_tlp_tdata_i),
       .s_axis_tlp_tkeep_i(s_axis_tlp_tkeep_i),
       .s_axis_tlp_tvalid_i(s_axis_tlp_tvalid_i),
       .s_axis_tlp_tlast_i(s_axis_tlp_tlast_i),
       .s_axis_tlp_tuser_i(s_axis_tlp_tuser_i),
       .s_axis_tlp_tready_o(s_axis_tlp_tready_o),
-      //tlp -> phy axis out
-      .m_axis_dllp_tdata_o(m_axis_tlp2phy_tdata_o),
-      .m_axis_dllp_tkeep_o(m_axis_tlp2phy_tkeep_o),
-      .m_axis_dllp_tvalid_o(m_axis_tlp2phy_tvalid_o),
-      .m_axis_dllp_tlast_o(m_axis_tlp2phy_tlast_o),
-      .m_axis_dllp_tuser_o(m_axis_tlp2phy_tuser_o),
-      .m_axis_dllp_tready_i(m_axis_tlp2phy_tready_i),
-      .ack_nack_i(seq_num_acknack),
-      .ack_nack_vld_i(seq_num_vld),
-      .ack_seq_num_i(seq_num),
+      .m_axis_dllp_tdata_o(m_axis_dllp_tdata_o),
+      .m_axis_dllp_tkeep_o(m_axis_dllp_tkeep_o),
+      .m_axis_dllp_tvalid_o(m_axis_dllp_tvalid_o),
+      .m_axis_dllp_tlast_o(m_axis_dllp_tlast_o),
+      .m_axis_dllp_tuser_o(m_axis_dllp_tuser_o),
+      .m_axis_dllp_tready_i(m_axis_dllp_tready_i),
+      .ack_nack_i(ack_nack),
+      .ack_nack_vld_i(ack_nack_vld),
+      .ack_seq_num_i(ack_seq_num),
       .tx_fc_ph_i(tx_fc_ph),
       .tx_fc_pd_i(tx_fc_pd),
       .tx_fc_nph_i(tx_fc_nph),
@@ -197,46 +195,34 @@ module pcie_datalink_layer
   );
 
 
+  //dllp recieve
   dllp_recieve #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
       .S_COUNT(S_COUNT),
+      .M_COUNT(M_COUNT),
       .RX_FIFO_SIZE(RX_FIFO_SIZE),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
   ) dllp_recieve_inst (
       .clk_i(clk_i),
       .rst_i(rst_i || soft_reset),
-      //phy tlp axis in
-      .s_axis_phy2tlp_tdata_i(s_axis_phy2tlp_tdata_i),
-      .s_axis_phy2tlp_tkeep_i(s_axis_phy2tlp_tkeep_i),
-      .s_axis_phy2tlp_tvalid_i(s_axis_phy2tlp_tvalid_i),
-      .s_axis_phy2tlp_tlast_i(s_axis_phy2tlp_tlast_i),
-      .s_axis_phy2tlp_tuser_i(s_axis_phy2tlp_tuser_i),
-      .s_axis_phy2tlp_tready_o(s_axis_phy2tlp_tready_o),
-      //phy dllp axis in
-      .s_axis_phy2dllp_tdata_i(s_axis_phy2dllp_tdata_i),
-      .s_axis_phy2dllp_tkeep_i(s_axis_phy2dllp_tkeep_i),
-      .s_axis_phy2dllp_tvalid_i(s_axis_phy2dllp_tvalid_i),
-      .s_axis_phy2dllp_tlast_i(s_axis_phy2dllp_tlast_i),
-      .s_axis_phy2dllp_tuser_i(s_axis_phy2dllp_tuser_i),
-      .s_axis_phy2dllp_tready_o(s_axis_phy2dllp_tready_o),
-      //tlp axis out
-      .m_axis_dllp2tlp_tdata_o(m_axis_tlp_tdata_o),
-      .m_axis_dllp2tlp_tkeep_o(m_axis_tlp_tkeep_o),
-      .m_axis_dllp2tlp_tvalid_o(m_axis_tlp_tvalid_o),
-      .m_axis_dllp2tlp_tlast_o(m_axis_tlp_tlast_o),
-      .m_axis_dllp2tlp_tuser_o(m_axis_tlp_tuser_o),
-      .m_axis_dllp2tlp_tready_i(m_axis_tlp_tready_i),
-      //dllp to phy axis out
-      .m_axis_dllp2phy_tdata_o(m_axis_dllprx2phy_tdata),
-      .m_axis_dllp2phy_tkeep_o(m_axis_dllprx2phy_tkeep),
-      .m_axis_dllp2phy_tvalid_o(m_axis_dllprx2phy_tvalid),
-      .m_axis_dllp2phy_tlast_o(m_axis_dllprx2phy_tlast),
-      .m_axis_dllp2phy_tuser_o(m_axis_dllprx2phy_tuser),
-      .m_axis_dllp2phy_tready_i(m_axis_dllprx2phy_tready),
+      .link_status_i(link_status),
+      .phy_link_up_i(phy_link_up_i),
+      .s_axis_tdata_i(   {s_axis_phy2tlp_tdata_i, s_axis_phy2dllp_tdata_i}  ),
+      .s_axis_tkeep_i(   {s_axis_phy2tlp_tkeep_i, s_axis_phy2dllp_tkeep_i}  ),
+      .s_axis_tvalid_i(  {s_axis_phy2tlp_tvalid_i, s_axis_phy2dllp_tvalid_i}),
+      .s_axis_tlast_i(   {s_axis_phy2tlp_tlast_i, s_axis_phy2dllp_tlast_i}  ),
+      .s_axis_tuser_i(   {s_axis_phy2tlp_tuser_i, s_axis_phy2dllp_tuser_i}  ),
+      .s_axis_tready_o(  {s_axis_phy2tlp_tready_o, s_axis_phy2dllp_tready_o}),
+      .m_axis_tdata_o(  {  m_axis_tlp_tdata_o, m_axis_dllprx2phy_tdata}),
+      .m_axis_tkeep_o(  {  m_axis_tlp_tkeep_o, m_axis_dllprx2phy_tkeep}),
+      .m_axis_tvalid_o( {  m_axis_tlp_tvalid_o, m_axis_dllprx2phy_tvalid}),
+      .m_axis_tlast_o(  {  m_axis_tlp_tlast_o, m_axis_dllprx2phy_tlast}),
+      .m_axis_tuser_o(  {  m_axis_tlp_tuser_o, m_axis_dllprx2phy_tuser}),
+      .m_axis_tready_i( {  m_axis_tlp_tready_i, m_axis_dllprx2phy_tready}),
       .seq_num_o(seq_num),
       .seq_num_vld_o(seq_num_vld),
       .seq_num_acknack_o(seq_num_acknack),
@@ -265,7 +251,7 @@ module pcie_datalink_layer
       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
   ) arbiter_mux_inst (
       .clk(clk_i),
-      .rst(rst_i),
+      .rst(rst_i || soft_reset),
       // AXI inputs
       .s_axis_tdata({m_axis_dllprx2phy_tdata, m_axis_dllpfc2phy_tdata}),
       .s_axis_tkeep({m_axis_dllprx2phy_tkeep, m_axis_dllpfc2phy_tkeep}),
@@ -285,6 +271,14 @@ module pcie_datalink_layer
       .m_axis_tdest(),
       .m_axis_tuser(m_axis_dllp2phy_tuser_o)
   );
+
+  assign bus_num_o    = '0;
+  assign ext_tag_enable_o    = '0;
+  assign rcb_128b_o    = '0;
+  assign max_read_request_size_o    = '0;
+  assign max_payload_size_o    =   '0;
+  assign msix_enable_o    =   '0;
+  assign msix_mask_o    =   '0;
 
 
 endmodule

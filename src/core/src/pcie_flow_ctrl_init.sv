@@ -9,16 +9,7 @@ module pcie_flow_ctrl_init
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 3,
     parameter int S_COUNT = 1,
-    // TLP segment count
-    parameter int TLP_SEG_COUNT = 1,
-    // TX sequence number count
-    parameter int TX_SEQ_NUM_COUNT = 1,
-    // TX sequence number width
-    parameter int TX_SEQ_NUM_WIDTH = 5,
-
-    //
-    parameter int RAM_DATA_WIDTH = 8,  // width of the data
-    parameter int RAM_ADDR_WIDTH = 4   // number of address bits
+    parameter int MAX_PAYLOAD_SIZE = 0
 ) (
     input logic clk_i,                 // Clock signal
     input logic rst_i,                 // Reset signal
@@ -38,6 +29,11 @@ module pcie_flow_ctrl_init
 
     output logic init_ack_o
 );
+
+
+  localparam int PdMinCredits = ((8 <<(5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
+  localparam int HdrMinCredits = 8'h01;
+  localparam int FcWaitPeriod = 8'hA0;
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -106,7 +102,7 @@ module pcie_flow_ctrl_init
         if (start_flow_control_i) begin
           seq_count_c = '0;
           //build dllp packet
-          dll_packet_c = send_fc_init(InitFC1_P, '0);
+          dll_packet_c = send_fc_init(InitFC1_P, '0,HdrMinCredits,PdMinCredits);
           m_axis_tdata_o = dll_packet_c;
           dllp_lcrc_c = crc_out;
           m_axis_tkeep_o = '1;
@@ -130,9 +126,9 @@ module pcie_flow_ctrl_init
       ST_FC1_NP: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (seq_count_r >= 16'h9C4) begin
+        if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = seq_count_r;
-          dll_packet_c = send_fc_init(InitFC1_P, '0);
+          dll_packet_c = send_fc_init(InitFC1_P, '0,HdrMinCredits, HdrMinCredits);
           m_axis_tdata_o = dll_packet_c;
           m_axis_tkeep_o = '1;
           m_axis_tvalid_o = '1;
@@ -158,9 +154,9 @@ module pcie_flow_ctrl_init
       ST_FC1_CPL: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (seq_count_r >= 16'h9C4) begin
+        if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = seq_count_r;
-          dll_packet_c = send_fc_init(InitFC1_Cpl, '0);
+          dll_packet_c = send_fc_init(InitFC1_Cpl, '0,'0,'0);
           m_axis_tdata_o = dll_packet_c;
           m_axis_tkeep_o = '1;
           m_axis_tvalid_o = '1;
@@ -187,7 +183,7 @@ module pcie_flow_ctrl_init
         if (fc1_values_stored_i) begin
           seq_count_c = '0;
           next_state  = ST_FC2;
-        end else if (seq_count_r >= 16'h9C4) begin
+        end else if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = '0;
           next_state  = ST_IDLE;
         end
@@ -195,9 +191,9 @@ module pcie_flow_ctrl_init
       ST_FC2: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (seq_count_r >= 16'h9C4) begin
+        if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = seq_count_r;
-          dll_packet_c = send_fc_init(InitFC2_P, '0);
+          dll_packet_c = send_fc_init(InitFC2_P, '0,HdrMinCredits,PdMinCredits);
           m_axis_tdata_o = dll_packet_c;
           m_axis_tkeep_o = '1;
           m_axis_tvalid_o = '1;
@@ -222,9 +218,9 @@ module pcie_flow_ctrl_init
       ST_FC2_NP: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (seq_count_r >= 16'h9C4) begin
+        if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = seq_count_r;
-          dll_packet_c = send_fc_init(InitFC2_NP, '0);
+          dll_packet_c = send_fc_init(InitFC2_NP, '0,HdrMinCredits,HdrMinCredits);
           m_axis_tdata_o = dll_packet_c;
           m_axis_tkeep_o = '1;
           m_axis_tvalid_o = '1;
@@ -249,9 +245,9 @@ module pcie_flow_ctrl_init
       ST_FC2_CPL: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (seq_count_r >= 16'h9C4) begin
+        if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = seq_count_r;
-          dll_packet_c = send_fc_init(InitFC2_Cpl, '0);
+          dll_packet_c = send_fc_init(InitFC2_Cpl, '0,'0,'0);
           m_axis_tdata_o = dll_packet_c;
           m_axis_tkeep_o = '1;
           m_axis_tvalid_o = '1;
@@ -270,15 +266,16 @@ module pcie_flow_ctrl_init
         //we never recieved an ack restart FC1P
         if (m_axis_tready_i) begin
           seq_count_c = '0;
-          next_state  = ST_FC2_CPL_CRC;
+          m_axis_tvalid_o = '0;
+          next_state  = CHECK_FC2_VALS;
         end
       end
-      ST_FC2_CPL_CRC: begin
+      CHECK_FC2_VALS: begin
         seq_count_c = seq_count_r + 1'b1;
         if (fc2_values_stored_i) begin
           seq_count_c = '0;
           next_state  = ST_FC_COMPLETE;
-        end else if (seq_count_r >= 16'h9C4) begin
+        end else if (seq_count_r >= FcWaitPeriod) begin
           seq_count_c = '0;
           next_state  = ST_FC2;
         end
@@ -292,10 +289,15 @@ module pcie_flow_ctrl_init
     endcase
   end
 
-
   pcie_datalink_crc dllp_crc_inst (
-      .Data(dll_packet_c[31:0]),
-      .Complement('1),
-      .Crc(crc_out)
-  );
+    .crcIn ('1),
+    .data  (dll_packet_c),
+    .crcOut(crc_out)
+);
+
+  // pcie_datalink_crc dllp_crc_inst (
+  //     .Data(dll_packet_c[31:0]),
+  //     .Complement('1),
+  //     .Crc(crc_out)
+  // );
 endmodule

@@ -13,8 +13,6 @@ module pcie_datalink_init
     input  logic            init_ack_i
 );
 
-
-
   typedef enum logic [2:0] {
     ST_DL_INACTIVE,
     ST_DL_INIT,
@@ -79,7 +77,7 @@ module pcie_datalink_init
           soft_reset_c = '1;
         end else begin
           if (fc1_values_stored_i) begin
-            next_state = ST_DL_INIT_FC1;
+            next_state = ST_DL_INIT_FC2;
             link_status_c = DL_UP;
           end
         end

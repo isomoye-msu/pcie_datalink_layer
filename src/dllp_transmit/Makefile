@@ -9,16 +9,18 @@ COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
 
 VERILOG_SOURCES = \
-	../packages/pcie_datalink_pkg.sv \
-	../crc/pcie_lcrc16.sv \
-	../crc/pcie_lcrc32.sv \
-	../crc/Crc16Gen.sv \
-	../crc/pcie_datalink_crc.sv  \
-	../bram/bram_dp.sv \
-	../../../verilog-axis/rtl/priority_encoder.v \
-	../../../verilog-axis/rtl/arbiter.v          \
-	../../../verilog-axis/rtl/axis_arb_mux.v   \
-	../../../verilog-axis/rtl/axis_register.v   \
+	../packages/pcie_datalink_pkg.sv  \
+	../crc/pcie_dllp_crc8.v \
+	../crc/pcie_crc8.v  \
+    ../crc/pcie_lcrc16.sv  \
+    ../crc/pcie_lcrc32.sv  \
+    ../crc/Crc16Gen.sv  \
+    ../crc/pcie_datalink_crc.sv   \
+    ../bram/bram_dp.sv  \
+    ../../verilog-axis/rtl/priority_encoder.v  \
+    ../../verilog-axis/rtl/arbiter.v  \
+    ../../verilog-axis/rtl/axis_arb_mux.v \
+	../../verilog-axis/rtl/axis_register.v   \
 	src/retry_management.sv    \
 	src/tlp2dllp.sv    \
 	src/dllp_transmit.sv   \

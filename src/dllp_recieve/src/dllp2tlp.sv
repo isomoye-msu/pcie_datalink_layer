@@ -64,7 +64,9 @@ module dllp2tlp
   //dllp to tlp fsm emum
   typedef enum logic [2:0] {
     ST_TLP_RX_IDLE,
-    ST_TLP_RX_STREAM
+    ST_TLP_GET_WD_CNT,
+    ST_TLP_RX_STREAM,
+    ST_TLP_RX_EOP
   } tlp_rx_st_e;
 
   dll_rx_st_e curr_state, next_state;
@@ -127,12 +129,15 @@ module dllp2tlp
   logic [USER_WIDTH-1:0] m_axis_dllp_tuser;
   logic                  m_axis_dllp_tready;
   //tlp signals
-  logic [DATA_WIDTH-1:0] m_axis_tlp_tdata;
-  logic [KEEP_WIDTH-1:0] m_axis_tlp_tkeep;
-  logic                  m_axis_tlp_tvalid;
-  logic                  m_axis_tlp_tlast;
-  logic [USER_WIDTH-1:0] m_axis_tlp_tuser;
   logic                  m_axis_tlp_tready;
+
+
+  logic [DATA_WIDTH-1:0] m_axis_tdata_c1, m_axis_tdata_r1;
+  logic [KEEP_WIDTH-1:0] m_axis_tkeep_c1, m_axis_tkeep_r1;
+  logic [S_COUNT-1:0] m_axis_tvalid_c1, m_axis_tvalid_r1;
+  logic [S_COUNT-1:0] m_axis_tlast_c1, m_axis_tlast_r1;
+  logic [USER_WIDTH-1:0] m_axis_tuser_c1, m_axis_tuser_r1;
+  logic [S_COUNT-1:0] m_axis_tready_c1, m_axis_tready_r1;
 
 
   //credits tracking signals
@@ -159,84 +164,89 @@ module dllp2tlp
 
   always @(posedge clk_i or posedge rst_i) begin : main_seq
     if (rst_i) begin
-      curr_state <= ST_DLL_RX_IDLE;
-      next_transmit_seq_r <= '0;
-      expected_seq_r <= '0;
+      curr_state             <= ST_DLL_RX_IDLE;
+      next_transmit_seq_r    <= '0;
+      expected_seq_r         <= '0;
       //crc signals
-      dllp_lcrc_r <= '1;
-      crc_calc_r <= '1;
-      //tlp type
-      is_cpl_r  <=  '0;
-      is_np_r   <=  '0;
-      is_p_r    <=  '0;
+      dllp_lcrc_r            <= '1;
+      crc_calc_r             <= '1;
       //recieve word count
-      word_count_r <= '0;
+      word_count_r           <= '0;
+      //axis signals
+      m_axis_tvalid_r1       <= '0;
       //credits tracking
-      ph_credits_consumed_r    <= '0;
-      pd_credits_consumed_r    <= '0;
-      nph_credits_consumed_r   <= '0;
-      npd_credits_consumed_r   <= '0;
+      ph_credits_consumed_r  <= '0;
+      pd_credits_consumed_r  <= '0;
+      nph_credits_consumed_r <= '0;
+      npd_credits_consumed_r <= '0;
       //
-      tlp_word_count_r <= '0;
-      rx_addr_r <= '0;
+      tlp_word_count_r       <= '0;
+      rx_addr_r              <= '0;
       //fifo tracking
-      fifo_tail_r <= '0;
-      fifo_head_r <= '0;
+      fifo_tail_r            <= '0;
+      fifo_head_r            <= '0;
       //transmit tlp signals
-      tx_word_count_r <= '0;
-      tlp_curr_count_r <= '0;
-      tx_addr_r <= '0;
-      tlp_curr_state <= ST_TLP_RX_IDLE;
+      tx_word_count_r        <= '0;
+      tlp_curr_count_r       <= '0;
+      tx_addr_r              <= '0;
+      tlp_curr_state         <= ST_TLP_RX_IDLE;
     end else begin
-      curr_state <= next_state;
-      next_transmit_seq_r <= next_transmit_seq_c;
-      expected_seq_r <= expected_seq_c;
+      curr_state             <= next_state;
+      next_transmit_seq_r    <= next_transmit_seq_c;
+      expected_seq_r         <= expected_seq_c;
       //crc signals
-      dllp_lcrc_r <= dllp_lcrc_c;
-      crc_calc_r <= crc_calc_c;
-      //tlp type
-      is_cpl_r  <=  is_cpl_c;
-      is_np_r   <=  is_np_c;
-      is_p_r    <=  is_p_c;
+      dllp_lcrc_r            <= dllp_lcrc_c;
+      crc_calc_r             <= crc_calc_c;
       //recieve word count
-      word_count_r <= word_count_c;
+      word_count_r           <= word_count_c;
       //credits tracking
-      ph_credits_consumed_r    <= ph_credits_consumed_c;
-      pd_credits_consumed_r    <= pd_credits_consumed_c;
-      nph_credits_consumed_r   <= nph_credits_consumed_c;
-      npd_credits_consumed_r   <= npd_credits_consumed_c;
+      ph_credits_consumed_r  <= ph_credits_consumed_c;
+      pd_credits_consumed_r  <= pd_credits_consumed_c;
+      nph_credits_consumed_r <= nph_credits_consumed_c;
+      npd_credits_consumed_r <= npd_credits_consumed_c;
       //
-      tlp_word_count_r <= tlp_word_count_c;
-      rx_addr_r <= rx_addr_c;
+      tlp_word_count_r       <= tlp_word_count_c;
+      rx_addr_r              <= rx_addr_c;
+      //axis signals
+      m_axis_tvalid_r1       <= m_axis_tvalid_c1;
       //fifo tracking
-      fifo_tail_r <= fifo_tail_c;
-      fifo_head_r <= fifo_head_c;
+      fifo_tail_r            <= fifo_tail_c;
+      fifo_head_r            <= fifo_head_c;
       //transmit tlp signals
-      tx_word_count_r <= tx_word_count_c;
-      tlp_curr_count_r <= tlp_curr_count_c;
-      tx_addr_r <= tx_addr_c;
-      tlp_curr_state <= tlp_next_state;
+      tx_word_count_r        <= tx_word_count_c;
+      tlp_curr_count_r       <= tlp_curr_count_c;
+      tx_addr_r              <= tx_addr_c;
+      tlp_curr_state         <= tlp_next_state;
     end
+     //tlp type
+    is_cpl_r               <= is_cpl_c;
+    is_np_r                <= is_np_c;
+    is_p_r                 <= is_p_c;
     tx_tkeep_r <= tx_tkeep_c;
     tkeep_r <= tkeep_c;
     crc_in_r <= crc_in_c;
     tlp_in_r <= tlp_in_c;
+    //stage 1
+    m_axis_tdata_r1 <= m_axis_tdata_c1;
+    m_axis_tkeep_r1 <= m_axis_tkeep_c1;
+    m_axis_tlast_r1 <= m_axis_tlast_c1;
+    m_axis_tuser_r1 <= m_axis_tuser_c1;
   end
 
 
   always_comb begin : byteswap
     for (int i = 0; i < 8; i++) begin
-      crc_out32[i] = crc_calc_r[7-i];
-      crc_out32[i+8] = crc_calc_r[15-i];
-      crc_out32[i+16] = crc_calc_r[23-i];
-      crc_out32[i+24] = crc_calc_r[31-i];
-      crc_reversed[i]    = crc_out16[7-i];
-      crc_reversed[i+8]  = crc_out16[15-i];
-      crc_reversed[i+16] = crc_out16[23-i];
-      crc_reversed[i+24] = crc_out16[31-i];
+      crc_out32[i]           = crc_calc_r[7-i];
+      crc_out32[i+8]         = crc_calc_r[15-i];
+      crc_out32[i+16]        = crc_calc_r[23-i];
+      crc_out32[i+24]        = crc_calc_r[31-i];
+      crc_reversed[i]        = crc_out16[7-i];
+      crc_reversed[i+8]      = crc_out16[15-i];
+      crc_reversed[i+16]     = crc_out16[23-i];
+      crc_reversed[i+24]     = crc_out16[31-i];
 
-      dllp_crc_reversed[i]     =  dllp_lcrc_r[7-i];
-      dllp_crc_reversed[i+8]   =  dllp_lcrc_r[15-i];
+      dllp_crc_reversed[i]   = dllp_lcrc_r[7-i];
+      dllp_crc_reversed[i+8] = dllp_lcrc_r[15-i];
     end
   end
 
@@ -286,8 +296,8 @@ module dllp2tlp
     fifo_tail_c = fifo_tail_r;
     case (curr_state)
       ST_DLL_RX_IDLE: begin
-        s_axis_skid_tready = '1;
-        if (s_axis_skid_tvalid && !fifo_full && (link_status_i == DL_ACTIVE)) begin
+        s_axis_skid_tready = (!fifo_full && (link_status_i == DL_ACTIVE));
+        if (s_axis_skid_tvalid && s_axis_skid_tready) begin
           next_transmit_seq_c = s_axis_skid_tdata[15:0];
           bram0_data_in = s_axis_skid_tdata;
           tlp_in_c = s_axis_skid_tdata;
@@ -338,7 +348,7 @@ module dllp2tlp
           bram0_addr = rx_addr_r + word_count_r + 1;
           bram0_wr = '1;
           if (s_axis_skid_tlast) begin
-            bram0_wr = '0;
+            //bram0_wr = '0;
             word_count_c = word_count_r;
             case (s_axis_skid_tkeep)
               4'b0001: begin
@@ -364,7 +374,6 @@ module dllp2tlp
               default: begin
               end
             endcase
-            bram0_wr = '0;
             word_count_c = word_count_r;
             next_state = ST_DLL_EOP;
           end
@@ -401,7 +410,7 @@ module dllp2tlp
         m_axis_dllp_tdata    = dll_packet;
         m_axis_dllp_tkeep    = '1;
         m_axis_dllp_tvalid   = '1;
-        if (m_axis_tlp_tready) begin
+        if (m_axis_dllp_tready) begin
           next_state = ST_ACK_DLLP_CRC;
         end
       end
@@ -411,7 +420,7 @@ module dllp2tlp
         m_axis_dllp_tkeep  = 8'h3;
         m_axis_dllp_tvalid = '1;
         m_axis_dllp_tlast  = '1;
-        if (m_axis_tlp_tready) begin
+        if (m_axis_dllp_tready) begin
           if (is_p_r) begin
             ph_credits_consumed_c = ph_credits_consumed_r + 1;
             //to get credits consumed .. subtract word count by header count which is 4.
@@ -471,51 +480,85 @@ module dllp2tlp
   end
 
   //transmit tlp from fifo through axi stream
+  //TODO: pull this into its own module
   always_comb begin : transmit_tlp_combo
-    tlp_next_state    = tlp_curr_state;
-    tx_word_count_c   = tx_word_count_r;
-    tlp_curr_count_c  = tlp_curr_count_r;
-    tx_addr_c         = tx_addr_r;
-    tx_tkeep_c        = tx_tkeep_r;
+    tlp_next_state   = tlp_curr_state;
+    tx_word_count_c  = tx_word_count_r;
+    tlp_curr_count_c = tlp_curr_count_r;
+    tx_addr_c        = tx_addr_r;
+    tx_tkeep_c       = tx_tkeep_r;
     //fifo head
-    fifo_head_c       = fifo_head_r;
+    fifo_head_c      = fifo_head_r;
     //axis signals
+    m_axis_tdata_c1  = m_axis_tdata_r1;
+    m_axis_tkeep_c1  = m_axis_tkeep_r1;
+    m_axis_tvalid_c1 = m_axis_tvalid_r1;
+    m_axis_tlast_c1  = m_axis_tlast_r1;
+    m_axis_tuser_c1  = m_axis_tuser_r1;
     //@hint: axis signals not registered...look here for easy timing improvements
-    m_axis_tlp_tdata  = '0;
-    m_axis_tlp_tkeep  = '0;
-    m_axis_tlp_tvalid = '0;
-    m_axis_tlp_tlast  = '0;
-    m_axis_tlp_tuser  = '0;
+    // m_axis_tlp_tdata  = '0;
+    // m_axis_tlp_tkeep  = '0;
+    // m_axis_tlp_tvalid = '0;
+    // m_axis_tlp_tlast  = '0;
+    // m_axis_tlp_tuser  = '0;
     //bram write signals
-    bram1_wr          = '0;
-    bram1_addr        = tx_addr_r;
-    bram1_data_in     = '0;
+    bram1_wr         = '0;
+    bram1_addr       = tx_addr_r;
+    bram1_data_in    = '0;
     case (tlp_curr_state)
       ST_TLP_RX_IDLE: begin
+        //check if fifo has tlp
         if (!fifo_empty) begin
+          //get word count
           tx_word_count_c = bram1_data_out[15:0];
           tx_tkeep_c = bram1_data_out[31:16];
-          tlp_curr_count_c = '0;
+          tlp_curr_count_c = 16'h1;
           bram1_addr = tx_addr_r + 1;
-          tlp_next_state = ST_TLP_RX_STREAM;
+          tlp_next_state = ST_TLP_GET_WD_CNT;
         end
       end
+      ST_TLP_GET_WD_CNT: begin
+        //we have word count.. store first tlp word from ram
+        m_axis_tdata_c1 = bram1_data_out;
+        m_axis_tkeep_c1 = '1;
+        m_axis_tvalid_c1 = '1;
+        //not expecting tlps shorter that 3 words minimum
+        m_axis_tlast_c1 = '0;
+        //user not used
+        m_axis_tuser_c1 = '0;
+        bram1_addr = tx_addr_r + tlp_curr_count_r + 1;
+        //increment address
+        tlp_curr_count_c = tlp_curr_count_r + 1;
+        tlp_next_state = ST_TLP_RX_STREAM;
+      end
       ST_TLP_RX_STREAM: begin
-        m_axis_tlp_tdata  = bram1_data_out;
-        m_axis_tlp_tkeep  = '1;
-        m_axis_tlp_tvalid = '1;
+        bram1_addr = tx_addr_r + tlp_curr_count_r + 1;
         if (m_axis_tlp_tready) begin
+          m_axis_tdata_c1  = bram1_data_out;
+          m_axis_tkeep_c1  = '1;
+          m_axis_tvalid_c1 = '1;
+          //not expecting tlps shorter that 3 words minimum
+          m_axis_tlast_c1  = '0;
+          //user not used
+          m_axis_tuser_c1  = '0;
+          //increment address
           tlp_curr_count_c = tlp_curr_count_r + 1;
-          bram1_addr = tx_addr_r + tlp_curr_count_r + 2;
-          if (tlp_curr_count_r == tx_word_count_r - 1) begin
-            m_axis_tlp_tlast = '1;
-            m_axis_tlp_tkeep = tx_tkeep_r;
-            tx_addr_c = tx_addr_r + 1;
-            tlp_curr_count_c = '0;
-            fifo_head_c = (fifo_head_r == RX_FIFO_SIZE) ? '0 : fifo_head_r + 1;
-            tx_addr_c = (fifo_head_r == RX_FIFO_SIZE) ? '0 : tx_addr_r + MaxTlpTotalSizeDW;
-            tlp_next_state = ST_TLP_RX_IDLE;
+          if (tlp_curr_count_r == tx_word_count_r+1) begin
+            m_axis_tlast_c1 = '1;
+            m_axis_tkeep_c1 = tx_tkeep_r;
+            tlp_next_state  = ST_TLP_RX_EOP;
           end
+        end
+      end
+      ST_TLP_RX_EOP: begin
+        if (m_axis_tlp_tready) begin
+          m_axis_tvalid_c1 = '0;
+          //not expecting tlps shorter that 3 words minimum
+          m_axis_tlast_c1 = '0;
+          tlp_curr_count_c = '0;
+          fifo_head_c = (fifo_head_r == RX_FIFO_SIZE) ? '0 : fifo_head_r + 1;
+          tx_addr_c = (fifo_head_r == RX_FIFO_SIZE) ? '0 : tx_addr_r + MaxTlpTotalSizeDW;
+          tlp_next_state = ST_TLP_RX_IDLE;
         end
       end
       default: begin
@@ -599,11 +642,11 @@ module dllp2tlp
   // );
 
 
-  assign m_axis_tdata_o = {m_axis_dllp_tdata, m_axis_tlp_tdata};
-  assign m_axis_tkeep_o = {m_axis_dllp_tkeep, m_axis_tlp_tkeep};
-  assign m_axis_tvalid_o = {m_axis_dllp_tvalid, m_axis_tlp_tvalid};
-  assign m_axis_tlast_o = {m_axis_dllp_tlast, m_axis_tlp_tlast};
-  assign m_axis_tuser_o = {m_axis_dllp_tuser, m_axis_tlp_tuser};
+  assign m_axis_tdata_o = {m_axis_dllp_tdata, m_axis_tdata_r1};
+  assign m_axis_tkeep_o = {m_axis_dllp_tkeep, m_axis_tkeep_r1};
+  assign m_axis_tvalid_o = {m_axis_dllp_tvalid, m_axis_tvalid_r1};
+  assign m_axis_tlast_o = {m_axis_dllp_tlast, m_axis_tlast_r1};
+  assign m_axis_tuser_o = {m_axis_dllp_tuser, m_axis_tuser_r1};
   assign m_axis_tlp_tready = m_axis_tready_i[TlpAxis];
   assign m_axis_dllp_tready = m_axis_tready_i[DllpAxis];
 

@@ -16,6 +16,7 @@ module dllp_recieve
     input logic rst_i,  // Reset signal
 
     input pcie_dl_status_e link_status_i,
+    input logic phy_link_up_i,
 
     /*
      * TLP AXIS inputs
@@ -97,7 +98,7 @@ module dllp_recieve
   ) dllp_handler_inst (
       .clk_i(clk_i),
       .rst_i(rst_i),
-      .link_status_i(link_status_i),
+      .phy_link_up_i(phy_link_up_i),
       .s_axis_tdata_i(s_axis_phy2dllp_tdata),
       .s_axis_tkeep_i(s_axis_phy2dllp_tkeep),
       .s_axis_tvalid_i(s_axis_phy2dllp_tvalid),
@@ -144,11 +145,11 @@ module dllp_recieve
       .m_axis_tready_i     ({m_axis_dllp2tlp_tready, m_axis_dllp2phy_tready})
   );
 
-  assign {s_axis_phy2tlp_tdata, s_axis_phy2dllp_tdata} = s_axis_tdata_i;
-  assign {s_axis_phy2tlp_tkeep, s_axis_phy2dllp_tkeep} = s_axis_tkeep_i;
-  assign {s_axis_phy2tlp_tvalid, s_axis_phy2dllp_tvalid} = s_axis_tvalid_i;
-  assign {s_axis_phy2tlp_tlast, s_axis_phy2dllp_tlast} = s_axis_tlast_i;
-  assign {s_axis_phy2tlp_tuser, s_axis_phy2dllp_tuser} = s_axis_tuser_i;
+  assign {s_axis_phy2tlp_tdata, s_axis_phy2dllp_tdata}    = s_axis_tdata_i;
+  assign {s_axis_phy2tlp_tkeep, s_axis_phy2dllp_tkeep}    = s_axis_tkeep_i;
+  assign {s_axis_phy2tlp_tvalid, s_axis_phy2dllp_tvalid}  = s_axis_tvalid_i;
+  assign {s_axis_phy2tlp_tlast, s_axis_phy2dllp_tlast}    = s_axis_tlast_i;
+  assign {s_axis_phy2tlp_tuser, s_axis_phy2dllp_tuser}    = s_axis_tuser_i;
   assign s_axis_tready_o = {s_axis_phy2tlp_tready, s_axis_phy2dllp_tready};
 
   assign m_axis_tdata_o =  {m_axis_dllp2tlp_tdata, m_axis_dllp2phy_tdata}  ;

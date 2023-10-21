@@ -75,10 +75,10 @@ module tb_tlp2dllp;
 
 
   // Dump waves
-  initial begin
-    $dumpfile("tb_tlp2dllp.vcd");
-    $dumpvars(1, tb_tlp2dllp);
-  end
+  // initial begin
+  //   $dumpfile("tb_tlp2dllp.vcd");
+  //   $dumpvars(1, tb_tlp2dllp);
+  // end
   //always #5  clk = ! clk ;
 
 endmodule

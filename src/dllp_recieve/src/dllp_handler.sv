@@ -14,7 +14,7 @@ module dllp_handler
 ) (
     input logic       clk_i,         // Clock signal
     input logic       rst_i,         // Reset signal
-    input logic [1:0] link_status_i,
+    input logic       phy_link_up_i,
 
 
     /*
@@ -167,7 +167,7 @@ module dllp_handler
 
     case (curr_state)
       ST_IDLE: begin
-        if ((link_status_i == DL_ACTIVE)) begin
+        if (phy_link_up_i) begin
           s_axis_tready_o = '1;
           if (s_axis_tvalid_i) begin
             dll_packet_c = s_axis_tdata_i;
