@@ -2,7 +2,7 @@ module retry_management
   import pcie_datalink_pkg::*;
 #(
     // TLP data width
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH = 32,//AXIS data width
     // TLP strobe width
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
@@ -42,10 +42,10 @@ module retry_management
 );
 
   //maxbytesper tlp
-localparam int MaxTlpHdrSizeDW = 4;
-localparam int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE);
-localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
-localparam int RetryTimer = 8'hA0;
+  localparam int MaxTlpHdrSizeDW = 4;
+  localparam int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE);
+  localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
+  localparam int RetryTimer = 8'hA0;
 
   //retry mechanism enum
   typedef enum logic [2:0] {
@@ -110,7 +110,7 @@ localparam int RetryTimer = 8'hA0;
 
 
   //main  sequential blocksSS
-  always_ff @(posedge clk_i or posedge rst_i) begin
+  always_ff @(posedge clk_i or posedge rst_i) begin: main_sequential_block
     if (rst_i) begin
       retrys_r <= '0;
       error_r <= '0;
@@ -158,7 +158,7 @@ localparam int RetryTimer = 8'hA0;
   end
 
   //retry tracking combo block
-  always_comb begin
+  always_comb begin: retry_tracking_combo
     retrys_c = retrys_r;
     next_retry_index_c = next_retry_index_r;
     retry_index_flag = '0;
@@ -201,7 +201,7 @@ localparam int RetryTimer = 8'hA0;
   end
 
   //retry free combo block
-  always_comb begin
+  always_comb begin: retry_free_combo
     free_retry_c = '0;
     store_seq_c  = store_seq_r;
     if (ack_nack_vld_i && ack_nack_i) begin
@@ -370,7 +370,7 @@ localparam int RetryTimer = 8'hA0;
           m_axis_tvalid_c = '1;
           tlp_curr_count_c = tlp_curr_count_r + 1;
           bram_addr_o = tx_addr_r + tlp_curr_count_r + 2;
-          if (tlp_curr_count_r >= tx_word_count_r-1) begin
+          if (tlp_curr_count_r >= tx_word_count_r - 1) begin
             m_axis_tlast_c = '1;
             tx_addr_c = tx_addr_r + 1;
             tlp_curr_count_c = '0;

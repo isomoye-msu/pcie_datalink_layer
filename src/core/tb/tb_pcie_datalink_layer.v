@@ -12,6 +12,7 @@ module tb_pcie_datalink_layer;
   localparam int RAM_DATA_WIDTH = 32;
   localparam int RAM_ADDR_WIDTH = 12;
   localparam int RETRY_TLP_SIZE = 3;
+  localparam int MAX_PAYLOAD_SIZE = 1;
   localparam int RX_FIFO_SIZE = 3;
 
   //Ports
@@ -34,13 +35,7 @@ module tb_pcie_datalink_layer;
   reg                   s_axis_phy2dllp_tvalid;
   reg                   s_axis_phy2dllp_tlast;
   reg  [USER_WIDTH-1:0] s_axis_phy2dllp_tuser;
-  wire                  s_axis_phy_
-  _
-  _
-  _
-  _
-  _
-  _2dllp_tready;
+  wire                  s_axis_phy2dllp_tready;
   wire [DATA_WIDTH-1:0] m_axis_dllp2phy_tdata;
   wire [KEEP_WIDTH-1:0] m_axis_dllp2phy_tkeep;
   wire                  m_axis_dllp2phy_tvalid;
@@ -79,6 +74,7 @@ module tb_pcie_datalink_layer;
       .S_COUNT(S_COUNT),
       .RX_FIFO_SIZE(RX_FIFO_SIZE),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
   ) pcie_datalink_layer_inst (

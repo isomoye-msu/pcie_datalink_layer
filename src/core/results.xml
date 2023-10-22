@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1697912783" />
-    <testcase name="run_test" classname="test_pcie_datalink_layer" file="/home/idris/projects/pcie_datalink_layer/src/core/test_pcie_datalink_layer.py" lineno="131" time="0.497255802154541" sim_time_ns="1240.001" ratio_time="2493.6883483857728" />
+    <property name="random_seed" value="1697998434" />
+    <testcase name="run_test" classname="test_pcie_datalink_layer" file="/home/idris/projects/pcie_datalink_layer/src/core/test_pcie_datalink_layer.py" lineno="131" time="0.4894843101501465" sim_time_ns="1240.001" ratio_time="2533.28038159106" />
   </testsuite>
 </testsuites>

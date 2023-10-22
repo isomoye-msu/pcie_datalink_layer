@@ -19,6 +19,21 @@ package pcie_datalink_pkg;
 
   localparam int LtssmDetect = 32'd1500;
 
+  typedef enum bit [7:0] {
+    // TS1 Ordered Sets
+    TS1_DATA_K28_5 = 8'h1C,   // TS1 Data: K28.5 (Start of TS1 Ordered Set)
+    TS1_DATA_K28_7 = 8'h3C,   // TS1 Data: K28.7 (End of TS1 Ordered Set)
+
+    // TS2 Ordered Sets
+    TS2_DATA_K28_5 = 8'h5C,   // TS2 Data: K28.5 (Start of TS2 Ordered Set)
+    TS2_DATA_K28_7 = 8'h7C,   // TS2 Data: K28.7 (End of TS2 Ordered Set)
+
+    // TLP Prefix Ordered Set
+    TLP_PREFIX = 8'hBC,        // TLP Prefix
+
+    // TLP Header Ordered Set
+    TLP_HEADER = 8'hFC         // TLP Header
+  } pcie_ordered_set_e;
 
 
   typedef enum logic [1:0] {
@@ -266,6 +281,30 @@ package pcie_datalink_pkg;
       send_fc_init = dll_packet;
     end
   endfunction
+
+
+//   reg [9:0] pcie_8b10b_encoding_table [0:255] = {
+//     // Data Values 8'h00 - 8'h0F
+//     10'b0001100000, 10'b1001110000, 10'b0101110000, 10'b1101100000,
+//     10'b0011110000, 10'b1011100000, 10'b0111100000, 10'b1111010000,
+//     10'b0001111000, 10'b1001101000, 10'b0101101000, 10'b1101111000,
+//     10'b0011101000, 10'b1011111000, 10'b0111111000, 10'b1111001000,
+
+//     // Data Values 8'h10 - 8'h1F
+//     10'b0001101100, 10'b1001111100, 10'b0101111100, 10'b1101101100,
+//     10'b0011111100, 10'b1011101100, 10'b0111101100, 10'b1111011100,
+//     10'b0001110100, 10'b1001100100, 10'b0101100100, 10'b1101110100,
+//     10'b0011100100, 10'b1011110100, 10'b0111110100, 10'b1111001100,
+
+//     // Continue mapping for other data values
+//     // ...
+
+//     // Data Values 8'hF0 - 8'hFF
+//     10'b0000100001, 10'b1000100001, 10'b0100100001, 10'b1100100001,
+//     10'b0010100001, 10'b1010100001, 10'b0110100001, 10'b1110100001,
+//     10'b0000100101, 10'b1000100101, 10'b0100100101, 10'b1100100101,
+//     10'b0010100101, 10'b1010100101, 10'b0110100101, 10'b1110100101
+// };
 
 
 endpackage

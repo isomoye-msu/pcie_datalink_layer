@@ -35,10 +35,10 @@ class TB:
 
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy2dllp"), dut.clk, dut.rst)
         self.sourcetllp = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy2tlp"), dut.clk, dut.rst)
-        self.sourcetlp = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlp"), dut.clk, dut.rst)
+        self.sourcetlp = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlpin"), dut.clk, dut.rst)
         #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk, dut.rst) for k in range(ports)]
         self.sinkdllp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp2phy"), dut.clk, dut.rst)
-        self.sinktlp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp"), dut.clk, dut.rst)
+        self.sinktlp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlpout"), dut.clk, dut.rst)
         #self.sinktlp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp2phy"), dut.clk, dut.rst)
         #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
 
