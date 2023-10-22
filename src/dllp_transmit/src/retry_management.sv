@@ -216,17 +216,14 @@ localparam int RetryTimer = 8'hA0;
     retry_st_e curr_state, next_state;
     logic [1:0] replay_cnt_c, replay_cnt_r;
     logic [31:0] retry_timer_c, retry_timer_r;
-    logic [15:0] word_offset_c, word_offset_r;
     always @(posedge clk_i or posedge rst_i) begin : retry_buffer_seq
       if (rst_i) begin
         retry_timer_r <= '0;
         replay_cnt_r <= '0;
-        word_offset_r <= '0;
         curr_state <= ST_RETRY_IDLE;
       end else begin
         retry_timer_r <= retry_timer_c;
         replay_cnt_r <= replay_cnt_c;
-        word_offset_r <= word_offset_c;
         curr_state <= next_state;
       end
     end
@@ -351,7 +348,7 @@ localparam int RetryTimer = 8'hA0;
         tlp_next_state = ST_TLP_RX_SOP;
       end
       ST_TLP_RX_SOP: begin
-        m_axis_tdata_c = 32'h0FFADBC;
+        m_axis_tdata_c = bram_data_in_i;
         m_axis_tkeep_c = '1;
         m_axis_tvalid_c = '1;
         m_axis_tuser_c = '0;
@@ -368,12 +365,12 @@ localparam int RetryTimer = 8'hA0;
       end
       ST_TLP_RX_STREAM: begin
         if (m_axis_tready_i) begin
-          m_axis_tdata_c = 32'h9BC;
+          m_axis_tdata_c = bram_data_in_i;
           m_axis_tkeep_c = '1;
           m_axis_tvalid_c = '1;
           tlp_curr_count_c = tlp_curr_count_r + 1;
           bram_addr_o = tx_addr_r + tlp_curr_count_r + 2;
-          if (tlp_curr_count_r >= tx_word_count_r) begin
+          if (tlp_curr_count_r >= tx_word_count_r-1) begin
             m_axis_tlast_c = '1;
             tx_addr_c = tx_addr_r + 1;
             tlp_curr_count_c = '0;

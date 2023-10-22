@@ -262,7 +262,6 @@ module tlp2dllp
     m_axis_tlast_r3));
     //word addr
     word_offset_c = word_offset_r;
-    word_count_c = word_count_r;
     //tlp type
     is_cpl_c = is_cpl_r;
     is_np_c = is_np_r;
@@ -287,7 +286,6 @@ module tlp2dllp
           last_c1 = '0;
           //TODO:change to shift at some point
           word_offset_c = retry_index_i * MaxNumWordsPerTLP;
-          word_count_c = 8'h1;
           m_axis_tdata_c1 = {s_axis_skid_tdata[15:0], 4'h0,next_transmit_seq_r[11:0]};
           tlp_is_first_c = '0;
           //check tlp type
@@ -307,7 +305,6 @@ module tlp2dllp
           crc_in_c = crc_out16;
           m_axis_tdata_c1 = {s_axis_skid_tdata[15:0], tlp_data_r1[31:16]};
           m_axis_tvalid_c1 = '1;
-          word_count_c = word_count_r + 1;
           if(m_axis_tlast_r3) begin
             tlp_is_first_c = '1;
             s_axis_skid_tready = '0;
@@ -386,6 +383,7 @@ module tlp2dllp
     m_axis_tvalid_c3 = m_axis_tvalid_r3;
     m_axis_tlast_c3  = m_axis_tlast_r3;
     m_axis_tuser_c3  = m_axis_tuser_r3;
+    word_count_c = word_count_r;
     last_c3          = last_r3;
     dllp_valid_o     = '0;
     bram_wr_o        = '0;
@@ -403,12 +401,14 @@ module tlp2dllp
         bram_addr_o        = word_offset_r;
         bram_wr_o          = '1;
         bram_data_out_o    = {15'h0,m_axis_tkeep_r3,word_count_r[15:0]};
+        word_count_c = '0;
       end
       //set last
       if (m_axis_tvalid_r2) begin
-        bram_addr_o        = word_count_r + word_offset_r;
+        bram_addr_o        = word_count_r + word_offset_r + 1;
         bram_wr_o          = '1;
         bram_data_out_o    = m_axis_tdata_c3;
+        word_count_c = word_count_r + 1;
         if (last_r2) begin
           m_axis_tkeep_c3 = m_axis_tkeep_r2;
           m_axis_tlast_c3 = '1;

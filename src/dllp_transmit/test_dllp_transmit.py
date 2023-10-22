@@ -112,12 +112,17 @@ async def run_test(dut):
     # await axis_source.wait()
     #
             
-    for i in range(200):
+    for i in range(300):
          await RisingEdge(dut.clk)
         
     await RisingEdge(dut.clk)    
-    # dut.ack_seq_num.value = 0x30
-    # dut.ack_nack_vld.value = 1
+    
+    dut.ack_seq_num.value = 0x00
+    dut.ack_nack_vld.value = 1
+    dut.ack_nack.value = 1
+    
+    for i in range(30):
+        await RisingEdge(dut.clk)
     # await RisingEdge(dut.clk)
     # dut.ack_nack_vld.value = 0
     # for i in range(20):
