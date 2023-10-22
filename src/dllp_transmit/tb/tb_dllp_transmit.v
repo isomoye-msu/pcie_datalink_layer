@@ -16,6 +16,7 @@ module tb_dllp_transmit;
   localparam int USER_WIDTH = 4;
   localparam int S_COUNT = 1;
   localparam int RETRY_TLP_SIZE = 3;
+  parameter int MAX_PAYLOAD_SIZE = 0;
 
   //Ports
   reg  clk;
@@ -46,6 +47,7 @@ module tb_dllp_transmit;
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
       .S_COUNT(S_COUNT),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
   ) dllp_transmit_inst (
       .clk_i(clk),

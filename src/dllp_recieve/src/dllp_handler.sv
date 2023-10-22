@@ -6,26 +6,22 @@ module dllp_handler
     // TLP strobe width
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
-    parameter int USER_WIDTH = 3,
-    parameter int S_COUNT = 1,
-    //
-    parameter int RAM_DATA_WIDTH = 8,  // width of the data
-    parameter int RAM_ADDR_WIDTH = 4   // number of address bits
+    parameter int USER_WIDTH = 3
 ) (
-    input logic       clk_i,         // Clock signal
-    input logic       rst_i,         // Reset signal
-    input logic       phy_link_up_i,
+    input logic clk_i,         // Clock signal
+    input logic rst_i,         // Reset signal
+    input logic phy_link_up_i,
 
 
     /*
      * PHY AXIS inputs
      */
-    input  logic [DATA_WIDTH-1:0] s_axis_tdata_i,
-    input  logic [KEEP_WIDTH-1:0] s_axis_tkeep_i,
-    input  logic [   S_COUNT-1:0] s_axis_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_tlast_i,
-    input  logic [USER_WIDTH-1:0] s_axis_tuser_i,
-    output logic [   S_COUNT-1:0] s_axis_tready_o,
+    input logic [DATA_WIDTH-1:0] s_axis_tdata_i,
+    input logic [KEEP_WIDTH-1:0] s_axis_tkeep_i,
+    input logic s_axis_tvalid_i,
+    input logic s_axis_tlast_i,
+    input logic [USER_WIDTH-1:0] s_axis_tuser_i,
+    output logic s_axis_tready_o,
 
     //tlp ack/nak
     output logic [11:0] seq_num_o,

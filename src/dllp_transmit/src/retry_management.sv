@@ -8,7 +8,7 @@ module retry_management
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 1,
     parameter int S_COUNT = 1,
-    //
+    parameter int MAX_PAYLOAD_SIZE = 0,
     parameter int RAM_DATA_WIDTH = 32,  // width of the data
     parameter int RAM_ADDR_WIDTH = $clog2(RAM_DATA_WIDTH),  // number of address bits
     // Width of AXI stream interfaces in bits
@@ -41,6 +41,11 @@ module retry_management
     input  logic                      m_axis_tready_i
 );
 
+  //maxbytesper tlp
+localparam int MaxTlpHdrSizeDW = 4;
+localparam int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE);
+localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
+localparam int RetryTimer = 8'hA0;
 
   //retry mechanism enum
   typedef enum logic [2:0] {
@@ -141,7 +146,7 @@ module retry_management
     end
 
     //non-resetable
-    ack_seq_mem_r <= ack_seq_mem_c;
+    ack_seq_mem_r  <= ack_seq_mem_c;
     // for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
     //   ack_seq_mem_r[i] <= ack_seq_mem_c[i];
     // end
@@ -169,7 +174,7 @@ module retry_management
         end
       end
     end else begin
-      if (tx_valid_i ) begin
+      if (tx_valid_i) begin
         // for (int i = 0; i < 11; i++) begin
         //   ack_seq_mem_c[i] = '1;
         // end
@@ -187,9 +192,9 @@ module retry_management
               end
             end
             if (!retry_index_flag || i == 0) begin
-                next_retry_index_c = i;
-              end
+              next_retry_index_c = i;
             end
+          end
         end
       end
     end
@@ -218,7 +223,6 @@ module retry_management
         replay_cnt_r <= '0;
         word_offset_r <= '0;
         curr_state <= ST_RETRY_IDLE;
-
       end else begin
         retry_timer_r <= retry_timer_c;
         replay_cnt_r <= replay_cnt_c;
@@ -226,7 +230,6 @@ module retry_management
         curr_state <= next_state;
       end
     end
-
     always_comb begin : retry_timer
       replay_cnt_c = replay_cnt_r;
       retry_timer_c = retry_timer_r;
@@ -245,7 +248,7 @@ module retry_management
             replay_cnt_c = '0;
             retry_timer_c = '0;
             next_state = ST_RETRY_IDLE;
-          end else if (retry_timer_r >= 8'h5) begin
+          end else if (retry_timer_r >= RetryTimer) begin
             replay_cnt_c  = replay_cnt_r + 1'b1;
             retry_timer_c = '0;
             if (replay_cnt_r == '1) begin
@@ -265,13 +268,12 @@ module retry_management
             next_state = ST_RETRY_IDLE;
           end else begin
             if (retry_ack_r[i]) begin
-              replay_cnt_c = '0;
+              //replay_cnt_c = '0;
               retry_timer_c = '0;
               retry_valid_c[i] = '0;
               next_state = ST_WAIT_REPLAY;
             end
           end
-
         end
         ST_WAIT_REPLAY: begin
           if (!retrys_r[i]) begin
@@ -290,7 +292,6 @@ module retry_management
         default: begin
         end
       endcase
-
     end
   end : gen_retry_counters
 
@@ -344,7 +345,7 @@ module retry_management
         tlp_next_state = ST_TLP_GET_ADDR;
       end
       ST_TLP_GET_ADDR: begin
-        tx_word_count_c = bram_data_in_i;
+        tx_word_count_c = bram_data_in_i[15:0];
         tlp_curr_count_c = '0;
         bram_addr_o = tx_addr_r + 1;
         tlp_next_state = ST_TLP_RX_SOP;
@@ -383,11 +384,11 @@ module retry_management
       end
       ST_TLP_RX_EOP: begin
         if (m_axis_tready_i) begin
-          m_axis_tdata_c = '0;
-          m_axis_tkeep_c = '0;
+          m_axis_tdata_c  = '0;
+          m_axis_tkeep_c  = '0;
           m_axis_tvalid_c = '0;
-          m_axis_tlast_c = '0;
-          tlp_next_state = ST_TLP_RX_IDLE;
+          m_axis_tlast_c  = '0;
+          tlp_next_state  = ST_TLP_RX_IDLE;
         end
       end
       default: begin

@@ -18,9 +18,6 @@ package pcie_datalink_pkg;
   localparam int ReplayNum = 32'd2;
 
   localparam int LtssmDetect = 32'd1500;
-  localparam int MaxTlpHdrSizeDW = 4;
-  localparam int MaxTlpPayloadSizeDW = 256;
-  localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxTlpPayloadSizeDW + 1;
 
 
 
@@ -257,14 +254,14 @@ package pcie_datalink_pkg;
 
 
   function automatic dll_packet_t send_fc_init(input dllp_type_t dllp_type, 
-  input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] hdrfc);
+  input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] datafc);
     begin
       dll_packet_t dll_packet;
       dll_packet = '0;
       dll_packet.dllp_type.type_byte = dllp_type & 8'hF0;
       dll_packet.dllp_type.type_vc.vcd = vcd;
       dll_packet.header.hdr = hdrfc;
-      dll_packet.seq_datafc.data_fc = hdrfc;
+      dll_packet.seq_datafc.data_fc = datafc;
 
       send_fc_init = dll_packet;
     end

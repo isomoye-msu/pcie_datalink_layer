@@ -8,6 +8,7 @@ module dllp_transmit
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 1,
     parameter int S_COUNT = 1,
+    parameter int MAX_PAYLOAD_SIZE = 0,
     // Width of AXI stream interfaces in bits
     parameter int RETRY_TLP_SIZE = 3
 ) (
@@ -46,9 +47,11 @@ module dllp_transmit
 );
 
 
-  //ram data
-  parameter int RAM_DATA_WIDTH = DATA_WIDTH;  // width of the data
-  parameter int RAM_ADDR_WIDTH = $clog2(DATA_WIDTH * RETRY_TLP_SIZE);  // number of address bits
+  localparam int MaxTlpHdrSizeDW = 4;
+  localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
+  localparam int MinRxBufferSize = MaxTlpTotalSizeDW * (RETRY_TLP_SIZE);
+  parameter int RAM_DATA_WIDTH = DATA_WIDTH;
+  parameter int RAM_ADDR_WIDTH = $clog2(MinRxBufferSize);
 
   //localparam int SLAVE_COUNT = 2;
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
@@ -107,8 +110,8 @@ module dllp_transmit
       .S_COUNT(1),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
-
   ) retry_management_inst (
       .clk_i            (clk_i),
       .rst_i            (rst_i),
@@ -144,6 +147,7 @@ module dllp_transmit
       .USER_WIDTH(USER_WIDTH),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .S_COUNT(S_COUNT)
   ) tlp2dllp_inst (
       .clk_i            (clk_i),

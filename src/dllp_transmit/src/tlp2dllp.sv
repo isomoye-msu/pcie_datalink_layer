@@ -2,21 +2,25 @@ module tlp2dllp
   import pcie_datalink_pkg::*;
 #(
     // Width of AXI stream interfaces in bits
-    parameter int DATA_WIDTH     = 32,
+    parameter int DATA_WIDTH = 32,
     // tkeep signal width (words per cycle)
-    parameter int KEEP_WIDTH     = (DATA_WIDTH / 8),
+    parameter int KEEP_WIDTH = (DATA_WIDTH / 8),
     // tuser signal width
-    parameter int USER_WIDTH     = 1,
+    parameter int USER_WIDTH = 1,
     //
-    parameter int S_COUNT        = 1,
-    parameter int RAM_DATA_WIDTH = 8,                 // width of the data
-    parameter int RAM_ADDR_WIDTH = 4                  // number of address bits
+    parameter int S_COUNT = 1,
+    parameter int MAX_PAYLOAD_SIZE = 0,
+    parameter int RAM_DATA_WIDTH = DATA_WIDTH,  // width of the data
+    parameter int RAM_ADDR_WIDTH = $clog2(MaxNumWordsPerTLP),  // number of address bits
+    localparam int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE),
+    localparam int MaxNumWordsPerHdr = 128 / DATA_WIDTH,
+    localparam int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2
 ) (
     input  logic                      clk_i,              // Clock signal
     input  logic                      rst_i,              // Reset signal
     /*
-     * TLP AXIS inputs
-     */
+      * TLP AXIS inputs
+      */
     input  logic [    DATA_WIDTH-1:0] s_axis_tdata_i,
     input  logic [    KEEP_WIDTH-1:0] s_axis_tkeep_i,
     input  logic [       S_COUNT-1:0] s_axis_tvalid_i,
@@ -24,8 +28,8 @@ module tlp2dllp
     input  logic [    USER_WIDTH-1:0] s_axis_tuser_i,
     output logic [       S_COUNT-1:0] s_axis_tready_o,
     /*
-     * TLP AXI output
-     */
+      * TLP AXI output
+      */
     output logic [    DATA_WIDTH-1:0] m_axis_tdata_o,
     output logic [    KEEP_WIDTH-1:0] m_axis_tkeep_o,
     output logic                      m_axis_tvalid_o,
@@ -44,8 +48,8 @@ module tlp2dllp
     input  logic                      retry_available_i,
     input  logic [               7:0] retry_index_i,
     /*
-     * Flow control
-     */
+      * Flow control
+      */
     input  logic [               7:0] tx_fc_ph_i,
     input  logic [              11:0] tx_fc_pd_i,
     input  logic [               7:0] tx_fc_nph_i,
@@ -53,9 +57,6 @@ module tlp2dllp
 
 );
 
-  localparam int MaxBytesPerTLP = 1024;
-  localparam int MaxNumWordsPerHdr = 128 / DATA_WIDTH;
-  localparam int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2;
   localparam int SkidBuffer = 2;
   //tlp to dllp fsm emum
   typedef enum logic [2:0] {
@@ -80,35 +81,36 @@ module tlp2dllp
   //skid buffer axis signals
   logic [DATA_WIDTH-1:0] s_axis_skid_tdata;
   logic [KEEP_WIDTH-1:0] s_axis_skid_tkeep;
-  logic  s_axis_skid_tvalid;
-  logic  s_axis_skid_tlast;
+  logic s_axis_skid_tvalid;
+  logic s_axis_skid_tlast;
   logic [USER_WIDTH-1:0] s_axis_skid_tuser;
-  logic  s_axis_skid_tready;
+  logic s_axis_skid_tready;
+  logic s_bypass_tready;
 
 
 
   logic [DATA_WIDTH-1:0] m_axis_tdata_c1, m_axis_tdata_r1;
   logic [KEEP_WIDTH-1:0] m_axis_tkeep_c1, m_axis_tkeep_r1;
-  logic  m_axis_tvalid_c1, m_axis_tvalid_r1;
-  logic  m_axis_tlast_c1, m_axis_tlast_r1;
+  logic m_axis_tvalid_c1, m_axis_tvalid_r1;
+  logic m_axis_tlast_c1, m_axis_tlast_r1;
   logic [USER_WIDTH-1:0] m_axis_tuser_c1, m_axis_tuser_r1;
-  logic  m_axis_tready_c1, m_axis_tready_r1;
+  logic m_axis_tready_c1, m_axis_tready_r1;
 
 
   logic [DATA_WIDTH-1:0] m_axis_tdata_c2, m_axis_tdata_r2;
   logic [KEEP_WIDTH-1:0] m_axis_tkeep_c2, m_axis_tkeep_r2;
-  logic  m_axis_tvalid_c2, m_axis_tvalid_r2;
-  logic  m_axis_tlast_c2, m_axis_tlast_r2;
+  logic m_axis_tvalid_c2, m_axis_tvalid_r2;
+  logic m_axis_tlast_c2, m_axis_tlast_r2;
   logic [USER_WIDTH-1:0] m_axis_tuser_c2, m_axis_tuser_r2;
-  logic  m_axis_tready_c2, m_axis_tready_r2;
+  logic m_axis_tready_c2, m_axis_tready_r2;
 
 
   logic [DATA_WIDTH-1:0] m_axis_tdata_c3, m_axis_tdata_r3;
   logic [KEEP_WIDTH-1:0] m_axis_tkeep_c3, m_axis_tkeep_r3;
-  logic  m_axis_tvalid_c3, m_axis_tvalid_r3;
-  logic  m_axis_tlast_c3, m_axis_tlast_r3;
+  logic m_axis_tvalid_c3, m_axis_tvalid_r3;
+  logic m_axis_tlast_c3, m_axis_tlast_r3;
   logic [USER_WIDTH-1:0] m_axis_tuser_c3, m_axis_tuser_r3;
-  logic  m_axis_tready_c3, m_axis_tready_r3;
+  logic m_axis_tready_c3, m_axis_tready_r3;
 
 
   //crc helper signals
@@ -246,29 +248,32 @@ module tlp2dllp
 
 
   always_comb begin : tlp_transmit_stage1
-    m_axis_tdata_c1 =  m_axis_tdata_r1;
-    m_axis_tkeep_c1 =  m_axis_tkeep_r1;
+    m_axis_tdata_c1 = m_axis_tdata_r1;
+    m_axis_tkeep_c1 = m_axis_tkeep_r1;
     m_axis_tvalid_c1 = m_axis_tvalid_r1;
-    m_axis_tlast_c1 =  m_axis_tlast_r1;
-    m_axis_tuser_c1 =  m_axis_tuser_r1;
+    m_axis_tlast_c1 = m_axis_tlast_r1;
+    m_axis_tuser_c1 = m_axis_tuser_r1;
     //tlp holder
     tlp_data_c1 = tlp_data_r1;
     crc_select = '0;
     //ready out
-    s_axis_skid_tready = '1;//retry_available_i & (m_axis_tready_i || !m_axis_tuser_r3);
+    s_axis_skid_tready = retry_available_i & (m_axis_tready_i || ~m_axis_tvalid_r3);
+    s_bypass_tready = (m_axis_tready_i & (m_axis_tlast_r1 || m_axis_tlast_r2 || 
+    m_axis_tlast_r3));
     //word addr
     word_offset_c = word_offset_r;
     word_count_c = word_count_r;
     //tlp type
-    is_cpl_c  =  is_cpl_r;
-    is_np_c   =  is_np_r;
-    is_p_c    =  is_p_r;
+    is_cpl_c = is_cpl_r;
+    is_np_c = is_np_r;
+    is_p_c = is_p_r;
     //
     crc_in_c = crc_in_r;
     last_c1 = last_r1;
     tlp_is_first_c = tlp_is_first_r;
     next_transmit_seq_c = next_transmit_seq_r;
-    if (s_axis_skid_tready || m_axis_tlast_r1 || m_axis_tlast_r2) begin
+    //TODO: simplify this logic
+    if (s_axis_skid_tready || s_bypass_tready) begin
       m_axis_tkeep_c1  = s_axis_skid_tkeep;
       m_axis_tlast_c1  = s_axis_skid_tlast;
       m_axis_tuser_c1  = s_axis_skid_tuser;
@@ -282,15 +287,18 @@ module tlp2dllp
           last_c1 = '0;
           //TODO:change to shift at some point
           word_offset_c = retry_index_i * MaxNumWordsPerTLP;
-          word_count_c = 8'h2;
+          word_count_c = 8'h1;
           m_axis_tdata_c1 = {s_axis_skid_tdata[15:0], 4'h0,next_transmit_seq_r[11:0]};
           tlp_is_first_c = '0;
           //check tlp type
           if (((s_axis_skid_tdata[7:0] == Cpl) || (s_axis_skid_tdata[7:0] == CplD))
-               && have_p_credit_r) begin
+              && have_p_credit_r)
+          begin
             is_cpl_c = '1;
-          end else if (((s_axis_skid_tdata[7:0]  == MW) || (s_axis_skid_tdata[7:0]  == CW0) ||
-          (s_axis_skid_tdata[7:0] == CW1))  && have_p_credit_r) begin
+          end
+          else if (((s_axis_skid_tdata[7:0]  == MW) || (s_axis_skid_tdata[7:0]  == CW0) ||
+                    (s_axis_skid_tdata[7:0] == CW1))  && have_p_credit_r)
+          begin
             is_p_c = '1;
           end else if (have_np_credit_r) begin
             is_np_c = '1;
@@ -299,48 +307,21 @@ module tlp2dllp
           crc_in_c = crc_out16;
           m_axis_tdata_c1 = {s_axis_skid_tdata[15:0], tlp_data_r1[31:16]};
           m_axis_tvalid_c1 = '1;
-          // if (m_axis_tlast_r1) begin
-          //   //s_axis_skid_tready = '0;
-          //   m_axis_tvalid_c1 = '1;
-          //   crc_in_c = crc_in_r;
-          //   case (m_axis_tkeep_r1)
-          //     4'b0001: begin
-          //       m_axis_tdata_c1 = {8'h0, crc_out32[31:8]};
-          //       crc_select = 2'b01;
-          //       crc_in_c = '1;
-          //       last_c1 = '1;
-          //       tlp_is_first_c = '1;
-          //       m_axis_tkeep_c1 = 4'b0111;
-          //     end
-          //     4'b0011: begin
-          //       m_axis_tdata_c1 = crc_out32;
-          //       crc_select = 2'b01;
-          //       crc_in_c = '1;
-          //       last_c1 = '1;
-          //       tlp_is_first_c = '1;
-          //       m_axis_tkeep_c1 = 4'b1111;
-          //     end
-          //     4'b0111: begin
-          //       m_axis_tdata_c1 = {crc_out32[23:0], tlp_data_r1[7:0]};
-          //       crc_select = 2'b10;
-          //     end
-          //     4'b1111: begin
-          //       m_axis_tdata_c1 = {crc_out32[15:0], tlp_data_r1[31:16]};
-          //       crc_select = 2'b10;
-          //     end
-          //     default: begin
-          //     end
-          //   endcase
-          // end else 
+          word_count_c = word_count_r + 1;
+          if(m_axis_tlast_r3) begin
+            tlp_is_first_c = '1;
+            s_axis_skid_tready = '0;
+          end
+          if ((m_axis_tlast_r1 || m_axis_tlast_r2)) begin
+            s_axis_skid_tready = '0;
+          end
           if (m_axis_tlast_r2) begin
-            //s_axis_skid_tready = '0;
             crc_in_c = '1;
             case (m_axis_tkeep_r2)
               4'b0111: begin
                 m_axis_tdata_c1 = {8'h0, crc_reversed[31:24]};
                 crc_select = 2'b10;
                 last_c1 = '1;
-                tlp_is_first_c = '1;
                 m_axis_tkeep_c1 = 4'b0001;
                 m_axis_tvalid_c1 = '1;
               end
@@ -348,9 +329,10 @@ module tlp2dllp
                 m_axis_tdata_c1 = {16'h0, crc_reversed[31:16]};
                 crc_select = 2'b10;
                 last_c1 = '1;
-                tlp_is_first_c = '1;
                 m_axis_tkeep_c1 = 4'b0011;
                 m_axis_tvalid_c1 = '1;
+              end
+              default: begin
               end
             endcase
           end
@@ -368,7 +350,7 @@ module tlp2dllp
     m_axis_tlast_c2 = m_axis_tlast_r2;
     m_axis_tuser_c2 = m_axis_tuser_r2;
     last_c2 = last_r2;
-    if (s_axis_skid_tready) begin
+    if (s_axis_skid_tready || s_bypass_tready) begin
       m_axis_tdata_c2  = m_axis_tdata_r1;
       m_axis_tkeep_c2  = m_axis_tkeep_r1;
       m_axis_tvalid_c2 = m_axis_tvalid_r1;
@@ -377,33 +359,16 @@ module tlp2dllp
       if (m_axis_tvalid_r1) begin
         m_axis_tdata_c2 = m_axis_tdata_r1;
         last_c2 = last_r1;
-        // if (m_axis_tlast_r1) begin
-        //   case (m_axis_tkeep_r1)
-        //     4'b0001: begin
-        //       m_axis_tdata_c2 = {crc_reversed[7:0], m_axis_tdata_r1[23:0]};
-        //       //crc_select = 2'b10;
-        //     end
-        //     default: begin
-        //     end
-        //   endcase
-        // end
         if (m_axis_tlast_r2) begin
           case (m_axis_tkeep_r2)
-            // 4'b0001: begin
-            //   m_axis_tdata_c2 = {crc_reversed[7:0], m_axis_tdata_r1[23:0]};
-            //   //crc_select = 2'b10;
-            // end
             4'b0011: begin
               m_axis_tdata_c2 = crc_reversed;
-              //crc_select = 2'b10;
             end
             4'b0111: begin
               m_axis_tdata_c2 = {crc_reversed[23:0], m_axis_tdata_r1[7:0]};
-              //crc_select = 2'b10;
             end
             4'b1111: begin
               m_axis_tdata_c2 = {crc_reversed[15:0], m_axis_tdata_r1[15:0]};
-              //crc_select = 2'b10;
             end
             default: begin
             end
@@ -416,225 +381,43 @@ module tlp2dllp
 
 
   always_comb begin : tlp_transmit_stage3
-    m_axis_tdata_c3 = m_axis_tdata_r3;
-    m_axis_tkeep_c3 = m_axis_tkeep_r3;
+    m_axis_tdata_c3  = m_axis_tdata_r3;
+    m_axis_tkeep_c3  = m_axis_tkeep_r3;
     m_axis_tvalid_c3 = m_axis_tvalid_r3;
-    m_axis_tlast_c3 = m_axis_tlast_r3;
-    m_axis_tuser_c3 = m_axis_tuser_r3;
-    last_c3 = last_r3;
-    if (s_axis_skid_tready) begin
+    m_axis_tlast_c3  = m_axis_tlast_r3;
+    m_axis_tuser_c3  = m_axis_tuser_r3;
+    last_c3          = last_r3;
+    dllp_valid_o     = '0;
+    bram_wr_o        = '0;
+    bram_addr_o      = '0;
+    bram_data_out_o  = '0;
+    //wait for upside to accept tlp
+    if (s_axis_skid_tready || s_bypass_tready) begin
       m_axis_tdata_c3  = m_axis_tdata_r2;
       m_axis_tkeep_c3  = '1;
       m_axis_tvalid_c3 = m_axis_tvalid_r2;
       m_axis_tlast_c3  = '0;
       m_axis_tuser_c3  = m_axis_tuser_r2;
+
+      if(m_axis_tlast_r3) begin
+        bram_addr_o        = word_offset_r;
+        bram_wr_o          = '1;
+        bram_data_out_o    = {15'h0,m_axis_tkeep_r3,word_count_r[15:0]};
+      end
+      //set last
       if (m_axis_tvalid_r2) begin
+        bram_addr_o        = word_count_r + word_offset_r;
+        bram_wr_o          = '1;
+        bram_data_out_o    = m_axis_tdata_c3;
         if (last_r2) begin
           m_axis_tkeep_c3 = m_axis_tkeep_r2;
           m_axis_tlast_c3 = '1;
+          dllp_valid_o = '1;
         end
       end
     end
   end
 
-
-  // always_comb begin : tlp_transmit_stage1
-  //   next_state = curr_state;
-  //   next_transmit_seq_c = next_transmit_seq_r;
-  //   bram_wr_o = '0;
-  //   bram_addr_o = '0;
-  //   bram_data_out_o = '0;
-  //   dllp_valid_o = '0;
-  //   crc_in_c = crc_in_r;
-  //   crc_select = '0;
-  //   word_offset_c = word_offset_r;
-  //   tlp_data_c1 =tlp_data_r1;
-  //   keep_c = keep_r;
-  //   //axis signals
-  //   //@hint: axis signals not registered...look here for easy timing improvements
-  //   s_axis_skid_tready = '0;
-  //   m_axis_tdata_c = m_axis_tdata_r;
-  //   m_axis_tkeep_c = m_axis_tkeep_r;
-  //   m_axis_tvalid_c = m_axis_tvalid_r;
-  //   m_axis_tlast_c = m_axis_tlast_r;
-  //   m_axis_tuser_c = m_axis_tuser_r;
-  //   //tlp type
-  //   is_cpl_c  =  is_cpl_r;
-  //   is_np_c   =  is_np_r;
-  //   is_p_c    =  is_p_r;
-  //   case (curr_state)
-  //     ST_IDLE: begin
-  //       s_axis_skid_tready = '0;
-  //       if (retry_available_i && s_axis_skid_tvalid) begin
-  //         s_axis_skid_tready = '1;
-  //         //calculate sequence number crc
-  //         //crc_in_c = crc_out16;
-  //         //store seq
-  //         bram_data_out_o = {s_axis_skid_tdata[15:0], next_transmit_seq_r[15:0]};
-  //         word_offset_c = retry_index_i * MaxNumWordsPerTLP;
-  //         bram_addr_o = word_offset_c + 1;
-  //         bram_wr_o = '1;
-  //         word_count_c = 8'h2;
-  //         s_axis_skid_tready = '0;
-
-  //         tlp_data_c1 = s_axis_skid_tdata;
-  //         m_axis_tdata_c = {s_axis_skid_tdata[15:0], next_transmit_seq_r[15:0]};
-  //         m_axis_tkeep_c = '1;
-  //         m_axis_tlast_c = '0;
-  //         m_axis_tuser_c = '0;
-  //         m_axis_tvalid_c = '1;
-  //         //goto stream state
-  //         next_state = ST_TLP_STREAM;
-  //         //check tlp type
-  //         if (((s_axis_skid_tdata[7:0] == Cpl) || (s_axis_skid_tdata[7:0] == CplD))
-  //         && have_p_credit_r) begin
-  //           is_cpl_c = '1;
-  //         end else if (((s_axis_skid_tdata[7:0]  == MW) || (s_axis_skid_tdata[7:0]  == CW0) ||
-  //           (s_axis_skid_tdata[7:0] == CW1))  && have_p_credit_r) begin
-  //           is_p_c = '1;
-  //         end else if (have_np_credit_r) begin
-  //           is_np_c = '1;
-  //         end
-  //       end
-  //     end
-  //     ST_TLP_STREAM: begin
-  //       s_axis_skid_tready = m_axis_tready_i;
-  //       crc_select = '1;
-  //       if (m_axis_tready_i) begin
-  //         m_axis_tdata_c  = {s_axis_skid_tdata[15:0], data_r[31:16]};
-  //         m_axis_tkeep_c  = '1;
-  //         m_axis_tvalid_c = s_axis_skid_tvalid;
-  //         if (s_axis_skid_tvalid) begin
-  //           crc_in_c = crc_out16;
-  //           //store tlp data
-  //           tlp_data_c1 = s_axis_skid_tdata;
-  //           bram_data_out_o = m_axis_tdata_c;
-  //           bram_wr_o = '0;
-  //           bram_addr_o = word_offset_r + word_count_r;
-  //           word_count_c = word_count_r + 1'b1;
-
-  //           keep_c = s_axis_skid_tlast & s_axis_skid_tkeep;
-  //           if ((s_axis_skid_tlast & s_axis_skid_tkeep != 4'b0001) || (keep_c != '0)) begin
-  //             m_axis_tvalid_c = '0;
-  //             m_axis_tdata_c = tlp_data_r1;
-  //             next_state = ST_TLP_CRC;
-  //           end
-  //         end
-  //       end
-  //     end
-  //     ST_TLP_CRC: begin
-  //       crc_select = '1;
-  //       s_axis_skid_tready = '0;
-  //       if (m_axis_tready_i) begin
-  //         crc_in_c = crc_out16;
-  //         bram_data_out_o = crc_in_r;
-  //         bram_wr_o = '1;
-  //         bram_addr_o = word_offset_r + word_count_r;
-  //         //axis data
-  //         m_axis_tdata_c = crc_in_r;
-  //         m_axis_tkeep_c = '1;
-  //         m_axis_tvalid_c = '1;
-  //         m_axis_tlast_c = '1;
-  //         word_count_c = word_count_r + 1'b1;
-  //         next_state = ST_TLP_LAST;
-  //         case (keep_r)
-  //           4'b0001: begin
-  //             //crc_select = 2'b00;
-  //             //tkeep_c = 16'h7;
-  //             m_axis_tdata_c = {8'h0, crc_out32[31:8]};
-  //             m_axis_tkeep_c = 4'b0111;
-  //             //crc_in_c = {s_axis_skid_tdata[7:0], tlp_in_r[31:8]};
-  //           end
-  //           4'b0011: begin
-  //             //crc_select = 2'b01;
-  //             //tkeep_c = 16'h3;
-  //             //m_axis_tdata_c = {s_axis_skid_tdata[15:0],data_r[31:16]};
-  //             m_axis_tdata_c = crc_out32;
-  //             // crc_in_c = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
-  //           end
-  //           4'b0111: begin
-  //             m_axis_tdata_c = {crc_out32[23:0], data_r[23:16]};
-  //             next_state = ST_TLP_CRC_ALIGN;
-  //             //tkeep_c = 16'h1;
-  //             //crc_in_c = {s_axis_skid_tdata[23:0], tlp_in_r[31:24]};
-  //           end
-  //           4'b1111: begin
-  //             m_axis_tdata_c = {crc_out32[15:0], data_r[31:16]};
-  //             next_state = ST_TLP_CRC_ALIGN;
-  //             //tkeep_c = 16'hF;
-  //             //crc_in_c = s_axis_skid_tdata;
-  //           end
-  //           default: begin
-  //           end
-  //         endcase
-  //       end
-  //     end
-  //     ST_TLP_CRC_ALIGN: begin
-  //       crc_select = '1;
-  //       if (m_axis_tready_i) begin
-  //         crc_in_c = crc_out16;
-  //         bram_data_out_o = crc_in_r;
-  //         bram_wr_o = '1;
-  //         bram_addr_o = word_offset_r + word_count_r;
-  //         //axis data
-  //         m_axis_tdata_c = crc_in_r;
-  //         m_axis_tkeep_c = '1;
-  //         m_axis_tvalid_c = '1;
-  //         m_axis_tlast_c = '1;
-  //         word_count_c = word_count_r + 1'b1;
-  //         next_state = ST_TLP_LAST;
-  //         case (keep_r)
-  //           4'b0111: begin
-  //             m_axis_tdata_c = {8'h0, crc_out32[31:24]};
-  //             m_axis_tkeep_c = 4'b0001;
-  //             //tkeep_c = 16'h1;
-  //             //crc_in_c = {s_axis_skid_tdata[23:0], tlp_in_r[31:24]};
-  //           end
-  //           4'b1111: begin
-  //             m_axis_tdata_c = {8'h0, crc_out32[31:16]};
-  //             m_axis_tkeep_c = 4'b0011;
-  //             //tkeep_c = 16'hF;
-  //             //crc_in_c = s_axis_skid_tdata;
-  //           end
-  //           default: begin
-  //           end
-  //         endcase
-  //         next_state = ST_CHECK_CREDITS;
-  //       end
-  //     end
-  //     //retry buffer of 1 to start
-  //     ST_TLP_LAST: begin
-  //       if (m_axis_tready_i) begin
-  //         bram_data_out_o = crc_in_r;
-  //         bram_wr_o = '1;
-  //         bram_addr_o = word_offset_r + word_count_r;
-  //         //axis data
-  //         m_axis_tdata_c = crc_in_r;
-  //         m_axis_tkeep_c = '1;
-  //         m_axis_tvalid_c = '1;
-  //         m_axis_tlast_c = '1;
-  //         word_count_c = word_count_r + 1'b1;
-  //         next_state = ST_CHECK_CREDITS;
-  //       end
-  //     end
-  //     ST_CHECK_CREDITS: begin
-  //       if (m_axis_tready_i) begin
-  //         bram_data_out_o = word_count_r;
-  //         bram_wr_o = '1;
-  //         bram_addr_o = word_offset_r;
-  //         dllp_valid_o = '1;
-  //         word_count_c = '0;
-  //         word_offset_c = '0;
-  //         next_transmit_seq_c = next_transmit_seq_r + 1'b1;
-  //         m_axis_tvalid_c = '0;
-  //         next_state = ST_IDLE;
-  //       end
-  //     end
-  //     default: begin
-
-  //     end
-  //   endcase
-  // end
 
   always_comb begin : flow_contol
 
@@ -643,17 +426,21 @@ module tlp2dllp
     nph_credits_consumed_c = nph_credits_consumed_r;
     npd_credits_consumed_c = npd_credits_consumed_r;
 
-    max_payload_size_fc_c = 9'd8 << 5;
-    have_p_credit_c  = ((tx_fc_ph_i - ph_credits_consumed_r)> 8) &&
-    ((tx_fc_pd_i - pd_credits_consumed_r)> (max_payload_size_fc_c << 1));
+    max_payload_size_fc_c = 9'd8 << (MAX_PAYLOAD_SIZE);
+    have_p_credit_c  = (tx_fc_ph_i > ph_credits_consumed_r ? (tx_fc_ph_i - ph_credits_consumed_r) > 1: 
+    (ph_credits_consumed_r - tx_fc_ph_i) > 1 ) & (tx_fc_pd_i > pd_credits_consumed_r) ? 
+    (tx_fc_pd_i - pd_credits_consumed_r) > max_payload_size_fc_c :
+    (pd_credits_consumed_r - pd_credits_consumed_r) > 1;
+    // ((tx_fc_ph_i - ph_credits_consumed_r)> 8) &&
+    //                  ((tx_fc_pd_i - pd_credits_consumed_r)> (max_payload_size_fc_c << 1));
     have_np_credit_c = (tx_fc_nph_i - nph_credits_consumed_r) > 8;
 
     if (dllp_valid_o) begin
       //header with data
-      if (word_count_r > 5) begin
+      if (is_p_r) begin
         ph_credits_consumed_c = ph_credits_consumed_r + 4;
         pd_credits_consumed_c = pd_credits_consumed_r + (word_count_r - 5);
-      end else begin  //no data
+      end else if (is_np_r) begin  //no data
         nph_credits_consumed_c = nph_credits_consumed_r + 4;
         npd_credits_consumed_c = npd_credits_consumed_r + (word_count_r - 5);
       end
@@ -696,12 +483,6 @@ module tlp2dllp
   );
 
 
-  // pcie_lcrc32 tlp_crc32_inst (
-  //     .crcIn (crc_in_r),
-  //     .data  (s_axis_tdata_i),
-  //     .crcOut(crc_out32)
-  // );
-
   pcie_lcrc16 tlp_crc16_inst (
       .data  (m_axis_tdata_r1),
       .crcIn (crc_in_r),
@@ -716,13 +497,6 @@ module tlp2dllp
   assign m_axis_tlast_o  = m_axis_tlast_r3;
   assign m_axis_tuser_o  = m_axis_tuser_r3;
   assign seq_num_o       = next_transmit_seq_r;
-
-
-  // Dump waves
-  // initial begin
-  //   $dumpfile("tlp2dllp.vcd");
-  //   $dumpvars(1, tlp2dllp);
-  // end
 
 
 endmodule

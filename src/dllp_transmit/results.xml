@@ -1,8 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1697826243" />
-    <testcase name="run_test" classname="test_tlp2dllp" file="/home/idris/projects/pcie_datalink_layer/src/dllp_transmit/test_tlp2dllp.py" lineno="72" time="7031.382642030716" sim_time_ns="513965.0" ratio_time="73.09586551693666">
-      <failure message="Test failed with RANDOM_SEED=1697826243" />
-    </testcase>
+    <property name="random_seed" value="1697947139" />
+    <testcase name="run_test" classname="test_dllp_transmit" file="/home/idris/projects/pcie_datalink_layer/src/dllp_transmit/test_dllp_transmit.py" lineno="57" time="0.28348731994628906" sim_time_ns="420.001" ratio_time="1481.5512738967495" />
   </testsuite>
 </testsuites>

@@ -145,6 +145,7 @@ module pcie_datalink_layer
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
       .S_COUNT(S_COUNT),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
   ) pcie_flow_ctrl_init_inst (
@@ -168,6 +169,7 @@ module pcie_datalink_layer
       .STRB_WIDTH(STRB_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .S_COUNT(S_COUNT),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
   ) dllp_transmit_inst (
@@ -203,6 +205,7 @@ module pcie_datalink_layer
       .USER_WIDTH(USER_WIDTH),
       .S_COUNT(S_COUNT),
       .M_COUNT(M_COUNT),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RX_FIFO_SIZE(RX_FIFO_SIZE),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)

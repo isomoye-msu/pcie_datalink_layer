@@ -10,10 +10,9 @@ module tb_dllp_recieve;
   localparam int USER_WIDTH = 4;
   localparam int S_COUNT = 2;
   localparam int M_COUNT = 2;
-  localparam int RAM_DATA_WIDTH = 32;
-  localparam int RAM_ADDR_WIDTH = 12;
   localparam int RETRY_TLP_SIZE = 3;
   localparam int RX_FIFO_SIZE = 3;
+  localparam int MAX_PAYLOAD_SIZE = 0;
 
   //Ports
   reg                   clk;
@@ -68,9 +67,8 @@ module tb_dllp_recieve;
     .USER_WIDTH(USER_WIDTH),
     .S_COUNT(S_COUNT),
     .M_COUNT(M_COUNT),
-    .RX_FIFO_SIZE(RX_FIFO_SIZE),
-    .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
-    .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
+    .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
+    .RX_FIFO_SIZE(RX_FIFO_SIZE)
   )
   dllp_recieve_inst (
     .clk_i(clk),

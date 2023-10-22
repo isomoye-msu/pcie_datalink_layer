@@ -7,13 +7,9 @@ module dllp2tlp
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 1,
-    parameter int S_COUNT = 1,
+    parameter int MAX_PAYLOAD_SIZE = 0,
     parameter int M_COUNT = 2,
-    parameter int RX_FIFO_SIZE = 2,
-
-    //
-    parameter int RAM_DATA_WIDTH = 8,  // width of the data
-    parameter int RAM_ADDR_WIDTH = 4   // number of address bits
+    parameter int RX_FIFO_SIZE = 2
 ) (
     input logic            clk_i,         // Clock signal
     input logic            rst_i,         // Reset signal
@@ -23,12 +19,12 @@ module dllp2tlp
     /*
      * TLP AXIS inputs
      */
-    input  logic [DATA_WIDTH-1:0] s_axis_tdata_i,
-    input  logic [KEEP_WIDTH-1:0] s_axis_tkeep_i,
-    input  logic [   S_COUNT-1:0] s_axis_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_tlast_i,
-    input  logic [USER_WIDTH-1:0] s_axis_tuser_i,
-    output logic [   S_COUNT-1:0] s_axis_tready_o,
+    input logic [DATA_WIDTH-1:0] s_axis_tdata_i,
+    input logic [KEEP_WIDTH-1:0] s_axis_tkeep_i,
+    input logic s_axis_tvalid_i,
+    input logic s_axis_tlast_i,
+    input logic [USER_WIDTH-1:0] s_axis_tuser_i,
+    output logic s_axis_tready_o,
 
 
     /*
@@ -45,6 +41,11 @@ module dllp2tlp
   localparam int SkidBuffer = 2;
   localparam int TlpAxis = 0;
   localparam int DllpAxis = 1;
+  localparam int MaxTlpHdrSizeDW = 4;
+  localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
+  localparam int MinRxBufferSize = MaxTlpTotalSizeDW * (RX_FIFO_SIZE);
+  localparam int RamDataWidth = DATA_WIDTH;
+  localparam int RamAddrWidth = $clog2(MinRxBufferSize);
 
   //dllp to tlp fsm emum
   typedef enum logic [4:0] {
@@ -95,17 +96,17 @@ module dllp2tlp
   logic [15:0] dllp_crc_out;
   logic [15:0] dllp_crc_reversed;
   logic [31:0] dllp_lcrc_c, dllp_lcrc_r;
-  logic [               1:0] crc_select;
+  logic [             1:0] crc_select;
   //bram write signals
-  logic                      bram0_wr;
-  logic [RAM_ADDR_WIDTH-1:0] bram0_addr;
-  logic [RAM_DATA_WIDTH-1:0] bram0_data_in;
-  logic [RAM_DATA_WIDTH-1:0] bram0_data_out;
+  logic                    bram0_wr;
+  logic [RamAddrWidth-1:0] bram0_addr;
+  logic [RamDataWidth-1:0] bram0_data_in;
+  logic [RamDataWidth-1:0] bram0_data_out;
   //bram read signals
-  logic                      bram1_wr;
-  logic [RAM_ADDR_WIDTH-1:0] bram1_addr;
-  logic [RAM_DATA_WIDTH-1:0] bram1_data_in;
-  logic [RAM_DATA_WIDTH-1:0] bram1_data_out;
+  logic                    bram1_wr;
+  logic [RamAddrWidth-1:0] bram1_addr;
+  logic [RamDataWidth-1:0] bram1_data_in;
+  logic [RamDataWidth-1:0] bram1_data_out;
   //tlp type signals
   logic is_cpl_c, is_cpl_r;
   logic is_np_c, is_np_r;
@@ -117,10 +118,10 @@ module dllp2tlp
   //skid buffer axis signals
   logic [DATA_WIDTH-1:0] s_axis_skid_tdata;
   logic [KEEP_WIDTH-1:0] s_axis_skid_tkeep;
-  logic [   S_COUNT-1:0] s_axis_skid_tvalid;
-  logic [   S_COUNT-1:0] s_axis_skid_tlast;
+  logic                  s_axis_skid_tvalid;
+  logic                  s_axis_skid_tlast;
   logic [USER_WIDTH-1:0] s_axis_skid_tuser;
-  logic [   S_COUNT-1:0] s_axis_skid_tready;
+  logic                  s_axis_skid_tready;
   //dllp signals
   logic [DATA_WIDTH-1:0] m_axis_dllp_tdata;
   logic [KEEP_WIDTH-1:0] m_axis_dllp_tkeep;
@@ -134,10 +135,10 @@ module dllp2tlp
 
   logic [DATA_WIDTH-1:0] m_axis_tdata_c1, m_axis_tdata_r1;
   logic [KEEP_WIDTH-1:0] m_axis_tkeep_c1, m_axis_tkeep_r1;
-  logic [S_COUNT-1:0] m_axis_tvalid_c1, m_axis_tvalid_r1;
-  logic [S_COUNT-1:0] m_axis_tlast_c1, m_axis_tlast_r1;
+  logic m_axis_tvalid_c1, m_axis_tvalid_r1;
+  logic m_axis_tlast_c1, m_axis_tlast_r1;
   logic [USER_WIDTH-1:0] m_axis_tuser_c1, m_axis_tuser_r1;
-  logic [S_COUNT-1:0] m_axis_tready_c1, m_axis_tready_r1;
+  logic m_axis_tready_c1, m_axis_tready_r1;
 
 
   //credits tracking signals
@@ -218,14 +219,14 @@ module dllp2tlp
       tx_addr_r              <= tx_addr_c;
       tlp_curr_state         <= tlp_next_state;
     end
-     //tlp type
-    is_cpl_r               <= is_cpl_c;
-    is_np_r                <= is_np_c;
-    is_p_r                 <= is_p_c;
-    tx_tkeep_r <= tx_tkeep_c;
-    tkeep_r <= tkeep_c;
-    crc_in_r <= crc_in_c;
-    tlp_in_r <= tlp_in_c;
+    //tlp type
+    is_cpl_r        <= is_cpl_c;
+    is_np_r         <= is_np_c;
+    is_p_r          <= is_p_c;
+    tx_tkeep_r      <= tx_tkeep_c;
+    tkeep_r         <= tkeep_c;
+    crc_in_r        <= crc_in_c;
+    tlp_in_r        <= tlp_in_c;
     //stage 1
     m_axis_tdata_r1 <= m_axis_tdata_c1;
     m_axis_tkeep_r1 <= m_axis_tkeep_c1;
@@ -375,7 +376,7 @@ module dllp2tlp
               end
             endcase
             word_count_c = word_count_r;
-            next_state = ST_DLL_EOP;
+            next_state   = ST_DLL_EOP;
           end
         end
       end
@@ -495,12 +496,6 @@ module dllp2tlp
     m_axis_tvalid_c1 = m_axis_tvalid_r1;
     m_axis_tlast_c1  = m_axis_tlast_r1;
     m_axis_tuser_c1  = m_axis_tuser_r1;
-    //@hint: axis signals not registered...look here for easy timing improvements
-    // m_axis_tlp_tdata  = '0;
-    // m_axis_tlp_tkeep  = '0;
-    // m_axis_tlp_tvalid = '0;
-    // m_axis_tlp_tlast  = '0;
-    // m_axis_tlp_tuser  = '0;
     //bram write signals
     bram1_wr         = '0;
     bram1_addr       = tx_addr_r;
@@ -543,7 +538,7 @@ module dllp2tlp
           m_axis_tuser_c1  = '0;
           //increment address
           tlp_curr_count_c = tlp_curr_count_r + 1;
-          if (tlp_curr_count_r == tx_word_count_r+1) begin
+          if (tlp_curr_count_r == tx_word_count_r + 1) begin
             m_axis_tlast_c1 = '1;
             m_axis_tkeep_c1 = tx_tkeep_r;
             tlp_next_state  = ST_TLP_RX_EOP;
@@ -606,8 +601,8 @@ module dllp2tlp
 
 
   bram_dp #(
-      .RAM_DATA_WIDTH(DATA_WIDTH),
-      .RAM_ADDR_WIDTH($clog2(MaxTlpTotalSizeDW * RX_FIFO_SIZE))
+      .RAM_DATA_WIDTH(RamDataWidth),
+      .RAM_ADDR_WIDTH(RamAddrWidth)
   ) recieve_buffer_inst (
       .rst(rst_i),
       .a_clk(clk_i),
@@ -634,13 +629,6 @@ module dllp2tlp
       .select(crc_select),
       .crcOut(crc_out16)
   );
-
-  // pcie_lcrc32 tlp_crc32_inst (
-  //     .data  (s_axis_tdata_i),
-  //     .crcIn (crc_calc_r),
-  //     .crcOut(crc_out32)
-  // );
-
 
   assign m_axis_tdata_o = {m_axis_dllp_tdata, m_axis_tdata_r1};
   assign m_axis_tkeep_o = {m_axis_dllp_tkeep, m_axis_tkeep_r1};

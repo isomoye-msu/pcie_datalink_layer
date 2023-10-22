@@ -29,7 +29,7 @@ class TB:
         cocotb.start_soon(Clock(dut.clk, 2, units="ns").start())
 
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlp"), dut.clk, dut.rst)
-        #self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk, dut.rst)
+        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk, dut.rst)
         #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
 
     def set_idle_generator(self, generator=None):
@@ -74,10 +74,10 @@ async def run_test(dut):
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
     await RisingEdge(dut.clk)
-    # dut.tx_fc_ph.value = 0x16
-    # dut.tx_fc_pd.value = 0xF40
-    # dut.tx_fc_nph.value = 0x016
-    # dut.tx_fc_npd.value = 0xF40
+    dut.tx_fc_ph.value = 0x16
+    dut.tx_fc_pd.value = 0xF40
+    dut.tx_fc_nph.value = 0x016
+    dut.tx_fc_npd.value = 0xF40
     #dut.retry_available.value = 1
     # dut.ack_nack.value = 1
     # dut.ack_nack_vld.value = 0
@@ -112,7 +112,7 @@ async def run_test(dut):
     # await axis_source.wait()
     #
             
-    for i in range(20):
+    for i in range(200):
          await RisingEdge(dut.clk)
         
     await RisingEdge(dut.clk)    
