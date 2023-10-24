@@ -135,15 +135,15 @@ package pcie_datalink_pkg;
     PM_Actv_St_Req_L1 = 8'b00100011,
     PM_Request_Ack    = 8'b00100100,
     Vendor_Specific   = 8'b00110000,
-    InitFC1_P         = 8'b0100_????,
-    InitFC1_NP        = 8'b0101_????,
-    InitFC1_Cpl       = 8'b0110_????,
-    InitFC2_P         = 8'b1100_????,
-    InitFC2_NP        = 8'b1101_????,
-    InitFC2_Cpl       = 8'b1110_????,
-    UpdateFC_P        = 8'b1000_????,
-    UpdateFC_NP       = 8'b1001_????,
-    UpdateFC_Cpl      = 8'b1010_????
+    InitFC1_P         = 8'b01000000,
+    InitFC1_NP        = 8'b01010000,
+    InitFC1_Cpl       = 8'b01100000,
+    InitFC2_P         = 8'b11000000,
+    InitFC2_NP        = 8'b11010000,
+    InitFC2_Cpl       = 8'b11100000,
+    UpdateFC_P        = 8'b10000000,
+    UpdateFC_NP       = 8'b10010000,
+    UpdateFC_Cpl      = 8'b10100000
   } dllp_type_t;
 
   typedef struct packed {logic [3:0] half_byte;} half_byte_t;
@@ -213,8 +213,8 @@ package pcie_datalink_pkg;
   typedef struct packed {
     logic [15:0] crc;
     logic [7:0]  ack_nack0;
-    half_byte_t  rsvd1;
-    half_byte_t  ack_nack1;
+    logic [3:0]  rsvd1;
+    logic [3:0]  ack_nack1;
     logic [7:0]  rsvd0;
     dllp_type_t  ack_nak;
   } dllp_ack_nak_t;
@@ -258,26 +258,26 @@ package pcie_datalink_pkg;
     get_fc_data = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
   endfunction
 
-  function static dllp_ack_nak_t set_ack_nack(input dllp_type_t dllp_type, 
+  function static dllp_ack_nak_t set_ack_nack(input dllp_type_t dllp_type,
   logic [11:0] seq_num, logic [15:0] crc_in = 16'h0);
     dllp_ack_nak_t temp_dllp = '0;
     temp_dllp.ack_nak.type_byte = dllp_type;
-    {temp_dllp.ack_nack1, temp_dllp.ack_nack0} = seq_num;
+    temp_dllp.ack_nack1 = seq_num[11:8];
+    temp_dllp.ack_nack0 = seq_num[7:0];
+    // {temp_dllp.ack_nack1, temp_dllp.ack_nack0} = {4'h0,seq_num};
     temp_dllp.crc = crc_in;
     set_ack_nack = temp_dllp;
   endfunction
 
 
-  function automatic dll_packet_t send_fc_init(input dllp_type_t dllp_type, 
+  function automatic dllp_fc_t send_fc_init(input dllp_fc_t dllp_type,
   input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] datafc);
     begin
-      dll_packet_t dll_packet;
+      dllp_fc_t dll_packet;
       dll_packet = '0;
-      dll_packet.dllp_type.type_byte = dllp_type & 8'hF0;
-      dll_packet.dllp_type.type_vc.vcd = vcd;
-      dll_packet.header.hdr = hdrfc;
-      dll_packet.seq_datafc.data_fc = datafc;
-
+      dll_packet.fc_type.type_byte = dllp_type & 8'b1111_0000;
+      {dll_packet.byte1.hdrfc1, dll_packet.byte2.hdrfc0} = hdrfc;
+      {dll_packet.byte2.datafc1, dll_packet.datafc0} = datafc;
       send_fc_init = dll_packet;
     end
   endfunction

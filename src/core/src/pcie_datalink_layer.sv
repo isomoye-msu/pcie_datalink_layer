@@ -1,4 +1,15 @@
 `timescale 1ns / 1ps
+
+//! @title pcie_datalink_layern
+//! @author Idris Somoye
+//
+//! Implements a pcie datalink layer.
+//! Module accepts TLPs in AXI-Stream format and converts them into packets to be
+//! transmitted to the PHY logical layer.
+//!
+//!
+//! Module accepts packets from the phy logical layer and either handles them as DLLPs,
+//! or converts them to TLPs to be output as AXI-Stream packets
 module pcie_datalink_layer
   import pcie_datalink_pkg::*;
 #(

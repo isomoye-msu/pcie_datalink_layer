@@ -81,7 +81,7 @@ module dllp2tlp
   logic [31:0] tlp_in_c, tlp_in_r;
   //transmit sequence logic
   logic [15:0] next_transmit_seq_c, next_transmit_seq_r;
-  logic [15:0] expected_seq_c, expected_seq_r;
+  logic [15:0] next_recv_seq_num_c, next_recv_seq_num_r;
   logic [15:0] tkeep_c, tkeep_r;
   logic [11:0] ackd_transmit_seq_c, ackd_transmit_seq_r;
   //fifo signals
@@ -167,7 +167,7 @@ module dllp2tlp
     if (rst_i) begin
       curr_state             <= ST_DLL_RX_IDLE;
       next_transmit_seq_r    <= '0;
-      expected_seq_r         <= '0;
+      next_recv_seq_num_r         <= '0;
       //crc signals
       dllp_lcrc_r            <= '1;
       crc_calc_r             <= '1;
@@ -194,7 +194,7 @@ module dllp2tlp
     end else begin
       curr_state             <= next_state;
       next_transmit_seq_r    <= next_transmit_seq_c;
-      expected_seq_r         <= expected_seq_c;
+      next_recv_seq_num_r         <= next_recv_seq_num_c;
       //crc signals
       dllp_lcrc_r            <= dllp_lcrc_c;
       crc_calc_r             <= crc_calc_c;
@@ -265,7 +265,7 @@ module dllp2tlp
     bram0_addr = rx_addr_r;
     bram0_data_in = '0;
     //seq num
-    expected_seq_c = expected_seq_r;
+    next_recv_seq_num_c = next_recv_seq_num_r;
     //rx word count
     word_count_c = word_count_r;
     //tlp type
@@ -274,7 +274,7 @@ module dllp2tlp
     is_cpl_c  =  is_cpl_r;
     is_np_c   =  is_np_r;
     is_p_c    =  is_p_r;
-    //
+    //credits signals
     ph_credits_consumed_c    = ph_credits_consumed_r;
     pd_credits_consumed_c    = pd_credits_consumed_r;
     nph_credits_consumed_c   = nph_credits_consumed_r;
@@ -299,10 +299,9 @@ module dllp2tlp
       ST_DLL_RX_IDLE: begin
         s_axis_skid_tready = (!fifo_full && (link_status_i == DL_ACTIVE));
         if (s_axis_skid_tvalid && s_axis_skid_tready) begin
-          next_transmit_seq_c = s_axis_skid_tdata[15:0];
-          bram0_data_in = s_axis_skid_tdata;
+          //store incoming sequence number
+          next_transmit_seq_c = {s_axis_skid_tdata[7:0],s_axis_skid_tdata[15:8]};
           tlp_in_c = s_axis_skid_tdata;
-          //crc_calc_c = crc_out16;
           crc_select = 2'b01;
           //tlp type
           is_cpl_c  =  '0;
@@ -319,8 +318,8 @@ module dllp2tlp
         if (s_axis_skid_tvalid) begin
           crc_calc_c = crc_out16;
           word_count_c = word_count_r + 1;
-          //bram store
           tlp_in_c = s_axis_skid_tdata;
+          //bram store
           bram0_data_in = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
           bram0_addr = rx_addr_r + word_count_r + 1;
           bram0_wr = '1;
@@ -349,7 +348,6 @@ module dllp2tlp
           bram0_addr = rx_addr_r + word_count_r + 1;
           bram0_wr = '1;
           if (s_axis_skid_tlast) begin
-            //bram0_wr = '0;
             word_count_c = word_count_r;
             case (s_axis_skid_tkeep)
               4'b0001: begin
@@ -359,7 +357,7 @@ module dllp2tlp
               end
               4'b0011: begin
                 crc_select = 2'b01;
-                tkeep_c = 16'h3;
+                tkeep_c = 16'hF;
                 crc_in_c = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
               end
               4'b0111: begin
@@ -369,7 +367,7 @@ module dllp2tlp
               end
               4'b1111: begin
                 crc_select = 2'b11;
-                tkeep_c = 16'hF;
+                tkeep_c = 16'h3;
                 crc_in_c = s_axis_skid_tdata;
               end
               default: begin
@@ -396,7 +394,7 @@ module dllp2tlp
           //go to nextstate
           next_state = ST_ACK_DLLP;
           //confirm data in buffer to be sent to tlp layer
-          if (expected_seq_r == next_transmit_seq_r) begin
+          if (next_recv_seq_num_r == next_transmit_seq_r) begin
             //expected sequence valid
             next_state = ST_ACK_DLLP;
           end
@@ -440,14 +438,18 @@ module dllp2tlp
         //build dllp fc update for crc
         if (is_p_r) begin
           //increment header by 1 and data by max size
-          dll_packet.generic.dllp_type.type_byte = UpdateFC_P & 8'hF0;
-          dll_packet.generic.header.hdr = ph_credits_consumed_r + 1;
-          dll_packet.generic.seq_datafc.data_fc = pd_credits_consumed_r + FcPData;
+          dll_packet = send_fc_init(UpdateFC_P,'0, ph_credits_consumed_r + 1,
+          pd_credits_consumed_r + FcPData);
+          // dll_packet.generic.dllp_type.type_byte = UpdateFC_P & 8'hF0;
+          // dll_packet.generic.header.hdr = ph_credits_consumed_r + 1;
+          // dll_packet.generic.seq_datafc.data_fc = pd_credits_consumed_r + FcPData;
         end else if (is_np_r) begin
           //increment header by 1 and data by max size
-          dll_packet.generic.dllp_type.type_byte = UpdateFC_NP & 8'hF0;
-          dll_packet.generic.header.hdr = nph_credits_consumed_r + 1;
-          dll_packet.generic.seq_datafc.data_fc = npd_credits_consumed_r + FcPData;
+          dll_packet = send_fc_init(UpdateFC_NP,'0, nph_credits_consumed_r + 1,
+          npd_credits_consumed_r + FcPData);
+          // dll_packet.generic.dllp_type.type_byte = UpdateFC_NP & 8'hF0;
+          // dll_packet.generic.header.hdr = nph_credits_consumed_r + 1;
+          // dll_packet.generic.seq_datafc.data_fc = npd_credits_consumed_r + FcPData;
         end
         dllp_lcrc_c = dllp_crc_out;
         //build axis master output
@@ -469,7 +471,8 @@ module dllp2tlp
         if (m_axis_dllp_tready) begin
           word_count_c = '0;
           crc_calc_c = '1;
-          expected_seq_c = expected_seq_r + 1;
+          //increment seq number, fifo tail, rx_buffer index
+          next_recv_seq_num_c = next_recv_seq_num_r + 1;
           fifo_tail_c = (fifo_tail_r == RX_FIFO_SIZE) ? '0 : fifo_tail_r + 1;
           rx_addr_c = (fifo_tail_r == RX_FIFO_SIZE) ? '0 : rx_addr_r + MaxTlpTotalSizeDW;
           next_state = ST_DLL_RX_IDLE;
@@ -538,7 +541,7 @@ module dllp2tlp
           m_axis_tuser_c1  = '0;
           //increment address
           tlp_curr_count_c = tlp_curr_count_r + 1;
-          if (tlp_curr_count_r == tx_word_count_r + 1) begin
+          if (tlp_curr_count_r == tx_word_count_r) begin
             m_axis_tlast_c1 = '1;
             m_axis_tkeep_c1 = tx_tkeep_r;
             tlp_next_state  = ST_TLP_RX_EOP;

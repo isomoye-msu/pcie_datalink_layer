@@ -131,12 +131,12 @@ module dllp_recieve
       .s_axis_tlast_i (s_axis_phy2tlp_tlast),
       .s_axis_tuser_i (s_axis_phy2tlp_tuser),
       .s_axis_tready_o(s_axis_phy2tlp_tready),
-      .m_axis_tdata_o ({m_axis_dllp2tlp_tdata, m_axis_dllp2phy_tdata}),
-      .m_axis_tkeep_o ({m_axis_dllp2tlp_tkeep, m_axis_dllp2phy_tkeep}),
-      .m_axis_tvalid_o({m_axis_dllp2tlp_tvalid, m_axis_dllp2phy_tvalid}),
-      .m_axis_tlast_o ({m_axis_dllp2tlp_tlast, m_axis_dllp2phy_tlast}),
-      .m_axis_tuser_o ({m_axis_dllp2tlp_tuser, m_axis_dllp2phy_tuser}),
-      .m_axis_tready_i({m_axis_dllp2tlp_tready, m_axis_dllp2phy_tready})
+      .m_axis_tdata_o ({m_axis_dllp2phy_tdata  ,m_axis_dllp2tlp_tdata }),
+      .m_axis_tkeep_o ({m_axis_dllp2phy_tkeep  ,m_axis_dllp2tlp_tkeep }),
+      .m_axis_tvalid_o({m_axis_dllp2phy_tvalid ,m_axis_dllp2tlp_tvalid  }),
+      .m_axis_tlast_o ({m_axis_dllp2phy_tlast  ,m_axis_dllp2tlp_tlast }),
+      .m_axis_tuser_o ({m_axis_dllp2phy_tuser  ,m_axis_dllp2tlp_tuser }),
+      .m_axis_tready_i({m_axis_dllp2phy_tready ,m_axis_dllp2tlp_tready })
   );
 
   assign {s_axis_phy2tlp_tdata, s_axis_phy2dllp_tdata} = s_axis_tdata_i;

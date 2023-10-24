@@ -13,13 +13,14 @@ from crc import Calculator, Configuration,Crc32
 import cocotb
 from cocotb.clock import Clock
 from cocotb.regression import TestFactory
-from cocotb.triggers import FallingEdge, RisingEdge, Timer
+from cocotb.triggers import FallingEdge, RisingEdge, Timer, First
 from cocotbext.axi import AxiStreamFrame, AxiStreamBus, AxiStreamSource, AxiStreamSink, AxiStreamMonitor
 from cocotbext.pcie.core import RootComplex, MemoryEndpoint, Device, Switch
 from cocotbext.pcie.core.caps import MsiCapability
 from cocotbext.pcie.core.utils import PcieId
 from cocotbext.pcie.core.tlp import Tlp, TlpType
 from cocotbext.pcie.core.dllp import Dllp, DllpType,FcScale
+from cocotb.queue import Queue, QueueFull
 
 
 class TB:
@@ -39,6 +40,12 @@ class TB:
         #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk, dut.rst) for k in range(ports)]
         self.sinkdllp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp2phy"), dut.clk, dut.rst)
         self.sinktlp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlpout"), dut.clk, dut.rst)
+        
+        self.source.log.setLevel(logging.CRITICAL)
+        self.sourcetllp.log.setLevel(logging.CRITICAL)
+        self.sourcetlp.log.setLevel(logging.CRITICAL)
+        self.sinkdllp2phy.log.setLevel(logging.CRITICAL)
+        self.sinktlp.log.setLevel(logging.CRITICAL)
         #self.sinktlp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp2phy"), dut.clk, dut.rst)
         #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
 
@@ -74,43 +81,6 @@ def crc16(data, crc=0xFFFF, poly=0xD008):
                 crc = crc >> 1
     return crc ^ 0xffff
 
-# def crc32(data, crc=0xFFFFFFFF, poly=0x04C11DB7):
-#     for d in data:
-#         crc = crc ^ d
-#         for bit in range(0, 8):
-#             if crc & 1:
-#                 crc = (crc >> 1) ^ poly
-#             else:
-#                 crc = crc >> 1
-#     return crc
-def crc(crcIn, data):
-    class bitwrapper:
-        def __init__(self, x):
-            self.x = x
-        def __getitem__(self, i):
-            return (self.x >> i) & 1
-        def __setitem__(self, i, x):
-            self.x = (self.x | (1 << i)) if x else (self.x & ~(1 << i))
-    crcIn = bitwrapper(crcIn)
-    data = bitwrapper(data)
-    ret = bitwrapper(0)
-    ret[0] = crcIn[2] ^ crcIn[4] ^ crcIn[7] ^ crcIn[11] ^ crcIn[12] ^ crcIn[13] ^ crcIn[15] ^ data[0] ^ data[4] ^ data[5] ^ data[6] ^ data[9] ^ data[10] ^ data[11] ^ data[12] ^ data[13] ^ data[14] ^ data[18] ^ data[20] ^ data[23] ^ data[27] ^ data[28] ^ data[29] ^ data[31]
-    ret[1] = crcIn[2] ^ crcIn[3] ^ crcIn[4] ^ crcIn[5] ^ crcIn[7] ^ crcIn[8] ^ crcIn[11] ^ crcIn[14] ^ crcIn[15] ^ data[0] ^ data[1] ^ data[4] ^ data[7] ^ data[9] ^ data[15] ^ data[18] ^ data[19] ^ data[20] ^ data[21] ^ data[23] ^ data[24] ^ data[27] ^ data[30] ^ data[31]
-    ret[2] = crcIn[0] ^ crcIn[2] ^ crcIn[3] ^ crcIn[5] ^ crcIn[6] ^ crcIn[7] ^ crcIn[8] ^ crcIn[9] ^ crcIn[11] ^ crcIn[13] ^ data[0] ^ data[1] ^ data[2] ^ data[4] ^ data[6] ^ data[8] ^ data[9] ^ data[11] ^ data[12] ^ data[13] ^ data[14] ^ data[16] ^ data[18] ^ data[19] ^ data[21] ^ data[22] ^ data[23] ^ data[24] ^ data[25] ^ data[27] ^ data[29]
-    ret[3] = crcIn[1] ^ crcIn[3] ^ crcIn[4] ^ crcIn[6] ^ crcIn[7] ^ crcIn[8] ^ crcIn[9] ^ crcIn[10] ^ crcIn[12] ^ crcIn[14] ^ data[1] ^ data[2] ^ data[3] ^ data[5] ^ data[7] ^ data[9] ^ data[10] ^ data[12] ^ data[13] ^ data[14] ^ data[15] ^ data[17] ^ data[19] ^ data[20] ^ data[22] ^ data[23] ^ data[24] ^ data[25] ^ data[26] ^ data[28] ^ data[30]
-    ret[4] = crcIn[0] ^ crcIn[5] ^ crcIn[8] ^ crcIn[9] ^ crcIn[10] ^ crcIn[12] ^ data[0] ^ data[2] ^ data[3] ^ data[5] ^ data[8] ^ data[9] ^ data[12] ^ data[15] ^ data[16] ^ data[21] ^ data[24] ^ data[25] ^ data[26] ^ data[28]
-    ret[5] = crcIn[0] ^ crcIn[1] ^ crcIn[2] ^ crcIn[4] ^ crcIn[6] ^ crcIn[7] ^ crcIn[9] ^ crcIn[10] ^ crcIn[12] ^ crcIn[15] ^ data[0] ^ data[1] ^ data[3] ^ data[5] ^ data[11] ^ data[12] ^ data[14] ^ data[16] ^ data[17] ^ data[18] ^ data[20] ^ data[22] ^ data[23] ^ data[25] ^ data[26] ^ data[28] ^ data[31]
-    ret[6] = crcIn[1] ^ crcIn[2] ^ crcIn[3] ^ crcIn[5] ^ crcIn[7] ^ crcIn[8] ^ crcIn[10] ^ crcIn[11] ^ crcIn[13] ^ data[1] ^ data[2] ^ data[4] ^ data[6] ^ data[12] ^ data[13] ^ data[15] ^ data[17] ^ data[18] ^ data[19] ^ data[21] ^ data[23] ^ data[24] ^ data[26] ^ data[27] ^ data[29]
-    ret[7] = crcIn[0] ^ crcIn[3] ^ crcIn[6] ^ crcIn[7] ^ crcIn[8] ^ crcIn[9] ^ crcIn[13] ^ crcIn[14] ^ crcIn[15] ^ data[0] ^ data[2] ^ data[3] ^ data[4] ^ data[6] ^ data[7] ^ data[9] ^ data[10] ^ data[11] ^ data[12] ^ data[16] ^ data[19] ^ data[22] ^ data[23] ^ data[24] ^ data[25] ^ data[29] ^ data[30] ^ data[31]
-    ret[8] = crcIn[1] ^ crcIn[2] ^ crcIn[8] ^ crcIn[9] ^ crcIn[10] ^ crcIn[11] ^ crcIn[12] ^ crcIn[13] ^ crcIn[14] ^ data[0] ^ data[1] ^ data[3] ^ data[6] ^ data[7] ^ data[8] ^ data[9] ^ data[14] ^ data[17] ^ data[18] ^ data[24] ^ data[25] ^ data[26] ^ data[27] ^ data[28] ^ data[29] ^ data[30]
-    ret[9] = crcIn[2] ^ crcIn[3] ^ crcIn[9] ^ crcIn[10] ^ crcIn[11] ^ crcIn[12] ^ crcIn[13] ^ crcIn[14] ^ crcIn[15] ^ data[1] ^ data[2] ^ data[4] ^ data[7] ^ data[8] ^ data[9] ^ data[10] ^ data[15] ^ data[18] ^ data[19] ^ data[25] ^ data[26] ^ data[27] ^ data[28] ^ data[29] ^ data[30] ^ data[31]
-    ret[10] = crcIn[0] ^ crcIn[2] ^ crcIn[3] ^ crcIn[7] ^ crcIn[10] ^ crcIn[14] ^ data[0] ^ data[2] ^ data[3] ^ data[4] ^ data[6] ^ data[8] ^ data[12] ^ data[13] ^ data[14] ^ data[16] ^ data[18] ^ data[19] ^ data[23] ^ data[26] ^ data[30]
-    ret[11] = crcIn[1] ^ crcIn[2] ^ crcIn[3] ^ crcIn[7] ^ crcIn[8] ^ crcIn[12] ^ crcIn[13] ^ data[0] ^ data[1] ^ data[3] ^ data[6] ^ data[7] ^ data[10] ^ data[11] ^ data[12] ^ data[15] ^ data[17] ^ data[18] ^ data[19] ^ data[23] ^ data[24] ^ data[28] ^ data[29]
-    ret[12] = crcIn[0] ^ crcIn[3] ^ crcIn[7] ^ crcIn[8] ^ crcIn[9] ^ crcIn[11] ^ crcIn[12] ^ crcIn[14] ^ crcIn[15] ^ data[0] ^ data[1] ^ data[2] ^ data[5] ^ data[6] ^ data[7] ^ data[8] ^ data[9] ^ data[10] ^ data[14] ^ data[16] ^ data[19] ^ data[23] ^ data[24] ^ data[25] ^ data[27] ^ data[28] ^ data[30] ^ data[31]
-    ret[13] = crcIn[1] ^ crcIn[4] ^ crcIn[8] ^ crcIn[9] ^ crcIn[10] ^ crcIn[12] ^ crcIn[13] ^ crcIn[15] ^ data[1] ^ data[2] ^ data[3] ^ data[6] ^ data[7] ^ data[8] ^ data[9] ^ data[10] ^ data[11] ^ data[15] ^ data[17] ^ data[20] ^ data[24] ^ data[25] ^ data[26] ^ data[28] ^ data[29] ^ data[31]
-    ret[14] = crcIn[0] ^ crcIn[2] ^ crcIn[5] ^ crcIn[9] ^ crcIn[10] ^ crcIn[11] ^ crcIn[13] ^ crcIn[14] ^ data[2] ^ data[3] ^ data[4] ^ data[7] ^ data[8] ^ data[9] ^ data[10] ^ data[11] ^ data[12] ^ data[16] ^ data[18] ^ data[21] ^ data[25] ^ data[26] ^ data[27] ^ data[29] ^ data[30]
-    ret[15] = crcIn[1] ^ crcIn[3] ^ crcIn[6] ^ crcIn[10] ^ crcIn[11] ^ crcIn[12] ^ crcIn[14] ^ crcIn[15] ^ data[3] ^ data[4] ^ data[5] ^ data[8] ^ data[9] ^ data[10] ^ data[11] ^ data[12] ^ data[13] ^ data[17] ^ data[19] ^ data[22] ^ data[26] ^ data[27] ^ data[28] ^ data[30] ^ data[31]
-    return ret.x
 
 def crc32(msg, poly=0x04C11DB7):
     crc = 0xffffffff
@@ -120,6 +90,9 @@ def crc32(msg, poly=0x04C11DB7):
             crc = (crc >> 1) ^ poly if crc & 1 else crc >> 1
     return crc ^ 0xffffffff
 
+def reverse_bytes(byte_obj):
+    reversed_bytes = byte_obj[::-1]
+    return reversed_bytes
 
 def tlp2dllp(seq_num, data,tlp_calculator):
     test_data = seq_num.to_bytes(2,'big')
@@ -127,6 +100,213 @@ def tlp2dllp(seq_num, data,tlp_calculator):
     test_data += tlp_calculator.checksum(test_data).to_bytes(4,'big')
     seq_num += 1
     return test_data
+
+
+def check_dllp(packet, packet_out):
+    
+    dllp_crc_config = Configuration(
+        width=16,
+        polynomial=0x1DB7,
+        init_value=0xFFFF,
+        final_xor_value=0x00000000,
+        reverse_input=False,
+        reverse_output=False,
+    )
+    
+    crc_calculator = Calculator(dllp_crc_config)
+    #find size of the frame
+    size = len(packet)
+    
+    #remove crc from packet
+    crc_in = packet[size-2:size]
+    dllp = packet[0:size-2]
+    
+    calc_crc = crc_calculator.checksum(dllp).to_bytes(2, 'little')
+    
+    if crc_in == calc_crc:
+        #print("crc_in : " + str(crc_in))
+        packet_out = dllp
+        return 1
+    else:
+        print("CRC check fail. crc_in:" + str(crc_in) + "calculated crc: " + str(calc_crc))
+        return 0
+    
+
+async def init_fc_driver(dut,tb, queue):
+    
+    seq = 0
+    #configure Dllp 
+    dllp_crc_config = Configuration(
+        width=16,
+        polynomial=0x1DB7,
+        init_value=0xFFFF,
+        final_xor_value=0x00000000,
+        reverse_input=False,
+        reverse_output=True,
+    )
+    
+    crc_calculator = Calculator(dllp_crc_config)
+    
+
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC1_P
+    test_dllp.seq = seq
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+    
+    for i in range(200):
+        await RisingEdge(dut.clk)
+    
+    seq+=1
+    
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC1_NP
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+    
+    for i in range(200):
+        await RisingEdge(dut.clk)
+        
+        
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC1_CPL
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+
+
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC2_P
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+    for i in range(20):
+         await RisingEdge(dut.clk)
+         
+    
+     
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC2_P
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+    
+    for i in range(20):
+         await RisingEdge(dut.clk)
+
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC2_NP
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+    
+    
+    for i in range(200):
+         await RisingEdge(dut.clk)
+         
+    test_dllp = Dllp()
+    test_dllp.type = DllpType.INIT_FC2_CPL
+    test_dllp.seq = 0
+    test_dllp.vc = 0
+    test_dllp.hdr_scale = FcScale(0)
+    test_dllp.hdr_fc = 1
+    test_dllp.data_scale = FcScale(0)
+    test_dllp.data_fc = 256
+    test_dllp.feature_support = 0
+    test_dllp.feature_ack = False
+    data = test_dllp.pack()
+    data += crc_calculator.checksum(data).to_bytes(2, 'big')
+    test_frame = AxiStreamFrame(data)
+    await queue.put(test_frame)
+    await tb.source.send(test_frame)
+
+
+async def init_fc_monitor(dut,tb, queue):
+    while 1:
+        packet = await tb.sinkdllp2phy.recv()
+        #print(packet)
+        data_in = packet.tdata
+        data_in = data_in
+        #data_in = reverse_bytes(data_in)
+        #print(str(data_in))
+        extracted_packet = packet.tdata
+        # dllppacket = Dllp()
+        # dllppacket = dllppacket.unpack(data_in)
+        # print(dllppacket)
+        if check_dllp(data_in, extracted_packet) == 1:
+            dllp =  Dllp()
+            #print(extracted_packet)
+            dllp = dllp.unpack(extracted_packet)
+            #print(dllp)
+            print("FC MONITOR: " + str(dllp))
+    print("\n\n\n\n")
+            
+            
+            
+        
+        
+
 
 @cocotb.test()
 async def run_test(dut):
@@ -144,6 +324,8 @@ async def run_test(dut):
 
     tb.set_idle_generator(None)
     tb.set_backpressure_generator(None)
+    
+    dllp_queue = Queue()
     
     tlp_config = Configuration(
         width=32,
@@ -169,160 +351,16 @@ async def run_test(dut):
     await RisingEdge(dut.clk)
     
     
-    length = random.randint(1, 32)
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC1_P
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    #test_dllp.create_ack(2)
-    #test_dllp.pack_crc()
-    
-    config = Configuration(
-        width=16,
-        polynomial=0x1DB7,
-        init_value=0xFFFF,
-        final_xor_value=0x00000000,
-        reverse_input=False,
-        reverse_output=True,
-    )
-
-    calculator = Calculator(config)
-    
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    print(data)
-    
-    
-    await tb.source.send(test_frame)
     for i in range(20):
-         await RisingEdge(dut.clk)
-         
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC1_NP
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk)
          
          
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC1_CPL
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
-         
-         
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC2_P
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
-        
-    await RisingEdge(dut.clk)    
-    
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC2_NP
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
-         
-    test_dllp = Dllp()
-    test_dllp.type = DllpType.INIT_FC2_CPL
-    test_dllp.seq = 0
-    test_dllp.vc = 0
-    test_dllp.hdr_scale = FcScale(0)
-    test_dllp.hdr_fc = 1
-    test_dllp.data_scale = FcScale(0)
-    test_dllp.data_fc = 256
-    test_dllp.feature_support = 0
-    test_dllp.feature_ack = False
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
-         
-    test_dllp = Dllp()
-    test_dllp = test_dllp.create_ack(0x002)
-    data = test_dllp.pack()
-    data += calculator.checksum(data).to_bytes(2, 'big')
-    test_frame = AxiStreamFrame(data)
-    await tb.source.send(test_frame)
-    
-    for i in range(20):
-         await RisingEdge(dut.clk)
-    # dut.ack_seq_num.value = 0x30
-    # dut.ack_nack_vld.value = 1
-    # await RisingEdge(dut.clk)
-    # dut.ack_nack_vld.value = 0
-    # for i in range(20):
-    #     await RisingEdge(dut.clk)
-    # data_in = await tb.sink.recv()
-    # 
-    # 
-    # data_in = await tb.sink.recv()
-    # 
-    # 
-    # data_in = await tb.sink.recv()
+    coro2Thread = cocotb.start_soon(init_fc_monitor(dut,tb,dllp_queue))
+    coro1Thread = cocotb.start_soon(init_fc_driver(dut,tb,dllp_queue))
+    await First(coro1Thread)
     
     
-    for i in range(20):
+    for i in range(2000):
          await RisingEdge(dut.clk)
          
     length = random.randint(1, 32)
@@ -337,16 +375,10 @@ async def run_test(dut):
         test_tlp.set_addr_be(1*4, length)
         test_tlp.tag = 1
         test_tlp.requester_id = 1
-
-    # data = 0x0100
-    # test_data =  0x0100
-    # data = data.to_bytes(2,'big')
-    # test_data = test_data.to_bytes(2,'big')
-    # test_data += test_tlp.pack()
     data = test_tlp.pack()
-    # data += tlp_calculator.checksum(data).to_bytes(4,'big')
     test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
     await tb.sourcetllp.send(test_frame)
+    seq_num +=1
     for i in range(20):
          await RisingEdge(dut.clk)
          
@@ -370,5 +402,47 @@ async def run_test(dut):
     test_frame = AxiStreamFrame(data)
     await tb.sourcetlp.send(test_frame)
     
-    for i in range(100):
+    for i in range(20):
+        await RisingEdge(dut.clk)
+        
+        
+    length = random.randint(1, 32)
+    test_tlp = Tlp()
+    test_tlp.fmt_type = random.choice([TlpType.MEM_WRITE])
+    if test_tlp.fmt_type == TlpType.MEM_WRITE:
+        test_data = bytearray(itertools.islice(itertools.cycle(range(255)), length))
+        test_tlp.set_addr_be_data(1*4, test_data)
+        test_tlp.tag = 1
+        test_tlp.requester_id = 1
+    elif test_tlp.fmt_type == TlpType.MEM_READ:
+        test_tlp.set_addr_be(1*4, length)
+        test_tlp.tag = 1
+        test_tlp.requester_id = 1
+    data = test_tlp.pack()
+    test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
+    await tb.sourcetllp.send(test_frame)
+    seq_num +=1
+    
+    for i in range(200):
+        await RisingEdge(dut.clk)
+
+    length = random.randint(1, 32)
+    test_tlp = Tlp()
+    test_tlp.fmt_type = random.choice([TlpType.MEM_WRITE])
+    if test_tlp.fmt_type == TlpType.MEM_WRITE:
+        test_data = bytearray(itertools.islice(itertools.cycle(range(255)), length))
+        test_tlp.set_addr_be_data(1*4, test_data)
+        test_tlp.tag = 1
+        test_tlp.requester_id = 1
+    elif test_tlp.fmt_type == TlpType.MEM_READ:
+        test_tlp.set_addr_be(1*4, length)
+        test_tlp.tag = 1
+        test_tlp.requester_id = 1
+    data = test_tlp.pack()
+    test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
+    await tb.sourcetllp.send(test_frame)
+    seq_num +=1
+    
+    
+    for i in range(2000):
         await RisingEdge(dut.clk)
