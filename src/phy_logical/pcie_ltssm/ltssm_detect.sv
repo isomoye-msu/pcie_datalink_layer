@@ -27,7 +27,7 @@ module ltssm_detect
 );
 
 
-  localparam int TimeOutPeriod = 32'hDACA;
+  localparam int TimeOutPeriod = 32'h0000DACA;
 
   typedef enum logic {
     ST_IDLE,

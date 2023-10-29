@@ -24,6 +24,11 @@ package pcie_phy_pkg;
     PAD = 8'hF7
   } train_seq_e;
 
+  typedef struct packed {
+    logic is_config_tsos;
+    logic is_polling_tsos;
+} phy_user_t;
+
 
   typedef struct packed {
     logic [7:4] rsvd;
@@ -117,17 +122,18 @@ package pcie_phy_pkg;
   } patterns_e;
 
 
-  function automatic pcie_ordered_set_t gen_tsos(input logic [7:0] link_num,
-                                                 input logic [7:0] lane_num);
+  function automatic pcie_ordered_set_t gen_tsos(input train_seq_e TSOS,
+  input train_seq_e link_num = PAD, input train_seq_e lane_num = PAD,
+  rate_id_e rate_id = gen3);
     begin
       pcie_tsos_t temp_os;
       temp_os = '0;
       temp_os.com = TS1_K28_5;
-      temp_os.link_num = PAD;
-      temp_os.lane_num = PAD;
-      temp_os.rate_id = gen3;
+      temp_os.link_num = link_num;
+      temp_os.lane_num = lane_num;
+      temp_os.rate_id = rate_id;
       for (int i = 0; i < 9; i++) begin
-        temp_os.ts_id[i] = TS1;
+        temp_os.ts_id[i] = TSOS;
       end
 
       for (int i = 0; i < 15; i++) begin
@@ -142,6 +148,25 @@ package pcie_phy_pkg;
       gen3_eieos = temp_os;
     end
   endfunction
+
+
+  function automatic pcie_ordered_set_t gen3_eieos();
+  begin
+    pcie_ordered_set_t temp_os;
+    temp_os = '0;
+    for (int i = 0; i < 15; i++) begin
+      //even
+      if (i % 2) begin
+        temp_os.symbols[i] = 8'h00;
+      end  //odd
+      else begin
+        temp_os.symbols[i] = 8'hFF;
+      end
+    end
+    gen3_eieos = temp_os;
+  end
+endfunction
+
 
   function automatic pcie_ordered_set_t gen3_eieos();
     begin

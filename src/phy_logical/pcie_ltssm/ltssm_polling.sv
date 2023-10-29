@@ -1,71 +1,102 @@
 module ltssm_polling
   import pcie_phy_pkg::*;
 #(
-    parameter int MAX_NUM_LANES = 4
+    parameter int MAX_NUM_LANES = 4,
+    // TLP data width
+    parameter int DATA_WIDTH = 32,
+    // TLP keep width
+    parameter int KEEP_WIDTH = DATA_WIDTH / 8,
+    parameter int USER_WIDTH = $bits(phy_user_t)
 
 ) (
     input logic clk_i,  // Clock signal
     input logic rst_i,  // Reset signal
 
     // Control
-
     input logic       en_i,
-    input logic [2:0] phy_rate_i,
+    output logic    error_o,
+    output logic    success_o,
 
+    input  logic [MAX_NUM_LANES-1:0] lanes_ts1_satisfied_i,
+    input  logic [MAX_NUM_LANES-1:0] lanes_ts2_satisfied_i,
 
-    output logic [MAX_NUM_LANES-1:0] lane_detected_i,
-    output logic [MAX_NUM_LANES-1:0] lane_elec_idle_o,
-    output logic [MAX_NUM_LANES-1:0] txdetectrx_o
-
-    // output logic [DW-1:0] phy_txdata_o,
-    // output logic [   1:0] phy_txdatak,
-    // output logic [   0:0] phy_txdata_valid_o,
-    // output logic [   0:0] phy_txstart_block_o,
-    // output logic [   1:0] phy_txsync_header_o,
-    // output logic          phy_txelecidle_o
+    /*
+ * TLP AXI output
+ */
+    output logic [DATA_WIDTH-1:0] m_axis_tdata_o,
+    output logic [KEEP_WIDTH-1:0] m_axis_tkeep_o,
+    output logic m_axis_tvalid_o,
+    output logic m_axis_tlast_o,
+    output logic [USER_WIDTH-1:0] m_axis_tuser_o,
+    input logic m_axis_tready_i
 );
 
+  localparam int TwentyFourMsTimeOut = 32'h015B8D80;  //temp value
 
-  typedef enum logic {
+  typedef enum logic [4:0] {
     ST_IDLE,
     ST_POLLING_ACTIVE,
-    ST_DETECT_ACTIVE,
-    ST_DETECT_RX,
+    ST_POLLING_SEND_TS1,
+    ST_POLLING_CHECK_TS1,
+    ST_POLLING_CONFIGURATION,
+    ST_POLLING_SEND_TS2,
+    ST_POLLING_CHECK_TS2,
+    ST_POLLING_COMPLIANCE,
+    ST_POLLING_SEND_MARGIN,
     ST_WAIT_EN_LOW
   } detect_st_e;
 
 
   detect_st_e curr_state, next_state;
+  pcie_tsos_t tsos_c, tsos_r;
 
   logic [31:0] timer_c, timer_r;
   logic error_c, error_r;
   logic success_c, success_r;
   logic [MAX_NUM_LANES-1:0] lane_status_c, lane_status_r;
   logic [MAX_NUM_LANES-1:0] lanes_detected_c, lanes_detected_r;
-  logic [MAX_NUM_LANES-1:0] ena_lane_detect_c, ena_lane_detect_r;
-  logic [MAX_NUM_LANES-1:0] lane_elec_idle_c, lane_elec_idle_r;
+  logic [15:0] ts1_sent_cnt_c, ts1_sent_cnt_r;
+  logic [7:0] axis_tsos_cnt_c, axis_tsos_cnt_r;
+
+  //axis signals
+  logic [DATA_WIDTH-1:0] m_axis_tdata_c, m_axis_tdata_r;
+  logic [KEEP_WIDTH-1:0] m_axis_tkeep_c, m_axis_tkeep_r;
+  logic m_axis_tvalid_c, m_axis_tvalid_r;
+  logic m_axis_tlast_c, m_axis_tlast_r;
+  logic [USER_WIDTH-1:0] m_axis_tuser_c, m_axis_tuser_r;
 
 
   always_ff @(posedge clk_i or posedge rst_i) begin : main_seq
     if (rst_i) begin
-      curr_state <= ST_IDLE;
-      timer_r <= '0;
-      error_r <= '0;
-      succes_r <= '0;
-      lane_status_r <= '0;
+      curr_state       <= ST_IDLE;
+      timer_r          <= '0;
+      error_r          <= '0;
+      succes_r         <= '0;
+      lane_status_r    <= '0;
       lanes_detected_r <= '0;
-      ena_lane_detect_r <= '0;
-      lane_elec_idle_r <= '0;
+      ts1_sent_cnt_r   <= '0;
+      axis_tsos_cnt_r  <= '0;
+      //axis signals
+      m_axis_tvalid_r  <= m_axis_tvalid_c;
     end else begin
-      curr_state <= next_state;
-      timer_r <= timer_c;
-      error_r <= error_c;
-      success_r <= success_c;
-      lane_status_r <= lane_status_c;
+      curr_state       <= next_state;
+      timer_r          <= timer_c;
+      error_r          <= error_c;
+      success_r        <= success_c;
+      lane_status_r    <= lane_status_c;
       lanes_detected_r <= lanes_detected_c;
-      ena_lane_detect_r <= ena_lane_detect_c;
-      lane_elec_idle_r <= lane_elec_idle_c;
+      ts1_sent_cnt_r   <= ts1_sent_cnt_c;
+      axis_tsos_cnt_r  <= axis_tsos_cnt_c;
+      //axis signals
+      m_axis_tvalid_r  <= '0;
     end
+    //non-resetable
+    tsos_r <= tsos_c;
+    //axis
+    m_axis_tdata_r <= m_axis_tdata_c;
+    m_axis_tkeep_r <= m_axis_tkeep_c;
+    m_axis_tlast_r <= m_axis_tlast_c;
+    m_axis_tuser_r <= m_axis_tuser_c;
   end
 
 
@@ -76,17 +107,116 @@ module ltssm_polling
     success_c = success_r;
     lane_status_c = lane_status_r;
     lanes_detected_c = lanes_detected_r;
-    ena_lane_detect_c = ena_lane_detect_r;
-    lane_elec_idle_c = lane_elec_idle_r;
+    ts1_sent_cnt_c = ts1_sent_cnt_r;
+    axis_tsos_cnt_c = axis_tsos_cnt_r;
+
+    //axis signals
+    m_axis_tdata_c = m_axis_tdata_r;
+    m_axis_tkeep_c = m_axis_tkeep_r;
+    m_axis_tvalid_c = m_axis_tvalid_r;
+    m_axis_tlast_c = m_axis_tlast_r;
+    m_axis_tuser_c = m_axis_tuser_r;
+
+    //training seq
+    tsos_c = tsos_r;
     case (curr_state)
       ST_IDLE: begin
         if (en_i) begin
           timer_c = '0;
-          next_state = ST_DETECT_ACTIVE;
+          next_state = ST_POLLING_ACTIVE;
+          tsos_c = gen_tsos(TS1);
+          ts1_sent_cnt_c = '0;
         end
       end
       ST_POLLING_ACTIVE: begin
-        
+        timer_c = timer_r + 1;
+        axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+        m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
+        m_axis_tkeep_c = '1;
+        m_axis_tvalid_c = '1;
+        m_axis_tlast_c = '0;
+        m_axis_tuser_c = 8'h01;
+        next_state = ST_POLLING_SEND_TS1;
+
+      end
+      ST_POLLING_SEND_TS1: begin
+        timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
+        if (m_axis_tready_i) begin
+          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+          m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+          m_axis_tkeep_c  = '1;
+          m_axis_tvalid_c = '1;
+          m_axis_tlast_c  = '0;
+          m_axis_tuser_c  = 8'h01;
+          if (axis_tsos_cnt_r >= 8'h03) begin
+            next_state = ST_POLLING_CHECK_TS1;
+            ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
+            axis_tsos_cnt_c = '0;
+          end
+        end
+      end
+      ST_POLLING_CHECK_TS1: begin
+        timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
+        if (m_axis_tready_i) begin
+          if ((timer_r >= TwentyFourMsTimeOut) || (ts1_sent_cnt_r >= 1024)) begin
+            if (&lanes_ts1_satisfied_i) begin
+              next_state = ST_POLLING_CONFIGURATION;
+              tsos_c = gen_tsos(TS2);
+              timer_c = '0;
+            end else begin
+              next_state = ST_POLLING_COMPLIANCE;
+            end
+          end else begin
+            next_state = ST_POLLING_ACTIVE;
+          end
+        end
+      end
+      ST_POLLING_COMPLIANCE: begin
+        //not implemented
+      end
+      ST_POLLING_SEND_MARGIN: begin
+        //not implemented
+      end
+      ST_POLLING_CONFIGURATION: begin
+        axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+        m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
+        m_axis_tkeep_c = '1;
+        m_axis_tvalid_c = '1;
+        m_axis_tlast_c = '0;
+        m_axis_tuser_c = 8'h01;
+        next_state = ST_POLLING_SEND_TS2;
+      end
+      ST_POLLING_SEND_TS2: begin
+        if (m_axis_tready_i) begin
+          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+          m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+          m_axis_tkeep_c  = '1;
+          m_axis_tvalid_c = '1;
+          m_axis_tlast_c  = '0;
+          m_axis_tuser_c  = 8'h01;
+          if (axis_tsos_cnt_r >= 8'h03) begin
+            next_state = ST_POLLING_CHECK_TS2;
+            axis_tsos_cnt_c = '0;
+          end
+        end
+      end
+      ST_POLLING_CHECK_TS2: begin
+        if (m_axis_tready_i) begin
+          next_state = ST_WAIT_EN_LOW;
+          if (&lanes_ts2_satisfied_i) begin
+            success_c = '1;
+            timer_c   = '0;
+          end else begin
+            error_c = '1;
+          end
+        end
+      end
+      ST_WAIT_EN_LOW: begin
+        if (!en_i) begin
+          next_state = ST_IDLE;
+          success_c = '0;
+          error_c = '0;
+        end
       end
       default: begin
 
@@ -94,8 +224,14 @@ module ltssm_polling
     endcase
   end
 
+  assign m_axis_tdata_o  = m_axis_tdata_r;
+  assign m_axis_tkeep_o  = m_axis_tkeep_r;
+  assign m_axis_tvalid_o = m_axis_tvalid_r;
+  assign m_axis_tlast_o  = m_axis_tlast_r;
+  assign m_axis_tuser_o  = m_axis_tuser_r;
 
 
-
+  assign success_o = success_r;
+  assign error_o = error_r;
 
 endmodule

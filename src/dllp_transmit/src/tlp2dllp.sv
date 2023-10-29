@@ -258,7 +258,7 @@ module tlp2dllp
     crc_select = '0;
     //ready out
     s_axis_skid_tready = retry_available_i & (m_axis_tready_i || ~m_axis_tvalid_r3);
-    s_bypass_tready = (m_axis_tready_i & (m_axis_tlast_r1 || m_axis_tlast_r2 || 
+    s_bypass_tready = (m_axis_tready_i & (m_axis_tlast_r1 || m_axis_tlast_r2 ||
     m_axis_tlast_r3));
     //word addr
     word_offset_c = word_offset_r;
@@ -427,8 +427,8 @@ module tlp2dllp
     npd_credits_consumed_c = npd_credits_consumed_r;
 
     max_payload_size_fc_c = 9'd8 << (MAX_PAYLOAD_SIZE);
-    have_p_credit_c  = (tx_fc_ph_i > ph_credits_consumed_r ? (tx_fc_ph_i - ph_credits_consumed_r) > 1: 
-    (ph_credits_consumed_r - tx_fc_ph_i) > 1 ) & (tx_fc_pd_i > pd_credits_consumed_r) ? 
+    have_p_credit_c  = (tx_fc_ph_i > ph_credits_consumed_r ? (tx_fc_ph_i - ph_credits_consumed_r) > 1:
+    (ph_credits_consumed_r - tx_fc_ph_i) > 1 ) & (tx_fc_pd_i > pd_credits_consumed_r) ?
     (tx_fc_pd_i - pd_credits_consumed_r) > max_payload_size_fc_c :
     (pd_credits_consumed_r - pd_credits_consumed_r) > 1;
     // ((tx_fc_ph_i - ph_credits_consumed_r)> 8) &&
