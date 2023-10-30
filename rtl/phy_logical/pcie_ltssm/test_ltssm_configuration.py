@@ -80,13 +80,13 @@ async def run_test(dut):
     await RisingEdge(dut.clk)
     dut.en.value = 1
     dut.link_up.value = 0
-    dut.link_width_satisfied.value = 0xF
-    dut.link_lanes_formed.value = 1
-    dut.link_lanes_nums_match.value = 1
-    dut.link_lane_reconfig.value = 1
-    dut.lanes_ts1_satisfied.value = 0xF
-    dut.lanes_ts2_satisfied.value = 0xF
-    dut.config_copmlete_ts2.value = 0xF
+    dut.link_width_satisfied.value = 0x0
+    dut.link_lanes_formed.value = 0
+    dut.link_lanes_nums_match.value = 0
+    dut.link_lane_reconfig.value = 0
+    dut.lanes_ts1_satisfied.value = 0x0
+    dut.lanes_ts2_satisfied.value = 0x0
+    dut.config_copmlete_ts2.value = 0x0
     dut.single_idle_recieved.value = 1
     dut.link_idle_satisfied.value = 1
     # dut.tx_fc_nph.lanes_ts2_satisfied = 0x016
