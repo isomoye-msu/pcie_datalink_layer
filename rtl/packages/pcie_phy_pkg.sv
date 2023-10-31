@@ -21,10 +21,13 @@ package pcie_phy_pkg;
   typedef enum logic [7:0] {
     TS1 = 8'h4A,
     TS2 = 8'h45,
-    PAD = 8'hF7
+    PAD = 8'hF7,
+    SDS = 8'hF0,
+    IDLE = 8'hFA
   } train_seq_e;
 
   typedef struct packed {
+    logic use_link_in;
     logic is_config_tsos;
     logic is_polling_tsos;
   } phy_user_t;
