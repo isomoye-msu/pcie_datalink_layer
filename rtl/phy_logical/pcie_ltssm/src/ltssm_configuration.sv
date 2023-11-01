@@ -29,6 +29,8 @@ module ltssm_configuration
     output logic error_loopback_o,
     output logic error_disable_o,
 
+    input rate_id_e rate_id_i,
+
     input logic [MAX_NUM_LANES-1:0] link_width_satisfied_i,
     input logic link_lanes_formed_i,
     input logic link_lanes_nums_match_i,
@@ -198,7 +200,7 @@ module ltssm_configuration
             m_axis_tkeep_c = '1;
             m_axis_tvalid_c = '1;
             m_axis_tlast_c = '0;
-            m_axis_tuser_c = 8'h01;
+            m_axis_tuser_c = 8'h03;
             next_state = ST_CONFIG_SEND_LINK_LANE_TS1;
           end else if (timer_r >= TwoMsTimeOut) begin
             error_c = '1;
@@ -229,6 +231,8 @@ module ltssm_configuration
         ST_CONFIG_LANE_NUM_ACCEPT: begin
           if (link_lanes_nums_match_i) begin
             next_state = ST_CONFIG_COMPLETE;
+            tsos_c = gen_tsos(TS2, LINK_NUM, 0);
+            axis_tsos_cnt_c = '0;
             timer_c = '0;
           end else if (link_lane_reconfig_i) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
@@ -274,18 +278,13 @@ module ltssm_configuration
         // end
         ST_CONFIG_COMPLETE: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
-            next_state = ST_WAIT_EN_LOW;
-            if (&lanes_ts2_satisfied_i) begin
-              next_state = ST_CONFIG_COMPLETE_SEND_TS2;
-              tsos_c = gen_tsos(TS1, LINK_NUM, 0);
-              axis_tsos_cnt_c = '0;
-              timer_c = '0;
-            end else begin
-              axis_tsos_cnt_c = '0;
-              error_c = '1;
-            end
-          end
+          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
+          m_axis_tkeep_c = '1;
+          m_axis_tvalid_c = '1;
+          m_axis_tlast_c = '0;
+          m_axis_tuser_c = 8'h03;
+          next_state = ST_CONFIG_COMPLETE_SEND_TS2;
         end
         ST_CONFIG_COMPLETE_SEND_TS2: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
@@ -306,12 +305,14 @@ module ltssm_configuration
               m_axis_tdata_c  = '0;
               if (&config_copmlete_ts2_i) begin
                 next_state = ST_CONFIG_IDLE;
-                tsos_c = gen_tsos(TS2, LINK_NUM, 0);
+                if (rate_id_i == gen3) begin
+                  tsos_c = gen_sds_os();
+                end else begin
+                  tsos_c = gen_idle(rate_id_i);
+                end
               end else if (timer_r >= TwoMsTimeOut) begin
                 error_c = '1;
                 next_state = ST_WAIT_EN_LOW;
-              end else begin
-                m_axis_tvalid_c = '1;
               end
             end
           end
@@ -332,6 +333,7 @@ module ltssm_configuration
               m_axis_tvalid_c = '0;
               axis_tsos_cnt_c = '0;
               m_axis_tdata_c  = '0;
+              tsos_c = gen_idle(rate_id_i);
               if (single_idle_recieved_i) begin
                 ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
               end
@@ -355,7 +357,7 @@ module ltssm_configuration
       endcase
 
     end
-  end else begin: gen_upstream
+  end else begin : gen_upstream
     always_comb begin : main_combo
       next_state = curr_state;
       timer_c = timer_r;
@@ -382,7 +384,7 @@ module ltssm_configuration
             next_state = ST_CONFIG_LINK_WIDTH;
             tsos_c = gen_tsos(TS1);
             ts1_sent_cnt_c = '0;
-            if(recovery_i && !is_timeout_i) begin
+            if (recovery_i && !is_timeout_i) begin
               tsos_c.rate_id[6] = '1;
             end
           end
@@ -534,10 +536,10 @@ module ltssm_configuration
               m_axis_tlast_c = '1;
             end
             if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c  = '0;
+              ts1_sent_cnt_c = '0;
               m_axis_tvalid_c = '0;
               axis_tsos_cnt_c = '0;
-              m_axis_tdata_c  = '0;
+              m_axis_tdata_c = '0;
               timer_c = '0;
               if (&config_copmlete_ts2_i) begin
                 next_state = ST_CONFIG_IDLE;
@@ -568,7 +570,7 @@ module ltssm_configuration
               ts1_sent_cnt_c  = '0;
               m_axis_tvalid_c = '0;
               axis_tsos_cnt_c = '0;
-              m_axis_tlast_c = '0;
+              m_axis_tlast_c  = '0;
               //m_axis_tdata_c  = '0;
               //tsos_c = gen_tsos(SDS, LINK_NUM, 0);
               if (single_idle_recieved_i) begin

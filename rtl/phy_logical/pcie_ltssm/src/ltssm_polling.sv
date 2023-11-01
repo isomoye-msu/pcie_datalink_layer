@@ -150,6 +150,7 @@ module ltssm_polling
           m_axis_tuser_c  = 8'h01;
           if (axis_tsos_cnt_r >= 8'h03) begin
             next_state = ST_POLLING_CHECK_TS1;
+            m_axis_tlast_c = '1;
             ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
             axis_tsos_cnt_c = '0;
           end
@@ -158,6 +159,7 @@ module ltssm_polling
       ST_POLLING_CHECK_TS1: begin
         timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         if (m_axis_tready_i) begin
+          m_axis_tlast_c = '0;
           if ((timer_r >= TwentyFourMsTimeOut) || (ts1_sent_cnt_r >= 1024)) begin
             if (&lanes_ts1_satisfied_i) begin
               next_state = ST_POLLING_CONFIGURATION;
@@ -197,11 +199,13 @@ module ltssm_polling
           if (axis_tsos_cnt_r >= 8'h03) begin
             next_state = ST_POLLING_CHECK_TS2;
             axis_tsos_cnt_c = '0;
+            m_axis_tlast_c = '1;
           end
         end
       end
       ST_POLLING_CHECK_TS2: begin
         if (m_axis_tready_i) begin
+          m_axis_tlast_c = '0;
           next_state = ST_WAIT_EN_LOW;
           if (&lanes_ts2_satisfied_i) begin
             success_c = '1;

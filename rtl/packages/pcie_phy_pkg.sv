@@ -22,9 +22,28 @@ package pcie_phy_pkg;
     TS1 = 8'h4A,
     TS2 = 8'h45,
     PAD = 8'hF7,
-    SDS = 8'hF0,
-    IDLE = 8'hFA
+    SDS = 8'hE1,
+    SDS_BODY = 8'h55,
+    IDLE = 8'h66
   } train_seq_e;
+
+  typedef enum logic [7:0] {
+    COM  = 8'hbc,  // K28.5
+    STP  = 8'hfb,  // K27.7
+    SDP  = 8'h5c,  // K28.2
+    ENDP = 8'hfd,  // K29.7
+    EDB  = 8'hfe,  // K30.7
+    PAD  = 8'hf7,  // K23.7
+    SKP  = 8'h1c,  // K28.0
+    FTS  = 8'h3c,  // K28.1
+    IDL  = 8'h7c,  // K28.3
+    EIE  = 8'hfc,  // K28.7
+    RV2  = 8'h9c,  // K28.4
+    RV3  = 8'hdc   // K28.6
+
+  } phy_layer_special_symbols_e;
+
+
 
   typedef struct packed {
     logic use_link_in;
@@ -42,9 +61,9 @@ package pcie_phy_pkg;
   } training_ctrl_t;
 
   typedef enum logic [7:0] {
-    gen1 = 8'h01,
-    gen2 = 8'h02,
-    gen3 = 8'h04
+    gen1 = 8'h02,
+    gen2 = 8'h06,
+    gen3 = 8'h0E
   } rate_id_e;
 
 
@@ -55,7 +74,7 @@ package pcie_phy_pkg;
     logic [7:0] n_fts;
     logic [7:0] lane_num;
     logic [7:0] link_num;
-    phy_special_k_e com;
+    phy_layer_special_symbols_e com;
   } pcie_tsos_t;
 
 
@@ -80,65 +99,18 @@ package pcie_phy_pkg;
   //   } pcie_ordered_set_e;
 
 
-
-  typedef enum logic [7:0] {
-    PAT_GEN_HOME         = 8'h00,
-    PAT_GEN_GEN12_SKP_1  = 8'h01,
-    PAT_GEN_GEN12_SKP_2  = 8'h02,
-    PAT_GEN_GEN12_PAT    = 8'h03,
-    PAT_GEN_GEN3_EIEOS_1 = 8'h10,
-    PAT_GEN_GEN3_EIEOS_2 = 8'h11,
-    PAT_GEN_GEN3_EIEOS_3 = 8'h12,
-    PAT_GEN_GEN3_EIEOS_4 = 8'h13,
-    PAT_GEN_GEN3_PAT_ST  = 8'h14,
-    PAT_GEN_GEN3_PAT_Z0  = 8'h15,
-    PAT_GEN_GEN3_PAT_Z1  = 8'h16,
-    PAT_GEN_GEN3_PAT_Z2  = 8'h17,
-    PAT_GEN_GEN3_PAT_Z3  = 8'h18,
-    PAT_GEN_GEN3_PAT_ST1 = 8'h19,
-    PAT_GEN_GEN3_PAT_Z01 = 8'h1A,
-    PAT_GEN_GEN3_PAT_Z11 = 8'h1B,
-    PAT_GEN_GEN3_PAT_Z21 = 8'h1C,
-    PAT_GEN_GEN3_PAT_Z4  = 8'h1D,
-    PAT_GEN_GEN4_EIEOS_1 = 8'h20,
-    PAT_GEN_GEN4_EIEOS_2 = 8'h21,
-    PAT_GEN_GEN4_EIEOS_3 = 8'h22,
-    PAT_GEN_GEN4_EIEOS_4 = 8'h23,
-    PAT_GEN_GEN4_PAT_ST  = 8'h24,
-    PAT_GEN_GEN4_PAT_Z0  = 8'h25,
-    PAT_GEN_GEN4_PAT_Z1  = 8'h26,
-    PAT_GEN_GEN4_SKP_0   = 8'h27,
-    PAT_GEN_GEN4_SKP_1   = 8'h28,
-    PAT_GEN_GEN4_SKP_2   = 8'h29,
-    PAT_GEN_GEN4_SKP_3   = 8'h2A,
-    PAT_GEN_GEN4_DAT_ST  = 8'h2B,
-    PAT_GEN_GEN4_DAT_Z0  = 8'h2C,
-    PAT_GEN_GEN4_DAT_Z1  = 8'h2D,
-    PAT_GEN_GEN4_DAT_ED0 = 8'h2E,
-    PAT_GEN_GEN4_DAT_ED1 = 8'h2F,
-    PAT_GEN_GEN3_EIOS_1  = 8'h30,
-    PAT_GEN_GEN3_EIOS_2  = 8'h31,
-    PAT_GEN_GEN3_EIOS_3  = 8'h32,
-    PAT_GEN_GEN3_EIOS_4  = 8'h33,
-    PAT_GEN_GEN3_EIOS_5  = 8'h34
-
-  } patterns_e;
-
-
   function static pcie_ordered_set_t gen_tsos(
-      input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD, input train_seq_e lane_num = PAD,
-      rate_id_e rate_id = gen3);
+      input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD,
+      input train_seq_e lane_num = PAD, rate_id_e rate_id = gen3);
     begin
       pcie_tsos_t temp_os;
       //integer i;
       temp_os = '0;
-      temp_os.com = K28_5;
+      temp_os.com = COM;
       temp_os.link_num = link_num;
       temp_os.lane_num = lane_num;
       temp_os.rate_id = rate_id;
-      // for (int i = 0; i < 9; i++) begin
-      //   temp_os.ts_id[i] = TSOS;
-      // end
+      //tsos
       temp_os.ts_id[0] = TSOS;
       temp_os.ts_id[1] = TSOS;
       temp_os.ts_id[2] = TSOS;
@@ -149,23 +121,81 @@ package pcie_phy_pkg;
       temp_os.ts_id[7] = TSOS;
       temp_os.ts_id[8] = TSOS;
       temp_os.ts_id[9] = TSOS;
-
-
-      // for (int i = 0; i < 15; i++) begin
-      //   //even
-      //   if (i % 2) begin
-      //     temp_os.symbols[i] = 8'h00;
-      //   end  //odd
-      //   else begin
-      //     temp_os.symbols[i] = 8'hFF;
-      //   end
-      // end
+      //return
       gen_tsos = temp_os;
     end
   endfunction
 
+  function automatic pcie_ordered_set_t gen_idle(rate_id_e rate_id = gen3);
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      if (rate_id == gen3) begin
+        temp_os[0]  = IDLE;
+        temp_os[1]  = IDLE;
+        temp_os[2]  = IDLE;
+        temp_os[3]  = IDLE;
+        temp_os[4]  = IDLE;
+        temp_os[5]  = IDLE;
+        temp_os[6]  = IDLE;
+        temp_os[7]  = IDLE;
+        temp_os[8]  = IDLE;
+        temp_os[9]  = IDLE;
+        temp_os[10] = IDLE;
+        temp_os[11] = IDLE;
+        temp_os[12] = IDLE;
+        temp_os[13] = IDLE;
+        temp_os[14] = IDLE;
+        temp_os[15] = IDLE;
+      end else begin
+        temp_os[0] = COM;
+        temp_os[1] = IDL;
+        temp_os[2] = IDL;
+        temp_os[3] = IDL;
+        temp_os[4]  = COM;
+        temp_os[5]  = IDL;
+        temp_os[6]  = IDL;
+        temp_os[7]  = IDL;
+        temp_os[8]  = COM;
+        temp_os[9]  = IDL;
+        temp_os[10] = IDL;
+        temp_os[11] = IDL;
+        temp_os[12] = COM;
+        temp_os[13] = IDL;
+        temp_os[14] = IDL;
+        temp_os[15] = IDL;
+      end
 
+      gen_idle = temp_os;
+    end
+  endfunction
 
+  function automatic pcie_ordered_set_t gen_sds_os();
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      if (rate_id == gen3) begin
+        temp_os[0]  = SDS;
+        temp_os[1]  = SDS_BODY;
+        temp_os[2]  = SDS_BODY;
+        temp_os[3]  = SDS_BODY;
+        temp_os[4]  = SDS_BODY;
+        temp_os[5]  = SDS_BODY;
+        temp_os[6]  = SDS_BODY;
+        temp_os[7]  = SDS_BODY;
+        temp_os[8]  = SDS_BODY;
+        temp_os[9]  = SDS_BODY;
+        temp_os[10] = SDS_BODY;
+        temp_os[11] = SDS_BODY;
+        temp_os[12] = SDS_BODY;
+        temp_os[13] = SDS_BODY;
+        temp_os[14] = SDS_BODY;
+        temp_os[15] = SDS_BODY;
+      end
+
+      gen_sds_os = temp_os;
+    end
+  endfunction
 
   // function automatic pcie_ordered_set_t gen3_eieos();
   //   begin
