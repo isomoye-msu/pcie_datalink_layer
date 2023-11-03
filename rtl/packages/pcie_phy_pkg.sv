@@ -21,7 +21,6 @@ package pcie_phy_pkg;
   typedef enum logic [7:0] {
     TS1 = 8'h4A,
     TS2 = 8'h45,
-    PAD = 8'hF7,
     SDS = 8'hE1,
     SDS_BODY = 8'h55,
     IDLE = 8'h66
@@ -126,73 +125,76 @@ package pcie_phy_pkg;
     end
   endfunction
 
-  function automatic pcie_ordered_set_t gen_idle(rate_id_e rate_id = gen3);
+  function automatic pcie_ordered_set_t gen_idle_gen3();
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os[0] = IDLE;
+      temp_os[1] = IDLE;
+      temp_os[2] = IDLE;
+      temp_os[3] = IDLE;
+      temp_os[4] = IDLE;
+      temp_os[5] = IDLE;
+      temp_os[6] = IDLE;
+      temp_os[7] = IDLE;
+      temp_os[8] = IDLE;
+      temp_os[9] = IDLE;
+      temp_os[10] = IDLE;
+      temp_os[11] = IDLE;
+      temp_os[12] = IDLE;
+      temp_os[13] = IDLE;
+      temp_os[14] = IDLE;
+      temp_os[15] = IDLE;
+      gen_idle_gen3 = temp_os;
+    end
+  endfunction
+
+
+
+  function automatic pcie_ordered_set_t gen_idle();
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
-      if (rate_id == gen3) begin
-        temp_os[0]  = IDLE;
-        temp_os[1]  = IDLE;
-        temp_os[2]  = IDLE;
-        temp_os[3]  = IDLE;
-        temp_os[4]  = IDLE;
-        temp_os[5]  = IDLE;
-        temp_os[6]  = IDLE;
-        temp_os[7]  = IDLE;
-        temp_os[8]  = IDLE;
-        temp_os[9]  = IDLE;
-        temp_os[10] = IDLE;
-        temp_os[11] = IDLE;
-        temp_os[12] = IDLE;
-        temp_os[13] = IDLE;
-        temp_os[14] = IDLE;
-        temp_os[15] = IDLE;
-      end else begin
-        temp_os[0] = COM;
-        temp_os[1] = IDL;
-        temp_os[2] = IDL;
-        temp_os[3] = IDL;
-        temp_os[4]  = COM;
-        temp_os[5]  = IDL;
-        temp_os[6]  = IDL;
-        temp_os[7]  = IDL;
-        temp_os[8]  = COM;
-        temp_os[9]  = IDL;
-        temp_os[10] = IDL;
-        temp_os[11] = IDL;
-        temp_os[12] = COM;
-        temp_os[13] = IDL;
-        temp_os[14] = IDL;
-        temp_os[15] = IDL;
-      end
-
+      temp_os[0] = COM;
+      temp_os[1] = IDL;
+      temp_os[2] = IDL;
+      temp_os[3] = IDL;
+      temp_os[4] = COM;
+      temp_os[5] = IDL;
+      temp_os[6] = IDL;
+      temp_os[7] = IDL;
+      temp_os[8] = COM;
+      temp_os[9] = IDL;
+      temp_os[10] = IDL;
+      temp_os[11] = IDL;
+      temp_os[12] = COM;
+      temp_os[13] = IDL;
+      temp_os[14] = IDL;
+      temp_os[15] = IDL;
       gen_idle = temp_os;
     end
   endfunction
+
 
   function automatic pcie_ordered_set_t gen_sds_os();
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
-      if (rate_id == gen3) begin
-        temp_os[0]  = SDS;
-        temp_os[1]  = SDS_BODY;
-        temp_os[2]  = SDS_BODY;
-        temp_os[3]  = SDS_BODY;
-        temp_os[4]  = SDS_BODY;
-        temp_os[5]  = SDS_BODY;
-        temp_os[6]  = SDS_BODY;
-        temp_os[7]  = SDS_BODY;
-        temp_os[8]  = SDS_BODY;
-        temp_os[9]  = SDS_BODY;
-        temp_os[10] = SDS_BODY;
-        temp_os[11] = SDS_BODY;
-        temp_os[12] = SDS_BODY;
-        temp_os[13] = SDS_BODY;
-        temp_os[14] = SDS_BODY;
-        temp_os[15] = SDS_BODY;
-      end
-
+      temp_os[0] = SDS;
+      temp_os[1] = SDS_BODY;
+      temp_os[2] = SDS_BODY;
+      temp_os[3] = SDS_BODY;
+      temp_os[4] = SDS_BODY;
+      temp_os[5] = SDS_BODY;
+      temp_os[6] = SDS_BODY;
+      temp_os[7] = SDS_BODY;
+      temp_os[8] = SDS_BODY;
+      temp_os[9] = SDS_BODY;
+      temp_os[10] = SDS_BODY;
+      temp_os[11] = SDS_BODY;
+      temp_os[12] = SDS_BODY;
+      temp_os[13] = SDS_BODY;
+      temp_os[14] = SDS_BODY;
+      temp_os[15] = SDS_BODY;
       gen_sds_os = temp_os;
     end
   endfunction

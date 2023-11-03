@@ -46,7 +46,6 @@ module tb_ltssm_configuration;
       .success_o(success),
       .error_loopback_o(error_loopback),
       .error_disable_o(error_disable),
-      .link_width_satisfied_i(link_width_satisfied),
       .link_lanes_formed_i(link_lanes_formed),
       .link_lanes_nums_match_i(link_lanes_nums_match),
       .link_lane_reconfig_i(link_lane_reconfig),
