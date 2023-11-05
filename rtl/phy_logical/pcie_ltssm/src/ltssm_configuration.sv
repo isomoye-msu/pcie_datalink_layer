@@ -29,23 +29,22 @@ module ltssm_configuration
     output logic error_loopback_o,
     output logic error_disable_o,
 
-    input rate_id_e [MAX_NUM_LANES-1:0] rate_id_i,
+    input logic [(MAX_NUM_LANES * 8)-1:0] rate_id_i,
     input logic [MAX_NUM_LANES-1:0] ts1_valid_i,
     input logic [MAX_NUM_LANES-1:0] ts2_valid_i,
-    input logic [7:0][MAX_NUM_LANES-1:0] link_num_i,
-    input logic [7:0][MAX_NUM_LANES-1:0] lane_num_i,
-    input training_ctrl_t [MAX_NUM_LANES-1:0] training_ctrl_i,
+    input logic [MAX_NUM_LANES-1:0] idle_valid_i,
+    input logic [(MAX_NUM_LANES * 8)-1:0] link_num_i,
+    input logic [(MAX_NUM_LANES * 8)-1:0] lane_num_i,
+    input logic [(MAX_NUM_LANES * 8)-1:0] lane_num_transmitted_i,
+    input logic [(MAX_NUM_LANES * 8)-1:0] training_ctrl_i,
 
     //input logic [MAX_NUM_LANES-1:0] link_width_satisfied,
-    input logic link_lanes_formed_i,
-    input logic link_lanes_nums_match_i,
-    input logic link_lane_reconfig_i,
-    input logic [MAX_NUM_LANES-1:0] lanes_ts1_satisfied_i,
+    //input logic link_lanes_formed,
+    //input logic link_lanes_nums_match,
+    //input logic link_lane_reconfig,
+    input logic [MAX_NUM_LANES-1:0] lane_active_i,
     input logic [MAX_NUM_LANES-1:0] lanes_ts2_satisfied_i,
     input logic [MAX_NUM_LANES-1:0] config_copmlete_ts2_i,
-
-    input logic single_idle_recieved_i,
-    input logic link_idle_satisfied_i,
 
     /*
  * TLP AXI output
@@ -64,19 +63,12 @@ module ltssm_configuration
 
   typedef enum logic [4:0] {
     ST_IDLE,
-    ST_CONFIG_LINK_WIDTH,
-    ST_CONFIG_SEND_LINK_TS1,
-    ST_CONFIG_LINK_WIDTH_ACCEPT,
-    ST_CONFIG_SEND_LINK_LANE_TS1,
-    ST_CONFIG_LANE_NUM_ACCEPT,
-    ST_CONFIG_LANENUM_WAIT_SEND_TS1,
+    ST_CONFIG_LINKWIDTH_START,
+    ST_CONFIG_LINKWIDTH_ACCEPT,
+    ST_CONFIG_LANENUM_ACCEPT,
+    ST_CONFIG_LANENUM_WAIT,
     ST_CONFIG_COMPLETE,
-    ST_CONFIG_COMPLETE_SEND_TS2,
     ST_CONFIG_IDLE,
-    ST_CONFIG_SEND_IDLE,
-    // ST_CONFIG_CHECK_LINK_TS1,
-    // ST_CONFIG_LANE_WIDTH,
-    // ST_CONFIG_CHECK_LANE_TS1,
     ST_WAIT_EN_LOW
   } detect_st_e;
 
@@ -97,6 +89,7 @@ module ltssm_configuration
   logic [MAX_NUM_LANES-1:0] lanes_detected_c, lanes_detected_r;
   logic [15:0] ts1_sent_cnt_c, ts1_sent_cnt_r;
   logic [7:0] axis_tsos_cnt_c, axis_tsos_cnt_r;
+  logic rst_cnt_c, rst_cnt_r;
 
   //axis signals
   logic [DATA_WIDTH-1:0] m_axis_tdata_c, m_axis_tdata_r;
@@ -108,6 +101,19 @@ module ltssm_configuration
   //link training helper signals
   logic [MAX_NUM_LANES-1:0] link_width_satisfied;
   logic [7:0] link_selected;
+  logic [MAX_NUM_LANES-1:0] link_lanes_formed;
+  logic [MAX_NUM_LANES-1:0] lane_num_formed;
+  logic [MAX_NUM_LANES-1:0] lane_num_satisfied;
+
+  logic [MAX_NUM_LANES-1:0] link_lanes_nums_match;
+  logic [MAX_NUM_LANES-1:0] link_lane_reconfig;
+
+  logic [MAX_NUM_LANES-1:0] ts1_lanenum_wait_satisfied;
+  // logic [MAX_NUM_LANES-1:0] link_lane_reconfig;
+
+
+  logic [MAX_NUM_LANES-1:0] single_idle_recieved;
+  logic [MAX_NUM_LANES-1:0] link_idle_satisfied;
 
 
 
@@ -123,6 +129,7 @@ module ltssm_configuration
       axis_tsos_cnt_r  <= '0;
       //axis signals
       m_axis_tvalid_r  <= '0;
+      rst_cnt_r        <= '0;
     end else begin
       curr_state       <= next_state;
       timer_r          <= timer_c;
@@ -134,6 +141,7 @@ module ltssm_configuration
       axis_tsos_cnt_r  <= axis_tsos_cnt_c;
       //axis signals
       m_axis_tvalid_r  <= m_axis_tvalid_c;
+      rst_cnt_r        <= rst_cnt_c;
     end
     //non-resetable
     tsos_r <= tsos_c;
@@ -154,283 +162,7 @@ module ltssm_configuration
       lanes_detected_c = lanes_detected_r;
       ts1_sent_cnt_c = ts1_sent_cnt_r;
       axis_tsos_cnt_c = axis_tsos_cnt_r;
-      //axis signals
-      m_axis_tdata_c = m_axis_tdata_r;
-      m_axis_tkeep_c = m_axis_tkeep_r;
-      m_axis_tvalid_c = m_axis_tvalid_r;
-      m_axis_tlast_c = m_axis_tlast_r;
-      m_axis_tuser_c = m_axis_tuser_r;
-      //training seq
-      tsos_c = tsos_r;
-      //DOWNSTREAM port
-      case (curr_state)
-        ST_IDLE: begin
-          if (en_i) begin
-            timer_c = '0;
-            next_state = ST_CONFIG_LINK_WIDTH;
-            tsos_c = gen_tsos(TS1, LINK_NUM);
-            ts1_sent_cnt_c = '0;
-          end
-        end
-        ST_CONFIG_LINK_WIDTH: begin
-          timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c = '0;
-          m_axis_tuser_c = 8'h01;
-          next_state = ST_CONFIG_SEND_LINK_TS1;
-        end
-        ST_CONFIG_SEND_LINK_TS1: begin
-          timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
-            if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c  = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-              m_axis_tdata_c  = '0;
-              if (|link_width_satisfied) begin
-                next_state = ST_CONFIG_LINK_WIDTH_ACCEPT;
-                tsos_c = gen_tsos(TS1, LINK_NUM, 0);
-                timer_c = '0;
-              end else if (timer_r >= TwentyFourMsTimeOut) begin
-                error_c = '1;
-                next_state = ST_WAIT_EN_LOW;
-              end else begin
-                next_state = ST_CONFIG_LINK_WIDTH;
-              end
-            end
-          end
-        end
-        ST_CONFIG_LINK_WIDTH_ACCEPT: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (link_lanes_formed_i) begin
-            //not implemented
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c = '0;
-            m_axis_tuser_c = 8'h03;
-            next_state = ST_CONFIG_SEND_LINK_LANE_TS1;
-          end else if (timer_r >= TwoMsTimeOut) begin
-            error_c = '1;
-            axis_tsos_cnt_c = '0;
-            next_state = ST_WAIT_EN_LOW;
-          end
-        end
-        ST_CONFIG_SEND_LINK_LANE_TS1: begin
-          if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c  = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c  = '0;
-            m_axis_tuser_c  = 8'h03;
-            if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              next_state = ST_CONFIG_LANE_NUM_ACCEPT;
-              m_axis_tdata_c = '0;
-              ts1_sent_cnt_c = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-            end
-          end
-        end
-        ST_CONFIG_LANE_NUM_ACCEPT: begin
-          if (link_lanes_nums_match_i) begin
-            next_state = ST_CONFIG_COMPLETE;
-            tsos_c = gen_tsos(TS2, LINK_NUM, 0);
-            axis_tsos_cnt_c = '0;
-            timer_c = '0;
-          end else if (link_lane_reconfig_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c = '0;
-            m_axis_tuser_c = 8'h03;
-            next_state = ST_CONFIG_LANENUM_WAIT_SEND_TS1;
-          end
-        end
-        ST_CONFIG_LANENUM_WAIT_SEND_TS1: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c  = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c  = '0;
-            m_axis_tuser_c  = 8'h03;
-            if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              next_state = ST_CONFIG_LANE_NUM_ACCEPT;
-              ts1_sent_cnt_c = '0;
-              m_axis_tdata_c = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-            end
-          end
-        end
-        // ST_CONFIG_LANENUM_WAIT_SEND_TS1: begin
-        //   timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        //   if (link_lanes_formed_i) begin
-        //     m_axis_tvalid_c = '0;
-        //     next_state = ST_CONFIG_LANE_NUM_ACCEPT;
-        //   end else if (timer_r >= TwoMsTimeOut) begin
-        //     axis_tsos_cnt_c = '0;
-        //     error_c = '1;
-        //     next_state = ST_WAIT_EN_LOW;
-        //   end
-        // end
-        ST_CONFIG_COMPLETE: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c = '0;
-          m_axis_tuser_c = 8'h03;
-          next_state = ST_CONFIG_COMPLETE_SEND_TS2;
-        end
-        ST_CONFIG_COMPLETE_SEND_TS2: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c  = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c  = '0;
-            m_axis_tuser_c  = 8'h03;
-            if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c  = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-              m_axis_tdata_c  = '0;
-              if (&config_copmlete_ts2_i) begin
-                next_state = ST_CONFIG_IDLE;
-                tsos_c = gen_idle();
-              end else if (timer_r >= TwoMsTimeOut) begin
-                error_c = '1;
-                next_state = ST_WAIT_EN_LOW;
-              end
-            end
-          end
-        end
-        ST_CONFIG_IDLE: begin
-          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c = '0;
-          m_axis_tuser_c = 8'h03;
-          next_state = ST_CONFIG_SEND_IDLE;
-        end
-        ST_CONFIG_SEND_IDLE: begin
-          if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c  = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c  = '0;
-            m_axis_tuser_c  = 8'h03;
-            if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-              m_axis_tdata_c = '0;
-              tsos_c = gen_idle();
-              if (single_idle_recieved_i) begin
-                ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
-              end
-              if (link_idle_satisfied_i && (ts1_sent_cnt_r >= 16)) begin
-                success_c  = '1;
-                next_state = ST_WAIT_EN_LOW;
-              end
-            end
-          end
-        end
-        ST_WAIT_EN_LOW: begin
-          if (!en_i) begin
-            next_state = ST_IDLE;
-            success_c = '0;
-            error_c = '0;
-          end
-        end
-        default: begin
-
-        end
-      endcase
-
-    end
-
-    state_e [MAX_NUM_LANES-1:0] state_;
-
-    for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ts1
-      logic [7:0] ts1_cnt;
-      always_ff @(posedge clk_i) begin : cnt_ts1
-        if (rst_i) begin
-          ts1_cnt <= '0;
-          state_[i]   <= ST_CNT_IDLE;
-        end else begin
-          case (state_[i])
-            ST_CNT_IDLE: begin
-              ts1_cnt <= '0;
-              if (ts1_valid_i[i]) begin
-                if ((link_num_i[i] == PAD) && (lane_num_i[i] == PAD)) begin
-                  state_[i] <= ST_CNT_TS1;
-                end
-              end
-            end
-            ST_CNT_TS1: begin
-              if (ts2_valid_i[i] && (ts1_cnt != 8'h2)) begin
-                if (((link_num_i[i] != PAD) && (lane_num_i[i] == PAD))) begin
-                  ts1_cnt <= ts1_cnt + 1;
-                end else begin
-                  ts1_cnt <= '0;
-                end
-              end
-            end
-            default: begin
-            end
-          endcase
-        end
-      end : cnt_ts1
-      assign link_width_satisfied[i] = (ts1_cnt == 8'h2);
-    end
-  end
-
-
-
-
-
-
-  if (IS_UPSTREAM) begin : gen_upstream
-    always_comb begin : main_combo
-      next_state = curr_state;
-      timer_c = timer_r;
-      error_c = error_r;
-      success_c = success_r;
-      lane_status_c = lane_status_r;
-      lanes_detected_c = lanes_detected_r;
-      ts1_sent_cnt_c = ts1_sent_cnt_r;
-      axis_tsos_cnt_c = axis_tsos_cnt_r;
+      rst_cnt_c = rst_cnt_r;
       //axis signals
       m_axis_tdata_c = m_axis_tdata_r;
       m_axis_tkeep_c = m_axis_tkeep_r;
@@ -445,7 +177,7 @@ module ltssm_configuration
         ST_IDLE: begin
           if (en_i) begin
             timer_c = '0;
-            next_state = ST_CONFIG_LINK_WIDTH;
+            next_state = ST_CONFIG_LINKWIDTH_START;
             tsos_c = gen_tsos(TS1);
             ts1_sent_cnt_c = '0;
             if (recovery_i && !is_timeout_i) begin
@@ -453,61 +185,43 @@ module ltssm_configuration
             end
           end
         end
-        ST_CONFIG_LINK_WIDTH: begin
+        //-----------------------------------------------------------
+        //  Configuration.Linkwidth.Start
+        //-----------------------------------------------------------
+        ST_CONFIG_LINKWIDTH_START: begin
           timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c = '0;
-          m_axis_tuser_c = 8'h01;
-          next_state = ST_CONFIG_SEND_LINK_TS1;
-        end
-        ST_CONFIG_SEND_LINK_TS1: begin
-          timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
+          if (m_axis_tready_i || !m_axis_tvalid_r) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
             m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h01;
             if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c  = '0;
-              m_axis_tvalid_c = '0;
+              m_axis_tlast_c  = '1;
               axis_tsos_cnt_c = '0;
-              m_axis_tdata_c  = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
               if (|link_width_satisfied) begin
-                next_state = ST_CONFIG_LINK_WIDTH_ACCEPT;
-                tsos_c = gen_tsos(TS1, LINK_NUM, 0);
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_CONFIG_LINKWIDTH_ACCEPT;
+                tsos_c = gen_tsos(TS1, link_selected, 0);
                 timer_c = '0;
               end else if (timer_r >= TwentyFourMsTimeOut) begin
                 error_c = '1;
                 next_state = ST_WAIT_EN_LOW;
-              end else begin
-                next_state = ST_CONFIG_LINK_WIDTH;
               end
             end
           end
         end
-        ST_CONFIG_LINK_WIDTH_ACCEPT: begin
+        //-----------------------------------------------------------
+        //  Configuration.Linkwidth.Accept
+        //-----------------------------------------------------------
+        ST_CONFIG_LINKWIDTH_ACCEPT: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (link_lanes_formed_i) begin
-            //not implemented
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c = '0;
-            m_axis_tuser_c = 8'b00000101;
-            next_state = ST_CONFIG_SEND_LINK_LANE_TS1;
-          end else if (timer_r >= TwoMsTimeOut) begin
-            error_c = '1;
-            axis_tsos_cnt_c = '0;
-            next_state = ST_WAIT_EN_LOW;
-          end
-        end
-        ST_CONFIG_SEND_LINK_LANE_TS1: begin
-          if (m_axis_tready_i) begin
+          if (m_axis_tready_i || !m_axis_tvalid_r) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
             m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
             m_axis_tkeep_c  = '1;
@@ -515,34 +229,28 @@ module ltssm_configuration
             m_axis_tlast_c  = '0;
             m_axis_tuser_c  = 8'h03;
             if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              next_state = ST_CONFIG_LANENUM_WAIT_SEND_TS1;
-              m_axis_tdata_c = '0;
-              ts1_sent_cnt_c = '0;
-              m_axis_tvalid_c = '0;
+              m_axis_tlast_c  = '1;
               axis_tsos_cnt_c = '0;
             end
+            if (axis_tsos_cnt_r == 8'h0) begin
+              if ((|link_lanes_formed) && (!(^link_lanes_formed))) begin
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_WAIT;
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
           end
         end
-        ST_CONFIG_LANE_NUM_ACCEPT: begin
-          if (link_lanes_nums_match_i) begin
-            next_state = ST_CONFIG_COMPLETE;
-            timer_c = '0;
-          end else if (link_lane_reconfig_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-            m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-            m_axis_tkeep_c = '1;
-            m_axis_tvalid_c = '1;
-            m_axis_tlast_c = '0;
-            m_axis_tuser_c = 8'h03;
-            next_state = ST_CONFIG_LANENUM_WAIT_SEND_TS1;
-          end
-        end
-        ST_CONFIG_LANENUM_WAIT_SEND_TS1: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
+        //-----------------------------------------------------------
+        // Configuration.Lanenum.Accept
+        //-----------------------------------------------------------
+        ST_CONFIG_LANENUM_ACCEPT: begin
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
             m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
             m_axis_tkeep_c  = '1;
@@ -550,35 +258,29 @@ module ltssm_configuration
             m_axis_tlast_c  = '0;
             m_axis_tuser_c  = 8'h03;
             if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              next_state = ST_CONFIG_LANE_NUM_ACCEPT;
-              ts1_sent_cnt_c = '0;
-              m_axis_tdata_c = '0;
-              m_axis_tvalid_c = '0;
+              m_axis_tlast_c  = '1;
               axis_tsos_cnt_c = '0;
             end
-          end
-        end
-        ST_CONFIG_COMPLETE: begin
-          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
-            next_state = ST_WAIT_EN_LOW;
-            if (&lanes_ts2_satisfied_i) begin
-              next_state = ST_CONFIG_COMPLETE_SEND_TS2;
-              tsos_c = gen_tsos(TS2, LINK_NUM, 0);
-              axis_tsos_cnt_c = '0;
-              timer_c = '0;
-            end else begin
-              axis_tsos_cnt_c = '0;
-              error_c = '1;
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (|link_lanes_nums_match) begin
+                tsos_c = gen_tsos(TS2, LINK_NUM, 0);
+                next_state = ST_CONFIG_COMPLETE;
+                axis_tsos_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+              end else if (|link_lane_reconfig) begin
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_WAIT;
+              end
             end
           end
         end
-        ST_CONFIG_COMPLETE_SEND_TS2: begin
+        //-----------------------------------------------------------
+        //  Configuration.Lanenum.Wait
+        //-----------------------------------------------------------
+        ST_CONFIG_LANENUM_WAIT: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-          if (m_axis_tready_i) begin
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
             m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
             m_axis_tkeep_c  = '1;
@@ -586,37 +288,59 @@ module ltssm_configuration
             m_axis_tlast_c  = '0;
             m_axis_tuser_c  = 8'h03;
             if (axis_tsos_cnt_r == 8'h03) begin
-              m_axis_tlast_c = '1;
-            end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c = '0;
-              m_axis_tvalid_c = '0;
+              m_axis_tlast_c  = '1;
               axis_tsos_cnt_c = '0;
-              m_axis_tdata_c = '0;
-              timer_c = '0;
-              if (&config_copmlete_ts2_i) begin
-                next_state = ST_CONFIG_IDLE;
-                tsos_c = gen_tsos(SDS, LINK_NUM, 0);
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (|ts1_lanenum_wait_satisfied) begin
+                axis_tsos_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_ACCEPT;
               end else if (timer_r >= TwoMsTimeOut) begin
                 error_c = '1;
                 next_state = ST_WAIT_EN_LOW;
-              end else begin
-                m_axis_tvalid_c = '1;
               end
             end
           end
         end
-        ST_CONFIG_IDLE: begin
-          axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c = '0;
-          m_axis_tuser_c = 8'h03;
-          next_state = ST_CONFIG_SEND_IDLE;
+        //-----------------------------------------------------------
+        //  Configuration.Complete
+        //-----------------------------------------------------------
+        ST_CONFIG_COMPLETE: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (&lane_num_formed) begin
+                axis_tsos_cnt_c = '0;
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_IDLE;
+                tsos_c = gen_sds_os();
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
         end
-        ST_CONFIG_SEND_IDLE: begin
-          if (m_axis_tready_i) begin
+        //-----------------------------------------------------------
+        //  Configuration.Idle
+        //-----------------------------------------------------------
+        ST_CONFIG_IDLE: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
             axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
             m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
             m_axis_tkeep_c  = '1;
@@ -626,17 +350,19 @@ module ltssm_configuration
             if (axis_tsos_cnt_r == 8'h03) begin
               m_axis_tlast_c = '1;
             end
-            if (axis_tsos_cnt_r == 8'h04) begin
-              ts1_sent_cnt_c = '0;
-              m_axis_tvalid_c = '0;
-              axis_tsos_cnt_c = '0;
-              m_axis_tdata_c = '0;
-              tsos_c = gen_idle(rate_id_i);
-              if (single_idle_recieved_i) begin
+            if (axis_tsos_cnt_r == 8'h00) begin
+              tsos_c = gen_idle();
+              if (single_idle_recieved) begin
                 ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
               end
-              if (link_idle_satisfied_i && (ts1_sent_cnt_r >= 16)) begin
-                success_c  = '1;
+              if (link_idle_satisfied && (ts1_sent_cnt_r >= 16)) begin
+                success_c = '1;
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_WAIT_EN_LOW;
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
                 next_state = ST_WAIT_EN_LOW;
               end
             end
@@ -654,40 +380,552 @@ module ltssm_configuration
       endcase
     end
 
-    for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ts1
-      state_e state;
+    //-----------------------------------------------------------
+    //  Lane based Ordered set handling logic
+    //-----------------------------------------------------------
+    for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ordered_set
       logic [7:0] ts1_cnt;
+      logic [7:0] ts2_cnt;
+      logic [7:0] lane_in_save;
+      logic first_ts1;
+
+      //determine if TS1 req satisfied for lane by its count
+      assign link_width_satisfied[i] = (ts1_cnt == 8'h2);
+      //determine if TS1 req satisfied for lane by its count
+      assign link_lanes_formed[i] = (ts1_cnt == 8'h2);
+      //determine if TS1 req satisfied
+      assign ts1_lanenum_wait_satisfied[i] = (ts1_cnt == 8'h2);
+      assign link_lanes_nums_match[i] = (ts1_cnt == 8'h2);
+      assign link_lane_reconfig[i] = (ts1_cnt == 8'h2);
+      assign lane_num_formed[i] = lane_active_i[i] ? (ts2_cnt == 8'h8) : '1;
+      //determine if TS1 req satisfied for lane by its count
+      assign link_idle_satisfied[i] = (ts1_cnt == 8'h8);
+
+
       always_ff @(posedge clk_i) begin : cnt_ts1
         if (rst_i) begin
+          //reset count and selected incoming link number
           ts1_cnt <= '0;
+          ts2_cnt <= '0;
+          first_ts1 <= '0;
           link_selected <= '0;
-          state   <= ST_CNT_IDLE;
+          lane_in_save <= '0;
+          single_idle_recieved[i] <= '0;
         end else begin
-          case (state)
-            ST_CNT_IDLE, ST_CNT_TS1: begin
-              if (ts2_valid_i[i] && (ts1_cnt != 8'h2)) begin
-                if (((link_num_i[i] != PAD) && (lane_num_i[i] == PAD))) begin
+          case (curr_state)
+            ST_IDLE: begin
+              ts1_cnt <= '0;
+              ts2_cnt <= '0;
+              first_ts1 <= '0;
+              single_idle_recieved[i] <= '0;
+            end
+            ST_CONFIG_LINKWIDTH_START: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                if (((link_num_i[i*8+:8] == PAD) && (lane_num_i[i*8+:8] == PAD))) begin
+                  first_ts1 <= '1;
+                end
+                //check that link number is not pad and that lane number is pad
+                if ((link_num_i[i*8+:8] != PAD) && (lane_num_i[i*8+:8] == PAD) && first_ts1) begin
+                  //incrment ts1 count
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  //reset ts1 cnt... this ensures that the TS1-OS are consecutive per the spec
+                  ts1_cnt <= '0;
+                end
+              end
+              //check if consecutive TS1's satisfied for this lane
+              if (link_width_satisfied[i]) begin
+                //select link number by choosing lowest significanct lane satisfied
+                //ignore all other lanes
+                if ((i == 0) || (link_width_satisfied[i:0] == '0)) begin
+                  link_selected <= link_num_i[i];
+                end
+              end
+            end
+            ST_CONFIG_LINKWIDTH_ACCEPT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                //check that incoming link number matches the "link_selected"
+                //that we are now transmitting and that lane number is different
+                //from the one stored when we entered this state
+                if ((link_num_i[i] == link_selected)) begin
+                  //increment count
+                  ts1_cnt <= ts1_cnt + 1;
+                  lane_in_save <= link_num_i[i];
+                end else begin
+                  ts1_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_LANENUM_WAIT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                if (((link_num_i[i] != PAD) && (lane_num_i[i] != lane_in_save))) begin
                   ts1_cnt <= ts1_cnt + 1;
                 end else begin
                   ts1_cnt <= '0;
                 end
               end
             end
+            ST_CONFIG_LANENUM_ACCEPT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                if ((link_num_i[i] == link_selected) && (lane_num_i[i] != PAD)) begin
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  ts1_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_COMPLETE: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts2_valid_i[i] && (ts2_cnt != 8'h8)) begin
+                if ((link_num_i[i] == link_selected) &&
+              (lane_num_i[i] == lane_num_transmitted_i[i]) &&
+              rate_id_i == gen3) begin
+                  ts2_cnt <= ts2_cnt + 1;
+                  ts1_cnt <= '0;
+                end else begin
+                  ts1_cnt <= '0;
+                  ts2_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_IDLE: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (idle_valid_i[i] && (ts1_cnt != 8'h8)) begin
+                single_idle_recieved[i] <= '1;
+                ts1_cnt <= ts1_cnt + 1;
+              end else if (ts1_valid_i || ts2_valid_i) begin
+                ts1_cnt <= '0;
+              end
+            end
             default: begin
             end
           endcase
         end
-        if (link_width_satisfied[i]) begin
-          if ((i == 0) || (link_width_satisfied[i:0] == '0)) begin
-            link_selected <= i;
-          end
-        end
-      end : cnt_ts1
-      assign link_width_satisfied[i] = (ts1_cnt == 8'h2);
-    end
+      end
+    end : gen_cnt_ordered_set
   end
 
 
+  if (IS_UPSTREAM) begin : gen_upstream
+    always_comb begin : main_combo
+      next_state = curr_state;
+      timer_c = timer_r;
+      error_c = error_r;
+      success_c = success_r;
+      lane_status_c = lane_status_r;
+      lanes_detected_c = lanes_detected_r;
+      ts1_sent_cnt_c = ts1_sent_cnt_r;
+      axis_tsos_cnt_c = axis_tsos_cnt_r;
+      rst_cnt_c = rst_cnt_r;
+      //axis signals
+      m_axis_tdata_c = m_axis_tdata_r;
+      m_axis_tkeep_c = m_axis_tkeep_r;
+      m_axis_tvalid_c = m_axis_tvalid_r;
+      m_axis_tlast_c = m_axis_tlast_r;
+      m_axis_tuser_c = m_axis_tuser_r;
+      //training seq
+      tsos_c = tsos_r;
+      //DOWNSTREAM port
+      //UPSTREAM LINK
+      case (curr_state)
+        ST_IDLE: begin
+          if (en_i) begin
+            timer_c = '0;
+            next_state = ST_CONFIG_LINKWIDTH_START;
+            tsos_c = gen_tsos(TS1);
+            ts1_sent_cnt_c = '0;
+            if (recovery_i && !is_timeout_i) begin
+              tsos_c.rate_id[6] = '1;
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        //  Configuration.Linkwidth.Start
+        //-----------------------------------------------------------
+        ST_CONFIG_LINKWIDTH_START: begin
+          timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i || !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h01;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (|link_width_satisfied) begin
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_CONFIG_LINKWIDTH_ACCEPT;
+                tsos_c = gen_tsos(TS1, link_selected, 0);
+                timer_c = '0;
+              end else if (timer_r >= TwentyFourMsTimeOut) begin
+                error_c = '1;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        //  Configuration.Linkwidth.Accept
+        //-----------------------------------------------------------
+        ST_CONFIG_LINKWIDTH_ACCEPT: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i || !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h0) begin
+              if ((|link_lanes_formed) && (!(^link_lanes_formed))) begin
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_WAIT;
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        // Configuration.Lanenum.Accept
+        //-----------------------------------------------------------
+        ST_CONFIG_LANENUM_ACCEPT: begin
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (|link_lanes_nums_match) begin
+                tsos_c = gen_tsos(TS2, LINK_NUM, 0);
+                next_state = ST_CONFIG_COMPLETE;
+                axis_tsos_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+              end else if (|link_lane_reconfig) begin
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_WAIT;
+              end
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        //  Configuration.Lanenum.Wait
+        //-----------------------------------------------------------
+        ST_CONFIG_LANENUM_WAIT: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (|ts1_lanenum_wait_satisfied) begin
+                axis_tsos_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_LANENUM_ACCEPT;
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        //  Configuration.Complete
+        //-----------------------------------------------------------
+        ST_CONFIG_COMPLETE: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c  = '1;
+              axis_tsos_cnt_c = '0;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              if (&lane_num_formed) begin
+                axis_tsos_cnt_c = '0;
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                timer_c = '0;
+                next_state = ST_CONFIG_IDLE;
+                tsos_c = gen_sds_os();
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
+        end
+        //-----------------------------------------------------------
+        //  Configuration.Idle
+        //-----------------------------------------------------------
+        ST_CONFIG_IDLE: begin
+          timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
+          if (m_axis_tready_i | !m_axis_tvalid_r) begin
+            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
+            m_axis_tkeep_c  = '1;
+            m_axis_tvalid_c = '1;
+            m_axis_tlast_c  = '0;
+            m_axis_tuser_c  = 8'h03;
+            if (axis_tsos_cnt_r == 8'h03) begin
+              m_axis_tlast_c = '1;
+            end
+            if (axis_tsos_cnt_r == 8'h00) begin
+              tsos_c = gen_idle();
+              if (single_idle_recieved) begin
+                ts1_sent_cnt_c = ts1_sent_cnt_r + 1;
+              end
+              if (link_idle_satisfied && (ts1_sent_cnt_r >= 16)) begin
+                success_c = '1;
+                ts1_sent_cnt_c = '0;
+                m_axis_tvalid_c = '0;
+                axis_tsos_cnt_c = '0;
+                next_state = ST_WAIT_EN_LOW;
+              end else if (timer_r >= TwoMsTimeOut) begin
+                error_c = '1;
+                next_state = ST_WAIT_EN_LOW;
+              end
+            end
+          end
+        end
+        ST_WAIT_EN_LOW: begin
+          if (!en_i) begin
+            next_state = ST_IDLE;
+            success_c = '0;
+            error_c = '0;
+          end
+        end
+        default: begin
+        end
+      endcase
+    end
+
+    //-----------------------------------------------------------
+    //  Lane based Ordered set handling logic
+    //-----------------------------------------------------------
+    for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ordered_set
+      logic [7:0] ts1_cnt;
+      logic [7:0] ts2_cnt;
+
+      //determine if TS1 req satisfied for lane by its count
+      assign link_width_satisfied[i] = (ts1_cnt == 8'h2);
+      //determine if TS1 req satisfied for lane by its count
+      assign link_lanes_formed[i] = (ts1_cnt == 8'h2);
+      //determine if TS1 req satisfied
+      assign ts1_lanenum_wait_satisfied[i] = (ts1_cnt == 8'h2) | (ts2_cnt == 8'h2);
+      assign link_lanes_nums_match[i] = (ts2_cnt == 8'h2);
+      assign link_lane_reconfig[i] = (ts1_cnt == 8'h2);
+      assign lane_num_formed[i] = lane_active_i[i] ? (ts2_cnt == 8'h8) : '1;
+      //determine if TS1 req satisfied for lane by its count
+      assign link_idle_satisfied[i] = (ts1_cnt == 8'h8);
+
+
+      always_ff @(posedge clk_i) begin : cnt_ts1
+        if (rst_i) begin
+          //reset count and selected incoming link number
+          ts1_cnt <= '0;
+          ts2_cnt <= '0;
+          link_selected <= '0;
+          single_idle_recieved[i] <= '0;
+        end else begin
+          case (curr_state)
+            ST_IDLE: begin
+              ts1_cnt <= '0;
+              ts2_cnt <= '0;
+              single_idle_recieved[i] <= '0;
+            end
+            ST_CONFIG_LINKWIDTH_START: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                //check that link number is not pad and that lane number is pad
+                if (((link_num_i[i*8+:8] != PAD) && (lane_num_i[i*8+:8] == PAD))) begin
+                  //incrment ts1 count
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  //reset ts1 cnt... this ensures that the TS1-OS are consecutive per the spec
+                  ts1_cnt <= '0;
+                end
+              end
+              //check if consecutive TS1's satisfied for this lane
+              if (link_width_satisfied[i]) begin
+                //select link number by choosing lowest significanct lane satisfied
+                //ignore all other lanes
+                if ((i == 0) || (link_width_satisfied[i:0] == '0)) begin
+                  link_selected <= link_num_i[i];
+                end
+              end
+            end
+            ST_CONFIG_LINKWIDTH_ACCEPT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                //check that incoming link number matches the "link_selected"
+                //that we are now transmitting and that lane number is different
+                //from the one stored when we entered this state
+                if (((link_num_i[i] == link_selected) &&
+                  (lane_num_i[i] != lane_num_transmitted_i[i]))) begin
+                  //increment count
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  ts1_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_LANENUM_WAIT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                if (ts2_cnt != 8'h2) begin
+                  ts2_cnt <= '0;
+                end
+                if (((link_num_i[i] == link_selected) && (lane_num_i[i] != PAD))) begin
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  ts1_cnt <= '0;
+                end
+              end else if (ts2_valid_i[i] && (ts2_cnt != 8'h2)) begin
+                if (ts1_cnt != 8'h2) begin
+                  ts1_cnt <= '0;
+                end
+                ts2_cnt <= ts2_cnt + 1;
+              end
+            end
+            ST_CONFIG_LANENUM_ACCEPT: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts2_valid_i[i] && (ts2_cnt != 8'h2)) begin
+                if (ts1_cnt != 8'h2) begin
+                  ts1_cnt <= '0;
+                end
+                if ((link_num_i[i] == link_selected) &&
+                (lane_num_i[i] == lane_num_transmitted_i[i])) begin
+                  ts2_cnt <= ts2_cnt + 1;
+                end else begin
+                  ts2_cnt <= '0;
+                end
+              end else if (ts1_valid_i[i] && (ts1_cnt != 8'h2)) begin
+                if (ts2_cnt != 8'h2) begin
+                  ts2_cnt <= '0;
+                end
+                if ((link_num_i[i] == link_selected) && (lane_num_i[i] != PAD)) begin
+                  ts1_cnt <= ts1_cnt + 1;
+                end else begin
+                  ts1_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_COMPLETE: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else if (ts2_valid_i[i] && (ts2_cnt != 8'h8)) begin
+                if ((link_num_i[i] == link_selected) &&
+              (lane_num_i[i] == lane_num_transmitted_i[i]) ) begin
+                  ts2_cnt <= ts2_cnt + 1;
+                  ts1_cnt <= '0;
+                end else begin
+                  ts1_cnt <= '0;
+                  ts2_cnt <= '0;
+                end
+              end
+            end
+            ST_CONFIG_IDLE: begin
+              if (next_state != curr_state) begin
+                ts1_cnt <= '0;
+                ts2_cnt <= '0;
+                single_idle_recieved[i] <= '0;
+              end else
+              //wait for incoming ts1-os...//skip if threshhold already reached
+              if (idle_valid_i[i] && (ts1_cnt != 8'h8)) begin
+                single_idle_recieved[i] <= '1;
+                ts1_cnt <= ts1_cnt + 1;
+              end else if (ts1_valid_i || ts2_valid_i) begin
+                ts1_cnt <= '0;
+              end
+            end
+            default: begin
+            end
+          endcase
+        end
+      end
+    end : gen_cnt_ordered_set
+  end
 
   assign m_axis_tdata_o = m_axis_tdata_r;
   assign m_axis_tkeep_o = m_axis_tkeep_r;

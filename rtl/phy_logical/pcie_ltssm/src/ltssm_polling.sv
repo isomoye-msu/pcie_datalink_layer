@@ -41,13 +41,8 @@ module ltssm_polling
   typedef enum logic [4:0] {
     ST_IDLE,
     ST_POLLING_ACTIVE,
-    ST_POLLING_SEND_TS1,
-    ST_POLLING_CHECK_TS1,
     ST_POLLING_CONFIGURATION,
-    ST_POLLING_SEND_TS2,
-    ST_POLLING_CHECK_TS2,
     ST_POLLING_COMPLIANCE,
-    ST_POLLING_SEND_MARGIN,
     ST_WAIT_EN_LOW
   } detect_st_e;
 
@@ -84,8 +79,6 @@ module ltssm_polling
       succes_r         <= '0;
       lane_status_r    <= '0;
       lanes_detected_r <= '0;
-      ts1_sent_cnt_r   <= '0;
-      axis_tsos_cnt_r  <= '0;
       //axis signals
       m_axis_tvalid_r  <= '0;
       rst_cnt_r        <= '0;
@@ -96,13 +89,13 @@ module ltssm_polling
       success_r        <= success_c;
       lane_status_r    <= lane_status_c;
       lanes_detected_r <= lanes_detected_c;
-      ts1_sent_cnt_r   <= ts1_sent_cnt_c;
-      axis_tsos_cnt_r  <= axis_tsos_cnt_c;
       //axis signals
       m_axis_tvalid_r  <= m_axis_tvalid_c;
       rst_cnt_r        <= rst_cnt_c;
     end
     //non-resetable
+    ts1_sent_cnt_r   <= ts1_sent_cnt_c;
+    axis_tsos_cnt_r  <= axis_tsos_cnt_c;
     tsos_r <= tsos_c;
     //axis
     m_axis_tdata_r <= m_axis_tdata_c;
@@ -143,19 +136,8 @@ module ltssm_polling
         end
       end
       ST_POLLING_ACTIVE: begin
-        timer_c = timer_r + 1;
-        axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-        m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-        m_axis_tkeep_c = '1;
-        m_axis_tvalid_c = '1;
-        m_axis_tlast_c = '0;
-        m_axis_tuser_c = 8'h01;
-        next_state = ST_POLLING_SEND_TS1;
-
-      end
-      ST_POLLING_SEND_TS1: begin
         timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-        if (m_axis_tready_i) begin
+        if (m_axis_tready_i | !m_axis_tvalid_r) begin
           axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
           m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
           m_axis_tkeep_c  = '1;
@@ -163,10 +145,11 @@ module ltssm_polling
           m_axis_tlast_c  = '0;
           m_axis_tuser_c  = 8'h01;
           if (axis_tsos_cnt_r == 8'h03) begin
-            m_axis_tlast_c = '1;
+            m_axis_tlast_c  = '1;
+            axis_tsos_cnt_c = '0;
+            ts1_sent_cnt_c  = ts1_sent_cnt_r + 1;
           end
-          if (axis_tsos_cnt_r == 8'h04) begin
-            m_axis_tlast_c = '0;
+          if (axis_tsos_cnt_r == 8'h00) begin
             if ((timer_r >= TwentyFourMsTimeOut) || (ts1_sent_cnt_r >= 1024)) begin
               if (&lanes_ts1_satisfied) begin
                 next_state = ST_POLLING_CONFIGURATION;
@@ -183,23 +166,6 @@ module ltssm_polling
           end
         end
       end
-      // ST_POLLING_CHECK_TS1: begin
-      //   timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-      //   if (m_axis_tready_i) begin
-      //     m_axis_tlast_c = '0;
-      //     if ((timer_r >= TwentyFourMsTimeOut) || (ts1_sent_cnt_r >= 1024)) begin
-      //       if (&lanes_ts1_satisfied) begin
-      //         next_state = ST_POLLING_CONFIGURATION;
-      //         tsos_c = gen_tsos(TS2);
-      //         timer_c = '0;
-      //       end else begin
-      //         next_state = ST_POLLING_COMPLIANCE;
-      //       end
-      //     end else begin
-      //       next_state = ST_POLLING_ACTIVE;
-      //     end
-      //   end
-      // end
       ST_POLLING_COMPLIANCE: begin
         //not implemented
       end
@@ -207,18 +173,8 @@ module ltssm_polling
         //not implemented
       end
       ST_POLLING_CONFIGURATION: begin
-        axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-        m_axis_tdata_c = tsos_r[32*axis_tsos_cnt_r+:32];
-        m_axis_tkeep_c = '1;
-        m_axis_tvalid_c = '1;
-        m_axis_tlast_c = '0;
-        m_axis_tuser_c = 8'h01;
-        next_state = ST_POLLING_SEND_TS2;
         timer_c = (timer_r >= FourtyEightMsTimeOut) ? FourtyEightMsTimeOut : timer_r + 1;
-      end
-      ST_POLLING_SEND_TS2: begin
-        timer_c = (timer_r >= FourtyEightMsTimeOut) ? FourtyEightMsTimeOut : timer_r + 1;
-        if (m_axis_tready_i) begin
+        if (m_axis_tready_i | !m_axis_tvalid_r) begin
           axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
           m_axis_tdata_c  = tsos_r[32*axis_tsos_cnt_r+:32];
           m_axis_tkeep_c  = '1;
@@ -242,25 +198,8 @@ module ltssm_polling
               next_state = ST_WAIT_EN_LOW;
             end
           end
-          // if (axis_tsos_cnt_r >= 8'h03) begin
-          //   next_state = ST_POLLING_CHECK_TS2;
-          //   axis_tsos_cnt_c = '0;
-          //   m_axis_tlast_c = '1;
-          // end
         end
       end
-      // ST_POLLING_CHECK_TS2: begin
-      //   if (m_axis_tready_i) begin
-      //     m_axis_tlast_c = '0;
-      //     next_state = ST_WAIT_EN_LOW;
-      //     if (&lanes_ts2_satisfied) begin
-      //       success_c = '1;
-      //       timer_c   = '0;
-      //     end else begin
-      //       error_c = '1;
-      //     end
-      //   end
-      // end
       ST_WAIT_EN_LOW: begin
         if (!en_i) begin
           next_state = ST_IDLE;
@@ -277,51 +216,58 @@ module ltssm_polling
 
   for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ts1
     logic [7:0] ts1_cnt;
+    logic [7:0] ts2_cnt;
+
+    assign lanes_ts1_satisfied[i] = reciever_detected_i[i] ? (ts1_cnt == 8'h8) : '1;
+    assign lanes_ts2_satisfied[i] = reciever_detected_i[i] ? (ts2_cnt == 8'h8) : '1;
+
     always_ff @(posedge clk_i) begin : cnt_ts1
       if (rst_i) begin
         ts1_cnt <= '0;
-      end else begin
-        if (rst_cnt_r) begin
-          ts1_cnt <= '0;
-        end else if (ts1_valid_i[i] && (ts1_cnt != 8'h8)) begin
-          if(((link_num_i[i] == PAD) && (lane_num_i[i] == PAD)) &&
-          training_ctrl_i[i].loopback || training_ctrl_i[i][4]) begin
-            ts1_cnt <= ts1_cnt + 1;
-          end else begin
-            ts1_cnt <= '0;
-          end
-        end else if (ts2_valid_i[i] && (ts1_cnt != 8'h8)) begin
-          if (((link_num_i[i] == PAD) && (lane_num_i[i] == PAD))) begin
-            ts1_cnt <= ts1_cnt + 1;
-          end else begin
-            ts1_cnt <= '0;
-          end
-        end
-      end
-    end : cnt_ts1
-    assign lanes_ts1_satisfied[i] = reciever_detected_i[i] ? (ts1_cnt == 8'h8) : '1;
-  end
-
-
-
-  for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_cnt_ts2
-    logic [7:0] ts2_cnt;
-    always_ff @(posedge clk_i) begin : cnt_ts2
-      if (rst_i) begin
         ts2_cnt <= '0;
       end else begin
-        if (rst_cnt_r) begin
-          ts2_cnt <= '0;
-        end else if (ts2_valid_i[i] && (ts2_cnt != 8'h8)) begin
-          if (((link_num_i[i] == PAD) && (lane_num_i[i] == PAD))) begin
-            ts2_cnt <= ts2_cnt + 1;
-          end else begin
+        case (curr_state)
+          ST_IDLE: begin
+            ts1_cnt <= '0;
             ts2_cnt <= '0;
           end
-        end
+          ST_POLLING_ACTIVE: begin
+            if (rst_cnt_r) begin
+              ts1_cnt <= '0;
+              ts2_cnt <= '0;
+            end else if (ts1_valid_i[i] && (ts1_cnt != 8'h8)) begin
+              if(((link_num_i[i] == PAD) && (lane_num_i[i] == PAD)) &&
+                training_ctrl_i[i].loopback || training_ctrl_i[i][4]) begin
+                ts1_cnt <= ts1_cnt + 1;
+              end else begin
+                ts1_cnt <= '0;
+              end
+            end else if (ts2_valid_i[i] && (ts1_cnt != 8'h8)) begin
+              if (((link_num_i[i] == PAD) && (lane_num_i[i] == PAD))) begin
+                ts1_cnt <= ts1_cnt + 1;
+              end else begin
+                ts1_cnt <= '0;
+              end
+            end
+          end
+          ST_POLLING_CONFIGURATION: begin
+            if (rst_cnt_r) begin
+              ts1_cnt <= '0;
+              ts2_cnt <= '0;
+            end else if (ts2_valid_i[i] && (ts2_cnt != 8'h8)) begin
+              if (((link_num_i[i] == PAD) && (lane_num_i[i] == PAD))) begin
+                ts2_cnt <= ts2_cnt + 1;
+              end else begin
+                ts2_cnt <= '0;
+              end
+            end
+          end
+          default: begin
+          end
+        endcase
       end
-    end : cnt_ts2
-    assign lanes_ts2_satisfied[i] = reciever_detected_i[i] ? (ts2_cnt == 8'h8) : '1;
+    end
+
   end
 
   assign m_axis_tdata_o = m_axis_tdata_r;

@@ -1,8 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1698985138" />
-    <testcase name="run_test" classname="test_ltssm_configuration" file="/home/idris/projects/pcie_datalink_layer/rtl/phy_logical/pcie_ltssm/test_ltssm_configuration.py" lineno="61" time="0.010065555572509766" sim_time_ns="16.001" ratio_time="1589.6787698138237">
-      <failure message="Test failed with RANDOM_SEED=1698985138" />
-    </testcase>
-  </testsuite>
-</testsuites>

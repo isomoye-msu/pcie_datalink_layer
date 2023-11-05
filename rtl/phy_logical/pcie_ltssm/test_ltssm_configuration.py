@@ -80,15 +80,14 @@ async def run_test(dut):
     await RisingEdge(dut.clk)
     dut.en.value = 1
     dut.link_up.value = 0
-    dut.link_width_satisfied.value = 0x0
-    dut.link_lanes_formed.value = 0
-    dut.link_lanes_nums_match.value = 0
-    dut.link_lane_reconfig.value = 0
-    dut.lanes_ts1_satisfied.value = 0x0
-    dut.lanes_ts2_satisfied.value = 0x0
-    dut.config_copmlete_ts2.value = 0x0
-    dut.single_idle_recieved.value = 1
-    dut.link_idle_satisfied.value = 1
+    dut.ts1_valid.value = 0xF
+    dut.ts2_valid.value = 0x0
+    dut.idle_valid.value = 0x0
+    dut.link_num.value = 0xf7f7f7f7
+    dut.lane_num.value = 0xf7f7f7f7
+    dut.rate_id.value =  0xf7f7f7f7
+    dut.lane_num_transmitted.value = 0x03020100
+    dut.lane_active.value = 0xF
     # dut.tx_fc_nph.lanes_ts2_satisfied = 0x016
     # dut.tx_fc_npd.value = 0xF40
     #dut.retry_available.value = 1
@@ -106,4 +105,15 @@ async def run_test(dut):
         await RisingEdge(dut.clk)
     for i in range(200):
         await RisingEdge(dut.clk)
+        
+    await RisingEdge(dut.clk)
+    dut.link_num.value = 0x01010101
+    
+    for i in range(200):
+        await RisingEdge(dut.clk)
+    
+    dut.lane_num.value = 0x03020100
+    
+        
+    await RisingEdge(dut.error)
     #data_in = await tb.sink.recv()
