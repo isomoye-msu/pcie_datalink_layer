@@ -64,12 +64,12 @@ module tb_ltssm_configuration;
       .lane_active_i(lane_active),
       .lanes_ts2_satisfied_i(lanes_ts2_satisfied),
       .config_copmlete_ts2_i(config_copmlete_ts2),
-      .m_axis_tdata_o(m_axis_tdata),
-      .m_axis_tkeep_o(m_axis_tkeep),
-      .m_axis_tvalid_o(m_axis_tvalid),
-      .m_axis_tlast_o(m_axis_tlast),
-      .m_axis_tuser_o(m_axis_tuser),
-      .m_axis_tready_i(m_axis_tready)
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tvalid(m_axis_tvalid),
+      .m_axis_tlast(m_axis_tlast),
+      .m_axis_tuser(m_axis_tuser),
+      .m_axis_tready(m_axis_tready)
   );
 
   //always #5  clk = ! clk ;

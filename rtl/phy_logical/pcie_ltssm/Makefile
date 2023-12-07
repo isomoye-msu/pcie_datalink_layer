@@ -25,6 +25,7 @@ VERILOG_SOURCES = \
 	src/ltssm_configuration.sv \
 	tb/tb_ltssm_configuration.v
 
+VERILOG_INCLUDES = includes/
 # use VHDL_SOURCES for VHDL files
 
 # TOPLEVEL is the name of the toplevel module in your Verilog or VHDL file
@@ -36,9 +37,9 @@ MODULE ?= test_ltssm_configuration
 #EXTRA_ARGS += -g2012
 
 ifeq ($(SIM), icarus)
-	PLUSARGS += -fst -g2012
+	PLUSARGS += -fst -g2012 -I $(VERILOG_INCLUDES)
 
-	COMPILE_ARGS += $(foreach v,$(filter PARAM_%,$(.VARIABLES)),-P $(TOPLEVEL).$(subst PARAM_,,$(v))=$($(v))) 
+	COMPILE_ARGS += $(foreach v,$(filter PARAM_%,$(.VARIABLES)),-P $(TOPLEVEL).$(subst PARAM_,,$(v))=$($(v))) -I $(VERILOG_INCLUDES)
 
 	ifeq ($(WAVES), 1)
 		VERILOG_SOURCES += iverilog_dump.v

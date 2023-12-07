@@ -114,6 +114,7 @@ async def run_test(dut):
     
     dut.lane_num.value = 0x03020100
     
-        
+    for i in range(2000):
+        await RisingEdge(dut.clk)    
     await RisingEdge(dut.error)
     #data_in = await tb.sink.recv()
