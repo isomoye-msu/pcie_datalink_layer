@@ -1,0 +1,18 @@
+CAPI=2:
+name: fusesoc:pcie:bram:1.0.0
+description: bram
+
+filesets:
+  rtl:
+    files:
+      - bram_dp.sv
+      - bram_sp.sv
+    file_type: systemVerilogSource
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - rtl
+    toplevel: bram_dp

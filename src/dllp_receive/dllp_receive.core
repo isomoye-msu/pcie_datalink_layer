@@ -1,0 +1,41 @@
+CAPI=2:
+name: fusesoc:pcie:dllp_receive:1.0.0
+description: pcie datalink datalink layer receive
+
+filesets:
+  rtl:
+    files:
+      - src/dllp_handler.sv
+      - src/dllp_receive.sv
+      - src/dllp2tlp.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+  tb:
+    files:
+      - tb/tb_dllp_handler.v 
+      - tb/tb_dllp_recieve.v 
+      - tb/tb_dllp2tlp.v
+    file_type: systemVerilogSource
+
+  cocotb:
+    files:
+      - tb/test_dllp_handler.py : {file_type : user, copyto : .}
+      - tb/test_dllp_recieve.py : {file_type : user, copyto : .}
+      - tb/test_dllp2tlp.py : {file_type : user, copyto : .}
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+          - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_dllp_recieve
+      timescale: 1ns/1ns
+    filesets : [rtl,tb,cocotb]
+    toplevel : [dllp_receive]
