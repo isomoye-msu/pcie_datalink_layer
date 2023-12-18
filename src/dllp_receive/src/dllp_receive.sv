@@ -99,7 +99,6 @@ module dllp_receive
       .STRB_WIDTH(STRB_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH),
-      .M_COUNT(M_COUNT),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RX_FIFO_SIZE(RX_FIFO_SIZE)
   ) dllp2tlp_inst (

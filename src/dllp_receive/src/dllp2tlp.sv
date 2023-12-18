@@ -1,3 +1,8 @@
+//! @title dllp2tlp
+//! @author Idris Somoye
+//! Module handles transaction layer packets recieved from the physical layer.
+//! Packets intended for the tlp layer are decoded and sent through the tlp
+//! master axis bus.
 module dllp2tlp
   import pcie_datalink_pkg::*;
 #(
@@ -8,7 +13,6 @@ module dllp2tlp
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 1,
     parameter int MAX_PAYLOAD_SIZE = 0,
-    parameter int M_COUNT = 2,
     parameter int RX_FIFO_SIZE = 2
 ) (
     //clocks and resets
@@ -71,91 +75,115 @@ module dllp2tlp
     ST_TLP_RX_EOP
   } tlp_rx_st_e;
 
-  dll_rx_st_e curr_state, next_state;
-  tlp_rx_st_e tlp_curr_state, tlp_next_state;
-  dllp_union_t dll_packet;
+  dll_rx_st_e                             curr_state;
+  dll_rx_st_e                             next_state;
+  tlp_rx_st_e                             tlp_curr_state;
+  tlp_rx_st_e                             tlp_next_state;
+  dllp_union_t                            dll_packet;
 
 
   //tlp nulled
-  logic tlp_nullified_c, tlp_nullified_r;
-  logic tx_tlp_ready_c, tx_tlp_ready_r;
-  logic [31:0] tlp_in_c, tlp_in_r;
+  logic                                   tlp_nullified_c;
+  logic                                   tlp_nullified_r;
+  logic                                   tx_tlp_ready_c;
+  logic                                   tx_tlp_ready_r;
+  logic        [                    31:0] tlp_in_c;
+  logic        [                    31:0] tlp_in_r;
   //transmit sequence logic
-  logic [15:0] next_transmit_seq_c, next_transmit_seq_r;
-  logic [15:0] next_recv_seq_num_c, next_recv_seq_num_r;
-  logic [15:0] tkeep_c, tkeep_r;
-  logic [11:0] ackd_transmit_seq_c, ackd_transmit_seq_r;
+  logic        [                    15:0] next_transmit_seq_c;
+  logic        [                    15:0] next_transmit_seq_r;
+  logic        [                    15:0] next_recv_seq_num_c;
+  logic        [                    15:0] next_recv_seq_num_r;
+  logic        [                    15:0] tkeep_c;
+  logic        [                    15:0] tkeep_r;
+  logic        [                    11:0] ackd_transmit_seq_c;
+  logic        [                    15:0] ackd_transmit_seq_r;
   //fifo signals
-  logic [($clog2(RX_FIFO_SIZE)):0] fifo_tail_c, fifo_tail_r;
-  logic [($clog2(RX_FIFO_SIZE)):0] fifo_head_c, fifo_head_r;
+  logic        [($clog2(RX_FIFO_SIZE)):0] fifo_tail_c;
+  logic        [($clog2(RX_FIFO_SIZE)):0] fifo_tail_r;
+  logic        [($clog2(RX_FIFO_SIZE)):0] fifo_head_c;
+  logic        [($clog2(RX_FIFO_SIZE)):0] fifo_head_r;
   //crc helper signals
-  logic [31:0] crc_in_c, crc_in_r;
-  logic [31:0] crc_calc_c, crc_calc_r;
-  logic [31:0] crc_out16;
-  logic [31:0] crc_reversed;
-  logic [31:0] crc_out32;
-  logic [15:0] dllp_crc_out;
-  logic [15:0] dllp_crc_reversed;
-  logic [31:0] dllp_lcrc_c, dllp_lcrc_r;
-  logic [             1:0] crc_select;
+  logic        [                    31:0] crc_in_c;
+  logic        [                    31:0] crc_in_r;
+  logic        [                    31:0] crc_calc_c;
+  logic        [                    31:0] crc_calc_r;
+  logic        [                    31:0] crc_out16;
+  logic        [                    31:0] crc_reversed;
+  logic        [                    31:0] crc_out32;
+  logic        [                    15:0] dllp_crc_out;
+  logic        [                    15:0] dllp_crc_reversed;
+  logic        [                    31:0] dllp_lcrc_c;
+  logic        [                    31:0] dllp_lcrc_r;
+  logic        [                     1:0] crc_select;
   //bram write signals
-  logic                    bram0_wr;
-  logic [RamAddrWidth-1:0] bram0_addr;
-  logic [RamDataWidth-1:0] bram0_data_in;
-  logic [RamDataWidth-1:0] bram0_data_out;
+  logic                                   bram0_wr;
+  logic        [        RamAddrWidth-1:0] bram0_addr;
+  logic        [        RamDataWidth-1:0] bram0_data_in;
+  logic        [        RamDataWidth-1:0] bram0_data_out;
   //bram read signals
-  logic                    bram1_wr;
-  logic [RamAddrWidth-1:0] bram1_addr;
-  logic [RamDataWidth-1:0] bram1_data_in;
-  logic [RamDataWidth-1:0] bram1_data_out;
+  logic                                   bram1_wr;
+  logic        [        RamAddrWidth-1:0] bram1_addr;
+  logic        [        RamDataWidth-1:0] bram1_data_in;
+  logic        [        RamDataWidth-1:0] bram1_data_out;
   //tlp type signals
-  logic is_cpl_c, is_cpl_r;
-  logic is_np_c, is_np_r;
-  logic is_p_c, is_p_r;
+  logic                                   is_cpl_c;
+  logic                                   is_cpl_r;
+  logic                                   is_np_c;
+  logic                                   is_np_r;
+  logic                                   is_p_c;
+  logic                                   is_p_r;
   //fifo helper signals
-  logic                  update_fc;
-  logic                  fifo_full;
-  logic                  fifo_empty;
+  logic                                   update_fc;
+  logic                                   fifo_full;
+  logic                                   fifo_empty;
   //skid buffer axis signals
-  logic [DATA_WIDTH-1:0] s_axis_skid_tdata;
-  logic [KEEP_WIDTH-1:0] s_axis_skid_tkeep;
-  logic                  s_axis_skid_tvalid;
-  logic                  s_axis_skid_tlast;
-  logic [USER_WIDTH-1:0] s_axis_skid_tuser;
-  logic                  s_axis_skid_tready;
-  //dllp signals
-  // logic [DATA_WIDTH-1:0] m_axis_dllp2phy_tdata;
-  // logic [KEEP_WIDTH-1:0] m_axis_dllp2phy_tkeep;
-  // logic                  m_axis_dllp2phy_tvalid;
-  // logic                  m_axis_dllp2phy_tlast;
-  // logic [USER_WIDTH-1:0] m_axis_dllp2phy_tuser;
-  // logic                  m_axis_dllp2phy_tready;
+  logic        [          DATA_WIDTH-1:0] s_axis_skid_tdata;
+  logic        [          KEEP_WIDTH-1:0] s_axis_skid_tkeep;
+  logic                                   s_axis_skid_tvalid;
+  logic                                   s_axis_skid_tlast;
+  logic        [          USER_WIDTH-1:0] s_axis_skid_tuser;
+  logic                                   s_axis_skid_tready;
   //tlp signals
-  logic                  m_axis_tlp_tready;
-
-
-  logic [DATA_WIDTH-1:0] m_axis_tdata_c, m_axis_tdata_r;
-  logic [KEEP_WIDTH-1:0] m_axis_tkeep_c, m_axis_tkeep_r;
-  logic m_axis_tvalid_c, m_axis_tvalid_r;
-  logic m_axis_tlast_c, m_axis_tlast_r;
-  logic [USER_WIDTH-1:0] m_axis_tuser_c, m_axis_tuser_r;
-  logic m_axis_tready_c, m_axis_tready_r;
-
-
+  logic                                   m_axis_tlp_tready;
+  //registered axis master signsals
+  logic        [          DATA_WIDTH-1:0] m_axis_tdata_c;
+  logic        [          DATA_WIDTH-1:0] m_axis_tdata_r;
+  logic        [          KEEP_WIDTH-1:0] m_axis_tkeep_c;
+  logic        [          KEEP_WIDTH-1:0] m_axis_tkeep_r;
+  logic                                   m_axis_tvalid_c;
+  logic                                   m_axis_tvalid_r;
+  logic                                   m_axis_tlast_c;
+  logic                                   m_axis_tlast_r;
+  logic        [          USER_WIDTH-1:0] m_axis_tuser_c;
+  logic        [          USER_WIDTH-1:0] m_axis_tuser_r;
+  logic                                   m_axis_tready_c;
+  logic                                   m_axis_tready_r;
   //credits tracking signals
-  logic [7:0] ph_credits_consumed_c, ph_credits_consumed_r;
-  logic [11:0] pd_credits_consumed_c, pd_credits_consumed_r;
-  logic [7:0] nph_credits_consumed_c, nph_credits_consumed_r;
-  logic [11:0] npd_credits_consumed_c, npd_credits_consumed_r;
+  logic        [                     7:0] ph_credits_consumed_c;
+  logic        [                     7:0] ph_credits_consumed_r;
+  logic        [                    11:0] pd_credits_consumed_c;
+  logic        [                    11:0] pd_credits_consumed_r;
+  logic        [                     7:0] nph_credits_consumed_c;
+  logic        [                     7:0] nph_credits_consumed_r;
+  logic        [                    11:0] npd_credits_consumed_c;
+  logic        [                    11:0] npd_credits_consumed_r;
   //word count signals
-  logic [31:0] word_count_c, word_count_r;
-  logic [31:0] tlp_word_count_c, tlp_word_count_r;
-  logic [31:0] tlp_curr_count_c, tlp_curr_count_r;
+  logic        [                    31:0] word_count_c;
+  logic        [                    31:0] word_count_r;
+  logic        [                    31:0] tlp_word_count_c;
+  logic        [                    31:0] tlp_word_count_r;
+  logic        [                    31:0] tlp_curr_count_c;
+  logic        [                    31:0] tlp_curr_count_r;
   //tx/rx word count
-  logic [15:0] tx_tkeep_c, tx_tkeep_r;
-  logic [31:0] tx_word_count_c, tx_word_count_r;
-  logic [31:0] rx_addr_c, rx_addr_r;
-  logic [31:0] tx_addr_c, tx_addr_r;
+  logic        [                    15:0] tx_tkeep_c;
+  logic        [                    15:0] tx_tkeep_r;
+  logic        [                    31:0] tx_word_count_c;
+  logic        [                    31:0] tx_word_count_r;
+  logic        [                    31:0] rx_addr_c;
+  logic        [                    31:0] rx_addr_r;
+  logic        [                    31:0] tx_addr_c;
+  logic        [                    31:0] tx_addr_r;
 
   //fifo state signals
   assign fifo_full = fifo_tail_r > fifo_head_r ?
@@ -254,76 +282,76 @@ module dllp2tlp
 
 
   always_comb begin : main_combo
-    next_state = curr_state;
-    next_transmit_seq_c = next_transmit_seq_r;
+    next_state             = curr_state;
+    next_transmit_seq_c    = next_transmit_seq_r;
     //crc signals
-    dllp_lcrc_c = dllp_lcrc_r;
-    crc_calc_c = crc_calc_r;
-    crc_select = '0;
-    crc_in_c = crc_in_r;
+    dllp_lcrc_c            = dllp_lcrc_r;
+    crc_calc_c             = crc_calc_r;
+    crc_select             = '0;
+    crc_in_c               = crc_in_r;
     //bram write signals
-    bram0_wr = '0;
-    bram0_addr = rx_addr_r;
-    bram0_data_in = '0;
+    bram0_wr               = '0;
+    bram0_addr             = rx_addr_r;
+    bram0_data_in          = '0;
     //seq num
-    next_recv_seq_num_c = next_recv_seq_num_r;
+    next_recv_seq_num_c    = next_recv_seq_num_r;
     //rx word count
-    word_count_c = word_count_r;
+    word_count_c           = word_count_r;
     //tlp type
-    tkeep_c  = tkeep_r;
-    tlp_in_c = tlp_in_r;
-    is_cpl_c  =  is_cpl_r;
-    is_np_c   =  is_np_r;
-    is_p_c    =  is_p_r;
+    tkeep_c                = tkeep_r;
+    tlp_in_c               = tlp_in_r;
+    is_cpl_c               = is_cpl_r;
+    is_np_c                = is_np_r;
+    is_p_c                 = is_p_r;
     //credits signals
-    ph_credits_consumed_c    = ph_credits_consumed_r;
-    pd_credits_consumed_c    = pd_credits_consumed_r;
-    nph_credits_consumed_c   = nph_credits_consumed_r;
-    npd_credits_consumed_c   = npd_credits_consumed_r;
+    ph_credits_consumed_c  = ph_credits_consumed_r;
+    pd_credits_consumed_c  = pd_credits_consumed_r;
+    nph_credits_consumed_c = nph_credits_consumed_r;
+    npd_credits_consumed_c = npd_credits_consumed_r;
     //
-    tlp_word_count_c = tlp_word_count_r;
-    rx_addr_c = rx_addr_r;
+    tlp_word_count_c       = tlp_word_count_r;
+    rx_addr_c              = rx_addr_r;
     //dllp rx to phy
-    m_axis_dllp2phy_tdata    = '0;
-    m_axis_dllp2phy_tkeep    = '0;
-    m_axis_dllp2phy_tvalid   = '0;
-    m_axis_dllp2phy_tlast    = '0;
-    m_axis_dllp2phy_tuser    = '0;
+    m_axis_dllp2phy_tdata  = '0;
+    m_axis_dllp2phy_tkeep  = '0;
+    m_axis_dllp2phy_tvalid = '0;
+    m_axis_dllp2phy_tlast  = '0;
+    m_axis_dllp2phy_tuser  = '0;
     //
-    s_axis_skid_tready = '0;
-    dll_packet = '0;
+    s_axis_skid_tready     = '0;
+    dll_packet             = '0;
     //
-    tx_tlp_ready_c = '0;
+    tx_tlp_ready_c         = '0;
     //fifo tail
-    fifo_tail_c = fifo_tail_r;
+    fifo_tail_c            = fifo_tail_r;
     case (curr_state)
       ST_DLL_RX_IDLE: begin
         s_axis_skid_tready = (!fifo_full && (link_status_i == DL_ACTIVE));
         if (s_axis_skid_tvalid && s_axis_skid_tready) begin
           //store incoming sequence number
-          next_transmit_seq_c = {s_axis_skid_tdata[7:0],s_axis_skid_tdata[15:8]};
-          tlp_in_c = s_axis_skid_tdata;
-          crc_select = 2'b01;
+          next_transmit_seq_c = {s_axis_skid_tdata[7:0], s_axis_skid_tdata[15:8]};
+          tlp_in_c            = s_axis_skid_tdata;
+          crc_select          = 2'b01;
           //tlp type
-          is_cpl_c  =  '0;
-          is_np_c   =  '0;
-          is_p_c    =  '0;
-          word_count_c =  '0;
+          is_cpl_c            = '0;
+          is_np_c             = '0;
+          is_p_c              = '0;
+          word_count_c        = '0;
           //state control
-          next_state = ST_DLL_RX_SEQ_NUM;
+          next_state          = ST_DLL_RX_SEQ_NUM;
         end
       end
       ST_DLL_RX_SEQ_NUM: begin
         s_axis_skid_tready = '1;
-        crc_select = 2'b11;
+        crc_select         = 2'b11;
         if (s_axis_skid_tvalid) begin
-          crc_calc_c = crc_out16;
-          word_count_c = word_count_r + 1;
-          tlp_in_c = s_axis_skid_tdata;
+          crc_calc_c    = crc_out16;
+          word_count_c  = word_count_r + 1;
+          tlp_in_c      = s_axis_skid_tdata;
           //bram store
           bram0_data_in = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
-          bram0_addr = rx_addr_r + word_count_r + 1;
-          bram0_wr = '1;
+          bram0_addr    = rx_addr_r + word_count_r + 1;
+          bram0_wr      = '1;
           //check tlp type
           if ((tlp_in_r[23:16] == Cpl) || (tlp_in_r[23:16] == CplD)) begin
             is_cpl_c = '1;
@@ -339,37 +367,37 @@ module dllp2tlp
       end
       ST_DLL_RX_TLP: begin
         s_axis_skid_tready = '1;
-        crc_select = 2'b11;
+        crc_select         = 2'b11;
         if (s_axis_skid_tvalid) begin
-          crc_calc_c = crc_out16;
-          word_count_c = word_count_r + 1;
+          crc_calc_c    = crc_out16;
+          word_count_c  = word_count_r + 1;
           //bram store
-          tlp_in_c = s_axis_skid_tdata;
+          tlp_in_c      = s_axis_skid_tdata;
           bram0_data_in = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
-          bram0_addr = rx_addr_r + word_count_r + 1;
-          bram0_wr = '1;
+          bram0_addr    = rx_addr_r + word_count_r + 1;
+          bram0_wr      = '1;
           if (s_axis_skid_tlast) begin
             word_count_c = word_count_r;
             case (s_axis_skid_tkeep)
               4'b0001: begin
                 crc_select = 2'b00;
-                tkeep_c = 16'h0007;
-                crc_in_c = {s_axis_skid_tdata[7:0], tlp_in_r[31:8]};
+                tkeep_c    = 16'h0007;
+                crc_in_c   = {s_axis_skid_tdata[7:0], tlp_in_r[31:8]};
               end
               4'b0011: begin
                 crc_select = 2'b01;
-                tkeep_c = 16'h000F;
-                crc_in_c = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
+                tkeep_c    = 16'h000F;
+                crc_in_c   = {s_axis_skid_tdata[15:0], tlp_in_r[31:16]};
               end
               4'b0111: begin
                 crc_select = 2'b10;
-                tkeep_c = 16'h0001;
-                crc_in_c = {s_axis_skid_tdata[23:0], tlp_in_r[31:24]};
+                tkeep_c    = 16'h0001;
+                crc_in_c   = {s_axis_skid_tdata[23:0], tlp_in_r[31:24]};
               end
               4'b1111: begin
                 crc_select = 2'b11;
-                tkeep_c = 16'h0003;
-                crc_in_c = s_axis_skid_tdata;
+                tkeep_c    = 16'h0003;
+                crc_in_c   = s_axis_skid_tdata;
               end
               default: begin
               end
@@ -384,16 +412,16 @@ module dllp2tlp
         //check crc
         if (crc_out32 == crc_in_r) begin
           //update bram addr zero with word count
-          bram0_addr = rx_addr_r;
-          bram0_data_in = {tkeep_r[15:0], word_count_r[15:0]};
-          bram0_wr = '1;
+          bram0_addr     = rx_addr_r;
+          bram0_data_in  = {tkeep_r[15:0], word_count_r[15:0]};
+          bram0_wr       = '1;
           //tell tlp axis tx to start
           tx_tlp_ready_c = '1;
           //build dllp ack for crc
-          dll_packet = set_ack_nack(Ack, next_transmit_seq_r);
-          dllp_lcrc_c = dllp_crc_out;
+          dll_packet     = set_ack_nack(Ack, next_transmit_seq_r);
+          dllp_lcrc_c    = dllp_crc_out;
           //go to nextstate
-          next_state = ST_ACK_DLLP;
+          next_state     = ST_ACK_DLLP;
           //confirm data in buffer to be sent to tlp layer
           if (next_recv_seq_num_r == next_transmit_seq_r) begin
             //expected sequence valid
@@ -639,7 +667,4 @@ module dllp2tlp
   assign m_axis_dllp2tlp_tvalid = m_axis_tvalid_r;
   assign m_axis_dllp2tlp_tlast  = m_axis_tlast_r;
   assign m_axis_dllp2tlp_tuser  = m_axis_tuser_r;
-  // assign m_axis_tlp_tready =   m_axis_tready_i[TlpAxis];
-  // assign m_axis_dllp2phy_tready =  m_axis_tready_i[DllpAxis];
-
 endmodule

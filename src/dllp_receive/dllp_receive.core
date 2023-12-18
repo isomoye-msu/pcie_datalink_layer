@@ -14,12 +14,6 @@ filesets:
       - fusesoc:pcie:crc
       - fusesoc:pcie:bram
       - fusesoc:pcie:axis
-  tb:
-    files:
-      - tb/tb_dllp_handler.v 
-      - tb/tb_dllp_recieve.v 
-      - tb/tb_dllp2tlp.v
-    file_type: systemVerilogSource
 
   cocotb:
     files:
@@ -37,5 +31,5 @@ targets:
           - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
       cocotb_module : test_dllp_recieve
       timescale: 1ns/1ns
-    filesets : [rtl,tb,cocotb]
+    filesets : [rtl,cocotb]
     toplevel : [dllp_receive]

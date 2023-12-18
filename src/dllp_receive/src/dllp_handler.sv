@@ -1,3 +1,8 @@
+//! @title dllp_handler
+//! @author Idris Somoye
+//! Module handles datalink packets recieved from the physical layer
+//! intended for the datalink layer. Datalink packets are decoded and replies are sent to
+//! the physical layer through the phy master axis bus.
 module dllp_handler
   import pcie_datalink_pkg::*;
 #(
@@ -8,15 +13,16 @@ module dllp_handler
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 3
 ) (
+    //clocks and resets
     input  logic                  clk_i,                // Clock signal
     input  logic                  rst_i,                // Reset signal
     input  logic                  phy_link_up_i,
     //PHY AXIS inputs
-    input  logic [DATA_WIDTH-1:0]  s_axis_tdata,
-    input  logic [KEEP_WIDTH-1:0]  s_axis_tkeep,
+    input  logic [DATA_WIDTH-1:0] s_axis_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
     input  logic                  s_axis_tvalid,
-    input  logic                   s_axis_tlast,
-    input  logic [USER_WIDTH-1:0]  s_axis_tuser,
+    input  logic                  s_axis_tlast,
+    input  logic [USER_WIDTH-1:0] s_axis_tuser,
     output logic                  s_axis_tready,
     //tlp ack/nak
     output logic [          11:0] seq_num_o,
@@ -42,30 +48,39 @@ module dllp_handler
     ST_TLP_EOP
   } dll_rx_st_e;
 
-  dll_rx_st_e curr_state, next_state;
-  dllp_union_t dll_packet_c, dll_packet_r;
-
-
+  dll_rx_st_e         curr_state;
+  dll_rx_st_e         next_state;
+  dllp_union_t        dll_packet_c;
+  dllp_union_t        dll_packet_r;
   //crc helper signals
-  logic [15:0] crc_in_c, crc_in_r;
-  logic [15:0] crc_out;
-
+  logic        [15:0] crc_in_c;
+  logic        [15:0] crc_in_r;
+  logic        [15:0] crc_out;
   //tlp nulled
-  logic tlp_nullified_c, tlp_nullified_r;
-  logic tx_tlp_ready_c, tx_tlp_ready_r;
-
+  logic               tlp_nullified_c;
+  logic               tlp_nullified_r;
+  logic               tx_tlp_ready_c;
+  logic               tx_tlp_ready_r;
   //transmit sequence logic
-  logic [15:0] next_transmit_seq_c, next_transmit_seq_r;
-  logic [11:0] ackd_transmit_seq_c, ackd_transmit_seq_r;
+  logic        [15:0] next_transmit_seq_c;
+  logic        [15:0] next_transmit_seq_r;
+  logic        [11:0] ackd_transmit_seq_c;
+  logic        [11:0] ackd_transmit_seq_r;
 
 
   //Flow control
-  logic [7:0] tx_fc_ph_c, tx_fc_ph_r;
-  logic [11:0] tx_fc_pd_c, tx_fc_pd_r;
-  logic [7:0] tx_fc_nph_c, tx_fc_nph_r;
-  logic [11:0] tx_fc_npd_c, tx_fc_npd_r;
-  logic [7:0] tx_fc_ch_c, tx_fc_ch_r;
-  logic [11:0] tx_fc_cd_c, tx_fc_cd_r;
+  logic        [ 7:0] tx_fc_ph_c;
+  logic        [ 7:0] tx_fc_ph_r;
+  logic        [11:0] tx_fc_pd_c;
+  logic        [11:0] tx_fc_pd_r;
+  logic        [ 7:0] tx_fc_nph_c;
+  logic        [ 7:0] tx_fc_nph_r;
+  logic        [11:0] tx_fc_npd_c;
+  logic        [11:0] tx_fc_npd_r;
+  logic        [ 7:0] tx_fc_ch_c;
+  logic        [ 7:0] tx_fc_ch_r;
+  logic        [11:0] tx_fc_cd_c;
+  logic        [11:0] tx_fc_cd_r;
 
   //fc1 vals
   logic fc1_np_stored_c, fc1_np_stored_r;
@@ -82,45 +97,45 @@ module dllp_handler
 
   always @(posedge clk_i or posedge rst_i) begin : main_seq
     if (rst_i) begin
-      curr_state <= ST_IDLE;
+      curr_state          <= ST_IDLE;
       next_transmit_seq_r <= '0;
-      dll_packet_r <= '0;
+      dll_packet_r        <= '0;
       //crc signals
-      crc_in_r <= '0;
+      crc_in_r            <= '0;
       //flow control
-      tx_fc_ph_r <= '0;
-      tx_fc_pd_r <= '0;
-      tx_fc_nph_r <= '0;
-      tx_fc_npd_r <= '0;
-      tx_fc_ch_r <= '0;
-      tx_fc_cd_r <= '0;
+      tx_fc_ph_r          <= '0;
+      tx_fc_pd_r          <= '0;
+      tx_fc_nph_r         <= '0;
+      tx_fc_npd_r         <= '0;
+      tx_fc_ch_r          <= '0;
+      tx_fc_cd_r          <= '0;
       //capture signals
-      fc1_np_stored_r <= '0;
-      fc1_p_stored_r <= '0;
-      fc1_c_stored_r <= '0;
-      fc2_np_stored_r <= '0;
-      fc2_p_stored_r <= '0;
-      fc2_c_stored_r <= '0;
+      fc1_np_stored_r     <= '0;
+      fc1_p_stored_r      <= '0;
+      fc1_c_stored_r      <= '0;
+      fc2_np_stored_r     <= '0;
+      fc2_p_stored_r      <= '0;
+      fc2_c_stored_r      <= '0;
     end else begin
-      curr_state <= next_state;
+      curr_state          <= next_state;
       next_transmit_seq_r <= next_transmit_seq_c;
-      dll_packet_r <= dll_packet_c;
+      dll_packet_r        <= dll_packet_c;
       //crc signals
-      crc_in_r <= crc_in_c;
+      crc_in_r            <= crc_in_c;
       //flow control
-      tx_fc_ph_r <= tx_fc_ph_c;
-      tx_fc_pd_r <= tx_fc_pd_c;
-      tx_fc_nph_r <= tx_fc_nph_c;
-      tx_fc_npd_r <= tx_fc_npd_c;
-      tx_fc_ch_r <= tx_fc_ch_c;
-      tx_fc_cd_r <= tx_fc_cd_c;
+      tx_fc_ph_r          <= tx_fc_ph_c;
+      tx_fc_pd_r          <= tx_fc_pd_c;
+      tx_fc_nph_r         <= tx_fc_nph_c;
+      tx_fc_npd_r         <= tx_fc_npd_c;
+      tx_fc_ch_r          <= tx_fc_ch_c;
+      tx_fc_cd_r          <= tx_fc_cd_c;
       //capture signals
-      fc1_np_stored_r <= fc1_np_stored_c;
-      fc1_p_stored_r <= fc1_p_stored_c;
-      fc1_c_stored_r <= fc1_c_stored_c;
-      fc2_np_stored_r <= fc2_np_stored_c;
-      fc2_p_stored_r <= fc2_p_stored_c;
-      fc2_c_stored_r <= fc2_c_stored_c;
+      fc1_np_stored_r     <= fc1_np_stored_c;
+      fc1_p_stored_r      <= fc1_p_stored_c;
+      fc1_c_stored_r      <= fc1_c_stored_c;
+      fc2_np_stored_r     <= fc2_np_stored_c;
+      fc2_p_stored_r      <= fc2_p_stored_c;
+      fc2_c_stored_r      <= fc2_c_stored_c;
     end
   end
 
@@ -129,7 +144,7 @@ module dllp_handler
     next_state          = curr_state;
     next_transmit_seq_c = next_transmit_seq_r;
     dll_packet_c        = dll_packet_r;
-    s_axis_tready     = '0;
+    s_axis_tready       = '0;
     //crc signals
     crc_in_c            = crc_in_r;
     //ack_nack signals
@@ -159,8 +174,8 @@ module dllp_handler
           s_axis_tready = '1;
           if (s_axis_tvalid) begin
             dll_packet_c = s_axis_tdata;
-            crc_in_c = crc_out;
-            next_state = ST_CHECK_CRC;
+            crc_in_c     = crc_out;
+            next_state   = ST_CHECK_CRC;
           end
         end
       end
@@ -177,12 +192,12 @@ module dllp_handler
         //process tlp
         casez (dll_packet_r.generic.dllp_type)
           Ack: begin
-            seq_num_o = get_ack_nack_seq(dll_packet_r.ack_nack);
-            seq_num_vld_o = '1;
+            seq_num_o         = get_ack_nack_seq(dll_packet_r.ack_nack);
+            seq_num_vld_o     = '1;
             seq_num_acknack_o = '1;
           end
           Nak: begin
-            seq_num_o = get_ack_nack_seq(dll_packet_r.ack_nack);
+            seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
             seq_num_vld_o = '1;
           end
           PM_Enter_L1: begin
@@ -201,13 +216,13 @@ module dllp_handler
             //not implemented
           end
           InitFC1_P: begin
-            tx_fc_ph_c = dll_packet_r.generic.header.hdr.HdrFC;
-            tx_fc_pd_c = dll_packet_r.generic.seq_datafc.data_fc;
+            tx_fc_ph_c     = dll_packet_r.generic.header.hdr.HdrFC;
+            tx_fc_pd_c     = dll_packet_r.generic.seq_datafc.data_fc;
             fc1_p_stored_c = '1;
           end
           InitFC1_NP: begin
-            tx_fc_nph_c = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_npd_c = get_fc_data(dll_packet_r.flow_control);
+            tx_fc_nph_c     = get_fc_hdr(dll_packet_r.flow_control);
+            tx_fc_npd_c     = get_fc_data(dll_packet_r.flow_control);
             fc1_np_stored_c = '1;
           end
           InitFC1_Cpl: begin
@@ -215,13 +230,13 @@ module dllp_handler
             fc1_c_stored_c = '1;
           end
           InitFC2_P: begin
-            tx_fc_ph_c = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_pd_c = get_fc_data(dll_packet_r.flow_control);
+            tx_fc_ph_c     = get_fc_hdr(dll_packet_r.flow_control);
+            tx_fc_pd_c     = get_fc_data(dll_packet_r.flow_control);
             fc2_p_stored_c = '1;
           end
           InitFC2_NP: begin
-            tx_fc_nph_c = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_npd_c = get_fc_data(dll_packet_r.flow_control);
+            tx_fc_nph_c     = get_fc_hdr(dll_packet_r.flow_control);
+            tx_fc_npd_c     = get_fc_data(dll_packet_r.flow_control);
             fc2_np_stored_c = '1;
           end
           InitFC2_Cpl: begin
