@@ -16,51 +16,43 @@ module dllp_transmit
     input logic rst_i,  // Reset signal
 
 
-    /*
-   * TLP AXIS inputs
-   */
-    input  logic [DATA_WIDTH-1:0] s_axis_tlp_tdata_i ,
-    input  logic [KEEP_WIDTH-1:0] s_axis_tlp_tkeep_i ,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tvalid_i,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tlast_i ,
-    input  logic [USER_WIDTH-1:0] s_axis_tlp_tuser_i ,
-    output logic [   S_COUNT-1:0] s_axis_tlp_tready_o,
-
-
+    //TLP AXIS inputs
+    input  logic [DATA_WIDTH-1:0] s_axis_tlp_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_axis_tlp_tkeep,
+    input  logic [   S_COUNT-1:0] s_axis_tlp_tvalid,
+    input  logic [   S_COUNT-1:0] s_axis_tlp_tlast,
+    input  logic [USER_WIDTH-1:0] s_axis_tlp_tuser,
+    output logic [   S_COUNT-1:0] s_axis_tlp_tready,
     //dllp AXIS output
-    output logic [DATA_WIDTH-1:0] m_axis_dllp_tdata_o,
-    output logic [KEEP_WIDTH-1:0] m_axis_dllp_tkeep_o,
-    output logic                  m_axis_dllp_tvalid_o,
-    output logic                  m_axis_dllp_tlast_o,
-    output logic [USER_WIDTH-1:0] m_axis_dllp_tuser_o,
-    input  logic                  m_axis_dllp_tready_i,
-
+    output logic [DATA_WIDTH-1:0] m_axis_dllp_tdata,
+    output logic [KEEP_WIDTH-1:0] m_axis_dllp_tkeep,
+    output logic                  m_axis_dllp_tvalid,
+    output logic                  m_axis_dllp_tlast,
+    output logic [USER_WIDTH-1:0] m_axis_dllp_tuser,
+    input  logic                  m_axis_dllp_tready,
     //dllp tlp sequence ack/nack
-    input logic        ack_nack_i,
-    input logic        ack_nack_vld_i,
-    input logic [11:0] ack_seq_num_i,
+    input  logic                  ack_nack_i,
+    input  logic                  ack_nack_vld_i,
+    input  logic [          11:0] ack_seq_num_i,
     //flow control
-    input logic [ 7:0] tx_fc_ph_i,
-    input logic [11:0] tx_fc_pd_i,
-    input logic [ 7:0] tx_fc_nph_i,
-    input logic [11:0] tx_fc_npd_i
+    input  logic [           7:0] tx_fc_ph_i,
+    input  logic [          11:0] tx_fc_pd_i,
+    input  logic [           7:0] tx_fc_nph_i,
+    input  logic [          11:0] tx_fc_npd_i
 );
 
 
-  localparam int MaxTlpHdrSizeDW = 4;
-  localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
-  localparam int MinRxBufferSize = MaxTlpTotalSizeDW * (RETRY_TLP_SIZE);
+  parameter int MaxTlpHdrSizeDW = 4;
+  parameter int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
+  parameter int MinRxBufferSize = MaxTlpTotalSizeDW * (RETRY_TLP_SIZE);
   parameter int RAM_DATA_WIDTH = DATA_WIDTH;
   parameter int RAM_ADDR_WIDTH = $clog2(MinRxBufferSize);
-
-  //localparam int SLAVE_COUNT = 2;
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
   parameter int ID_ENABLE = 0;
   parameter int ID_WIDTH = 8;
   parameter int DEST_ENABLE = 0;
   parameter int DEST_WIDTH = 8;
   parameter int USER_ENABLE = 1;
-  // parameter int USER_WIDTH = 1;
   parameter int LAST_ENABLE = 1;
   parameter int ARB_TYPE_ROUND_ROBIN = 0;
   parameter int ARB_LSB_HIGH_PRIORITY = 1;
@@ -73,17 +65,13 @@ module dllp_transmit
   logic                      m_axis_retry_tlast;
   logic [    USER_WIDTH-1:0] m_axis_retry_tuser;
   logic                      m_axis_retry_tready;
-
-
   //DLLP AXIS output
-  logic [  (DATA_WIDTH)-1:0] m_axis_dllp_tdata;
-  logic [  (KEEP_WIDTH)-1:0] m_axis_dllp_tkeep;
-  logic                      m_axis_dllp_tvalid;
-  logic                      m_axis_dllp_tlast;
-  logic [    USER_WIDTH-1:0] m_axis_dllp_tuser;
-  logic                      m_axis_dllp_tready;
-
-
+  logic [  (DATA_WIDTH)-1:0] m_axis_tlp2dllp_tdata;
+  logic [  (KEEP_WIDTH)-1:0] m_axis_tlp2dllp_tkeep;
+  logic                      m_axis_tlp2dllp_tvalid;
+  logic                      m_axis_tlp2dllp_tlast;
+  logic [    USER_WIDTH-1:0] m_axis_tlp2dllp_tuser;
+  logic                      m_axis_tlp2dllp_tready;
   //bram retry signals
   logic                      bram_retry_wr;
   logic [RAM_ADDR_WIDTH-1:0] bram_retry_addr;
@@ -94,10 +82,8 @@ module dllp_transmit
   logic [RAM_ADDR_WIDTH-1:0] bram_dllp_addr;
   logic [RAM_DATA_WIDTH-1:0] bram_dllp_data_in;
   logic [RAM_DATA_WIDTH-1:0] bram_dllp_data_out;
-
   logic [              11:0] ackd_transmit_seq;
   logic                      dllp_valid;
-
   logic                      retry_available;
   logic [               7:0] retry_index;
   logic                      retry_err;
@@ -132,12 +118,12 @@ module dllp_transmit
       .bram_data_out_o  (bram_retry_data_in),
       .bram_data_in_i   (bram_retry_data_out),
       //axis out to phy
-      .m_axis_tdata_o   (m_axis_retry_tdata),
-      .m_axis_tkeep_o   (m_axis_retry_tkeep),
-      .m_axis_tvalid_o  (m_axis_retry_tvalid),
-      .m_axis_tlast_o   (m_axis_retry_tlast),
-      .m_axis_tuser_o   (m_axis_retry_tuser),
-      .m_axis_tready_i  (m_axis_retry_tready)
+      .m_axis_tdata     (m_axis_retry_tdata),
+      .m_axis_tkeep     (m_axis_retry_tkeep),
+      .m_axis_tvalid    (m_axis_retry_tvalid),
+      .m_axis_tlast     (m_axis_retry_tlast),
+      .m_axis_tuser     (m_axis_retry_tuser),
+      .m_axis_tready    (m_axis_retry_tready)
   );
 
 
@@ -153,19 +139,19 @@ module dllp_transmit
       .clk_i            (clk_i),
       .rst_i            (rst_i),
       //axis tlp in
-      .s_axis_tdata_i   (s_axis_tlp_tdata_i),
-      .s_axis_tkeep_i   (s_axis_tlp_tkeep_i),
-      .s_axis_tvalid_i  (s_axis_tlp_tvalid_i),
-      .s_axis_tlast_i   (s_axis_tlp_tlast_i),
-      .s_axis_tuser_i   (s_axis_tlp_tuser_i),
-      .s_axis_tready_o  (s_axis_tlp_tready_o),
+      .s_axis_tdata     (s_axis_tlp_tdata),
+      .s_axis_tkeep     (s_axis_tlp_tkeep),
+      .s_axis_tvalid    (s_axis_tlp_tvalid),
+      .s_axis_tlast     (s_axis_tlp_tlast),
+      .s_axis_tuser     (s_axis_tlp_tuser),
+      .s_axis_tready    (s_axis_tlp_tready),
       //axis out to phy
-      .m_axis_tdata_o   (m_axis_dllp_tdata),
-      .m_axis_tkeep_o   (m_axis_dllp_tkeep),
-      .m_axis_tvalid_o  (m_axis_dllp_tvalid),
-      .m_axis_tlast_o   (m_axis_dllp_tlast),
-      .m_axis_tuser_o   (m_axis_dllp_tuser),
-      .m_axis_tready_i  (m_axis_dllp_tready),
+      .m_axis_tdata     (m_axis_tlp2dllp_tdata),
+      .m_axis_tkeep     (m_axis_tlp2dllp_tkeep),
+      .m_axis_tvalid    (m_axis_tlp2dllp_tvalid),
+      .m_axis_tlast     (m_axis_tlp2dllp_tlast),
+      .m_axis_tuser     (m_axis_tlp2dllp_tuser),
+      .m_axis_tready    (m_axis_tlp2dllp_tready),
       //bram
       .bram_wr_o        (bram_dllp_wr),
       .bram_addr_o      (bram_dllp_addr),
@@ -211,14 +197,14 @@ module dllp_transmit
       .s_axis_tdest(),
       .s_axis_tuser({m_axis_dllp_tuser, m_axis_retry_tuser}),
       // AXI output
-      .m_axis_tdata(m_axis_dllp_tdata_o),
-      .m_axis_tkeep(m_axis_dllp_tkeep_o),
-      .m_axis_tvalid(m_axis_dllp_tvalid_o),
-      .m_axis_tready(m_axis_dllp_tready_i),
-      .m_axis_tlast(m_axis_dllp_tlast_o),
+      .m_axis_tdata(m_axis_dllp_tdata),
+      .m_axis_tkeep(m_axis_dllp_tkeep),
+      .m_axis_tvalid(m_axis_dllp_tvalid),
+      .m_axis_tready(m_axis_dllp_tready),
+      .m_axis_tlast(m_axis_dllp_tlast),
       .m_axis_tid(),
       .m_axis_tdest(),
-      .m_axis_tuser(m_axis_dllp_tuser_o)
+      .m_axis_tuser(m_axis_dllp_tuser)
   );
 
 
@@ -238,8 +224,5 @@ module dllp_transmit
       .b_data_in (bram_dllp_data_in),
       .b_data_out(bram_dllp_data_out)
   );
-
-
-
 
 endmodule

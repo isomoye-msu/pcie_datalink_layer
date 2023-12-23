@@ -6,6 +6,9 @@ filesets:
   rtl:
     files:
       - rtl/axis_register.v
+      - rtl/axis_arb_mux.v
+      - rtl/arbiter.v
+      - rtl/priority_encoder.v
     file_type: systemVerilogSource
 
 targets:

@@ -2,7 +2,7 @@ module retry_management
   import pcie_datalink_pkg::*;
 #(
     // TLP data width
-    parameter int DATA_WIDTH = 32,//AXIS data width
+    parameter int DATA_WIDTH = 32,  //AXIS data width
     // TLP strobe width
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
@@ -33,12 +33,12 @@ module retry_management
     output logic [RAM_DATA_WIDTH-1:0] bram_data_out_o,
     input  logic [RAM_DATA_WIDTH-1:0] bram_data_in_i,
     //RETRY AXIS output
-    output logic [  (DATA_WIDTH)-1:0] m_axis_tdata_o,
-    output logic [  (KEEP_WIDTH)-1:0] m_axis_tkeep_o,
-    output logic                      m_axis_tvalid_o,
-    output logic                      m_axis_tlast_o,
-    output logic [    USER_WIDTH-1:0] m_axis_tuser_o,
-    input  logic                      m_axis_tready_i
+    output logic [  (DATA_WIDTH)-1:0] m_axis_tdata,
+    output logic [  (KEEP_WIDTH)-1:0] m_axis_tkeep,
+    output logic                      m_axis_tvalid,
+    output logic                      m_axis_tlast,
+    output logic [    USER_WIDTH-1:0] m_axis_tuser,
+    input  logic                      m_axis_tready
 );
 
   //maxbytesper tlp
@@ -69,80 +69,97 @@ module retry_management
 
 
 
-  tlp_rx_st_e tlp_curr_state, tlp_next_state;
+  tlp_rx_st_e                            tlp_curr_state;
+  tlp_rx_st_e                            tlp_next_state;
   //internal retry tracking signals
-  logic [RETRY_TLP_SIZE-1:0] retrys_c, retrys_r;
-  logic [RETRY_TLP_SIZE-1:0] retry_index_flag;
-  logic [RETRY_TLP_SIZE-1:0] mutex_flag;
-  logic [RETRY_TLP_SIZE-1:0] error_c, error_r;
-  logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_c;
-  logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_r;
-  logic [7:0] next_retry_index_c, next_retry_index_r;
-  logic [RETRY_TLP_SIZE-1:0] retry_valid_c, retry_valid_r;
-  logic [7:0] retry_index_c, retry_index_r;
-  logic [RETRY_TLP_SIZE-1:0] retry_ack_c, retry_ack_r;
-  logic free_retry_c, free_retry_r;
-  logic [11:0] store_seq_c, store_seq_r;
-  logic [11:0] seq_num_out;
+  logic       [RETRY_TLP_SIZE-1:0]       retrys_c;
+  logic       [RETRY_TLP_SIZE-1:0]       retrys_r;
+  logic       [RETRY_TLP_SIZE-1:0]       retry_index_flag;
+  logic       [RETRY_TLP_SIZE-1:0]       mutex_flag;
+  logic       [RETRY_TLP_SIZE-1:0]       error_c;
+  logic       [RETRY_TLP_SIZE-1:0]       error_r;
+  logic       [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_c;
+  logic       [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_r;
+  logic       [               7:0]       next_retry_index_c;
+  logic       [               7:0]       next_retry_index_r;
+  logic       [RETRY_TLP_SIZE-1:0]       retry_valid_c;
+  logic       [RETRY_TLP_SIZE-1:0]       retry_valid_r;
+  logic       [               7:0]       retry_index_c;
+  logic       [               7:0]       retry_index_r;
+  logic       [RETRY_TLP_SIZE-1:0]       retry_ack_c;
+  logic       [RETRY_TLP_SIZE-1:0]       retry_ack_r;
+  logic                                  free_retry_c;
+  logic                                  free_retry_r;
+  logic       [              11:0]       store_seq_c;
+  logic       [              11:0]       store_seq_r;
+  logic       [              11:0]       seq_num_out;
   //tx counters
-  logic [31:0] tx_word_count_c, tx_word_count_r;
-  logic [31:0] tlp_curr_count_c, tlp_curr_count_r;
-  logic [31:0] tx_addr_c, tx_addr_r;
-
-
+  logic       [              31:0]       tx_word_count_c;
+  logic       [              31:0]       tx_word_count_r;
+  logic       [              31:0]       tlp_curr_count_c;
+  logic       [              31:0]       tlp_curr_count_r;
+  logic       [              31:0]       tx_addr_c;
+  logic       [              31:0]       tx_addr_r;
   //skid buffer axis signals
-  logic [DATA_WIDTH-1:0] s_axis_skid_tdata;
-  logic [KEEP_WIDTH-1:0] s_axis_skid_tkeep;
-  logic [   S_COUNT-1:0] s_axis_skid_tvalid;
-  logic [   S_COUNT-1:0] s_axis_skid_tlast;
-  logic [USER_WIDTH-1:0] s_axis_skid_tuser;
-  logic [   S_COUNT-1:0] s_axis_skid_tready;
+  logic       [    DATA_WIDTH-1:0]       s_axis_skid_tdata;
+  logic       [    KEEP_WIDTH-1:0]       s_axis_skid_tkeep;
+  logic       [       S_COUNT-1:0]       s_axis_skid_tvalid;
+  logic       [       S_COUNT-1:0]       s_axis_skid_tlast;
+  logic       [    USER_WIDTH-1:0]       s_axis_skid_tuser;
+  logic       [       S_COUNT-1:0]       s_axis_skid_tready;
 
 
 
-  logic [DATA_WIDTH-1:0] m_axis_tdata_c, m_axis_tdata_r;
-  logic [KEEP_WIDTH-1:0] m_axis_tkeep_c, m_axis_tkeep_r;
-  logic [S_COUNT-1:0] m_axis_tvalid_c, m_axis_tvalid_r;
-  logic [S_COUNT-1:0] m_axis_tlast_c, m_axis_tlast_r;
-  logic [USER_WIDTH-1:0] m_axis_tuser_c, m_axis_tuser_r;
-  logic [S_COUNT-1:0] m_axis_tready_c, m_axis_tready_r;
+  logic       [    DATA_WIDTH-1:0]       m_axis_tdata_c;
+  logic       [    KEEP_WIDTH-1:0]       m_axis_tkeep_c;
+  logic       [       S_COUNT-1:0]       m_axis_tvalid_c;
+  logic       [       S_COUNT-1:0]       m_axis_tlast_c;
+  logic       [    USER_WIDTH-1:0]       m_axis_tuser_c;
+  logic       [       S_COUNT-1:0]       m_axis_tready_c;
+  //register pair
+  logic       [    DATA_WIDTH-1:0]       m_axis_tdata_r;
+  logic       [    KEEP_WIDTH-1:0]       m_axis_tkeep_r;
+  logic       [       S_COUNT-1:0]       m_axis_tvalid_r;
+  logic       [       S_COUNT-1:0]       m_axis_tlast_r;
+  logic       [    USER_WIDTH-1:0]       m_axis_tuser_r;
+  logic       [       S_COUNT-1:0]       m_axis_tready_r;
 
 
 
   //main  sequential blocksSS
-  always_ff @(posedge clk_i or posedge rst_i) begin: main_sequential_block
+  always_ff @(posedge clk_i or posedge rst_i) begin : main_sequential_block
     if (rst_i) begin
-      retrys_r <= '0;
-      error_r <= '0;
+      retrys_r           <= '0;
+      error_r            <= '0;
       next_retry_index_r <= '0;
-      retry_valid_r <= '0;
-      retry_ack_r <= '0;
-      retry_index_r <= '0;
-      store_seq_r <= '0;
-      free_retry_r <= '0;
+      retry_valid_r      <= '0;
+      retry_ack_r        <= '0;
+      retry_index_r      <= '0;
+      store_seq_r        <= '0;
+      free_retry_r       <= '0;
       //transmit tlp signals
-      tx_word_count_r <= '0;
-      tlp_curr_count_r <= '0;
-      tx_addr_r <= '0;
-      tlp_curr_state <= ST_TLP_RX_IDLE;
+      tx_word_count_r    <= '0;
+      tlp_curr_count_r   <= '0;
+      tx_addr_r          <= '0;
+      tlp_curr_state     <= ST_TLP_RX_IDLE;
       //axis signals
-      m_axis_tvalid_r <= '0;
+      m_axis_tvalid_r    <= '0;
     end else begin
-      retrys_r <= retrys_c;
-      error_r <= error_c;
+      retrys_r           <= retrys_c;
+      error_r            <= error_c;
       next_retry_index_r <= next_retry_index_c;
-      retry_valid_r <= retry_valid_c;
-      retry_ack_r <= retry_ack_c;
-      retry_index_r <= retry_index_c;
-      store_seq_r <= store_seq_c;
-      free_retry_r <= free_retry_c;
+      retry_valid_r      <= retry_valid_c;
+      retry_ack_r        <= retry_ack_c;
+      retry_index_r      <= retry_index_c;
+      store_seq_r        <= store_seq_c;
+      free_retry_r       <= free_retry_c;
       //transmit tlp signals
-      tx_word_count_r <= tx_word_count_c;
-      tlp_curr_count_r <= tlp_curr_count_c;
-      tx_addr_r <= tx_addr_c;
-      tlp_curr_state <= tlp_next_state;
+      tx_word_count_r    <= tx_word_count_c;
+      tlp_curr_count_r   <= tlp_curr_count_c;
+      tx_addr_r          <= tx_addr_c;
+      tlp_curr_state     <= tlp_next_state;
       //axis signals
-      m_axis_tvalid_r <= m_axis_tvalid_c;
+      m_axis_tvalid_r    <= m_axis_tvalid_c;
     end
 
     //non-resetable
@@ -158,10 +175,10 @@ module retry_management
   end
 
   //retry tracking combo block
-  always_comb begin: retry_tracking_combo
-    retrys_c = retrys_r;
+  always_comb begin : retry_tracking_combo
+    retrys_c           = retrys_r;
     next_retry_index_c = next_retry_index_r;
-    retry_index_flag = '0;
+    retry_index_flag   = '0;
     for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
       ack_seq_mem_c[i] = ack_seq_mem_r[i];
     end
@@ -179,7 +196,7 @@ module retry_management
         //   ack_seq_mem_c[i] = '1;
         // end
         ack_seq_mem_c[next_retry_index_r] = tx_seq_num_i;
-        retrys_c[next_retry_index_r] = '1;
+        retrys_c[next_retry_index_r]      = '1;
         for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
           // if (i == next_retry_index_r) begin
           //   // ack_seq_mem_c[i] = '1;
@@ -201,7 +218,7 @@ module retry_management
   end
 
   //retry free combo block
-  always_comb begin: retry_free_combo
+  always_comb begin : retry_free_combo
     free_retry_c = '0;
     store_seq_c  = store_seq_r;
     if (ack_nack_vld_i && ack_nack_i) begin
@@ -219,20 +236,20 @@ module retry_management
     always @(posedge clk_i or posedge rst_i) begin : retry_buffer_seq
       if (rst_i) begin
         retry_timer_r <= '0;
-        replay_cnt_r <= '0;
-        curr_state <= ST_RETRY_IDLE;
+        replay_cnt_r  <= '0;
+        curr_state    <= ST_RETRY_IDLE;
       end else begin
         retry_timer_r <= retry_timer_c;
-        replay_cnt_r <= replay_cnt_c;
-        curr_state <= next_state;
+        replay_cnt_r  <= replay_cnt_c;
+        curr_state    <= next_state;
       end
     end
     always_comb begin : retry_timer
-      replay_cnt_c = replay_cnt_r;
-      retry_timer_c = retry_timer_r;
-      next_state = curr_state;
+      replay_cnt_c     = replay_cnt_r;
+      retry_timer_c    = retry_timer_r;
+      next_state       = curr_state;
       retry_valid_c[i] = retry_valid_r[i];
-      error_c[i] = error_r[i];
+      error_c[i]       = error_r[i];
       case (curr_state)
         ST_RETRY_IDLE: begin
           if (retrys_r[i]) begin
@@ -242,9 +259,9 @@ module retry_management
         ST_CNT_RETRY: begin
           retry_timer_c = retry_timer_r + 1'b1;
           if (!retrys_r[i]) begin
-            replay_cnt_c = '0;
+            replay_cnt_c  = '0;
             retry_timer_c = '0;
-            next_state = ST_RETRY_IDLE;
+            next_state    = ST_RETRY_IDLE;
           end else if (retry_timer_r >= RetryTimer) begin
             replay_cnt_c  = replay_cnt_r + 1'b1;
             retry_timer_c = '0;
@@ -252,33 +269,33 @@ module retry_management
               //have a fit
               next_state = ST_RETRY_ERR;
             end else begin
-              next_state = ST_REPLAY;
+              next_state       = ST_REPLAY;
               retry_valid_c[i] = '1;
             end
           end
         end
         ST_REPLAY: begin
           if (!retrys_r[i]) begin
-            replay_cnt_c = '0;
-            retry_timer_c = '0;
+            replay_cnt_c     = '0;
+            retry_timer_c    = '0;
             retry_valid_c[i] = '0;
-            next_state = ST_RETRY_IDLE;
+            next_state       = ST_RETRY_IDLE;
           end else begin
             if (retry_ack_r[i]) begin
               //replay_cnt_c = '0;
-              retry_timer_c = '0;
+              retry_timer_c    = '0;
               retry_valid_c[i] = '0;
-              next_state = ST_WAIT_REPLAY;
+              next_state       = ST_WAIT_REPLAY;
             end
           end
         end
         ST_WAIT_REPLAY: begin
           if (!retrys_r[i]) begin
-            replay_cnt_c = '0;
+            replay_cnt_c  = '0;
             retry_timer_c = '0;
-            next_state = ST_RETRY_IDLE;
+            next_state    = ST_RETRY_IDLE;
           end else begin
-            if (m_axis_tvalid_o && m_axis_tready_i && m_axis_tlast_o) begin
+            if (m_axis_tvalid && m_axis_tready && m_axis_tlast) begin
               next_state = ST_CNT_RETRY;
             end
           end
@@ -337,50 +354,50 @@ module retry_management
         end
       end
       ST_TLP_GET_COUNT: begin
-        tx_addr_c = retry_index_r * MaxTlpTotalSizeDW;
-        bram_addr_o = tx_addr_c;
+        tx_addr_c      = retry_index_r * MaxTlpTotalSizeDW;
+        bram_addr_o    = tx_addr_c;
         tlp_next_state = ST_TLP_GET_ADDR;
       end
       ST_TLP_GET_ADDR: begin
-        tx_word_count_c = bram_data_in_i[15:0];
+        tx_word_count_c  = bram_data_in_i[15:0];
         tlp_curr_count_c = '0;
-        bram_addr_o = tx_addr_r + 1;
-        tlp_next_state = ST_TLP_RX_SOP;
+        bram_addr_o      = tx_addr_r + 1;
+        tlp_next_state   = ST_TLP_RX_SOP;
       end
       ST_TLP_RX_SOP: begin
-        m_axis_tdata_c = bram_data_in_i;
-        m_axis_tkeep_c = '1;
-        m_axis_tvalid_c = '1;
-        m_axis_tuser_c = '0;
-        m_axis_tlast_c = '0;
+        m_axis_tdata_c   = bram_data_in_i;
+        m_axis_tkeep_c   = '1;
+        m_axis_tvalid_c  = '1;
+        m_axis_tuser_c   = '0;
+        m_axis_tlast_c   = '0;
         tlp_curr_count_c = tlp_curr_count_r + 1;
-        bram_addr_o = tx_addr_r + tlp_curr_count_r + 2;
-        tlp_next_state = ST_TLP_RX_STREAM;
+        bram_addr_o      = tx_addr_r + tlp_curr_count_r + 2;
+        tlp_next_state   = ST_TLP_RX_STREAM;
         if (tlp_curr_count_r >= tx_word_count_r) begin
-          m_axis_tlast_c = '1;
-          tx_addr_c = tx_addr_r + 1;
+          m_axis_tlast_c   = '1;
+          tx_addr_c        = tx_addr_r + 1;
           tlp_curr_count_c = '0;
-          tlp_next_state = ST_TLP_RX_EOP;
+          tlp_next_state   = ST_TLP_RX_EOP;
         end
       end
       ST_TLP_RX_STREAM: begin
-        if (m_axis_tready_i) begin
-          m_axis_tdata_c = bram_data_in_i;
-          m_axis_tkeep_c = '1;
-          m_axis_tvalid_c = '1;
+        if (m_axis_tready) begin
+          m_axis_tdata_c   = bram_data_in_i;
+          m_axis_tkeep_c   = '1;
+          m_axis_tvalid_c  = '1;
           tlp_curr_count_c = tlp_curr_count_r + 1;
-          bram_addr_o = tx_addr_r + tlp_curr_count_r + 2;
+          bram_addr_o      = tx_addr_r + tlp_curr_count_r + 2;
           if (tlp_curr_count_r >= tx_word_count_r - 1) begin
-            m_axis_tlast_c = '1;
-            tx_addr_c = tx_addr_r + 1;
+            m_axis_tlast_c   = '1;
+            tx_addr_c        = tx_addr_r + 1;
             tlp_curr_count_c = '0;
-            retry_ack_c = '0;
-            tlp_next_state = ST_TLP_RX_EOP;
+            retry_ack_c      = '0;
+            tlp_next_state   = ST_TLP_RX_EOP;
           end
         end
       end
       ST_TLP_RX_EOP: begin
-        if (m_axis_tready_i) begin
+        if (m_axis_tready) begin
           m_axis_tdata_c  = '0;
           m_axis_tkeep_c  = '0;
           m_axis_tvalid_c = '0;
@@ -429,15 +446,15 @@ module retry_management
       .m_axis_tuser(s_axis_skid_tuser)
   );
 
-  assign retry_err_o = (error_r != '0);
+  assign retry_err_o       = (error_r != '0);
   assign retry_available_o = (retrys_r != '1);
-  assign retry_index_o = next_retry_index_r;
-
-  assign m_axis_tdata_o = m_axis_tdata_r;
-  assign m_axis_tkeep_o = m_axis_tkeep_r;
-  assign m_axis_tvalid_o = m_axis_tvalid_r;
-  assign m_axis_tlast_o = m_axis_tlast_r;
-  assign m_axis_tuser_o = m_axis_tuser_r;
+  assign retry_index_o     = next_retry_index_r;
+  //assign axi stream
+  assign  m_axis_tdata    = m_axis_tdata_r;
+  assign  m_axis_tkeep    = m_axis_tkeep_r;
+  assign m_axis_tvalid   = m_axis_tvalid_r;
+  assign  m_axis_tlast    = m_axis_tlast_r;
+  assign  m_axis_tuser    = m_axis_tuser_r;
 
 
 endmodule

@@ -26,11 +26,11 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)
 
-        cocotb.start_soon(Clock(dut.clk, 2, units="ns").start())
+        cocotb.start_soon(Clock(dut.clk_i, 2, units="ns").start())
 
-        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlp"), dut.clk, dut.rst)
-        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk, dut.rst)
-        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
+        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlp"), dut.clk_i, dut.rst_i)
+        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk_i, dut.rst_i)
+        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk_i, dut.rst_i)
 
     def set_idle_generator(self, generator=None):
         if generator:
@@ -41,15 +41,15 @@ class TB:
             self.sink.set_pause_generator(generator())
 
     async def reset(self):
-        self.dut.rst.setimmediatevalue(0)
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
-        self.dut.rst.value = 1
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
-        self.dut.rst.value = 0
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+        self.dut.rst_i.setimmediatevalue(0)
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
+        self.dut.rst_i.value = 1
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
+        self.dut.rst_i.value = 0
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
 
 def cycle_pause():
     return itertools.cycle([1, 1, 1, 0])
@@ -71,18 +71,18 @@ async def run_test(dut):
     tb.set_backpressure_generator(None)
     
     
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    dut.tx_fc_ph.value = 0x16
-    dut.tx_fc_pd.value = 0xF40
-    dut.tx_fc_nph.value = 0x016
-    dut.tx_fc_npd.value = 0xF40
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    dut.tx_fc_ph_i.value = 0x16
+    dut.tx_fc_pd_i.value = 0xF40
+    dut.tx_fc_nph_i.value = 0x016
+    dut.tx_fc_npd_i.value = 0xF40
     #dut.retry_available.value = 1
     # dut.ack_nack.value = 1
     # dut.ack_nack_vld.value = 0
     # dut.ack_seq_num.value = 0x03
-    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk_i)
     
     
     length = random.randint(35, 45)
@@ -113,20 +113,20 @@ async def run_test(dut):
     #
             
     for i in range(300):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
         
-    await RisingEdge(dut.clk)    
+    await RisingEdge(dut.clk_i)    
     
-    dut.ack_seq_num.value = 0x00
-    dut.ack_nack_vld.value = 1
-    dut.ack_nack.value = 1
+    dut.ack_seq_num_i.value = 0x00
+    dut.ack_nack_vld_i.value = 1
+    dut.ack_nack_i.value = 1
     
     for i in range(30):
-        await RisingEdge(dut.clk)
-    # await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
+    # await RisingEdge(dut.clk_i)
     # dut.ack_nack_vld.value = 0
     # for i in range(20):
-    #     await RisingEdge(dut.clk)
+    #     await RisingEdge(dut.clk_i)
     # data_in = await tb.sink.recv()
 
     
@@ -135,9 +135,9 @@ async def run_test(dut):
     # """Generate clock pulses."""
 # 
     # for cycle in range(10):
-        # dut.clk.value = 0
+        # dut.clk_i.value = 0
         # await Timer(1, units="ns")
-        # dut.clk.value = 1
+        # dut.clk_i.value = 1
         # await Timer(1, units="ns")
 # 
 # 
@@ -152,14 +152,14 @@ async def run_test(dut):
     # await cocotb.start(generate_clock(dut))  # run the clock "in the background"
 # 
     # await Timer(5, units="ns")  # wait a bit
-    # await FallingEdge(dut.clk)  # wait for falling edge/"negedge"
+    # await FallingEdge(dut.clk_i)  # wait for falling edge/"negedge"
 # 
-    # await RisingEdge(dut.clk)  # wait for falling edge/"negedge"
-    # dut.rst.value = 1
-    # await RisingEdge(dut.clk)  # wait for falling edge/"negedge"
-    # await RisingEdge(dut.clk)  # wait for falling edge/"negedge"
-    # await RisingEdge(dut.clk)  # wait for falling edge/"negedge"
-    # dut.rst.value = 0
+    # await RisingEdge(dut.clk_i)  # wait for falling edge/"negedge"
+    # dut.rst_i.value = 1
+    # await RisingEdge(dut.clk_i)  # wait for falling edge/"negedge"
+    # await RisingEdge(dut.clk_i)  # wait for falling edge/"negedge"
+    # await RisingEdge(dut.clk_i)  # wait for falling edge/"negedge"
+    # dut.rst_i.value = 0
 # 
 # 
     # 
@@ -167,8 +167,8 @@ async def run_test(dut):
     #dut._log.info("ready out is %s", dut.m_axis_tvalid.value)
     #assert dut.s_axis_tready.value == 0, "s_axis_tready is not 0!"
 # 
-    # axis_source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis"), dut.clk, dut.rst)
-    #axis_sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk, dut.rst)
+    # axis_source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis"), dut.clk_i, dut.rst_i)
+    #axis_sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk_i, dut.rst_i)
     # 
     # dut.retry_available.value = 1
     # dut.retry_index.value = 0
