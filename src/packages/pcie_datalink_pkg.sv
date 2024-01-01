@@ -1,6 +1,6 @@
 package pcie_datalink_pkg;
 
-
+/* verilator lint_off WIDTHEXPAND */
   localparam byte HdrFc = 8'hFA;
   localparam byte DataFc = 8'hDA;
 
@@ -9,16 +9,15 @@ package pcie_datalink_pkg;
   localparam byte FcCplHdr = 8'h01;
 
 
-  localparam int FcPData = 16'h040;
-  localparam int FcNpData = 16'h010;
+  localparam int FcPData = 32'h040;
+  localparam int FcNpData = 32'h010;
   localparam int FcClpData = FcPData / FcPHdr;
 
-  localparam int DllpHdrByteSize = 8'h2;
+  localparam int DllpHdrByteSize = 32'h2;
   localparam int ReplayTimer = 32'd999;
   localparam int ReplayNum = 32'd2;
 
   localparam int LtssmDetect = 32'd1500;
-
 
 
   typedef enum logic [1:0] {
@@ -103,7 +102,7 @@ package pcie_datalink_pkg;
   } dllp_byte_t;
 
   typedef union packed {
-    dllp_type_t type_byte;
+    dllp_type_t type_byte_;
     dllp_type_hdr_t type_vc;
   } dllp_type_union_t;
 
@@ -159,8 +158,8 @@ package pcie_datalink_pkg;
     logic [3:0]  rsvd1;
     logic [3:0]  ack_nack1;
     logic [7:0]  rsvd0;
-    dllp_type_t  ack_nak;
-  } dllp_ack_nak_t;
+    dllp_type_union_t  ack_nack_;
+  } dllp_ack_nack_t;
 
   typedef struct packed {
     logic [1:0] rsvd0;
@@ -178,18 +177,18 @@ package pcie_datalink_pkg;
     logic [7:0]     datafc0;
     dllp_fc_byte2_t byte2;
     dllp_fc_byte1_t byte1;
-    dllp_type_t     fc_type;
+    dllp_type_union_t     fc_type_;
   } dllp_fc_t;
 
 
   typedef union packed {
     dllp_fc_t      flow_control;
-    dllp_ack_nak_t ack_nack;
+    dllp_ack_nack_t ack_nack;
     dll_packet_t   generic;
   } dllp_union_t;
 
 
-  function static logic [11:0] get_ack_nack_seq(input dllp_ack_nak_t ack_nack_in);
+  function static logic [11:0] get_ack_nack_seq(input dllp_ack_nack_t ack_nack_in);
     get_ack_nack_seq = {ack_nack_in.ack_nack1, ack_nack_in.ack_nack0};
   endfunction
 
@@ -201,10 +200,10 @@ package pcie_datalink_pkg;
     get_fc_data = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
   endfunction
 
-  function static dllp_ack_nak_t set_ack_nack(input dllp_type_t dllp_type,
+  function static dllp_ack_nack_t set_ack_nack(input dllp_type_t dllp_type,
   logic [11:0] seq_num, logic [15:0] crc_in = 16'h0);
-    dllp_ack_nak_t temp_dllp = '0;
-    temp_dllp.ack_nak.type_byte = dllp_type;
+    dllp_ack_nack_t temp_dllp = '0;
+    temp_dllp.ack_nack_ = dllp_type;
     temp_dllp.ack_nack1 = seq_num[11:8];
     temp_dllp.ack_nack0 = seq_num[7:0];
     // {temp_dllp.ack_nack1, temp_dllp.ack_nack0} = {4'h0,seq_num};
@@ -213,17 +212,17 @@ package pcie_datalink_pkg;
   endfunction
 
 
-  function automatic dllp_fc_t send_fc_init(input dllp_fc_t dllp_type,
+  function automatic dllp_fc_t send_fc_init(input dllp_type_t dllp_type,
   input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] datafc);
     begin
       dllp_fc_t dll_packet;
       dll_packet = '0;
-      dll_packet.fc_type.type_byte = dllp_type & 8'b1111_0000;
+      {dll_packet.fc_type_.type_byte_} = dllp_type;
       {dll_packet.byte1.hdrfc1, dll_packet.byte2.hdrfc0} = hdrfc;
       {dll_packet.byte2.datafc1, dll_packet.datafc0} = datafc;
       send_fc_init = dll_packet;
     end
   endfunction
-
+/* verilator lint_on WIDTHEXPAND */
 
 endpackage

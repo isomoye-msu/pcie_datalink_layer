@@ -20,6 +20,7 @@ filesets:
       - tb/test_dllp_handler.py : {file_type : user, copyto : .}
       - tb/test_dllp_recieve.py : {file_type : user, copyto : .}
       - tb/test_dllp2tlp.py : {file_type : user, copyto : .}
+      - tb/dllp_agent.py : {file_type : user, copyto : .}
 
 
 targets:
@@ -29,7 +30,48 @@ targets:
       tool : icarus
       iverilog_options:
           - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
-      cocotb_module : test_dllp_recieve
+      cocotb_module : dllp_agent
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : dllp_agent
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_receive]
+
+  sim:
+    default_tool: verilator
+    filesets : [rtl, cocotb]
+    tools:
+      verilator:
+        cocotb_module : dllp_agent
+        verilator_options: 
+          - --vpi --public-flat-rw --prefix Vtop --trace-fst
+          - -LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir`     -L`cocotb-config --lib-dir`     -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils" 
+          -  $(shell cocotb-config --share)/lib/verilator/verilator.cpp
+          - --top dllp_receive
+        make_options:
+          # Optimization levels have a large impact on the runtime performance
+          # of the simulation model. -O2 and -O3 are pretty similar, -Os is
+          # slower than -O2/-O3
+          - OPT_FAST="-O2"
+          - MODULE=dllp_agent
+    toplevel: top
+
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : dllp_receive
+
+scripts:
+  iceprog:
+    cmd : [MODULE=dllp_agent]

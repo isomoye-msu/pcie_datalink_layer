@@ -38,6 +38,12 @@ module dllp_handler
     output logic [          11:0] tx_fc_npd_o
 );
 
+  /* verilator lint_off WIDTHEXPAND */
+    /* verilator lint_off WIDTHTRUNC */
+
+  localparam int SkidBuffer = 2;
+  localparam int UserIsDllp = 0;
+
 
   //tlp to dllp fsm emum
   typedef enum logic [2:0] {
@@ -48,48 +54,58 @@ module dllp_handler
     ST_TLP_EOP
   } dll_rx_st_e;
 
-  dll_rx_st_e         curr_state;
-  dll_rx_st_e         next_state;
-  dllp_union_t        dll_packet_c;
-  dllp_union_t        dll_packet_r;
+  dll_rx_st_e                   curr_state;
+  dll_rx_st_e                   next_state;
+  dllp_union_t                  dll_packet_c;
+  dllp_union_t                  dll_packet_r;
   //crc helper signals
-  logic        [15:0] crc_in_c;
-  logic        [15:0] crc_in_r;
-  logic        [15:0] crc_out;
+  logic        [          15:0] crc_in_c;
+  logic        [          15:0] crc_in_r;
+  logic        [          15:0] crc_out;
   //tlp nulled
-  logic               tlp_nullified_c;
-  logic               tlp_nullified_r;
-  logic               tx_tlp_ready_c;
-  logic               tx_tlp_ready_r;
+  logic                         tlp_nullified_c;
+  logic                         tlp_nullified_r;
+  logic                         tx_tlp_ready_c;
+  logic                         tx_tlp_ready_r;
   //transmit sequence logic
-  logic        [15:0] next_transmit_seq_c;
-  logic        [15:0] next_transmit_seq_r;
-  logic        [11:0] ackd_transmit_seq_c;
-  logic        [11:0] ackd_transmit_seq_r;
-
-
+  logic        [          15:0] next_transmit_seq_c;
+  logic        [          15:0] next_transmit_seq_r;
+  logic        [          11:0] ackd_transmit_seq_c;
+  logic        [          11:0] ackd_transmit_seq_r;
+  //s axis skid buffer
+  logic        [DATA_WIDTH-1:0] skid_s_axis_tdata;
+  logic        [KEEP_WIDTH-1:0] skid_s_axis_tkeep;
+  logic                         skid_s_axis_tvalid;
+  logic                         skid_s_axis_tlast;
+  logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
+  logic                         skid_s_axis_tready;
   //Flow control
-  logic        [ 7:0] tx_fc_ph_c;
-  logic        [ 7:0] tx_fc_ph_r;
-  logic        [11:0] tx_fc_pd_c;
-  logic        [11:0] tx_fc_pd_r;
-  logic        [ 7:0] tx_fc_nph_c;
-  logic        [ 7:0] tx_fc_nph_r;
-  logic        [11:0] tx_fc_npd_c;
-  logic        [11:0] tx_fc_npd_r;
-  logic        [ 7:0] tx_fc_ch_c;
-  logic        [ 7:0] tx_fc_ch_r;
-  logic        [11:0] tx_fc_cd_c;
-  logic        [11:0] tx_fc_cd_r;
-
+  logic        [           7:0] tx_fc_ph_c;
+  logic        [           7:0] tx_fc_ph_r;
+  logic        [          11:0] tx_fc_pd_c;
+  logic        [          11:0] tx_fc_pd_r;
+  logic        [           7:0] tx_fc_nph_c;
+  logic        [           7:0] tx_fc_nph_r;
+  logic        [          11:0] tx_fc_npd_c;
+  logic        [          11:0] tx_fc_npd_r;
+  logic        [           7:0] tx_fc_ch_c;
+  logic        [           7:0] tx_fc_ch_r;
+  logic        [          11:0] tx_fc_cd_c;
+  logic        [          11:0] tx_fc_cd_r;
   //fc1 vals
-  logic fc1_np_stored_c, fc1_np_stored_r;
-  logic fc1_p_stored_c, fc1_p_stored_r;
-  logic fc1_c_stored_c, fc1_c_stored_r;
+  logic                         fc1_np_stored_c;
+  logic                         fc1_np_stored_r;
+  logic                         fc1_p_stored_c;
+  logic                         fc1_p_stored_r;
+  logic                         fc1_c_stored_c;
+  logic                         fc1_c_stored_r;
   //fc2 vals
-  logic fc2_np_stored_c, fc2_np_stored_r;
-  logic fc2_p_stored_c, fc2_p_stored_r;
-  logic fc2_c_stored_c, fc2_c_stored_r;
+  logic                         fc2_np_stored_c;
+  logic                         fc2_np_stored_r;
+  logic                         fc2_p_stored_c;
+  logic                         fc2_p_stored_r;
+  logic                         fc2_c_stored_c;
+  logic                         fc2_c_stored_r;
 
   assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
@@ -144,7 +160,7 @@ module dllp_handler
     next_state          = curr_state;
     next_transmit_seq_c = next_transmit_seq_r;
     dll_packet_c        = dll_packet_r;
-    s_axis_tready       = '0;
+    skid_s_axis_tready  = '0;
     //crc signals
     crc_in_c            = crc_in_r;
     //ack_nack signals
@@ -158,8 +174,6 @@ module dllp_handler
     tx_fc_npd_c         = tx_fc_npd_r;
     tx_fc_ch_c          = tx_fc_ch_r;
     tx_fc_cd_c          = tx_fc_cd_r;
-
-
     //capture signals
     fc1_np_stored_c     = fc1_np_stored_r;
     fc1_p_stored_c      = fc1_p_stored_r;
@@ -171,25 +185,26 @@ module dllp_handler
     case (curr_state)
       ST_IDLE: begin
         if (phy_link_up_i) begin
-          s_axis_tready = '1;
-          if (s_axis_tvalid) begin
-            dll_packet_c = s_axis_tdata;
+          skid_s_axis_tready = '1;
+          if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
+            dll_packet_c = skid_s_axis_tdata;
             crc_in_c     = crc_out;
             next_state   = ST_CHECK_CRC;
           end
         end
       end
       ST_CHECK_CRC: begin
-        s_axis_tready = '1;
-        if (s_axis_tvalid) begin
-          if (crc_in_r == s_axis_tdata[15:0]) begin
+        skid_s_axis_tready = '1;
+        if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
+          if (crc_in_r == skid_s_axis_tdata[15:0]) begin
             //process tlp
             next_state = ST_PROCESS_DLLP;
           end
         end
       end
       ST_PROCESS_DLLP: begin
-        //process tlp
+        //drop ready and process tlp... a little inefficient since we reduce bandwidth
+        //but this should not be a bottleneck
         casez (dll_packet_r.generic.dllp_type)
           Ack: begin
             seq_num_o         = get_ack_nack_seq(dll_packet_r.ack_nack);
@@ -265,16 +280,49 @@ module dllp_handler
 
   pcie_datalink_crc pcie_datalink_crc_inst (
       .crcIn ('1),
-      .data  (s_axis_tdata),
+      .data  (skid_s_axis_tdata),
       .crcOut(crc_out)
   );
 
-
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(3),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(s_axis_tdata),
+      .s_axis_tkeep(s_axis_tkeep),
+      .s_axis_tvalid(s_axis_tvalid),
+      .s_axis_tready(s_axis_tready),
+      .s_axis_tlast(s_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(s_axis_tuser),
+      .m_axis_tdata(skid_s_axis_tdata),
+      .m_axis_tkeep(skid_s_axis_tkeep),
+      .m_axis_tvalid(skid_s_axis_tvalid),
+      .m_axis_tready(skid_s_axis_tready),
+      .m_axis_tlast(skid_s_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(skid_s_axis_tuser)
+  );
 
   assign tx_fc_ph_o  = tx_fc_ph_r;
   assign tx_fc_pd_o  = tx_fc_pd_r;
   assign tx_fc_nph_o = tx_fc_nph_r;
   assign tx_fc_npd_o = tx_fc_npd_r;
 
-
+  /* verilator lint_on WIDTHEXPAND */
+    /* verilator lint_on WIDTHTRUNC */
 endmodule

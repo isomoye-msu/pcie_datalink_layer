@@ -142,18 +142,25 @@ module ltssm_configuration
   logic                                  rst_cnt_c;
   logic                                  rst_cnt_r;
 
+  // //axis signals
+  // logic              [   DATA_WIDTH-1:0] m_axis_tdata_c;
+  // logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_c;
+  // logic                                  m_axis_tvalid_c;
+  // logic                                  m_axis_tlast_c;
+  // logic              [   USER_WIDTH-1:0] m_axis_tuser_c;
+  // //axis reg
+  // logic              [   DATA_WIDTH-1:0] m_axis_tdata_r;
+  // logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_r;
+  // logic                                  m_axis_tvalid_r;
+  // logic                                  m_axis_tlast_r;
+  // logic              [   USER_WIDTH-1:0] m_axis_tuser_r;
+
   //axis signals
-  logic              [   DATA_WIDTH-1:0] m_axis_tdata_c;
-  logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_c;
-  logic                                  m_axis_tvalid_c;
-  logic                                  m_axis_tlast_c;
-  logic              [   USER_WIDTH-1:0] m_axis_tuser_c;
-  //axis reg
-  logic              [   DATA_WIDTH-1:0] m_axis_tdata_r;
-  logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_r;
-  logic                                  m_axis_tvalid_r;
-  logic                                  m_axis_tlast_r;
-  logic              [   USER_WIDTH-1:0] m_axis_tuser_r;
+  logic              [   DATA_WIDTH-1:0] skid_axis_tdata_c;
+  logic              [   KEEP_WIDTH-1:0] skid_axis_tkeep_c;
+  logic                                  skid_axis_tvalid_c;
+  logic                                  skid_axis_tlast_c;
+  logic              [   USER_WIDTH-1:0] skid_axis_tuser_c;
 
   //link training helper signals
   logic              [MAX_NUM_LANES-1:0] link_width_satisfied;

@@ -16,28 +16,21 @@ module dllp_receive
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 4,
-    parameter int MAX_PAYLOAD_SIZE = 0,
-    parameter int RX_FIFO_SIZE = 0
+    parameter int MAX_PAYLOAD_SIZE = 1,
+    parameter int RX_FIFO_SIZE = 2
 ) (
     input  logic                               clk_i,                   // Clock signal
     input  logic                               rst_i,                   // Reset signal
     //link status signals
     input  pcie_dl_status_e                    link_status_i,
     input  logic                               phy_link_up_i,
-    //phy2tlp slave axis
-    input  logic            [(DATA_WIDTH)-1:0] s_axis_phy2tlp_tdata,
-    input  logic            [(KEEP_WIDTH)-1:0] s_axis_phy2tlp_tkeep,
-    input  logic                               s_axis_phy2tlp_tvalid,
-    input  logic                               s_axis_phy2tlp_tlast,
-    input  logic            [(USER_WIDTH)-1:0] s_axis_phy2tlp_tuser,
-    output logic                               s_axis_phy2tlp_tready,
-    //phy2tlp slave axis
-    input  logic            [(DATA_WIDTH)-1:0] s_axis_phy2dllp_tdata,
-    input  logic            [(KEEP_WIDTH)-1:0] s_axis_phy2dllp_tkeep,
-    input  logic                               s_axis_phy2dllp_tvalid,
-    input  logic                               s_axis_phy2dllp_tlast,
-    input  logic            [(USER_WIDTH)-1:0] s_axis_phy2dllp_tuser,
-    output logic                               s_axis_phy2dllp_tready,
+    //phy2dllp slave axis
+    input  logic            [(DATA_WIDTH)-1:0] s_axis_tdata,
+    input  logic            [(KEEP_WIDTH)-1:0] s_axis_tkeep,
+    input  logic                               s_axis_tvalid,
+    input  logic                               s_axis_tlast,
+    input  logic            [(USER_WIDTH)-1:0] s_axis_tuser,
+    output logic                               s_axis_tready,
     // TLP dllp2tlp output
     output logic            [(DATA_WIDTH)-1:0] m_axis_dllp2tlp_tdata,
     output logic            [(KEEP_WIDTH)-1:0] m_axis_dllp2tlp_tkeep,
@@ -66,6 +59,14 @@ module dllp_receive
     output logic            [            11:0] tx_fc_npd_o
 );
 
+
+  logic dllp_ready;
+  logic tlp_ready;
+  localparam int UserIsTlp = 1;
+  localparam int UserIsDllp = 0;
+  assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
+    s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
+
   //dllp handler instance
   dllp_handler #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -76,12 +77,12 @@ module dllp_receive
       .clk_i              (clk_i),
       .rst_i              (rst_i),
       .phy_link_up_i      (phy_link_up_i),
-      .s_axis_tdata       (s_axis_phy2dllp_tdata),
-      .s_axis_tkeep       (s_axis_phy2dllp_tkeep),
-      .s_axis_tvalid      (s_axis_phy2dllp_tvalid),
-      .s_axis_tlast       (s_axis_phy2dllp_tlast),
-      .s_axis_tuser       (s_axis_phy2dllp_tuser),
-      .s_axis_tready      (s_axis_phy2dllp_tready),
+      .s_axis_tdata       (s_axis_tdata),
+      .s_axis_tkeep       (s_axis_tkeep),
+      .s_axis_tvalid      (s_axis_tvalid),
+      .s_axis_tlast       (s_axis_tlast),
+      .s_axis_tuser       (s_axis_tuser),
+      .s_axis_tready      (dllp_ready),
       .seq_num_o          (seq_num_o),
       .seq_num_vld_o      (seq_num_vld_o),
       .seq_num_acknack_o  (seq_num_acknack_o),
@@ -105,12 +106,12 @@ module dllp_receive
       .clk_i                 (clk_i),
       .rst_i                 (rst_i),
       .link_status_i         (link_status_i),
-      .s_axis_tdata          (s_axis_phy2tlp_tdata),
-      .s_axis_tkeep          (s_axis_phy2tlp_tkeep),
-      .s_axis_tvalid         (s_axis_phy2tlp_tvalid),
-      .s_axis_tlast          (s_axis_phy2tlp_tlast),
-      .s_axis_tuser          (s_axis_phy2tlp_tuser),
-      .s_axis_tready         (s_axis_phy2tlp_tready),
+      .s_axis_tdata          (s_axis_tdata),
+      .s_axis_tkeep          (s_axis_tkeep),
+      .s_axis_tvalid         (s_axis_tvalid),
+      .s_axis_tlast          (s_axis_tlast),
+      .s_axis_tuser          (s_axis_tuser),
+      .s_axis_tready         (tlp_ready),
       .m_axis_dllp2phy_tdata (m_axis_dllp2phy_tdata),
       .m_axis_dllp2phy_tkeep (m_axis_dllp2phy_tkeep),
       .m_axis_dllp2phy_tvalid(m_axis_dllp2phy_tvalid),
@@ -124,6 +125,7 @@ module dllp_receive
       .m_axis_dllp2tlp_tuser (m_axis_dllp2tlp_tuser),
       .m_axis_dllp2tlp_tready(m_axis_dllp2tlp_tready)
   );
+
 
   // the "macro" to dump signals
 `ifdef COCOTB_SIM

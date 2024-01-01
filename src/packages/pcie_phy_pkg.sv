@@ -1,7 +1,7 @@
 package pcie_phy_pkg;
 
 
-
+    /* verilator lint_off WIDTHTRUNC */
   typedef enum logic [7:0] {
     K28_0 = 8'b000_11100,
     K28_1 = 8'b001_11100,
@@ -22,6 +22,7 @@ package pcie_phy_pkg;
     TS1 = 8'h4A,
     TS2 = 8'h45,
     SDS = 8'hE1,
+    PAD_  = 8'hf7,  // K23.7
     SDS_BODY = 8'h55,
     IDLE = 8'h66
   } train_seq_e;
@@ -99,8 +100,8 @@ package pcie_phy_pkg;
 
 
   function static pcie_ordered_set_t gen_tsos(
-      input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD,
-      input train_seq_e lane_num = PAD, rate_id_e rate_id = gen3);
+      input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD_,
+      input train_seq_e lane_num = PAD_, rate_id_e rate_id = gen3);
     begin
       pcie_tsos_t temp_os;
       //integer i;
@@ -147,6 +148,7 @@ package pcie_phy_pkg;
       gen_idle_gen3 = temp_os;
     end
   endfunction
+
 
 
 
@@ -216,4 +218,6 @@ package pcie_phy_pkg;
   //   end
   // endfunction
 
+
+      /* verilator lint_on WIDTHTRUNC */
 endpackage
