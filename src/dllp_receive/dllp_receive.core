@@ -14,6 +14,7 @@ filesets:
       - fusesoc:pcie:crc
       - fusesoc:pcie:bram
       - fusesoc:pcie:axis
+      - fusesoc:pcie:base_uvm
 
   cocotb:
     files:
@@ -21,6 +22,7 @@ filesets:
       - tb/test_dllp_recieve.py : {file_type : user, copyto : .}
       - tb/test_dllp2tlp.py : {file_type : user, copyto : .}
       - tb/dllp_agent.py : {file_type : user, copyto : .}
+      - tb/phy_agent.py : {file_type : user, copyto : .}
 
 
 targets:
@@ -30,7 +32,7 @@ targets:
       tool : icarus
       iverilog_options:
           - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
-      cocotb_module : dllp_agent
+      cocotb_module : phy_agent
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
@@ -39,7 +41,7 @@ targets:
     flow: sim
     flow_options:
       tool : verilator
-      cocotb_module : dllp_agent
+      cocotb_module : phy_agent
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]

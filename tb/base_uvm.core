@@ -1,0 +1,17 @@
+CAPI=2:
+name: fusesoc:pcie:base_uvm:1.0.0
+description: base_uvm
+
+
+filesets:
+  tb:
+    files:
+      - base_uvm.py : {file_type : user, copyto : .}
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - tb
+    toplevel: base_uvm
