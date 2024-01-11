@@ -11,7 +11,7 @@ module dllp_handler
     // TLP strobe width
     parameter int STRB_WIDTH = DATA_WIDTH / 8,
     parameter int KEEP_WIDTH = STRB_WIDTH,
-    parameter int USER_WIDTH = 3
+    parameter int USER_WIDTH = 4
 ) (
     //clocks and resets
     input  logic                  clk_i,                // Clock signal
@@ -111,7 +111,7 @@ module dllp_handler
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
 
 
-  always @(posedge clk_i or posedge rst_i) begin : main_seq
+  always @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       curr_state          <= ST_IDLE;
       next_transmit_seq_r <= '0;
@@ -295,7 +295,7 @@ module dllp_handler
       .DEST_ENABLE('0),
       .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH(3),
+      .USER_WIDTH(USER_WIDTH),
       .REG_TYPE(SkidBuffer)
   ) axis_register_inst (
       .clk(clk_i),

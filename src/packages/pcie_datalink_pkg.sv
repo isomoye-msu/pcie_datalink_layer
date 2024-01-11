@@ -200,7 +200,7 @@ package pcie_datalink_pkg;
     get_fc_data = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
   endfunction
 
-  function static dllp_ack_nack_t set_ack_nack(input dllp_type_t dllp_type,
+  function automatic dllp_ack_nack_t set_ack_nack(input dllp_type_t dllp_type,
   logic [11:0] seq_num, logic [15:0] crc_in = 16'h0);
     dllp_ack_nack_t temp_dllp = '0;
     temp_dllp.ack_nack_ = dllp_type;

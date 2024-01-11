@@ -1,10 +1,10 @@
 module Crc16Gen (
-    input wire [15:0] Data,
-    input wire Complement,
-    input wire [15:0] ShiftIn,
-    output wire [15:0] ShiftChain,
-    output wire [15:0] Crc,
-    output wire [15:0] CombCrc
+    input logic [15:0] Data,
+    input logic Complement,
+    input logic [15:0] ShiftIn,
+    output logic [15:0] ShiftChain,
+    output logic [15:0] Crc,
+    output logic [15:0] CombCrc
 );
   // input Complement;
   // input [15:0] Data, ShiftIn;  // 16 bit  wide input data.
@@ -23,7 +23,7 @@ module Crc16Gen (
                                              ShiftChain[4],  ShiftChain[5],  ShiftChain[6],  ShiftChain[7]};
 
   // LSB first
-  wire [15:0] DtXorShift = { Data[8],  Data[9],  Data[10], Data[11], Data[12], Data[13], Data[14], Data[15],
+  logic [15:0] DtXorShift = { Data[8],  Data[9],  Data[10], Data[11], Data[12], Data[13], Data[14], Data[15],
                            Data[0],  Data[1],  Data[2],  Data[3],  Data[4],  Data[5],  Data[6],  Data[7]
                           } ^ ShiftIn;
 

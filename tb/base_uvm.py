@@ -54,15 +54,14 @@ class base_driver(uvm_driver):
 
 # Create a monitor class
 class base_monitor (uvm_monitor):
-    ...
-    # def run_phase(self):
-    #     self.ap = uvm_analysis_port("ap", self)
-    #     # Monitor-specific code goes here
-    #     uvm_info("base_monitor", "Running the monitor", UVM_LOW)
-    #     while True:
-    #         # Monitor the DUT and capture relevant information
-    #         # This is a simplified example; actual monitoring logic depends on the DUT interface
-    #         pass
+    def run_phase(self):
+        self.ap = uvm_analysis_port("ap", self)
+        # Monitor-specific code goes here
+        uvm_info("base_monitor", "Running the monitor", UVM_LOW)
+        while True:
+            # Monitor the DUT and capture relevant information
+            # This is a simplified example; actual monitoring logic depends on the DUT interface
+            pass
         
 # Create a scoreboard class
 class base_scoreboard (uvm_scoreboard):
@@ -79,7 +78,7 @@ class base_scoreboard (uvm_scoreboard):
 
 # Create an agent class
 class base_agent(uvm_agent):
-    def __init__(self, name, parent=None, driver_t = None,
+    def __init__(self, name, parent=None, driver_t = base_driver,
                  monitor_t = base_monitor, sequencer_t = base_sequencer,
                  scoreboard_t = base_scoreboard,  method_name = "base"):
         super().__init__(name,parent)
@@ -109,21 +108,17 @@ class base_agent(uvm_agent):
     def connect_phase(self):
         # Set up connections
         self.driver.seq_item_port.connect(self.sequencer.seq_item_export)
-        # self.monitor.seq_item_port.connect(self.sequencer.seq_item_export)
+        self.monitor.seq_item_port.connect(self.sequencer.seq_item_export)
     # Define the run_phase function for your agent. This function is called when the agent is ready to start processing transactions. You can put your main test logic in this function. For example:
     # Copy code
     # def run_phase(self):
-    #     self.sequencer.start() # Start the sequencer
-    #     while not self.sequencer.done():
-    #         # Wait for the sequencer to finish
-    #         phase.wait_for_event()
-    #         self.sequencer.join() # Wait for all sequences to complete
+    #     ...
+        # self.sequencer.start() # Start the sequencer
+        # while not self.sequencer.done():
+        #     # Wait for the sequencer to finish
+        #     phase.wait_for_event()
+        #     self.sequencer.join() # Wait for all sequences to complete
 
-# class base_agent (uvm_agent):
-#     def build_phase(self):
-#         # Create and configure the driver and monitor
-#         self.driver = base_driver("driver", self)
-#         self.monitor = base_monitor("monitor", self)
 
 # Create an environment class
 # class base_env (uvm_env):

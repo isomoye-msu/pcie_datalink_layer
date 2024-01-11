@@ -152,7 +152,7 @@ class phy_driver(base_driver):
         self.ap = uvm_analysis_port("ap", self)
         self.dut = cocotb.top
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(
-            self.dut, "s_axis"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "s_axis_phy"), self.dut.clk_i, self.dut.rst_i)
         
     async def reset(self):
         self.dut.rst_i.setimmediatevalue(0)
@@ -166,7 +166,6 @@ class phy_driver(base_driver):
         await RisingEdge(self.dut.clk_i)
         
     async def launch_tb(self):
-        self.dut.link_status_i.value = 0x2
         self.dut.phy_link_up_i.value = 1
         await self.reset()
         

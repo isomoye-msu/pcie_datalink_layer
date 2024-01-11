@@ -31,7 +31,7 @@ targets:
     flow_options:
       tool : icarus
       iverilog_options:
-          - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
       cocotb_module : phy_agent
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
@@ -43,6 +43,8 @@ targets:
       tool : verilator
       cocotb_module : phy_agent
       timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
 

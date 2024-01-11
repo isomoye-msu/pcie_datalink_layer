@@ -17,19 +17,19 @@ module dllp_transmit
 
 
     //TLP AXIS inputs
-    input  logic [DATA_WIDTH-1:0] s_axis_tlp_tdata,
-    input  logic [KEEP_WIDTH-1:0] s_axis_tlp_tkeep,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tvalid,
-    input  logic [   S_COUNT-1:0] s_axis_tlp_tlast,
-    input  logic [USER_WIDTH-1:0] s_axis_tlp_tuser,
-    output logic [   S_COUNT-1:0] s_axis_tlp_tready,
+    input  logic [DATA_WIDTH-1:0] s_axis_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
+    input  logic [   S_COUNT-1:0] s_axis_tvalid,
+    input  logic [   S_COUNT-1:0] s_axis_tlast,
+    input  logic [USER_WIDTH-1:0] s_axis_tuser,
+    output logic [   S_COUNT-1:0] s_axis_tready,
     //dllp AXIS output
-    output logic [DATA_WIDTH-1:0] m_axis_dllp_tdata,
-    output logic [KEEP_WIDTH-1:0] m_axis_dllp_tkeep,
-    output logic                  m_axis_dllp_tvalid,
-    output logic                  m_axis_dllp_tlast,
-    output logic [USER_WIDTH-1:0] m_axis_dllp_tuser,
-    input  logic                  m_axis_dllp_tready,
+    output logic [DATA_WIDTH-1:0] m_axis_tdata,
+    output logic [KEEP_WIDTH-1:0] m_axis_tkeep,
+    output logic                  m_axis_tvalid,
+    output logic                  m_axis_tlast,
+    output logic [USER_WIDTH-1:0] m_axis_tuser,
+    input  logic                  m_axis_tready,
     //dllp tlp sequence ack/nack
     input  logic                  ack_nack_i,
     input  logic                  ack_nack_vld_i,
@@ -139,12 +139,12 @@ module dllp_transmit
       .clk_i            (clk_i),
       .rst_i            (rst_i),
       //axis tlp in
-      .s_axis_tdata     (s_axis_tlp_tdata),
-      .s_axis_tkeep     (s_axis_tlp_tkeep),
-      .s_axis_tvalid    (s_axis_tlp_tvalid),
-      .s_axis_tlast     (s_axis_tlp_tlast),
-      .s_axis_tuser     (s_axis_tlp_tuser),
-      .s_axis_tready    (s_axis_tlp_tready),
+      .s_axis_tdata     (s_axis_tdata),
+      .s_axis_tkeep     (s_axis_tkeep),
+      .s_axis_tvalid    (s_axis_tvalid),
+      .s_axis_tlast     (s_axis_tlast),
+      .s_axis_tuser     (s_axis_tuser),
+      .s_axis_tready    (s_axis_tready),
       //axis out to phy
       .m_axis_tdata     (m_axis_tlp2dllp_tdata),
       .m_axis_tkeep     (m_axis_tlp2dllp_tkeep),
@@ -188,23 +188,23 @@ module dllp_transmit
       .clk(clk_i),
       .rst(rst_i),
       // AXI inputs
-      .s_axis_tdata({m_axis_dllp_tdata, m_axis_retry_tdata}),
-      .s_axis_tkeep({m_axis_dllp_tkeep, m_axis_retry_tkeep}),
-      .s_axis_tvalid({m_axis_dllp_tvalid, m_axis_retry_tvalid}),
-      .s_axis_tready({m_axis_dllp_tready, m_axis_retry_tready}),
-      .s_axis_tlast({m_axis_dllp_tlast, m_axis_retry_tlast}),
+      .s_axis_tdata({ m_axis_tlp2dllp_tdata, m_axis_retry_tdata}),
+      .s_axis_tkeep({ m_axis_tlp2dllp_tkeep, m_axis_retry_tkeep}),
+      .s_axis_tvalid({m_axis_tlp2dllp_tvalid, m_axis_retry_tvalid}),
+      .s_axis_tready({m_axis_tlp2dllp_tready, m_axis_retry_tready}),
+      .s_axis_tlast({ m_axis_tlp2dllp_tlast, m_axis_retry_tlast}),
       .s_axis_tid(),
       .s_axis_tdest(),
-      .s_axis_tuser({m_axis_dllp_tuser, m_axis_retry_tuser}),
+      .s_axis_tuser({m_axis_tlp2dllp_tuser, m_axis_retry_tuser}),
       // AXI output
-      .m_axis_tdata(m_axis_dllp_tdata),
-      .m_axis_tkeep(m_axis_dllp_tkeep),
-      .m_axis_tvalid(m_axis_dllp_tvalid),
-      .m_axis_tready(m_axis_dllp_tready),
-      .m_axis_tlast(m_axis_dllp_tlast),
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tvalid(m_axis_tvalid),
+      .m_axis_tready(m_axis_tready),
+      .m_axis_tlast(m_axis_tlast),
       .m_axis_tid(),
       .m_axis_tdest(),
-      .m_axis_tuser(m_axis_dllp_tuser)
+      .m_axis_tuser(m_axis_tuser)
   );
 
 

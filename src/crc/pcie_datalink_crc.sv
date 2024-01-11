@@ -29,10 +29,10 @@ module pcie_datalink_crc (
     output [15:0] crcOut
 );
 
-  wire [15:0] crc0;
-  wire [15:0] crc1;
-  wire [15:0] crc2;
-  wire [15:0] crc3;
+  logic [15:0] crc0;
+  logic [15:0] crc1;
+  logic [15:0] crc2;
+  logic [15:0] crc3;
   reg [15:0] crc4;
 
   pcie_dllp_crc8 crc_inst_0 (

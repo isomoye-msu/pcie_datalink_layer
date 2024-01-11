@@ -5,10 +5,10 @@ module pcie_lcrc16 (
     input  [ 1:0] select
 );
 
-  reg [31:0] crc_out8;
-  reg [31:0] crc_out16;
-  reg [31:0] crc_out24;
-  reg [31:0] crc_out32;
+  logic [31:0] crc_out8;
+  logic [31:0] crc_out16;
+  logic [31:0] crc_out24;
+  logic [31:0] crc_out32;
 
   pcie_crc8 pcie_crc8_inst0 (
       .crcIn (crcIn),

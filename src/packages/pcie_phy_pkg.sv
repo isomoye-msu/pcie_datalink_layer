@@ -129,22 +129,26 @@ package pcie_phy_pkg;
   function automatic pcie_ordered_set_t gen_idle_gen3();
     begin
       pcie_ordered_set_t temp_os;
-      temp_os[0] = IDLE;
-      temp_os[1] = IDLE;
-      temp_os[2] = IDLE;
-      temp_os[3] = IDLE;
-      temp_os[4] = IDLE;
-      temp_os[5] = IDLE;
-      temp_os[6] = IDLE;
-      temp_os[7] = IDLE;
-      temp_os[8] = IDLE;
-      temp_os[9] = IDLE;
-      temp_os[10] = IDLE;
-      temp_os[11] = IDLE;
-      temp_os[12] = IDLE;
-      temp_os[13] = IDLE;
-      temp_os[14] = IDLE;
-      temp_os[15] = IDLE;
+      temp_os = '0;
+      for(int i = 0; i <15 ; i++) begin
+        temp_os[8*i +: 8] = IDLE;
+      end
+      // temp_os.symbols[0] = IDLE;
+      // temp_os.symbols[1] = IDLE;
+      // temp_os.symbols[2] = IDLE;
+      // temp_os.symbols[3] = IDLE;
+      // temp_os.symbols[4] = IDLE;
+      // temp_os.symbols[5] = IDLE;
+      // temp_os.symbols[6] = IDLE;
+      // temp_os.symbols[7] = IDLE;
+      // temp_os.symbols[8] = IDLE;
+      // temp_os.symbols[9] = IDLE;
+      // temp_os.symbols[10] = IDLE;
+      // temp_os.symbols[11] = IDLE;
+      // temp_os.symbols[12] = IDLE;
+      // temp_os.symbols[13] = IDLE;
+      // temp_os.symbols[14] = IDLE;
+      // temp_os.symbols[15] = IDLE;
       gen_idle_gen3 = temp_os;
     end
   endfunction

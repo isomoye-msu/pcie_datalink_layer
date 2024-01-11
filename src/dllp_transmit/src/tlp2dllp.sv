@@ -64,9 +64,7 @@ module tlp2dllp
     ST_CHECK_CREDITS
   } dll_tx_st_e;
 
-  //datalink state
-  dll_tx_st_e                  curr_state;
-  dll_tx_st_e                  next_state;
+
   //replay signals
   logic       [          31:0] word_offset_c;
   logic       [          31:0] word_offset_r;
@@ -148,8 +146,6 @@ module tlp2dllp
   //tlp type signals
   logic       [DATA_WIDTH-1:0] tlp_data_c1;
   logic       [DATA_WIDTH-1:0] tlp_data_r1;
-  logic       [KEEP_WIDTH-1:0] keep_c;
-  logic       [KEEP_WIDTH-1:0] keep_r;
   logic                        last_c1;
   logic                        last_r1;
   logic                        last_c2;
@@ -179,9 +175,8 @@ module tlp2dllp
   logic       [           7:0] nph_credits_consumed_r;
   logic       [          11:0] npd_credits_consumed_r;
 
-  always @(posedge clk_i or posedge rst_i) begin
+  always @(posedge clk_i) begin
     if (rst_i) begin
-      curr_state             <= ST_IDLE;
       next_transmit_seq_r    <= '0;
       //crc signals
       word_count_r           <= '0;
@@ -210,7 +205,6 @@ module tlp2dllp
       last_r2                <= '0;
       last_r3                <= '0;
     end else begin
-      curr_state             <= next_state;
       next_transmit_seq_r    <= next_transmit_seq_c;
       //crc signals
       word_count_r           <= word_count_c;
@@ -241,7 +235,6 @@ module tlp2dllp
     end
     //non resetable
     tlp_data_r1     <= tlp_data_c1;
-    keep_r          <= keep_c;
     //stage 1
     m_axis_tdata_r1 <= m_axis_tdata_c1;
     m_axis_tkeep_r1 <= m_axis_tkeep_c1;

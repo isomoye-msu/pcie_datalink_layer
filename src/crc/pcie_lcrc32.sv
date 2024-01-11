@@ -25,9 +25,9 @@
 // Input word width:            32 bits
 
 module pcie_lcrc32 (
-    input  wire [31:0] crcIn,
-    input  wire [31:0] data,
-    output wire [31:0] crcOut
+    input  logic [31:0] crcIn,
+    input  logic [31:0] data,
+    output logic [31:0] crcOut
 );
   assign crcOut[0] = crcIn[0] ^ crcIn[6] ^ crcIn[9] ^ crcIn[10] ^ crcIn[12] ^ crcIn[16] ^ crcIn[24] ^ crcIn[25] ^ crcIn[26] ^ crcIn[28] ^ crcIn[29] ^ crcIn[30] ^ crcIn[31] ^ data[0] ^ data[6] ^ data[9] ^ data[10] ^ data[12] ^ data[16] ^ data[24] ^ data[25] ^ data[26] ^ data[28] ^ data[29] ^ data[30] ^ data[31];
   assign crcOut[1] = crcIn[0] ^ crcIn[1] ^ crcIn[6] ^ crcIn[7] ^ crcIn[9] ^ crcIn[11] ^ crcIn[12] ^ crcIn[13] ^ crcIn[16] ^ crcIn[17] ^ crcIn[24] ^ crcIn[27] ^ crcIn[28] ^ data[0] ^ data[1] ^ data[6] ^ data[7] ^ data[9] ^ data[11] ^ data[12] ^ data[13] ^ data[16] ^ data[17] ^ data[24] ^ data[27] ^ data[28];

@@ -595,7 +595,7 @@ module dllp2tlp
       .DEST_ENABLE('0),
       .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH(3),
+      .USER_WIDTH(USER_WIDTH),
       .REG_TYPE(SkidBuffer)
   ) dllp2tlp_axis_register_inst (
       .clk(clk_i),
@@ -630,7 +630,7 @@ module dllp2tlp
       .DEST_ENABLE('0),
       .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH(3),
+      .USER_WIDTH(USER_WIDTH),
       .REG_TYPE(SkidBuffer)
   ) dllp2phy_axis_register_inst (
       .clk(clk_i),
@@ -665,7 +665,7 @@ module dllp2tlp
       .DEST_ENABLE('0),
       .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH(3),
+      .USER_WIDTH(USER_WIDTH),
       .REG_TYPE(SkidBuffer)
   ) axis_register_inst (
       .clk(clk_i),
@@ -711,7 +711,7 @@ module dllp2tlp
   //dll crc instance
   pcie_datalink_crc dllp_crc_inst (
       .crcIn ('1),
-      .data  (dll_packet),
+      .data  (dll_packet[31:0]),
       .crcOut(dllp_crc_out)
   );
 

@@ -127,7 +127,7 @@ module retry_management
 
 
   //main  sequential blocksSS
-  always_ff @(posedge clk_i or posedge rst_i) begin : main_sequential_block
+  always_ff @(posedge clk_i) begin : main_sequential_block
     if (rst_i) begin
       retrys_r           <= '0;
       error_r            <= '0;
@@ -203,8 +203,9 @@ module retry_management
           // end
           if (!retrys_r[i] && (i != next_retry_index_r)) begin
             retry_index_flag[i] = 1'b0;
-            for (int j = 1; j < i; j++) begin
-              if (!retrys_r[j] && (j != next_retry_index_r)) begin
+            for (int j = 1; j < RETRY_TLP_SIZE; j++) begin
+              if (!retrys_r[j] && (j != next_retry_index_r)
+              && (j <i)) begin
                 retry_index_flag[i] = 1'b1;
               end
             end
@@ -233,7 +234,7 @@ module retry_management
     retry_st_e curr_state, next_state;
     logic [1:0] replay_cnt_c, replay_cnt_r;
     logic [31:0] retry_timer_c, retry_timer_r;
-    always @(posedge clk_i or posedge rst_i) begin : retry_buffer_seq
+    always @(posedge clk_i) begin : retry_buffer_seq
       if (rst_i) begin
         retry_timer_r <= '0;
         replay_cnt_r  <= '0;
@@ -330,6 +331,7 @@ module retry_management
     //retry signals
     retry_ack_c        = retry_ack_r;
     retry_index_c      = retry_index_r;
+    mutex_flag = '0;
     case (tlp_curr_state)
       ST_TLP_RX_IDLE: begin
         //retry mutex block
@@ -339,8 +341,8 @@ module retry_management
             //retry_ack_c[i] = '0;
             mutex_flag[i] = 1'b0;
             if (retry_valid_r[i]) begin
-              for (int j = 1; j < i; j++) begin
-                if (retry_valid_r[j]) begin
+              for (int j = 1; j < RETRY_TLP_SIZE; j++) begin
+                if (retry_valid_r[j] && j < i) begin
                   mutex_flag[i] = 1'b1;
                 end
               end
@@ -413,38 +415,38 @@ module retry_management
 
 
   //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
-      .USER_ENABLE('1),
-      .USER_WIDTH(3),
-      .REG_TYPE(2)
-  ) axis_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(s_axis_tdata_i),
-      .s_axis_tkeep(s_axis_tkeep_i),
-      .s_axis_tvalid(s_axis_tvalid_i),
-      .s_axis_tready(s_axis_tready_o),
-      .s_axis_tlast(s_axis_tlast_i),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .s_axis_tuser(s_axis_tuser_i),
-      .m_axis_tdata(s_axis_skid_tdata),
-      .m_axis_tkeep(s_axis_skid_tkeep),
-      .m_axis_tvalid(s_axis_skid_tvalid),
-      .m_axis_tready(s_axis_skid_tready),
-      .m_axis_tlast(s_axis_skid_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(s_axis_skid_tuser)
-  );
+  // axis_register #(
+  //     .DATA_WIDTH(DATA_WIDTH),
+  //     .KEEP_ENABLE('1),
+  //     .KEEP_WIDTH(KEEP_WIDTH),
+  //     .LAST_ENABLE('1),
+  //     .ID_ENABLE('0),
+  //     .ID_WIDTH(1),
+  //     .DEST_ENABLE('0),
+  //     .DEST_WIDTH(1),
+  //     .USER_ENABLE('1),
+  //     .USER_WIDTH(3),
+  //     .REG_TYPE(2)
+  // ) axis_register_inst (
+  //     .clk(clk_i),
+  //     .rst(rst_i),
+  //     .s_axis_tdata(s_axis_tdata_i),
+  //     .s_axis_tkeep(s_axis_tkeep_i),
+  //     .s_axis_tvalid(s_axis_tvalid_i),
+  //     .s_axis_tready(s_axis_tready_o),
+  //     .s_axis_tlast(s_axis_tlast_i),
+  //     .s_axis_tid('0),
+  //     .s_axis_tdest('0),
+  //     .s_axis_tuser(s_axis_tuser_i),
+  //     .m_axis_tdata(s_axis_skid_tdata),
+  //     .m_axis_tkeep(s_axis_skid_tkeep),
+  //     .m_axis_tvalid(s_axis_skid_tvalid),
+  //     .m_axis_tready(s_axis_skid_tready),
+  //     .m_axis_tlast(s_axis_skid_tlast),
+  //     .m_axis_tid(),
+  //     .m_axis_tdest(),
+  //     .m_axis_tuser(s_axis_skid_tuser)
+  // );
 
   assign retry_err_o       = (error_r != '0);
   assign retry_available_o = (retrys_r != '1);
