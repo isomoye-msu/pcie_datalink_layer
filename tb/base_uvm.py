@@ -54,6 +54,10 @@ class base_driver(uvm_driver):
 
 # Create a monitor class
 class base_monitor (uvm_monitor):
+    def __init__(self, name="base_monitor", parent=None):
+        super().__init__(name, parent)
+        # self.ap = uvm_analysis_port("ap", self)
+        
     def run_phase(self):
         self.ap = uvm_analysis_port("ap", self)
         # Monitor-specific code goes here

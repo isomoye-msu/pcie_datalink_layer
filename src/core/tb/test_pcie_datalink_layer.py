@@ -32,22 +32,22 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)
 
-        cocotb.start_soon(Clock(dut.clk, 4, units="ns").start())
+        cocotb.start_soon(Clock(dut.clk_i, 4, units="ns").start())
 
-        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy2dllp"), dut.clk, dut.rst)
-        self.sourcetllp = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy2tlp"), dut.clk, dut.rst)
-        self.sourcetlp = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlpin"), dut.clk, dut.rst)
-        #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk, dut.rst) for k in range(ports)]
-        self.sinkdllp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp2phy"), dut.clk, dut.rst)
-        self.sinktlp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlpout"), dut.clk, dut.rst)
+        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy"), dut.clk_i, dut.rst_i)
+        # self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_phy"), dut.clk_i, dut.rst_i)
+        # self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlpin"), dut.clk_i, dut.rst_i)
+        #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk_i, dut.rst_i) for k in range(ports)]
+        self.sinkdllp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp2phy"), dut.clk_i, dut.rst_i)
+        # self.sinktlp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlpout"), dut.clk_i, dut.rst_i)
         
         self.source.log.setLevel(logging.CRITICAL)
-        self.sourcetllp.log.setLevel(logging.CRITICAL)
-        self.sourcetlp.log.setLevel(logging.CRITICAL)
+        # self.source.log.setLevel(logging.CRITICAL)
+        # self.source.log.setLevel(logging.CRITICAL)
         self.sinkdllp2phy.log.setLevel(logging.CRITICAL)
-        self.sinktlp.log.setLevel(logging.CRITICAL)
-        #self.sinktlp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp2phy"), dut.clk, dut.rst)
-        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
+        # self.sinktlp.log.setLevel(logging.CRITICAL)
+        #self.sinktlp2phy = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp2phy"), dut.clk_i, dut.rst_i)
+        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk_i, dut.rst_i)
 
     def set_idle_generator(self, generator=None):
         if generator:
@@ -58,15 +58,15 @@ class TB:
             self.sink.set_pause_generator(generator())
 
     async def reset(self):
-        self.dut.rst.setimmediatevalue(0)
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
-        self.dut.rst.value = 1
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
-        self.dut.rst.value = 0
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+        self.dut.rst_i.setimmediatevalue(0)
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
+        self.dut.rst_i.value = 1
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
+        self.dut.rst_i.value = 0
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
 
 def cycle_pause():
     return itertools.cycle([1, 1, 1, 0])
@@ -165,7 +165,7 @@ async def init_fc_driver(dut,tb, queue):
     await tb.source.send(test_frame)
     
     for i in range(200):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
     
     seq+=1
     
@@ -186,7 +186,7 @@ async def init_fc_driver(dut,tb, queue):
     await tb.source.send(test_frame)
     
     for i in range(200):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
         
         
     test_dllp = Dllp()
@@ -222,7 +222,7 @@ async def init_fc_driver(dut,tb, queue):
     await queue.put(test_frame)
     await tb.source.send(test_frame)
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
          
     
      
@@ -243,7 +243,7 @@ async def init_fc_driver(dut,tb, queue):
     await tb.source.send(test_frame)
     
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
 
     test_dllp = Dllp()
     test_dllp.type = DllpType.INIT_FC2_NP
@@ -263,7 +263,7 @@ async def init_fc_driver(dut,tb, queue):
     
     
     for i in range(200):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
          
     test_dllp = Dllp()
     test_dllp.type = DllpType.INIT_FC2_CPL
@@ -288,6 +288,7 @@ async def init_fc_monitor(dut,tb, queue):
         #print(packet)
         data_in = packet.tdata
         data_in = data_in
+        print(data_in)
         #data_in = reverse_bytes(data_in)
         #print(str(data_in))
         extracted_packet = packet.tdata
@@ -337,9 +338,9 @@ async def run_test(dut):
     )
     tlp_calculator = Calculator(tlp_config)
     
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
     # dut.tx_fc_ph.value = 0x16
     # dut.tx_fc_pd.value = 0xF40
     # dut.tx_fc_nph.value = 0x016
@@ -347,12 +348,12 @@ async def run_test(dut):
     #dut.retry_available.value = 1
     # dut.ack_nack.value = 1
     # dut.ack_nack_vld.value = 0
-    dut.phy_link_up.value = 1
-    await RisingEdge(dut.clk)
+    dut.phy_link_up_i.value = 1
+    await RisingEdge(dut.clk_i)
     
     
     for i in range(20):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
          
          
     coro2Thread = cocotb.start_soon(init_fc_monitor(dut,tb,dllp_queue))
@@ -361,7 +362,7 @@ async def run_test(dut):
     
     
     for i in range(2000):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
          
     length = random.randint(1, 32)
     test_tlp = Tlp()
@@ -377,13 +378,13 @@ async def run_test(dut):
         test_tlp.requester_id = 1
     data = test_tlp.pack()
     test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
-    await tb.sourcetllp.send(test_frame)
+    await tb.source.send(test_frame)
     seq_num +=1
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
          
     for i in range(20):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
         
     length = random.randint(1, 32)
     test_tlp = Tlp()
@@ -400,10 +401,10 @@ async def run_test(dut):
     data = test_tlp.pack()
     # data += tlp_calculator.checksum(data).to_bytes(4,'big')
     test_frame = AxiStreamFrame(data)
-    await tb.sourcetlp.send(test_frame)
+    await tb.source.send(test_frame)
     
     for i in range(20):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
         
         
     length = random.randint(1, 32)
@@ -420,11 +421,11 @@ async def run_test(dut):
         test_tlp.requester_id = 1
     data = test_tlp.pack()
     test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
-    await tb.sourcetllp.send(test_frame)
+    await tb.source.send(test_frame)
     seq_num +=1
     
     for i in range(200):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)
 
     length = random.randint(1, 32)
     test_tlp = Tlp()
@@ -440,9 +441,9 @@ async def run_test(dut):
         test_tlp.requester_id = 1
     data = test_tlp.pack()
     test_frame = AxiStreamFrame(tlp2dllp(seq_num,data,tlp_calculator))
-    await tb.sourcetllp.send(test_frame)
+    await tb.source.send(test_frame)
     seq_num +=1
     
     
     for i in range(2000):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.clk_i)

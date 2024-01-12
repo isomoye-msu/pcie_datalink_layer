@@ -132,7 +132,7 @@ module pcie_flow_ctrl_init
     init_ack_o = '0;
     case (curr_state)
       ST_IDLE: begin
-        if (start_flow_control_i) begin
+        if (start_flow_control_i && (m_axis_tready|| !m_axis_tvalid_r1)) begin
           seq_count_c = '0;
           //build dllp packet
           dll_packet_c = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
@@ -147,7 +147,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC1_P: begin
-        if (m_axis_tready) begin
+        if (m_axis_tready || !m_axis_tvalid_r1) begin
           m_axis_tdata_c1 = crc_reversed;
           dllp_lcrc_c = crc_out;
           m_axis_tkeep_c1 = 8'h3;
@@ -159,7 +159,7 @@ module pcie_flow_ctrl_init
       end
       ST_FC1_CRC: begin
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
-        if (m_axis_tready) begin
+        if (m_axis_tready || !m_axis_tvalid_r1) begin
           seq_count_c = '0;
           m_axis_tvalid_c1 = '0;
           next_state = ST_FC1_NP;
@@ -185,7 +185,7 @@ module pcie_flow_ctrl_init
       end
       ST_FC1_NP_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready) begin
+        if (m_axis_tready || !m_axis_tvalid_r1) begin
           m_axis_tdata_c1 = crc_reversed;
           m_axis_tkeep_c1 = 8'h3;
           m_axis_tvalid_c1 = '1;
