@@ -32,8 +32,9 @@ module pcie_flow_ctrl_init
 
 
   localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
-  localparam int HdrMinCredits = 8'h01;
+  localparam int HdrMinCredits = 8'h040;
   localparam int FcWaitPeriod = 8'hA0;
+  localparam int SkidBuffer = 2;
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -58,12 +59,12 @@ module pcie_flow_ctrl_init
 
 
   //axis registered output signals
-  logic [DATA_WIDTH-1:0] m_axis_tdata_c1, m_axis_tdata_r1;
-  logic [KEEP_WIDTH-1:0] m_axis_tkeep_c1, m_axis_tkeep_r1;
-  logic m_axis_tvalid_c1, m_axis_tvalid_r1;
-  logic m_axis_tlast_c1, m_axis_tlast_r1;
-  logic [USER_WIDTH-1:0] m_axis_tuser_c1, m_axis_tuser_r1;
-  logic m_axis_tready_c1, m_axis_tready_r1;
+  logic [DATA_WIDTH-1:0] fc_axis_tdata;
+  logic [KEEP_WIDTH-1:0] fc_axis_tkeep;
+  logic                  fc_axis_tvalid;
+  logic                  fc_axis_tlast;
+  logic [USER_WIDTH-1:0] fc_axis_tuser;
+  logic                  fc_axis_tready;
 
   // Internal state machine for link flow control
   flow_control_state_e curr_state, next_state;
@@ -84,27 +85,18 @@ module pcie_flow_ctrl_init
   // Initialize to idle state
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state       <= ST_IDLE;
-      dll_packet_r     <= '0;
-      seq_count_r      <= '0;
-      //axis signals
-      m_axis_tvalid_r1 <= '0;
+      curr_state   <= ST_IDLE;
+      dll_packet_r <= '0;
+      seq_count_r  <= '0;
       //crc signals
-      dllp_lcrc_r      <= '0;
+      dllp_lcrc_r  <= '0;
     end else begin
-      curr_state       <= next_state;
-      dll_packet_r     <= dll_packet_c;
-      seq_count_r      <= seq_count_c;
-      //axis signals
-      m_axis_tvalid_r1 <= m_axis_tvalid_c1;
+      curr_state   <= next_state;
+      dll_packet_r <= dll_packet_c;
+      seq_count_r  <= seq_count_c;
       //crc signals
-      dllp_lcrc_r      <= dllp_lcrc_c;
+      dllp_lcrc_r  <= dllp_lcrc_c;
     end
-    //stage 1
-    m_axis_tdata_r1 <= m_axis_tdata_c1;
-    m_axis_tkeep_r1 <= m_axis_tkeep_c1;
-    m_axis_tlast_r1 <= m_axis_tlast_c1;
-    m_axis_tuser_r1 <= m_axis_tuser_c1;
   end
 
 
@@ -112,84 +104,72 @@ module pcie_flow_ctrl_init
     next_state = curr_state;
     dll_packet_c = dll_packet_r;
     seq_count_c = seq_count_r;
-    //axis signals
-    //@hint: axis signals not registered...look here for easy timing improvements
-    // m_axis_tdata_o = '0;
-    // m_axis_tkeep_o = '0;
-    // m_axis_tvalid_o = '0;
-    // m_axis_tlast_o = '0;
-    // m_axis_tuser_o = '0;
-
-    //axis signals
-    m_axis_tdata_c1 = m_axis_tdata_r1;
-    m_axis_tkeep_c1 = m_axis_tkeep_r1;
-    m_axis_tvalid_c1 = m_axis_tvalid_r1;
-    m_axis_tlast_c1 = m_axis_tlast_r1;
-    m_axis_tuser_c1 = m_axis_tuser_r1;
+    //axis flow control defaults
+    fc_axis_tdata = '0;
+    fc_axis_tkeep = '0;
+    fc_axis_tvalid = '0;
+    fc_axis_tlast = '0;
+    fc_axis_tuser = 4'h01;
     //crc signals
     dllp_lcrc_c = dllp_lcrc_r;
     //init handshake
     init_ack_o = '0;
     case (curr_state)
       ST_IDLE: begin
-        if (start_flow_control_i && (m_axis_tready|| !m_axis_tvalid_r1)) begin
+        if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = '0;
           //build dllp packet
-          dll_packet_c = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
+          send_fc_init(fc_axis_tdata, InitFC1_P, '0, HdrMinCredits, PdMinCredits);
           dllp_lcrc_c = crc_out;
-          m_axis_tdata_c1 = dll_packet_c;
-          m_axis_tkeep_c1 = '1;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '0;
-          m_axis_tuser_c1 = '0;
+          fc_axis_tkeep = '1;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast = '0;
           init_ack_o = '1;
           next_state = ST_FC1_P;
         end
       end
       ST_FC1_P: begin
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tdata_c1 = crc_reversed;
+        if (fc_axis_tready) begin
+          fc_axis_tdata = crc_reversed;
           dllp_lcrc_c = crc_out;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
+          fc_axis_tkeep    = 8'h3;
+          fc_axis_tvalid   = '1;
+          fc_axis_tlast    = '1;
           seq_count_c = '0;
           next_state = ST_FC1_CRC;
         end
       end
       ST_FC1_CRC: begin
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
+        if (fc_axis_tready) begin
           seq_count_c = '0;
-          m_axis_tvalid_c1 = '0;
+          fc_axis_tvalid = '0;
           next_state = ST_FC1_NP;
         end
       end
       ST_FC1_NP: begin
         seq_count_c = seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c = '0;
-            dll_packet_c = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
-            dllp_lcrc_c = crc_out;
-            m_axis_tdata_c1 = dll_packet_c;
-            m_axis_tkeep_c1 = '1;
-            m_axis_tvalid_c1 = '1;
-            m_axis_tlast_c1 = '0;
-            m_axis_tuser_c1 = '0;
-            next_state = ST_FC1_NP_CRC;
+            send_fc_init(fc_axis_tdata, InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
+            dllp_lcrc_c    = crc_out;
+            fc_axis_tkeep  = '1;
+            fc_axis_tvalid = '1;
+            fc_axis_tlast  = '0;
+            next_state     = ST_FC1_NP_CRC;
           end
         end
       end
       ST_FC1_NP_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tdata_c1 = crc_reversed;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
+        if (fc_axis_tready) begin
+          fc_axis_tdata = crc_reversed;
+          fc_axis_tkeep = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast = '1;
           seq_count_c = '0;
           next_state = ST_FC1_CPL;
         end
@@ -197,17 +177,16 @@ module pcie_flow_ctrl_init
       //send np
       ST_FC1_CPL: begin
         seq_count_c = seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            dll_packet_c = send_fc_init(InitFC1_Cpl, '0, '0, '0);
-            m_axis_tdata_c1 = dll_packet_c;
+            send_fc_init(fc_axis_tdata, InitFC1_Cpl, '0, '0, '0);
+            // fc_axis_tdata = dll_packet_c;
             dllp_lcrc_c = crc_out;
-            m_axis_tkeep_c1 = '1;
-            m_axis_tvalid_c1 = '1;
-            m_axis_tlast_c1 = '0;
-            m_axis_tuser_c1 = '0;
+            fc_axis_tkeep = '1;
+            fc_axis_tvalid = '1;
+            fc_axis_tlast = '0;
             seq_count_c = '0;
             next_state = ST_FC1_CPL_CRC;
           end
@@ -215,25 +194,25 @@ module pcie_flow_ctrl_init
       end
       ST_FC1_CPL_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready) begin
-          m_axis_tdata_c1 = crc_reversed;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
+        if (fc_axis_tready) begin
+          fc_axis_tdata = crc_reversed;
+          fc_axis_tkeep = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast = '1;
           seq_count_c = '0;
           next_state = CHECK_FC1;
         end
       end
       CHECK_FC1: begin
         seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           if (fc1_values_stored_i) begin
             seq_count_c = '0;
             next_state  = ST_FC2;
           end else if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c = '0;
-            m_axis_tvalid_c1 = '0;
+            fc_axis_tvalid = '0;
             next_state = ST_IDLE;
             if (fc1_values_stored_i) begin
               seq_count_c = '0;
@@ -244,75 +223,73 @@ module pcie_flow_ctrl_init
       end
       ST_FC2: begin
         seq_count_c = seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            dll_packet_c = send_fc_init(InitFC2_P, '0, HdrMinCredits, PdMinCredits);
-            m_axis_tdata_c1 = dll_packet_c;
-            m_axis_tkeep_c1 = '1;
-            m_axis_tvalid_c1 = '1;
-            m_axis_tlast_c1 = '0;
-            m_axis_tuser_c1 = '0;
-            dllp_lcrc_c = crc_out;
-            seq_count_c = '0;
-            next_state = ST_FC2_CRC;
+            send_fc_init(fc_axis_tdata, InitFC2_P, '0, HdrMinCredits, PdMinCredits);
+            // fc_axis_tdata = dll_packet_c;
+            fc_axis_tkeep  = '1;
+            fc_axis_tvalid = '1;
+            fc_axis_tlast  = '0;
+            dllp_lcrc_c    = crc_out;
+            seq_count_c    = '0;
+            next_state     = ST_FC2_CRC;
           end
         end
       end
       ST_FC2_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready) begin
-          m_axis_tdata_c1 = crc_reversed;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
-          seq_count_c = '0;
-          next_state = ST_FC2_NP;
+        if (fc_axis_tready) begin
+          fc_axis_tdata  = crc_reversed;
+          fc_axis_tkeep  = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '1;
+          seq_count_c    = '0;
+          next_state     = ST_FC2_NP;
         end
       end
       ST_FC2_NP: begin
         seq_count_c = seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            dll_packet_c = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
-            m_axis_tdata_c1 = dll_packet_c;
-            m_axis_tkeep_c1 = '1;
-            m_axis_tvalid_c1 = '1;
-            m_axis_tlast_c1 = '0;
-            m_axis_tuser_c1 = '0;
-            dllp_lcrc_c = crc_out;
-            seq_count_c = '0;
-            next_state = ST_FC2_NP_CRC;
+            send_fc_init(fc_axis_tdata, InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
+            // fc_axis_tdata = dll_packet_c;
+            fc_axis_tkeep  = '1;
+            fc_axis_tvalid = '1;
+            fc_axis_tlast  = '0;
+            // m_axis_tuser_c1 = 4'h01;
+            dllp_lcrc_c    = crc_out;
+            seq_count_c    = '0;
+            next_state     = ST_FC2_NP_CRC;
           end
         end
       end
       ST_FC2_NP_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready) begin
-          m_axis_tdata_c1 = crc_reversed;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
-          seq_count_c = '0;
-          next_state = ST_FC2_CPL;
+        if (fc_axis_tready) begin
+          fc_axis_tdata  = crc_reversed;
+          fc_axis_tkeep  = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '1;
+          seq_count_c    = '0;
+          next_state     = ST_FC2_CPL;
         end
       end
       ST_FC2_CPL: begin
         seq_count_c = seq_count_r + 1'b1;
         //wait for 10us
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           if (seq_count_r >= FcWaitPeriod) begin
-            dll_packet_c = send_fc_init(InitFC2_Cpl, '0, '0, '0);
-            m_axis_tdata_c1 = dll_packet_c;
+            send_fc_init(fc_axis_tdata, InitFC2_Cpl, '0, '0, '0);
+            // fc_axis_tdata = dll_packet_c;
             dllp_lcrc_c = crc_out;
-            m_axis_tkeep_c1 = '1;
-            m_axis_tvalid_c1 = '1;
-            m_axis_tlast_c1 = '0;
-            m_axis_tuser_c1 = '0;
+            fc_axis_tkeep    = '1;
+            fc_axis_tvalid    = '1;
+            fc_axis_tlast    = '0;
             seq_count_c = '0;
             next_state = ST_FC2_CPL_CRC;
           end
@@ -320,27 +297,26 @@ module pcie_flow_ctrl_init
       end
       ST_FC2_CPL_CRC: begin
         //we never recieved an ack restart FC1P
-        if (m_axis_tready) begin
-          m_axis_tdata_c1 = crc_reversed;
-          m_axis_tkeep_c1 = 8'h3;
-          m_axis_tvalid_c1 = '1;
-          m_axis_tlast_c1 = '1;
-          m_axis_tuser_c1 = '0;
-          seq_count_c = '0;
-          next_state = CHECK_FC2;
+        if (fc_axis_tready) begin
+          fc_axis_tdata  = crc_reversed;
+          fc_axis_tkeep  = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '1;
+          seq_count_c    = '0;
+          next_state     = CHECK_FC2;
         end
       end
       CHECK_FC2: begin
         seq_count_c = seq_count_r + 1'b1;
-        if (m_axis_tready || !m_axis_tvalid_r1) begin
-          m_axis_tvalid_c1 = '0;
+        if (fc_axis_tready) begin
+          fc_axis_tvalid = '0;
           if (fc2_values_stored_i) begin
             seq_count_c = '0;
-            m_axis_tvalid_c1 = '0;
+            fc_axis_tvalid = '0;
             next_state = ST_FC_COMPLETE;
           end else if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c = '0;
-            m_axis_tvalid_c1 = '0;
+            fc_axis_tvalid = '0;
             next_state = ST_FC2;
           end
         end
@@ -354,19 +330,45 @@ module pcie_flow_ctrl_init
     endcase
   end
 
-  pcie_datalink_crc dllp_crc_inst (
-      .crcIn ('1),
-      .data  (dll_packet_c[31:0]),
-      .crcOut(crc_out)
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_pipeline_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(fc_axis_tdata),
+      .s_axis_tkeep(fc_axis_tkeep),
+      .s_axis_tvalid(fc_axis_tvalid),
+      .s_axis_tready(fc_axis_tready),
+      .s_axis_tlast(fc_axis_tlast),
+      .s_axis_tuser(fc_axis_tuser),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tvalid(m_axis_tvalid),
+      .m_axis_tready(fc_axis_tready),
+      .m_axis_tlast(m_axis_tlast),
+      .m_axis_tuser(m_axis_tuser),
+      .m_axis_tid(),
+      .m_axis_tdest()
   );
 
-
-  assign m_axis_tdata  = m_axis_tdata_r1;
-  assign m_axis_tkeep  = m_axis_tkeep_r1;
-  assign m_axis_tvalid = m_axis_tvalid_r1;
-  assign m_axis_tlast  = m_axis_tlast_r1;
-  assign m_axis_tuser  = m_axis_tuser_r1;
-
+  pcie_datalink_crc dllp_crc_inst (
+      .crcIn ('1),
+      .data  (fc_axis_tdata),
+      .crcOut(crc_out)
+  );
 
 
 endmodule

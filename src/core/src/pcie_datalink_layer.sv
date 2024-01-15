@@ -47,19 +47,12 @@ module pcie_datalink_layer
     input  logic [USER_WIDTH-1:0] s_axis_phy_tuser,
     output logic                  s_axis_phy_tready,
     //PHY -> DLLP AXIS output
-    output logic [DATA_WIDTH-1:0] m_axis_dllp2phy_tdata,
-    output logic [KEEP_WIDTH-1:0] m_axis_dllp2phy_tkeep,
-    output logic                  m_axis_dllp2phy_tvalid,
-    output logic                  m_axis_dllp2phy_tlast,
-    output logic [USER_WIDTH-1:0] m_axis_dllp2phy_tuser,
-    input  logic                  m_axis_dllp2phy_tready,
-    //TLP -> DLLP AXIS output
-    output logic [DATA_WIDTH-1:0] m_axis_tlp2phy_tdata,
-    output logic [KEEP_WIDTH-1:0] m_axis_tlp2phy_tkeep,
-    output logic                  m_axis_tlp2phy_tvalid,
-    output logic                  m_axis_tlp2phy_tlast,
-    output logic [USER_WIDTH-1:0] m_axis_tlp2phy_tuser,
-    input  logic                  m_axis_tlp2phy_tready,
+    output logic [DATA_WIDTH-1:0] m_axis_phy_tdata,
+    output logic [KEEP_WIDTH-1:0] m_axis_phy_tkeep,
+    output logic                  m_axis_phy_tvalid,
+    output logic                  m_axis_phy_tlast,
+    output logic [USER_WIDTH-1:0] m_axis_phy_tuser,
+    input  logic                  m_axis_phy_tready,
     //Configuration
     input  logic                  phy_link_up_i,
     output logic [           7:0] bus_num_o,
@@ -107,6 +100,15 @@ module pcie_datalink_layer
   logic                               m_axis_dllprx2phy_tlast;
   logic            [  USER_WIDTH-1:0] m_axis_dllprx2phy_tuser;
   logic                               m_axis_dllprx2phy_tready;
+
+
+  //TLP AXIS output
+  logic            [(DATA_WIDTH)-1:0] m_axis_tlp2phy_tdata;
+  logic            [(KEEP_WIDTH)-1:0] m_axis_tlp2phy_tkeep;
+  logic                               m_axis_tlp2phy_tvalid;
+  logic                               m_axis_tlp2phy_tlast;
+  logic            [  USER_WIDTH-1:0] m_axis_tlp2phy_tuser;
+  logic                               m_axis_tlp2phy_tready;
 
   //tlp ack/nak
   logic            [            11:0] seq_num;
@@ -210,42 +212,42 @@ module pcie_datalink_layer
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RX_FIFO_SIZE(RX_FIFO_SIZE)
   ) dllp_receive_inst (
-      .clk_i              (clk_i),
-      .rst_i              (rst_i || soft_reset),
-      .link_status_i      (link_status),
-      .phy_link_up_i      (phy_link_up_i),
-      .s_axis_tdata       (s_axis_phy_tdata),
-      .s_axis_tkeep       (s_axis_phy_tkeep),
-      .s_axis_tvalid      (s_axis_phy_tvalid),
-      .s_axis_tlast       (s_axis_phy_tlast),
-      .s_axis_tuser       (s_axis_phy_tuser),
-      .s_axis_tready      (s_axis_phy_tready),
-      .m_axis_dllp2tlp_tdata       (m_axis_tlp_tdata)    ,
-      .m_axis_dllp2tlp_tkeep       (m_axis_tlp_tkeep)    ,
-      .m_axis_dllp2tlp_tvalid      (m_axis_tlp_tvalid)  ,
-      .m_axis_dllp2tlp_tlast       (m_axis_tlp_tlast)  ,
-      .m_axis_dllp2tlp_tuser       (m_axis_tlp_tuser)  ,
-      .m_axis_dllp2tlp_tready      ( m_axis_tlp_tready),
-      .m_axis_dllp2phy_tdata       (m_axis_dllprx2phy_tdata),
-      .m_axis_dllp2phy_tkeep       (m_axis_dllprx2phy_tkeep),
-      .m_axis_dllp2phy_tvalid      ( m_axis_dllprx2phy_tvalid),
-      .m_axis_dllp2phy_tlast       (m_axis_dllprx2phy_tlast),
-      .m_axis_dllp2phy_tuser       (m_axis_dllprx2phy_tuser),
-      .m_axis_dllp2phy_tready      ( m_axis_dllprx2phy_tready),
-      .seq_num_o          (seq_num),
-      .seq_num_vld_o      (seq_num_vld),
-      .seq_num_acknack_o  (seq_num_acknack),
-      .fc1_values_stored_o(fc1_values_stored),
-      .fc2_values_stored_o(fc2_values_stored),
-      .tx_fc_ph_o         (tx_fc_ph),
-      .tx_fc_pd_o         (tx_fc_pd),
-      .tx_fc_nph_o        (tx_fc_nph),
-      .tx_fc_npd_o        (tx_fc_npd)
+      .clk_i                 (clk_i),
+      .rst_i                 (rst_i || soft_reset),
+      .link_status_i         (link_status),
+      .phy_link_up_i         (phy_link_up_i),
+      .s_axis_tdata          (s_axis_phy_tdata),
+      .s_axis_tkeep          (s_axis_phy_tkeep),
+      .s_axis_tvalid         (s_axis_phy_tvalid),
+      .s_axis_tlast          (s_axis_phy_tlast),
+      .s_axis_tuser          (s_axis_phy_tuser),
+      .s_axis_tready         (s_axis_phy_tready),
+      .m_axis_dllp2tlp_tdata (m_axis_tlp_tdata),
+      .m_axis_dllp2tlp_tkeep (m_axis_tlp_tkeep),
+      .m_axis_dllp2tlp_tvalid(m_axis_tlp_tvalid),
+      .m_axis_dllp2tlp_tlast (m_axis_tlp_tlast),
+      .m_axis_dllp2tlp_tuser (m_axis_tlp_tuser),
+      .m_axis_dllp2tlp_tready(m_axis_tlp_tready),
+      .m_axis_dllp2phy_tdata (m_axis_dllprx2phy_tdata),
+      .m_axis_dllp2phy_tkeep (m_axis_dllprx2phy_tkeep),
+      .m_axis_dllp2phy_tvalid(m_axis_dllprx2phy_tvalid),
+      .m_axis_dllp2phy_tlast (m_axis_dllprx2phy_tlast),
+      .m_axis_dllp2phy_tuser (m_axis_dllprx2phy_tuser),
+      .m_axis_dllp2phy_tready(m_axis_dllprx2phy_tready),
+      .seq_num_o             (seq_num),
+      .seq_num_vld_o         (seq_num_vld),
+      .seq_num_acknack_o     (seq_num_acknack),
+      .fc1_values_stored_o   (fc1_values_stored),
+      .fc2_values_stored_o   (fc2_values_stored),
+      .tx_fc_ph_o            (tx_fc_ph),
+      .tx_fc_pd_o            (tx_fc_pd),
+      .tx_fc_nph_o           (tx_fc_nph),
+      .tx_fc_npd_o           (tx_fc_npd)
   );
 
 
   axis_arb_mux #(
-      .S_COUNT(2),
+      .S_COUNT(3),
       .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE(KEEP_ENABLE),
       .KEEP_WIDTH(KEEP_WIDTH),
@@ -262,23 +264,23 @@ module pcie_datalink_layer
       .clk(clk_i),
       .rst(rst_i || soft_reset),
       // AXI inputs
-      .s_axis_tdata({m_axis_dllprx2phy_tdata, m_axis_dllpfc2phy_tdata}),
-      .s_axis_tkeep({m_axis_dllprx2phy_tkeep, m_axis_dllpfc2phy_tkeep}),
-      .s_axis_tvalid({m_axis_dllprx2phy_tvalid, m_axis_dllpfc2phy_tvalid}),
-      .s_axis_tready({m_axis_dllprx2phy_tready, m_axis_dllpfc2phy_tready}),
-      .s_axis_tlast({m_axis_dllprx2phy_tlast, m_axis_dllpfc2phy_tlast}),
+      .s_axis_tdata({m_axis_dllprx2phy_tdata, m_axis_dllpfc2phy_tdata, m_axis_tlp2phy_tdata}),
+      .s_axis_tkeep({m_axis_dllprx2phy_tkeep, m_axis_dllpfc2phy_tkeep, m_axis_tlp2phy_tkeep}),
+      .s_axis_tvalid({m_axis_dllprx2phy_tvalid, m_axis_dllpfc2phy_tvalid, m_axis_tlp2phy_tvalid}),
+      .s_axis_tready({m_axis_dllprx2phy_tready, m_axis_dllpfc2phy_tready, m_axis_tlp2phy_tready}),
+      .s_axis_tlast({m_axis_dllprx2phy_tlast, m_axis_dllpfc2phy_tlast, m_axis_tlp2phy_tlast}),
       .s_axis_tid(),
       .s_axis_tdest(),
-      .s_axis_tuser({m_axis_dllprx2phy_tuser, m_axis_dllpfc2phy_tuser}),
+      .s_axis_tuser({m_axis_dllprx2phy_tuser, m_axis_dllpfc2phy_tuser, m_axis_tlp2phy_tuser}),
       // AXI output
-      .m_axis_tdata(m_axis_dllp2phy_tdata),
-      .m_axis_tkeep(m_axis_dllp2phy_tkeep),
-      .m_axis_tvalid(m_axis_dllp2phy_tvalid),
-      .m_axis_tready(m_axis_dllp2phy_tready),
-      .m_axis_tlast(m_axis_dllp2phy_tlast),
+      .m_axis_tdata(m_axis_phy_tdata),
+      .m_axis_tkeep(m_axis_phy_tkeep),
+      .m_axis_tvalid(m_axis_phy_tvalid),
+      .m_axis_tready(m_axis_phy_tready),
+      .m_axis_tlast(m_axis_phy_tlast),
       .m_axis_tid(),
       .m_axis_tdest(),
-      .m_axis_tuser(m_axis_dllp2phy_tuser)
+      .m_axis_tuser(m_axis_phy_tuser)
   );
 
   assign bus_num_o    = '0;

@@ -4,9 +4,11 @@ import itertools
 import pyuvm
 import cocotb_test.simulator
 import sys
+from cocotb.queue import Queue
 from cocotbext.pcie.core import *
 from cocotbext.pcie.core.dllp import *
 from cocotbext.pcie.core.tlp import *
+from cocotbext.pcie.core.port import *
 from cocotb.clock import Clock
 from cocotbext.axi import *
 from cocotb.triggers import *
@@ -16,6 +18,136 @@ from base_uvm import *
 from pathlib import Path
 sys.path.append(str(Path("..").resolve()))
 
+class PhySimPort(Port):
+    """Port to interconnect simulated PCIe devices"""
+    def __init__(self, source, fc_init=[[0]*6]*8, *args, **kwargs):
+        super().__init__(*args, fc_init, **kwargs)
+        self.fc_idle_timer_steps = get_sim_steps(1, 'us')
+        self.fc_update_steps = get_sim_steps(3, 'us')
+
+        self.other = None
+
+        self.port_delay = 5e-9
+        self.rx_handler = self.tlp_handler
+
+        self.symbol_period = 3
+        self.max_latency_timer_steps = get_sim_steps(1e-1,'us')
+        self.link_delay_steps = get_sim_steps(1e-1, 'us')
+        self.max_latency_timer_steps = 4
+        self.time_scale = 2
+        self.seq_num = 0
+        self.source = source
+        self.config = Configuration(
+            width=16,
+            polynomial=0x1DB7,
+            init_value=0xFFFF,
+            final_xor_value=0x00000000,
+            reverse_input=False,
+            reverse_output=True,
+        )
+        self.calculator = Calculator(self.config)
+        
+        self.tlp_config = Configuration(
+            width=32,
+            polynomial=0x04C11DB7,
+            init_value=0xFFFFFFFF,
+            final_xor_value=0x00000000,
+            reverse_input=False,
+            reverse_output=True,
+        )
+        self.tlp_calculator = Calculator(self.tlp_config)
+        # cocotb.start_soon(self._run_transmit())
+        # cocotb.start_soon(self._run_receive())
+        # cocotb.start_soon(self._run_fc_update_idle_timer())
+
+    def tlp2dllp(self,seq_num, data,tlp_calculator):
+        test_data = seq_num.to_bytes(2,'big')
+        test_data += data
+        test_data += tlp_calculator.checksum(test_data).to_bytes(4,'big')
+        # seq_num += 1
+        return test_data
+    
+    def connect(self, other):
+        if isinstance(other, AxiStreamSource):
+            self.source = other
+
+    def _connect(self, port):
+        if self.other is not None:
+            raise Exception("Already connected")
+        port._connect_int(self)
+        self._connect_int(port)
+    
+    async def tlp_handler(self,tlp):
+        ...
+        # while True:
+        #     await Timer(90000)
+
+    # def _connect_int(self, port):
+    #     if self.other is not None:
+    #         raise Exception("Already connected")
+
+    #     self.other = port
+
+    #     if self.max_link_speed:
+    #         if port.max_link_speed:
+    #             self.cur_link_speed = min(self.max_link_speed, port.max_link_speed)
+    #         else:
+    #             self.cur_link_speed = self.max_link_speed
+    #     else:
+    #         self.cur_link_speed = port.max_link_speed
+
+    #     if self.max_link_width:
+    #         if port.max_link_width:
+    #             self.cur_link_width = min(self.max_link_width, port.max_link_width)
+    #         else:
+    #             self.cur_link_width = self.max_link_width
+    #     else:
+    #         self.cur_link_width = port.max_link_width
+
+    #     if self.cur_link_width is not None and self.cur_link_speed is not None:
+    #         self.symbol_period = 8 / (PCIE_GEN_RATE[self.cur_link_speed] * self.cur_link_width)
+    #         self.max_latency_timer_steps = int(get_max_update_latency(self.max_payload_size, self.cur_link_width, self.cur_link_speed) * 8 / PCIE_GEN_RATE[self.cur_link_speed] * self.time_scale)
+    #         self.link_delay_steps = int((self.port_delay + port.port_delay) * self.time_scale)
+    #     else:
+    #         self.symbol_period = 0
+    #         self.max_latency_timer_steps = 0
+    #         self.link_delay_steps = 0
+
+    async def handle_tx(self, pkt):
+        await Timer(max(int(pkt.get_wire_size() * self.symbol_period * self.time_scale), 1), 'step')
+        # cocotb.start_soon(self._transmit(pkt))
+        await self._transmit(pkt)
+
+    async def _transmit(self, pkt):
+        # pkt1 = self.tx_queue.get_nowait()
+        # print(self.tx_queue)
+        # await self._run_transmit()
+        if self.source is None:
+            raise Exception("Port not connected")
+        await Timer(max(self.link_delay_steps, 1), 'step')
+        if isinstance(pkt,Dllp):
+            seq_item = pkt
+            seq_item.crc = self.calculator.checksum(
+                seq_item.pack()).to_bytes(2, 'big')
+            data = seq_item.pack()
+            data += self.calculator.checksum(data).to_bytes(2, 'big')
+            frame = AxiStreamFrame(data)
+            frame.tuser = 1
+            
+        elif isinstance(pkt,Tlp):
+            print("sending tlp")
+            seq_item = pkt
+            seq_item.crc = self.calculator.checksum(
+                seq_item.pack()).to_bytes(2, 'big')
+            data = seq_item.pack()
+            data += self.calculator.checksum(data).to_bytes(2, 'big')
+            frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,self.tlp_calculator))
+            frame.tuser = 2
+            
+        await self.source.send(frame)
+        await with_timeout(self.source.wait(), 100000, 'ns')
+        # wait self.other.ext_recv(pkt)
+    
 
 class dllp_seq_item(uvm_sequence_item):
     def __init__(self, name="dllp_seq_item"):
@@ -104,6 +236,7 @@ class tlp_seq(uvm_sequence):
         # Create and send a sequence item
         length = random.randint(1, 32)
         seq_item = dllp_seq_item("my_sequence_item")
+        print("my seq" + str(seq_item))
         await self.start_item(seq_item)
         seq_item.Tlp.fmt_type = random.choice([TlpType.MEM_WRITE])
         if seq_item.Tlp.fmt_type == TlpType.MEM_WRITE:
@@ -122,54 +255,6 @@ class tlp_seq(uvm_sequence):
         await self.finish_item(seq_item)
         # assert 1 == 0
         self.result = seq_item.results
-
-async def test_fc1(seqr, fc1_type, seq_num, hdr_fc, data_fc):
-    seq = dllp_seq("seq", seq_num, fc1_type, hdr_fc, data_fc)
-    print(seq)
-    await seq.start(seqr)
-    return seq.result
-
-# async def send_tlps(seqr):
-#     seq = tlp_seq("seq")
-#     await seq.start(seqr)
-#     return seq.result
-
-class FcInitSeq(uvm_sequence):
-    def __init__(self, name):
-        super().__init__(name)
-        self.seqr = ConfigDB().get(None, "", "phy_sequencer")
-
-    async def body(self):
-        prev_num = 0
-        cur_num = 1
-        fib_list = [prev_num, cur_num]
-        sum = 0
-        hdr_fc = random.randint(0, 20)
-        data_fc = random.randint(0, 20)
-        init_list = [DllpType.INIT_FC1_P,
-                     DllpType.INIT_FC1_NP,
-                     DllpType.INIT_FC1_CPL,
-                     DllpType.INIT_FC2_P,
-                     DllpType.INIT_FC2_NP,
-                     DllpType.INIT_FC2_CPL]
-        tlp_list = [TlpType.MEM_READ,
-                    TlpType.MEM_READ_64,
-                    TlpType.MEM_READ_LOCKED,
-                    TlpType.MEM_READ_LOCKED_64,
-                    TlpType.MEM_WRITE,
-                    TlpType.MEM_WRITE_64]
-        for i in range(6):
-            sum = await test_fc1(self.seqr, init_list[i], i, hdr_fc, data_fc)
-            fib_list.append(sum)
-            prev_num = cur_num
-            cur_num = sum
-        # for i in range(6):
-        #     sum = await send_tlp(self.seqr, tlp_list[i], i)
-        #     fib_list.append(sum)
-        #     prev_num = cur_num
-        #     cur_num = sum
-        # uvm_root().logger.info("flow control initiation Sequence: " + str(fib_list))
-        # uvm_root().set_logging_level_hier(CRITICAL)
 
 
 class flow_control_seq(base_sequence):
@@ -214,9 +299,10 @@ class flow_control_seq(base_sequence):
                 break
             
     async def send_tlp(self,seqr):
-        for i in range(100):
+        for i in range(10):
             tlp = tlp_seq("tlp seq item",i)
             await tlp.start(seqr)
+            await Timer(9000000)
             
     async def get_dllp(self):
         ...
@@ -224,19 +310,19 @@ class flow_control_seq(base_sequence):
         #     cmd_success, cmd = self.cmd_get_port.try_get()
             
     async def body(self):
-        # print(ConfigDB())
+        print(ConfigDB())
         seqr = ConfigDB().get(None, "", "phy_sequencer")
-        # while True:
-        coro1Thread = cocotb.start_soon(self.send_fc1(seqr))
-        coro2Thread = await Timer(9000000)
-        coro3Thread = cocotb.start_soon(self.get_dllp())
-        
-        await First(coro1Thread,coro2Thread)
-        coro1Thread = cocotb.start_soon(self.send_fc2(seqr))
-        await First(coro1Thread,coro2Thread)
-        
         coro1Thread = cocotb.start_soon(self.send_tlp(seqr))
-        await First(coro1Thread,coro2Thread)
+        coro2Thread = await Timer(900000)
+        await First(coro1Thread)
+        # while True:
+        # coro1Thread = cocotb.start_soon(self.send_fc1(seqr))
+        # coro2Thread = await Timer(9000000)
+        # coro3Thread = cocotb.start_soon(self.get_dllp())
+        
+        # await First(coro1Thread,coro2Thread)
+        # coro1Thread = cocotb.start_soon(self.send_fc2(seqr))
+        # await First(coro1Thread,coro2Thread)
         # uvm_root().logger.info("flow control initiation Sequence: ")
         # uvm_root().set_logging_level_hier(CRITICAL)
 
@@ -277,7 +363,11 @@ class phy_driver(base_driver):
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_axis_phy"), self.dut.clk_i, self.dut.rst_i)
         self.sink = AxiStreamSink(AxiStreamBus.from_prefix(
-            self.dut, "m_axis_dllp2phy"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "m_axis_phy"), self.dut.clk_i, self.dut.rst_i)
+        self.tlp_sink = AxiStreamSink(AxiStreamBus.from_prefix(
+            self.dut, "m_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
+        self.tlp_source = AxiStreamSource(AxiStreamBus.from_prefix(
+            self.dut, "s_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
         self.datum = None
 
     async def reset(self):
@@ -300,35 +390,81 @@ class phy_driver(base_driver):
         self.dut.phy_link_up_i.value = 1
 
     async def drive_item(self):
-         while True:
+        # while self.port.fc_initialized == False:
+            # ...
+        while True:
             # Wait for a sequence item from the sequencer
             seq_item = await self.seq_item_port.get_next_item()
             print("got item")
-            await self.source.send(seq_item.frame)
-            await with_timeout(self.source.wait(), 10000, 'ns')
-            seq_item.results = self.datum
+            await self.port.send(seq_item.Tlp)
+            # print(self.port.tx_queue)
+            # await self.source.send(seq_item.frame)
+            # await with_timeout(self.source.wait(), 10000, 'ns')
+            seq_item.results = None
             self.datum = None
-            self.ap.write(seq_item)
+            # self.ap.write(seq_item)
             self.seq_item_port.item_done()
+    
+    async def read_tlp(self):
+        while True:
+            tlp = await self.tlp_sink.recv()
+            await self.tlp_source.send(tlp)
+            # await with_timeout(self.tlp_source.wait(), 10000, 'ns')
             
     async def  read_dllp(self):
          while True:
             self.datum = await self.sink.recv()
+            rx_tlp = self.datum
+            if rx_tlp.tuser == 1:
+                pkt = Dllp()
+            elif rx_tlp.tuser == 2:
+                pkt = Tlp()
+                print(pkt)
+            else:
+                pkt = None
+                
+            if pkt:
+                pkt = pkt.unpack(rx_tlp.tdata)
+                await self.port.ext_recv(pkt)
+            # if(rx_tlp.tuser == 1):
+            #     pkt = Dllp()
+            #     pkt = pkt.unpack(rx_tlp.tdata)
+            # else:
+            #     pkt = Tlp()
+            #     pkt = pkt.unpack(rx_tlp.tdata)
+                
+                
+            # uvm_root().logger.info("flow control initiation Sequence: ")
+            # uvm_root().set_logging_level_hier(CRITICAL)
             # self.datum = self.datuma.tdata
-            print(f"\n\n\n\n\nMONITORED {self.datum}")
+            # print(f"\n\n\n\n\nMONITORED {self.datum}")
             # self.source_ap.write(datum)
 
+    # async def connect_phase(self):
+    #     await self.port.connect(self.source)
+        
     async def run_phase(self):
         await self.launch_tb()
-        for i in range(20):
-            await RisingEdge(self.dut.clk_i)
+        self.port = PhySimPort(self.source,fc_init=[[64, 1024, 64, 64, 64, 1024]]*8)
+        # NullTrigger()
+        # self.port.connect(self.source)
+        self.port.send_fc.set()
+        # self.port.send_ack.set()
+        print(self.port.send_fc.is_set())
+        self.port.fc_initialized = False
+        # await self.port.fc_state.reset()
+        # while self.port.fc_initialized == False:
+        #     ...
+        # for i in range(20):
+        #     await RisingEdge(self.dut.clk_i)
         self.source.set_pause_generator(self.cycle_pause())
         self.sink.set_pause_generator(self.cycle_pause())
         while True:
             coro1Thread = cocotb.start_soon(self.drive_item())
-            await Timer(10000)
+            # await Timer(10000)
             coro2Thread = cocotb.start_soon(self.read_dllp())
-            await First(coro1Thread,coro2Thread)
+            coro3Thread = cocotb.start_soon(self.read_tlp())
+            await First(coro1Thread,coro2Thread,coro3Thread)
             # Wait for a sequence item from the sequencer
             # seq_item = await self.seq_item_port.get_next_item()
             # print("got item")
@@ -386,20 +522,22 @@ class Fc1Test(uvm_test):
     """Test Dllp layer by going through flow control init sequence"""
 
     def build_phase(self):
+        self.log = logging.getLogger("cocotb.tb")
+        self.log.setLevel(logging.DEBUG)
         self.env = phy_env.create("phy_env", self)
 
     def end_of_elaboration_phase(self):
         self.test_all = flow_control_seq("test fc1")
-        print(self.env.agent.monitor.source_ap)
+        # print(self.env.agent.monitor.source_ap)
         # self.env.agent.monitor.source_ap.connect(self.test_all.cmd_export)
         # self.test_all.mon_ap.connect(self.env.agent.monitor.source_ap)
     
-    def connect_phase(self):
-        ...
+    # def connect_phase(self):
+    #     ...
         # self.env.agent.monitor.source_ap.connect(self.test_all.cmd_export)
         # self.test_all.cmd_export.connect(self.env.agent.monitor.source_ap)
 
     async def run_phase(self):
         self.raise_objection()
-        await self.test_all.start()
+        await with_timeout(self.test_all.start(),9000,'ns')
         self.drop_objection()

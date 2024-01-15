@@ -33,7 +33,7 @@ package pcie_datalink_pkg;
   typedef enum logic [7:0] {
     MR     = 8'b00?_00000,  // Memory Read Request
     MRL    = 8'b00?_00001,  // Memory Read Request Locked
-    MW     = 8'b010_00000,  // Memory Write Request
+    MW     = 8'b01?_00000,  // Memory Write Request
     IOR    = 8'b000_00010,  // I / O Read Request
     IOW    = 8'b010_00010,  // I / O Write Request
     CR0    = 8'b000_00100,  // Configuration Read Type 0
@@ -200,7 +200,7 @@ package pcie_datalink_pkg;
     get_fc_data = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
   endfunction
 
-  function automatic dllp_ack_nack_t set_ack_nack(input dllp_type_t dllp_type,
+  function automatic void set_ack_nack(output dllp_ack_nack_t dllp_out, input dllp_type_t dllp_type,
   logic [11:0] seq_num, logic [15:0] crc_in = 16'h0);
     dllp_ack_nack_t temp_dllp = '0;
     temp_dllp.ack_nack_ = dllp_type;
@@ -208,11 +208,11 @@ package pcie_datalink_pkg;
     temp_dllp.ack_nack0 = seq_num[7:0];
     // {temp_dllp.ack_nack1, temp_dllp.ack_nack0} = {4'h0,seq_num};
     temp_dllp.crc = crc_in;
-    set_ack_nack = temp_dllp;
+    dllp_out = temp_dllp;
   endfunction
 
 
-  function automatic dllp_fc_t send_fc_init(input dllp_type_t dllp_type,
+  function automatic void send_fc_init(output dllp_fc_t dllp_out, input dllp_type_t dllp_type,
   input logic [2:0] vcd, input logic [7:0] hdrfc, input logic [11:0] datafc);
     begin
       dllp_fc_t dll_packet;
@@ -220,7 +220,7 @@ package pcie_datalink_pkg;
       {dll_packet.fc_type_.type_byte_} = dllp_type;
       {dll_packet.byte1.hdrfc1, dll_packet.byte2.hdrfc0} = hdrfc;
       {dll_packet.byte2.datafc1, dll_packet.datafc0} = datafc;
-      send_fc_init = dll_packet;
+      dllp_out = dll_packet;
     end
   endfunction
 /* verilator lint_on WIDTHEXPAND */

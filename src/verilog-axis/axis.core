@@ -8,6 +8,7 @@ filesets:
       - rtl/axis_register.v
       - rtl/axis_arb_mux.v
       - rtl/arbiter.v
+      - rtl/axis_fifo.v
       - rtl/priority_encoder.v
     file_type: systemVerilogSource
 

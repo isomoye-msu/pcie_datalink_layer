@@ -112,18 +112,18 @@ module dllp_receive
       .s_axis_tlast          (s_axis_tlast),
       .s_axis_tuser          (s_axis_tuser),
       .s_axis_tready         (tlp_ready),
-      .m_axis_dllp2phy_tdata (m_axis_dllp2phy_tdata),
-      .m_axis_dllp2phy_tkeep (m_axis_dllp2phy_tkeep),
-      .m_axis_dllp2phy_tvalid(m_axis_dllp2phy_tvalid),
-      .m_axis_dllp2phy_tlast (m_axis_dllp2phy_tlast),
-      .m_axis_dllp2phy_tuser (m_axis_dllp2phy_tuser),
-      .m_axis_dllp2phy_tready(m_axis_dllp2phy_tready),
-      .m_axis_dllp2tlp_tdata (m_axis_dllp2tlp_tdata),
-      .m_axis_dllp2tlp_tkeep (m_axis_dllp2tlp_tkeep),
-      .m_axis_dllp2tlp_tvalid(m_axis_dllp2tlp_tvalid),
-      .m_axis_dllp2tlp_tlast (m_axis_dllp2tlp_tlast),
-      .m_axis_dllp2tlp_tuser (m_axis_dllp2tlp_tuser),
-      .m_axis_dllp2tlp_tready(m_axis_dllp2tlp_tready)
+      .m_phy_axis_tdata (m_axis_dllp2phy_tdata),
+      .m_phy_axis_tkeep (m_axis_dllp2phy_tkeep),
+      .m_phy_axis_tvalid(m_axis_dllp2phy_tvalid),
+      .m_phy_axis_tlast (m_axis_dllp2phy_tlast),
+      .m_phy_axis_tuser (m_axis_dllp2phy_tuser),
+      .m_phy_axis_tready(m_axis_dllp2phy_tready),
+      .m_tlp_axis_tdata (m_axis_dllp2tlp_tdata),
+      .m_tlp_axis_tkeep (m_axis_dllp2tlp_tkeep),
+      .m_tlp_axis_tvalid(m_axis_dllp2tlp_tvalid),
+      .m_tlp_axis_tlast (m_axis_dllp2tlp_tlast),
+      .m_tlp_axis_tuser (m_axis_dllp2tlp_tuser),
+      .m_tlp_axis_tready(m_axis_dllp2tlp_tready)
   );
 
 
