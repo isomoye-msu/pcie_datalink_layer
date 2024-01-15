@@ -85,30 +85,30 @@ module pcie_datalink_layer
 
 
   //RETRY AXIS output
-  logic            [(DATA_WIDTH)-1:0] m_axis_dllpfc2phy_tdata;
-  logic            [(KEEP_WIDTH)-1:0] m_axis_dllpfc2phy_tkeep;
-  logic                               m_axis_dllpfc2phy_tvalid;
-  logic                               m_axis_dllpfc2phy_tlast;
-  logic            [  USER_WIDTH-1:0] m_axis_dllpfc2phy_tuser;
-  logic                               m_axis_dllpfc2phy_tready;
+  logic            [(DATA_WIDTH)-1:0] phy_fc_axis_tdata;
+  logic            [(KEEP_WIDTH)-1:0] phy_fc_axis_tkeep;
+  logic                               phy_fc_axis_tvalid;
+  logic                               phy_fc_axis_tlast;
+  logic            [  USER_WIDTH-1:0] phy_fc_axis_tuser;
+  logic                               phy_fc_axis_tready;
 
 
   //DLLP AXIS output
-  logic            [(DATA_WIDTH)-1:0] m_axis_dllprx2phy_tdata;
-  logic            [(KEEP_WIDTH)-1:0] m_axis_dllprx2phy_tkeep;
-  logic                               m_axis_dllprx2phy_tvalid;
-  logic                               m_axis_dllprx2phy_tlast;
-  logic            [  USER_WIDTH-1:0] m_axis_dllprx2phy_tuser;
-  logic                               m_axis_dllprx2phy_tready;
+  logic            [(DATA_WIDTH)-1:0] phy_rx_axis_tdata;
+  logic            [(KEEP_WIDTH)-1:0] phy_rx_axis_tkeep;
+  logic                               phy_rx_axis_tvalid;
+  logic                               phy_rx_axis_tlast;
+  logic            [  USER_WIDTH-1:0] phy_rx_axis_tuser;
+  logic                               phy_rx_axis_tready;
 
 
   //TLP AXIS output
-  logic            [(DATA_WIDTH)-1:0] m_axis_tlp2phy_tdata;
-  logic            [(KEEP_WIDTH)-1:0] m_axis_tlp2phy_tkeep;
-  logic                               m_axis_tlp2phy_tvalid;
-  logic                               m_axis_tlp2phy_tlast;
-  logic            [  USER_WIDTH-1:0] m_axis_tlp2phy_tuser;
-  logic                               m_axis_tlp2phy_tready;
+  logic            [(DATA_WIDTH)-1:0] phy_tlp_axis_tdata;
+  logic            [(KEEP_WIDTH)-1:0] phy_tlp_axis_tkeep;
+  logic                               phy_tlp_axis_tvalid;
+  logic                               phy_tlp_axis_tlast;
+  logic            [  USER_WIDTH-1:0] phy_tlp_axis_tuser;
+  logic                               phy_tlp_axis_tready;
 
   //tlp ack/nak
   logic            [            11:0] seq_num;
@@ -160,12 +160,12 @@ module pcie_datalink_layer
       .start_flow_control_i(init_flow_control),
       .fc1_values_stored_i(fc1_values_stored),
       .fc2_values_stored_i(fc2_values_stored),
-      .m_axis_tdata(m_axis_dllpfc2phy_tdata),
-      .m_axis_tkeep(m_axis_dllpfc2phy_tkeep),
-      .m_axis_tvalid(m_axis_dllpfc2phy_tvalid),
-      .m_axis_tlast(m_axis_dllpfc2phy_tlast),
-      .m_axis_tuser(m_axis_dllpfc2phy_tuser),
-      .m_axis_tready(m_axis_dllpfc2phy_tready),
+      .m_axis_tdata(phy_fc_axis_tdata),
+      .m_axis_tkeep(phy_fc_axis_tkeep),
+      .m_axis_tvalid(phy_fc_axis_tvalid),
+      .m_axis_tlast(phy_fc_axis_tlast),
+      .m_axis_tuser(phy_fc_axis_tuser),
+      .m_axis_tready(phy_fc_axis_tready),
       .init_ack_o(init_ack)
   );
 
@@ -187,12 +187,12 @@ module pcie_datalink_layer
       .s_axis_tlast(s_axis_tlp_tlast),
       .s_axis_tuser(s_axis_tlp_tuser),
       .s_axis_tready(s_axis_tlp_tready),
-      .m_axis_tdata(m_axis_tlp2phy_tdata),
-      .m_axis_tkeep(m_axis_tlp2phy_tkeep),
-      .m_axis_tvalid(m_axis_tlp2phy_tvalid),
-      .m_axis_tlast(m_axis_tlp2phy_tlast),
-      .m_axis_tuser(m_axis_tlp2phy_tuser),
-      .m_axis_tready(m_axis_tlp2phy_tready),
+      .m_axis_tdata(phy_tlp_axis_tdata),
+      .m_axis_tkeep(phy_tlp_axis_tkeep),
+      .m_axis_tvalid(phy_tlp_axis_tvalid),
+      .m_axis_tlast(phy_tlp_axis_tlast),
+      .m_axis_tuser(phy_tlp_axis_tuser),
+      .m_axis_tready(phy_tlp_axis_tready),
       .ack_nack_i(seq_num_acknack),
       .ack_nack_vld_i(seq_num_vld),
       .ack_seq_num_i(seq_num),
@@ -228,12 +228,12 @@ module pcie_datalink_layer
       .m_axis_dllp2tlp_tlast (m_axis_tlp_tlast),
       .m_axis_dllp2tlp_tuser (m_axis_tlp_tuser),
       .m_axis_dllp2tlp_tready(m_axis_tlp_tready),
-      .m_axis_dllp2phy_tdata (m_axis_dllprx2phy_tdata),
-      .m_axis_dllp2phy_tkeep (m_axis_dllprx2phy_tkeep),
-      .m_axis_dllp2phy_tvalid(m_axis_dllprx2phy_tvalid),
-      .m_axis_dllp2phy_tlast (m_axis_dllprx2phy_tlast),
-      .m_axis_dllp2phy_tuser (m_axis_dllprx2phy_tuser),
-      .m_axis_dllp2phy_tready(m_axis_dllprx2phy_tready),
+      .m_axis_dllp2phy_tdata (phy_rx_axis_tdata),
+      .m_axis_dllp2phy_tkeep (phy_rx_axis_tkeep),
+      .m_axis_dllp2phy_tvalid(phy_rx_axis_tvalid),
+      .m_axis_dllp2phy_tlast (phy_rx_axis_tlast),
+      .m_axis_dllp2phy_tuser (phy_rx_axis_tuser),
+      .m_axis_dllp2phy_tready(phy_rx_axis_tready),
       .seq_num_o             (seq_num),
       .seq_num_vld_o         (seq_num_vld),
       .seq_num_acknack_o     (seq_num_acknack),
@@ -264,14 +264,14 @@ module pcie_datalink_layer
       .clk(clk_i),
       .rst(rst_i || soft_reset),
       // AXI inputs
-      .s_axis_tdata({m_axis_dllprx2phy_tdata, m_axis_dllpfc2phy_tdata, m_axis_tlp2phy_tdata}),
-      .s_axis_tkeep({m_axis_dllprx2phy_tkeep, m_axis_dllpfc2phy_tkeep, m_axis_tlp2phy_tkeep}),
-      .s_axis_tvalid({m_axis_dllprx2phy_tvalid, m_axis_dllpfc2phy_tvalid, m_axis_tlp2phy_tvalid}),
-      .s_axis_tready({m_axis_dllprx2phy_tready, m_axis_dllpfc2phy_tready, m_axis_tlp2phy_tready}),
-      .s_axis_tlast({m_axis_dllprx2phy_tlast, m_axis_dllpfc2phy_tlast, m_axis_tlp2phy_tlast}),
+      .s_axis_tdata({phy_rx_axis_tdata, phy_fc_axis_tdata, phy_tlp_axis_tdata}),
+      .s_axis_tkeep({phy_rx_axis_tkeep, phy_fc_axis_tkeep, phy_tlp_axis_tkeep}),
+      .s_axis_tvalid({phy_rx_axis_tvalid, phy_fc_axis_tvalid, phy_tlp_axis_tvalid}),
+      .s_axis_tready({phy_rx_axis_tready, phy_fc_axis_tready, phy_tlp_axis_tready}),
+      .s_axis_tlast({phy_rx_axis_tlast, phy_fc_axis_tlast, phy_tlp_axis_tlast}),
       .s_axis_tid(),
       .s_axis_tdest(),
-      .s_axis_tuser({m_axis_dllprx2phy_tuser, m_axis_dllpfc2phy_tuser, m_axis_tlp2phy_tuser}),
+      .s_axis_tuser({phy_rx_axis_tuser, phy_fc_axis_tuser, phy_tlp_axis_tuser}),
       // AXI output
       .m_axis_tdata(m_axis_phy_tdata),
       .m_axis_tkeep(m_axis_phy_tkeep),
