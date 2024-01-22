@@ -28,8 +28,8 @@ class TB:
 
         cocotb.start_soon(Clock(dut.clk_i, 2, units="ns").start())
 
-        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis_tlp"), dut.clk_i, dut.rst_i)
-        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk_i, dut.rst_i)
+        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis"), dut.clk_i, dut.rst_i)
+        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk_i, dut.rst_i)
         #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk_i, dut.rst_i)
 
     def set_idle_generator(self, generator=None):

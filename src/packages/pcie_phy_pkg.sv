@@ -8,7 +8,6 @@ package pcie_phy_pkg;
   localparam int SkidBuffer = 2;
   // localparam int TwentyFourMsTimeOut = (CLK_RATE * (24 ** 5));  //32'h015B8D80;  //temp value
   // localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
-  localparam int SkidBuffer = 2;
 
   /* verilator lint_off WIDTHTRUNC */
   typedef enum logic [7:0] {
@@ -68,7 +67,7 @@ package pcie_phy_pkg;
     logic [5:0] post_cursor_coef;
   } ts1_symbol9_t;
 
-  typedef union {
+  typedef union packed {
     ts2_symbol6_t ts2;
     ts1_symbol6_t ts1;
     logic [7:0]   whole;

@@ -8,7 +8,7 @@ module dllp_transmit
     parameter int KEEP_WIDTH       = STRB_WIDTH,
     parameter int USER_WIDTH       = 1,
     parameter int S_COUNT          = 1,
-    parameter int MAX_PAYLOAD_SIZE = 0,
+    parameter int MAX_PAYLOAD_SIZE = 256,
     // Width of AXI stream interfaces in bits
     parameter int RETRY_TLP_SIZE   = 3
 ) (
@@ -112,11 +112,13 @@ module dllp_transmit
       .ack_nack_i       (ack_nack_i),
       .ack_nack_vld_i   (ack_nack_vld_i),
       .ack_seq_num_i    (ack_seq_num_i),
-      //bram
-      .bram_wr_o        (bram_retry_wr),
-      .bram_addr_o      (bram_retry_addr),
-      .bram_data_out_o  (bram_retry_data_in),
-      .bram_data_in_i   (bram_retry_data_out),
+      //axis tlp in
+      .s_axis_tdata     (m_axis_tlp2dllp_tdata),
+      .s_axis_tkeep     (m_axis_tlp2dllp_tkeep),
+      .s_axis_tvalid    (m_axis_tlp2dllp_tvalid),
+      .s_axis_tlast     (m_axis_tlp2dllp_tlast),
+      .s_axis_tuser     (m_axis_tlp2dllp_tuser),
+      .s_axis_tready    (),
       //axis out to phy
       .m_axis_tdata     (m_axis_retry_tdata),
       .m_axis_tkeep     (m_axis_retry_tkeep),
@@ -153,10 +155,10 @@ module dllp_transmit
       .m_axis_tuser     (m_axis_tlp2dllp_tuser),
       .m_axis_tready    (m_axis_tlp2dllp_tready),
       //bram
-      .bram_wr_o        (bram_dllp_wr),
-      .bram_addr_o      (bram_dllp_addr),
-      .bram_data_out_o  (bram_dllp_data_in),
-      .bram_data_in_i   (bram_dllp_data_out),
+    //   .bram_wr_o        (bram_dllp_wr),
+    //   .bram_addr_o      (bram_dllp_addr),
+    //   .bram_data_out_o  (bram_dllp_data_in),
+    //   .bram_data_in_i   (bram_dllp_data_out),
       //sequence number
       .seq_num_o        (ackd_transmit_seq),
       .dllp_valid_o     (dllp_valid),
@@ -208,21 +210,21 @@ module dllp_transmit
   );
 
 
-  bram_dp #(
-      .RAM_DATA_WIDTH(DATA_WIDTH),
-      .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
-  ) retry_buffer_inst (
-      .rst       (rst_i),
-      .a_clk     (clk_i),
-      .a_wr      (bram_retry_wr),
-      .a_addr    (bram_retry_addr),
-      .a_data_in (bram_retry_data_in),
-      .a_data_out(bram_retry_data_out),
-      .b_clk     (clk_i),
-      .b_wr      (bram_dllp_wr),
-      .b_addr    (bram_dllp_addr),
-      .b_data_in (bram_dllp_data_in),
-      .b_data_out(bram_dllp_data_out)
-  );
+//   bram_dp #(
+//       .RAM_DATA_WIDTH(DATA_WIDTH),
+//       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
+//   ) retry_buffer_inst (
+//       .rst       (rst_i),
+//       .a_clk     (clk_i),
+//       .a_wr      (bram_retry_wr),
+//       .a_addr    (bram_retry_addr),
+//       .a_data_in (bram_retry_data_in),
+//       .a_data_out(bram_retry_data_out),
+//       .b_clk     (clk_i),
+//       .b_wr      (bram_dllp_wr),
+//       .b_addr    (bram_dllp_addr),
+//       .b_data_in (bram_dllp_data_in),
+//       .b_data_out(bram_dllp_data_out)
+//   );
 
 endmodule

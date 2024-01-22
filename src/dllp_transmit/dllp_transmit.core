@@ -8,12 +8,14 @@ filesets:
       - src/retry_management.sv
       - src/dllp_transmit.sv
       - src/tlp2dllp.sv
+      - src/axis_retry_fifo.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
       - fusesoc:pcie:crc
       - fusesoc:pcie:bram
       - fusesoc:pcie:axis
+      - fusesoc:pcie:lint
 
   cocotb:
     files:
@@ -33,3 +35,18 @@ targets:
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
     toplevel : [dllp_transmit]
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_dllp_transmit
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -Iincludes/
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_transmit]
+
+

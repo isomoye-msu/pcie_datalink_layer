@@ -14,39 +14,39 @@ module tlp2dllp
     parameter int MaxNumWordsPerHdr = 128 / DATA_WIDTH,
     parameter int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2
 ) (
-    input  logic                      clk_i,              // Clock signal
-    input  logic                      rst_i,              // Reset signal
+    input  logic                  clk_i,              // Clock signal
+    input  logic                  rst_i,              // Reset signal
     //TLP AXIS inputs
-    input  logic [    DATA_WIDTH-1:0] s_axis_tdata,
-    input  logic [    KEEP_WIDTH-1:0] s_axis_tkeep,
-    input  logic [       S_COUNT-1:0] s_axis_tvalid,
-    input  logic [       S_COUNT-1:0] s_axis_tlast,
-    input  logic [    USER_WIDTH-1:0] s_axis_tuser,
-    output logic [       S_COUNT-1:0] s_axis_tready,
+    input  logic [DATA_WIDTH-1:0] s_axis_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
+    input  logic [   S_COUNT-1:0] s_axis_tvalid,
+    input  logic [   S_COUNT-1:0] s_axis_tlast,
+    input  logic [USER_WIDTH-1:0] s_axis_tuser,
+    output logic [   S_COUNT-1:0] s_axis_tready,
     //TLP AXI output
-    output logic [    DATA_WIDTH-1:0] m_axis_tdata,
-    output logic [    KEEP_WIDTH-1:0] m_axis_tkeep,
-    output logic                      m_axis_tvalid,
-    output logic                      m_axis_tlast,
-    output logic [    USER_WIDTH-1:0] m_axis_tuser,
-    input  logic                      m_axis_tready,
+    output logic [DATA_WIDTH-1:0] m_axis_tdata,
+    output logic [KEEP_WIDTH-1:0] m_axis_tkeep,
+    output logic                  m_axis_tvalid,
+    output logic                  m_axis_tlast,
+    output logic [USER_WIDTH-1:0] m_axis_tuser,
+    input  logic                  m_axis_tready,
     //bram signals
     // pulse a 1 to write and 0 reads
-    output logic                      bram_wr_o,
-    output logic [RAM_ADDR_WIDTH-1:0] bram_addr_o,
-    output logic [RAM_DATA_WIDTH-1:0] bram_data_out_o,
-    input  logic [RAM_DATA_WIDTH-1:0] bram_data_in_i,
+    // output logic                      bram_wr_o,
+    // output logic [RAM_ADDR_WIDTH-1:0] bram_addr_o,
+    // output logic [RAM_DATA_WIDTH-1:0] bram_data_out_o,
+    // input  logic [RAM_DATA_WIDTH-1:0] bram_data_in_i,
     //seq number.. handshake with phy layer
-    output logic [              15:0] seq_num_o,
-    output logic                      dllp_valid_o,
+    output logic [          15:0] seq_num_o,
+    output logic                  dllp_valid_o,
     //retry management
-    input  logic                      retry_available_i,
-    input  logic [               7:0] retry_index_i,
+    input  logic                  retry_available_i,
+    input  logic [           7:0] retry_index_i,
     // Flow control
-    input  logic [               7:0] tx_fc_ph_i,
-    input  logic [              11:0] tx_fc_pd_i,
-    input  logic [               7:0] tx_fc_nph_i,
-    input  logic [              11:0] tx_fc_npd_i
+    input  logic [           7:0] tx_fc_ph_i,
+    input  logic [          11:0] tx_fc_pd_i,
+    input  logic [           7:0] tx_fc_nph_i,
+    input  logic [          11:0] tx_fc_npd_i
 
 );
 
@@ -220,9 +220,9 @@ module tlp2dllp
     crc_in_c            = crc_in_r;
     //retry handshake signals
     dllp_valid_o        = '0;
-    bram_wr_o           = '0;
-    bram_addr_o         = '0;
-    bram_data_out_o     = '0;
+    // bram_wr_o           = '0;
+    // bram_addr_o         = '0;
+    // bram_data_out_o     = '0;
     next_transmit_seq_c = next_transmit_seq_r;
     case (curr_state)
       ST_IDLE: begin
@@ -254,9 +254,9 @@ module tlp2dllp
             is_np_c = '1;
           end
           if (is_cpl_c || is_p_c || is_np_c) begin
-            bram_addr_o     = word_count_r + word_offset_r + 1;
-            bram_wr_o       = '1;
-            bram_data_out_o = tlp_axis_tdata;
+            // bram_addr_o     = word_count_r + word_offset_r + 1;
+            // bram_wr_o       = '1;
+            // bram_data_out_o = tlp_axis_tdata;
             word_count_c    = word_count_r + 1;
             crc_in_c        = crc_out16;
             tlp_axis_tvalid = skid_axis_tvalid;
@@ -275,9 +275,9 @@ module tlp2dllp
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = skid_axis_tvalid;
           //update handshake
-          bram_addr_o     = word_count_r + word_offset_r + 1;
-          bram_wr_o       = '1;
-          bram_data_out_o = tlp_axis_tdata;
+          // bram_addr_o     = word_count_r + word_offset_r + 1;
+          // bram_wr_o       = '1;
+          // bram_data_out_o = tlp_axis_tdata;
           word_count_c    = word_count_r + 1;
           //check if packet is last
           if (skid_axis_tlast) begin
@@ -306,25 +306,25 @@ module tlp2dllp
           case (keep_r)
             //complete the rest of crc placement
             4'b0001: begin
-              tlp_axis_tdata  = {8'h0, crc_out32[23:0]};
-              tlp_axis_tkeep  = 4'b0111;
-              tlp_axis_tlast  = '1;
+              tlp_axis_tdata = {8'h0, crc_out32[23:0]};
+              tlp_axis_tkeep = 4'b0111;
+              tlp_axis_tlast = '1;
               //update handshake
-              bram_addr_o     = word_count_r + word_offset_r + 1;
-              bram_wr_o       = '1;
-              bram_data_out_o = tlp_axis_tdata;
-              word_count_c    = word_count_r + 1;
-              dllp_valid_o    = '1;
-              next_state      = ST_TLP_LAST;
+              // bram_addr_o     = word_count_r + word_offset_r + 1;
+              // bram_wr_o       = '1;
+              // bram_data_out_o = tlp_axis_tdata;
+              word_count_c   = word_count_r + 1;
+              dllp_valid_o   = '1;
+              next_state     = ST_TLP_LAST;
             end
             4'b0011: begin
               tlp_axis_tdata  = crc_out32;
               tlp_axis_tlast  = '1;
               tlp_axis_tvalid = '1;
               //update handshake
-              bram_addr_o     = word_count_r + word_offset_r + 1;
-              bram_wr_o       = '1;
-              bram_data_out_o = tlp_axis_tdata;
+              // bram_addr_o     = word_count_r + word_offset_r + 1;
+              // bram_wr_o       = '1;
+              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -355,10 +355,12 @@ module tlp2dllp
             4'b0111: begin
               tlp_axis_tdata  = {8'h0, crc_out32[31:24]};
               tlp_axis_tkeep  = 4'b0001;
+              tlp_axis_tlast  = '1;
+              tlp_axis_tvalid = '1;
               //update handshake
-              bram_addr_o     = word_count_r + word_offset_r + 1;
-              bram_wr_o       = '1;
-              bram_data_out_o = tlp_axis_tdata;
+              // bram_addr_o     = word_count_r + word_offset_r + 1;
+              // bram_wr_o       = '1;
+              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -366,10 +368,12 @@ module tlp2dllp
             4'b1111: begin
               tlp_axis_tdata  = {8'h0, crc_out32[31:16]};
               tlp_axis_tkeep  = 4'b0011;
+              tlp_axis_tlast  = '1;
+              tlp_axis_tvalid = '1;
               //update handshake
-              bram_addr_o     = word_count_r + word_offset_r + 1;
-              bram_wr_o       = '1;
-              bram_data_out_o = tlp_axis_tdata;
+              // bram_addr_o     = word_count_r + word_offset_r + 1;
+              // bram_wr_o       = '1;
+              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -380,10 +384,10 @@ module tlp2dllp
         end
       end
       ST_TLP_LAST: begin
-        bram_addr_o         = word_offset_r;
-        bram_wr_o           = '1;
+        // bram_addr_o         = word_offset_r;
+        // bram_wr_o           = '1;
         crc_in_c            = '1;
-        bram_data_out_o     = {15'h0, m_axis_tkeep, word_count_r[15:0]};
+        // bram_data_out_o     = {15'h0, m_axis_tkeep, word_count_r[15:0]};
         word_count_c        = '0;
         is_cpl_c            = '0;
         is_np_c             = '0;
