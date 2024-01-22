@@ -2,17 +2,17 @@ module tlp2dllp
   import pcie_datalink_pkg::*;
 #(
     // Width of AXI stream interfaces in bits
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH         = 32,
     // tkeep signal width (words per cycle)
-    parameter int KEEP_WIDTH = (DATA_WIDTH / 8),
-    parameter int USER_WIDTH = 1,
-    parameter int S_COUNT = 1,
-    parameter int MAX_PAYLOAD_SIZE = 0,
-    parameter int RAM_DATA_WIDTH = DATA_WIDTH,  // width of the data
-    parameter int RAM_ADDR_WIDTH = $clog2(MaxNumWordsPerTLP),  // number of address bits
-    parameter int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE),
-    parameter int MaxNumWordsPerHdr = 128 / DATA_WIDTH,
-    parameter int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2
+    parameter int KEEP_WIDTH         = (DATA_WIDTH / 8),
+    parameter int USER_WIDTH         = 1,
+    parameter int S_COUNT            = 1,
+    parameter int MAX_PAYLOAD_SIZE   = 0,
+    parameter int RAM_DATA_WIDTH     = DATA_WIDTH, // width of the data
+    parameter int RAM_ADDR_WIDTH     = $clog2(MaxNumWordsPerTLP),  // number of address bits
+    parameter int MaxBytesPerTLP     = 8 << (4 + MAX_PAYLOAD_SIZE),
+    parameter int MaxNumWordsPerHdr  = 128 / DATA_WIDTH,
+    parameter int MaxNumWordsPerTLP  = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2
 ) (
     input  logic                  clk_i,              // Clock signal
     input  logic                  rst_i,              // Reset signal
@@ -30,12 +30,6 @@ module tlp2dllp
     output logic                  m_axis_tlast,
     output logic [USER_WIDTH-1:0] m_axis_tuser,
     input  logic                  m_axis_tready,
-    //bram signals
-    // pulse a 1 to write and 0 reads
-    // output logic                      bram_wr_o,
-    // output logic [RAM_ADDR_WIDTH-1:0] bram_addr_o,
-    // output logic [RAM_DATA_WIDTH-1:0] bram_data_out_o,
-    // input  logic [RAM_DATA_WIDTH-1:0] bram_data_in_i,
     //seq number.. handshake with phy layer
     output logic [          15:0] seq_num_o,
     output logic                  dllp_valid_o,
@@ -220,9 +214,6 @@ module tlp2dllp
     crc_in_c            = crc_in_r;
     //retry handshake signals
     dllp_valid_o        = '0;
-    // bram_wr_o           = '0;
-    // bram_addr_o         = '0;
-    // bram_data_out_o     = '0;
     next_transmit_seq_c = next_transmit_seq_r;
     case (curr_state)
       ST_IDLE: begin
@@ -254,9 +245,6 @@ module tlp2dllp
             is_np_c = '1;
           end
           if (is_cpl_c || is_p_c || is_np_c) begin
-            // bram_addr_o     = word_count_r + word_offset_r + 1;
-            // bram_wr_o       = '1;
-            // bram_data_out_o = tlp_axis_tdata;
             word_count_c    = word_count_r + 1;
             crc_in_c        = crc_out16;
             tlp_axis_tvalid = skid_axis_tvalid;
@@ -274,10 +262,6 @@ module tlp2dllp
           tlp_axis_tdata  = {skid_axis_tdata[15:0], tlp_data_r1[31:16]};
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = skid_axis_tvalid;
-          //update handshake
-          // bram_addr_o     = word_count_r + word_offset_r + 1;
-          // bram_wr_o       = '1;
-          // bram_data_out_o = tlp_axis_tdata;
           word_count_c    = word_count_r + 1;
           //check if packet is last
           if (skid_axis_tlast) begin
@@ -309,10 +293,6 @@ module tlp2dllp
               tlp_axis_tdata = {8'h0, crc_out32[23:0]};
               tlp_axis_tkeep = 4'b0111;
               tlp_axis_tlast = '1;
-              //update handshake
-              // bram_addr_o     = word_count_r + word_offset_r + 1;
-              // bram_wr_o       = '1;
-              // bram_data_out_o = tlp_axis_tdata;
               word_count_c   = word_count_r + 1;
               dllp_valid_o   = '1;
               next_state     = ST_TLP_LAST;
@@ -321,10 +301,6 @@ module tlp2dllp
               tlp_axis_tdata  = crc_out32;
               tlp_axis_tlast  = '1;
               tlp_axis_tvalid = '1;
-              //update handshake
-              // bram_addr_o     = word_count_r + word_offset_r + 1;
-              // bram_wr_o       = '1;
-              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -357,10 +333,6 @@ module tlp2dllp
               tlp_axis_tkeep  = 4'b0001;
               tlp_axis_tlast  = '1;
               tlp_axis_tvalid = '1;
-              //update handshake
-              // bram_addr_o     = word_count_r + word_offset_r + 1;
-              // bram_wr_o       = '1;
-              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -370,10 +342,6 @@ module tlp2dllp
               tlp_axis_tkeep  = 4'b0011;
               tlp_axis_tlast  = '1;
               tlp_axis_tvalid = '1;
-              //update handshake
-              // bram_addr_o     = word_count_r + word_offset_r + 1;
-              // bram_wr_o       = '1;
-              // bram_data_out_o = tlp_axis_tdata;
               word_count_c    = word_count_r + 1;
               dllp_valid_o    = '1;
               next_state      = ST_TLP_LAST;
@@ -384,10 +352,7 @@ module tlp2dllp
         end
       end
       ST_TLP_LAST: begin
-        // bram_addr_o         = word_offset_r;
-        // bram_wr_o           = '1;
         crc_in_c            = '1;
-        // bram_data_out_o     = {15'h0, m_axis_tkeep, word_count_r[15:0]};
         word_count_c        = '0;
         is_cpl_c            = '0;
         is_np_c             = '0;
