@@ -1,0 +1,65 @@
+CAPI=2:
+name: fusesoc:pcie:ltssm:1.0.0
+description: pcie link training state machine
+
+filesets:
+  rtl:
+    files:
+      - src/ltssm_configuration.sv 
+      - src/ltssm_detect.sv 
+      - src/ltssm_l0.sv 
+      - src/ltssm_polling.sv 
+      - src/ltssm_recovery.sv 
+      - src/pcie_ltssm.sv
+      - includes/downstream_config.sv : {is_include_file: true}
+      - includes/upstream_config.sv : {is_include_file: true}
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:base_uvm
+      - fusesoc:pcie:dllp_core
+      - fusesoc:pcie:lint
+
+  cocotb:
+    files:
+      - tb/test_ltssm_configuration.py : {file_type : user, copyto : .}
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_ltssm_configuration
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_receive]
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_ltssm_configuration
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -Iincludes/
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [ltssm_configuration]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : ltssm_configuration
+
+scripts:
+  iceprog:
+    cmd : [MODULE=ltssm_configuration]

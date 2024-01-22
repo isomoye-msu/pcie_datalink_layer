@@ -2,15 +2,15 @@ module dllp_transmit
   import pcie_datalink_pkg::*;
 #(
     // TLP data width
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH       = 32,
     // TLP strobe width
-    parameter int STRB_WIDTH = DATA_WIDTH / 8,
-    parameter int KEEP_WIDTH = STRB_WIDTH,
-    parameter int USER_WIDTH = 1,
-    parameter int S_COUNT = 1,
+    parameter int STRB_WIDTH       = DATA_WIDTH / 8,
+    parameter int KEEP_WIDTH       = STRB_WIDTH,
+    parameter int USER_WIDTH       = 1,
+    parameter int S_COUNT          = 1,
     parameter int MAX_PAYLOAD_SIZE = 0,
     // Width of AXI stream interfaces in bits
-    parameter int RETRY_TLP_SIZE = 3
+    parameter int RETRY_TLP_SIZE   = 3
 ) (
     input logic clk_i,  // Clock signal
     input logic rst_i,  // Reset signal
@@ -188,11 +188,11 @@ module dllp_transmit
       .clk(clk_i),
       .rst(rst_i),
       // AXI inputs
-      .s_axis_tdata({ m_axis_tlp2dllp_tdata, m_axis_retry_tdata}),
-      .s_axis_tkeep({ m_axis_tlp2dllp_tkeep, m_axis_retry_tkeep}),
+      .s_axis_tdata({m_axis_tlp2dllp_tdata, m_axis_retry_tdata}),
+      .s_axis_tkeep({m_axis_tlp2dllp_tkeep, m_axis_retry_tkeep}),
       .s_axis_tvalid({m_axis_tlp2dllp_tvalid, m_axis_retry_tvalid}),
       .s_axis_tready({m_axis_tlp2dllp_tready, m_axis_retry_tready}),
-      .s_axis_tlast({ m_axis_tlp2dllp_tlast, m_axis_retry_tlast}),
+      .s_axis_tlast({m_axis_tlp2dllp_tlast, m_axis_retry_tlast}),
       .s_axis_tid(),
       .s_axis_tdest(),
       .s_axis_tuser({m_axis_tlp2dllp_tuser, m_axis_retry_tuser}),

@@ -68,20 +68,9 @@ module dllp2tlp
   } dll_rx_st_e;
 
 
-
-  //dllp to tlp fsm emum
-  typedef enum logic [2:0] {
-    ST_TLP_RX_IDLE,
-    ST_TLP_GET_WD_CNT,
-    ST_TLP_RX_STREAM,
-    ST_TLP_RX_EOP
-  } tlp_rx_st_e;
-
   dll_rx_st_e                   curr_state;
   dll_rx_st_e                   next_state;
   dllp_union_t                  dll_packet;
-
-
   //tlp nulled
   logic                         tlp_nullified_c;
   logic                         tlp_nullified_r;
@@ -118,8 +107,6 @@ module dllp2tlp
   logic                         is_p_r;
   logic                         is_3dw_c;
   logic                         is_3dw_r;
-  //fifo helper signals
-  logic                         update_fc;
   //skid buffer axis signals
   logic        [DATA_WIDTH-1:0] skid_axis_tdata;
   logic        [KEEP_WIDTH-1:0] skid_axis_tkeep;
@@ -288,10 +275,6 @@ module dllp2tlp
           tlp_axis_tdata  = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = '1;
-
-          // bram0_data_in   = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
-          // bram0_addr      = RamAddrWidth'(rx_addr_r + byte_count_r + 16'h1);
-          // bram0_wr        = '1;
           //check tlp type
           if (tlp_in_r[21]) begin
             is_3dw_c = '1;
@@ -319,9 +302,6 @@ module dllp2tlp
           tlp_axis_tkeep  = skid_axis_tkeep;
           tlp_axis_tvalid = '1;
           byte_count_c    = byte_count_r + 32'h4;
-          // bram0_data_in   = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
-          // bram0_addr      = RamAddrWidth'(rx_addr_r + byte_count_r + 16'h1);
-          // bram0_wr        = '1;
           if (pipeline_axis_tlast) begin
             // tlp_axis_tkeep = skid_axis_tkeep;
             case (pipeline_axis_tkeep)
@@ -330,28 +310,16 @@ module dllp2tlp
                 byte_count_c    = byte_count_r;
                 last_tdata_c = tlp_axis_tdata;
                 tlp_axis_tvalid = '0;
-                // crc_in_c   = {skid_axis_tdata[7:0], tlp_in_r[31:8]};
-                // tlp_axis_tkeep = skid_axis_tkeep;
               end
               4'b0011: begin
                 crc_select = 2'b01;
                 byte_count_c    = byte_count_r;
                 last_tdata_c = tlp_axis_tdata;
                 tlp_axis_tvalid = '0;
-                // crc_in_c   = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
               end
-              // 4'b0111: begin
-              //   crc_select = 2'b10;
-              //   crc_in_c   = {skid_axis_tdata[23:0], tlp_in_r[31:24]};
-              // end
-              // 4'b1111: begin
-              //   crc_select = '1;
-              //   crc_in_c   = skid_axis_tdata;
-              // end
               default: begin
               end
             endcase
-            // byte_count_c = byte_count_r;
             next_state = ST_DLL_EOP;
           end
         end
@@ -365,7 +333,6 @@ module dllp2tlp
           tlp_axis_tlast = '1;
           tlp_axis_tkeep = skid_axis_tkeep;
           next_state     = ST_DLL_CHECK_CRC;
-          // byte_count_c = byte_count_r;
           case (skid_axis_tkeep)
             4'b0001: begin
               crc_select = '0;
@@ -385,12 +352,12 @@ module dllp2tlp
               crc_in_c = {skid_axis_tdata[23:0], tlp_in_r[31:24]};
             end
             4'b1111: begin
-              crc_select = '1;
-              last_tdata_c = tlp_axis_tdata;
+              crc_select      = '1;
+              last_tdata_c    = tlp_axis_tdata;
               tlp_axis_tvalid = '0;
-              tlp_axis_tlast = '1;
-              tlp_axis_tkeep = 4'b0011;
-              crc_in_c = skid_axis_tdata;
+              tlp_axis_tlast  = '1;
+              tlp_axis_tkeep  = 4'b0011;
+              crc_in_c        = skid_axis_tdata;
             end
             default: begin
             end
@@ -398,12 +365,12 @@ module dllp2tlp
         end
       end
       ST_DLL_CHECK_CRC: begin
-        tlp_axis_tdata = last_tdata_r;
+        tlp_axis_tdata  = last_tdata_r;
         tlp_axis_tvalid = '1;
-        tlp_axis_tlast = '1;
+        tlp_axis_tlast  = '1;
         // tlp_axis_tuser = '1;
         //default to dllp ack state
-        next_state = ST_ACK_DLLP;
+        next_state      = ST_ACK_DLLP;
         //assign tkeep based on last keep and alignement
         case (skid_axis_tkeep)
           4'b0001: begin
@@ -453,10 +420,10 @@ module dllp2tlp
       ST_ACK_DLLP_CRC: begin
         //build axis master output
         logic [15:0] tlp_header_offset;
-        phy_axis_tdata = dllp_crc_reversed;
-        phy_axis_tkeep = 8'h03;
-        phy_axis_tvalid = '1;
-        phy_axis_tlast = '1;
+        phy_axis_tdata    = dllp_crc_reversed;
+        phy_axis_tkeep    = 8'h03;
+        phy_axis_tvalid   = '1;
+        phy_axis_tlast    = '1;
         tlp_header_offset = (is_3dw_r ? 16'd12 : 16'd16);
         if (phy_axis_tready) begin
           if (is_p_r) begin

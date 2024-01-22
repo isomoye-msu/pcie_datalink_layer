@@ -1,12 +1,13 @@
 module ltssm_polling
   import pcie_phy_pkg::*;
 #(
+    parameter int CLK_RATE      = 100,
     parameter int MAX_NUM_LANES = 4,
     // TLP data width
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH    = 32,
     // TLP keep width
-    parameter int KEEP_WIDTH = DATA_WIDTH / 8,
-    parameter int USER_WIDTH = $bits(phy_user_t)
+    parameter int KEEP_WIDTH    = DATA_WIDTH / 8,
+    parameter int USER_WIDTH    = $bits(phy_user_t)
 
 ) (
     input  logic                                 clk_i,                // Clock signal
@@ -31,8 +32,10 @@ module ltssm_polling
     input  logic                                 m_axis_tready
 );
 
-  localparam int FourtyEightMsTimeOut = 32'h2B71B00;  //temp value
-  localparam int TwentyFourMsTimeOut = 32'h015B8D80;  //temp value
+  localparam int FourtyEightMsTimeOut = (CLK_RATE * (48 ** 5));
+  localparam int TwentyFourMsTimeOut = (CLK_RATE * (24 ** 5));  //32'h015B8D80;  //temp value
+  localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
+
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -68,17 +71,12 @@ module ltssm_polling
   logic       [MAX_NUM_LANES-1:0] lanes_ts2_satisfied;
 
   //axis signals
-  logic       [   DATA_WIDTH-1:0] m_axis_tdata_c;
-  logic       [   KEEP_WIDTH-1:0] m_axis_tkeep_c;
-  logic                           m_axis_tvalid_c;
-  logic                           m_axis_tlast_c;
-  logic       [   USER_WIDTH-1:0] m_axis_tuser_c;
-  //axis reg
-  logic       [   DATA_WIDTH-1:0] m_axis_tdata_r;
-  logic       [   KEEP_WIDTH-1:0] m_axis_tkeep_r;
-  logic                           m_axis_tvalid_r;
-  logic                           m_axis_tlast_r;
-  logic       [   USER_WIDTH-1:0] m_axis_tuser_r;
+  logic       [   DATA_WIDTH-1:0] dllp_axis_tdata;
+  logic       [   KEEP_WIDTH-1:0] dllp_axis_tkeep;
+  logic                           dllp_axis_tvalid;
+  logic                           dllp_axis_tlast;
+  logic       [   USER_WIDTH-1:0] dllp_axis_tuser;
+  logic                           dllp_axis_tready;
 
   //-----------------------------------------------------------
   //  Main Sequential block
@@ -91,8 +89,6 @@ module ltssm_polling
       succes_r         <= '0;
       lane_status_r    <= '0;
       lanes_detected_r <= '0;
-      //axis signals
-      m_axis_tvalid_r  <= '0;
     end else begin
       curr_state       <= next_state;
       timer_r          <= timer_c;
@@ -100,18 +96,11 @@ module ltssm_polling
       success_r        <= success_c;
       lane_status_r    <= lane_status_c;
       lanes_detected_r <= lanes_detected_c;
-      //axis signals
-      m_axis_tvalid_r  <= m_axis_tvalid_c;
     end
     //non-resetable
     ordered_set_sent_cnt_r <= ordered_set_sent_cnt_c;
     pkt_cnt_r <= pkt_cnt_c;
     tsos_r <= tsos_c;
-    //axis
-    m_axis_tdata_r <= m_axis_tdata_c;
-    m_axis_tkeep_r <= m_axis_tkeep_c;
-    m_axis_tlast_r <= m_axis_tlast_c;
-    m_axis_tuser_r <= m_axis_tuser_c;
   end
 
   //-----------------------------------------------------------
@@ -127,20 +116,20 @@ module ltssm_polling
     ordered_set_sent_cnt_c = ordered_set_sent_cnt_r;
     pkt_cnt_c              = pkt_cnt_r;
     //axis signals
-    m_axis_tdata_c         = m_axis_tdata_r;
-    m_axis_tkeep_c         = m_axis_tkeep_r;
-    m_axis_tvalid_c        = m_axis_tvalid_r;
-    m_axis_tlast_c         = m_axis_tlast_r;
-    m_axis_tuser_c         = m_axis_tuser_r;
+    dllp_axis_tdata        = '0;
+    dllp_axis_tkeep        = '0;
+    dllp_axis_tvalid       = '0;
+    dllp_axis_tlast        = '0;
+    dllp_axis_tuser        = '0;
     //training seq
     tsos_c                 = tsos_r;
     case (curr_state)
       ST_IDLE: begin
         //wait for enable
         if (en_i) begin
-          timer_c                = '0;
-          next_state             = ST_POLLING_ACTIVE;
-          tsos_c                 = gen_tsos(TS1);
+          timer_c    = '0;
+          next_state = ST_POLLING_ACTIVE;
+          gen_tsos(tsos_c, TS1);
           ordered_set_sent_cnt_c = '0;
         end
       end
@@ -150,13 +139,13 @@ module ltssm_polling
         //pkt empty
         if (m_axis_tready | !m_axis_tvalid_r) begin
           //increment packet counter
-          pkt_cnt_c       = pkt_cnt_r + 1;
+          pkt_cnt_c        = pkt_cnt_r + 1;
           //build axis pkt
-          m_axis_tdata_c  = tsos_r[32*pkt_cnt_r+:32];
-          m_axis_tkeep_c  = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c  = '0;
-          m_axis_tuser_c  = 8'h01;
+          dllp_axis_tdata  = tsos_r[32*pkt_cnt_r+:32];
+          dllp_axis_tkeep  = '1;
+          dllp_axis_tvalid = '1;
+          dllp_axis_tlast  = '0;
+          dllp_axis_tuser  = 8'h01;
           //check if last packet in frame
           if (pkt_cnt_r == 8'h03) begin
             m_axis_tlast_c         = '1;
@@ -174,7 +163,7 @@ module ltssm_polling
               //check if ts1 reqs satisfied
               if (&lanes_ts1_satisfied) begin
                 //build ts2 ordered set
-                tsos_c = gen_tsos(TS2);
+                gen_tsos(tsos_c, TS2);
                 //goto cofig
                 next_state = ST_POLLING_CONFIGURATION;
               end else begin
@@ -200,13 +189,13 @@ module ltssm_polling
         //empty packet
         if (m_axis_tready | !m_axis_tvalid_r) begin
           //increment packet count
-          pkt_cnt_c       = pkt_cnt_r + 1;
+          pkt_cnt_c        = pkt_cnt_r + 1;
           //build axis pkt
-          m_axis_tdata_c  = tsos_r[32*pkt_cnt_r+:32];
-          m_axis_tkeep_c  = '1;
-          m_axis_tvalid_c = '1;
-          m_axis_tlast_c  = '0;
-          m_axis_tuser_c  = 8'h01;
+          dllp_axis_tdata  = tsos_r[32*pkt_cnt_r+:32];
+          dllp_axis_tkeep  = '1;
+          dllp_axis_tvalid = '1;
+          dllp_axis_tlast  = '0;
+          dllp_axis_tuser  = 8'h01;
           //check if last pkt
           if (pkt_cnt_r == 8'h03) begin
             pkt_cnt_c      = '0;
@@ -303,15 +292,44 @@ module ltssm_polling
     end
   end
 
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(dllp_axis_tdata),
+      .s_axis_tkeep(dllp_axis_tkeep),
+      .s_axis_tvalid(dllp_axis_tvalid),
+      .s_axis_tready(dllp_axis_tready),
+      .s_axis_tlast(dllp_axis_tlast),
+      .s_axis_tuser(dllp_axis_tuser),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tvalid(m_axis_tvalid),
+      .m_axis_tready(m_axis_tready),
+      .m_axis_tlast(m_axis_tlast),
+      .m_axis_tuser(m_axis_tuser),
+      .m_axis_tid(),
+      .m_axis_tdest()
+  );
+
+
   //--------------------------------------------------------------------
   //assign outputs
   //--------------------------------------------------------------------
-  assign m_axis_tdata  = m_axis_tdata_r;
-  assign m_axis_tkeep  = m_axis_tkeep_r;
-  assign m_axis_tvalid = m_axis_tvalid_r;
-  assign m_axis_tlast  = m_axis_tlast_r;
-  assign m_axis_tuser  = m_axis_tuser_r;
-  assign success_o     = success_r;
-  assign error_o       = error_r;
+  assign success_o = success_r;
+  assign error_o   = error_r;
 
 endmodule

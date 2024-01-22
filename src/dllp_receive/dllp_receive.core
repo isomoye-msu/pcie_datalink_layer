@@ -15,6 +15,7 @@ filesets:
       - fusesoc:pcie:bram
       - fusesoc:pcie:axis
       - fusesoc:pcie:base_uvm
+      - fusesoc:pcie:lint
 
   cocotb:
     files:
@@ -59,6 +60,7 @@ targets:
           - -LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir`     -L`cocotb-config --lib-dir`     -lcocotbvpi_verilator -lgpi -lcocotb -lgpilog -lcocotbutils" 
           -  $(shell cocotb-config --share)/lib/verilator/verilator.cpp
           - --top dllp_receive
+          - waiver.vlt
         make_options:
           # Optimization levels have a large impact on the runtime performance
           # of the simulation model. -O2 and -O3 are pretty similar, -Os is

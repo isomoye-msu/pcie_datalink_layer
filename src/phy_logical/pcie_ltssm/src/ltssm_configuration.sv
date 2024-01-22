@@ -3,17 +3,18 @@
 module ltssm_configuration
   import pcie_phy_pkg::*;
 #(
+    parameter int CLK_RATE      = 100,
     parameter int MAX_NUM_LANES = 4,
     // TLP data width
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH    = 32,
     // TLP keep width
-    parameter int KEEP_WIDTH = DATA_WIDTH / 8,
-    parameter int USER_WIDTH = $bits(phy_user_t),
-    parameter int IS_ROOT_PORT = 1,
-    parameter int LINK_NUM = 0,
-    parameter int IS_UPSTREAM = 0,  //downstream by default
-    parameter int CROSSLINK_EN = 0,  //crosslink not supported
-    parameter int UPCONFIG_EN = 0  //upconfig not supported
+    parameter int KEEP_WIDTH    = DATA_WIDTH / 8,
+    parameter int USER_WIDTH    = $bits(phy_user_t),
+    parameter int IS_ROOT_PORT  = 1,
+    parameter int LINK_NUM      = 0,
+    parameter int IS_UPSTREAM   = 0,                  //downstream by default
+    parameter int CROSSLINK_EN  = 0,                  //crosslink not supported
+    parameter int UPCONFIG_EN   = 0                   //upconfig not supported
 
 ) (
     input  logic                           clk_i,                   // Clock signal
@@ -48,9 +49,8 @@ module ltssm_configuration
     input  logic                           m_axis_tready
 );
 
-  localparam int TwentyFourMsTimeOut = 32'h015B8D80;  //temp value
-  localparam int TwoMsTimeOut = 32'h000B8D80;  //temp value
-
+  localparam int TwentyFourMsTimeOut = (CLK_RATE * (24 ** 5));  //32'h015B8D80;  //temp value
+  localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -77,6 +77,8 @@ module ltssm_configuration
 
   logic              [             31:0] timer_c;
   logic              [             31:0] timer_r;
+  logic              [              7:0] transfer_timer_c;
+  logic              [              7:0] transfer_timer_r;
   logic                                  error_c;
   logic                                  error_r;
   logic                                  success_c;
@@ -85,56 +87,6 @@ module ltssm_configuration
   logic              [MAX_NUM_LANES-1:0] lane_status_r;
   logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
   logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
-
-
-  logic              [             31:0] timer_c;
-  logic              [             31:0] timer_r;
-  logic                                  error_c;
-  logic                                  error_r;
-  logic                                  success_c;
-  logic                                  success_r;
-  logic              [MAX_NUM_LANES-1:0] lane_status_c;
-  logic              [MAX_NUM_LANES-1:0] lane_status_r;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
-
-
-  logic              [             31:0] timer_c;
-  logic              [             31:0] timer_r;
-  logic                                  error_c;
-  logic                                  error_r;
-  logic                                  success_c;
-  logic                                  success_r;
-  logic              [MAX_NUM_LANES-1:0] lane_status_c;
-  logic              [MAX_NUM_LANES-1:0] lane_status_r;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
-
-
-  logic              [             31:0] timer_c;
-  logic              [             31:0] timer_r;
-  logic                                  error_c;
-  logic                                  error_r;
-  logic                                  success_c;
-  logic                                  success_r;
-  logic              [MAX_NUM_LANES-1:0] lane_status_c;
-  logic              [MAX_NUM_LANES-1:0] lane_status_r;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
-
-
-  logic              [             31:0] timer_c;
-  logic              [             31:0] timer_r;
-  logic                                  error_c;
-  logic                                  error_r;
-  logic                                  success_c;
-  logic                                  success_r;
-  logic              [MAX_NUM_LANES-1:0] lane_status_c;
-  logic              [MAX_NUM_LANES-1:0] lane_status_r;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
-
-
   logic              [             15:0] ordered_set_sent_cnt_c;
   logic              [             15:0] ordered_set_sent_cnt_r;
   logic              [              7:0] axis_pkt_cnt_c;
@@ -142,25 +94,13 @@ module ltssm_configuration
   logic                                  rst_cnt_c;
   logic                                  rst_cnt_r;
 
-  // //axis signals
-  // logic              [   DATA_WIDTH-1:0] m_axis_tdata_c;
-  // logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_c;
-  // logic                                  m_axis_tvalid_c;
-  // logic                                  m_axis_tlast_c;
-  // logic              [   USER_WIDTH-1:0] m_axis_tuser_c;
-  // //axis reg
-  // logic              [   DATA_WIDTH-1:0] m_axis_tdata_r;
-  // logic              [   KEEP_WIDTH-1:0] m_axis_tkeep_r;
-  // logic                                  m_axis_tvalid_r;
-  // logic                                  m_axis_tlast_r;
-  // logic              [   USER_WIDTH-1:0] m_axis_tuser_r;
-
   //axis signals
-  logic              [   DATA_WIDTH-1:0] skid_axis_tdata_c;
-  logic              [   KEEP_WIDTH-1:0] skid_axis_tkeep_c;
-  logic                                  skid_axis_tvalid_c;
-  logic                                  skid_axis_tlast_c;
-  logic              [   USER_WIDTH-1:0] skid_axis_tuser_c;
+  logic              [   DATA_WIDTH-1:0] phy_axis_tdata;
+  logic              [   KEEP_WIDTH-1:0] phy_axis_tkeep;
+  logic                                  phy_axis_tvalid;
+  logic                                  phy_axis_tlast;
+  logic              [   USER_WIDTH-1:0] phy_axis_tuser;
+  logic                                  phy_axis_tready;
 
   //link training helper signals
   logic              [MAX_NUM_LANES-1:0] link_width_satisfied;
@@ -173,8 +113,6 @@ module ltssm_configuration
   logic              [MAX_NUM_LANES-1:0] link_lane_reconfig;
 
   logic              [MAX_NUM_LANES-1:0] ts1_lanenum_wait_satisfied;
-  // logic [MAX_NUM_LANES-1:0] link_lane_reconfig;
-
 
   logic              [MAX_NUM_LANES-1:0] single_idle_recieved;
   logic              [MAX_NUM_LANES-1:0] link_idle_satisfied;
@@ -195,8 +133,6 @@ module ltssm_configuration
       lanes_detected_r             <= '0;
       ordered_set_sent_cnt_r       <= '0;
       axis_pkt_cnt_r               <= '0;
-      //axis signals
-      m_axis_tvalid_r              <= '0;
       rst_cnt_r                    <= '0;
       idle_to_rlock_transitioned_r <= '0;
     end else begin
@@ -209,18 +145,12 @@ module ltssm_configuration
       ordered_set_sent_cnt_r       <= ordered_set_sent_cnt_c;
       axis_pkt_cnt_r               <= axis_pkt_cnt_c;
       idle_to_rlock_transitioned_r <= idle_to_rlock_transitioned_c;
-      //axis signals
-      m_axis_tvalid_r              <= m_axis_tvalid_c;
       rst_cnt_r                    <= rst_cnt_c;
     end
     //non-resetable
-    ordered_set_r   <= ordered_set_c;
-    //axis
-    m_axis_tdata_r  <= m_axis_tdata_c;
-    m_axis_tkeep_r  <= m_axis_tkeep_c;
-    m_axis_tlast_r  <= m_axis_tlast_c;
-    m_axis_tuser_r  <= m_axis_tuser_c;
+    ordered_set_r <= ordered_set_c;
     goto_recovery_r <= goto_recovery_c;
+    transfer_timer_r <= transfer_timer_c;
   end
 
 
@@ -239,17 +169,53 @@ module ltssm_configuration
   //-----------------------------------------------------------
   //***********************************************************
   if (IS_UPSTREAM) begin : gen_upstream
-    `include "../includes/upstream_config.sv"
+    `include "upstream_config.sv"
   end
+
+
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(phy_axis_tdata),
+      .s_axis_tkeep(phy_axis_tkeep),
+      .s_axis_tvalid(phy_axis_tvalid),
+      .s_axis_tready(phy_axis_tready),
+      .s_axis_tlast(phy_axis_tlast),
+      .s_axis_tuser(phy_axis_tuser),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tvalid(m_axis_tvalid),
+      .m_axis_tready(m_axis_tready),
+      .m_axis_tlast(m_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(m_axis_tuser)
+  );
+
 
   //------------------------------------------------------------
   //output assignments
   //------------------------------------------------------------
-  assign m_axis_tdata    = m_axis_tdata_r;
-  assign m_axis_tkeep    = m_axis_tkeep_r;
-  assign m_axis_tvalid   = m_axis_tvalid_r;
-  assign m_axis_tlast    = m_axis_tlast_r;
-  assign m_axis_tuser    = m_axis_tuser_r;
+  // assign m_axis_tdata    = m_axis_tdata_r;
+  // assign m_axis_tkeep    = m_axis_tkeep_r;
+  // assign m_axis_tvalid   = m_axis_tvalid_r;
+  // assign m_axis_tlast    = m_axis_tlast_r;
+  // assign m_axis_tuser    = m_axis_tuser_r;
   assign goto_recovery_o = goto_recovery_r;
   assign success_o       = success_r;
   assign error_o         = error_r;

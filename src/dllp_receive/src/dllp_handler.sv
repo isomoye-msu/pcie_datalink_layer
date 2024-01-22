@@ -38,12 +38,9 @@ module dllp_handler
     output logic [          11:0] tx_fc_npd_o
 );
 
-  /* verilator lint_off WIDTHEXPAND */
-    /* verilator lint_off WIDTHTRUNC */
 
   localparam int SkidBuffer = 2;
   localparam int UserIsDllp = 0;
-
 
   //tlp to dllp fsm emum
   typedef enum logic [2:0] {
@@ -181,7 +178,6 @@ module dllp_handler
     fc2_np_stored_c     = fc2_np_stored_r;
     fc2_p_stored_c      = fc2_p_stored_r;
     fc2_c_stored_c      = fc2_c_stored_r;
-
     case (curr_state)
       ST_IDLE: begin
         if (phy_link_up_i) begin
@@ -323,6 +319,4 @@ module dllp_handler
   assign tx_fc_nph_o = tx_fc_nph_r;
   assign tx_fc_npd_o = tx_fc_npd_r;
 
-  /* verilator lint_on WIDTHEXPAND */
-    /* verilator lint_on WIDTHTRUNC */
 endmodule

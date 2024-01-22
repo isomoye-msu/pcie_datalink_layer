@@ -16,18 +16,14 @@ module tlp2dllp
 ) (
     input  logic                      clk_i,              // Clock signal
     input  logic                      rst_i,              // Reset signal
-    /*
-      * TLP AXIS inputs
-      */
+    //TLP AXIS inputs
     input  logic [    DATA_WIDTH-1:0] s_axis_tdata,
     input  logic [    KEEP_WIDTH-1:0] s_axis_tkeep,
     input  logic [       S_COUNT-1:0] s_axis_tvalid,
     input  logic [       S_COUNT-1:0] s_axis_tlast,
     input  logic [    USER_WIDTH-1:0] s_axis_tuser,
     output logic [       S_COUNT-1:0] s_axis_tready,
-    /*
-      * TLP AXI output
-      */
+    //TLP AXI output
     output logic [    DATA_WIDTH-1:0] m_axis_tdata,
     output logic [    KEEP_WIDTH-1:0] m_axis_tkeep,
     output logic                      m_axis_tvalid,
@@ -35,7 +31,8 @@ module tlp2dllp
     output logic [    USER_WIDTH-1:0] m_axis_tuser,
     input  logic                      m_axis_tready,
     //bram signals
-    output logic                      bram_wr_o,          // pulse a 1 to write and 0 reads
+    // pulse a 1 to write and 0 reads
+    output logic                      bram_wr_o,
     output logic [RAM_ADDR_WIDTH-1:0] bram_addr_o,
     output logic [RAM_DATA_WIDTH-1:0] bram_data_out_o,
     input  logic [RAM_DATA_WIDTH-1:0] bram_data_in_i,
@@ -111,7 +108,6 @@ module tlp2dllp
   logic                        tlp_nullified_r;
   logic                        tlp_is_first_c;
   logic                        tlp_is_first_r;
-  // logic s_axis_tready_o, tx_tlp_ready_r;
   logic                        tlp_ack;
   //packet shift data
   logic       [DATA_WIDTH-1:0] tlp_data_c1;
@@ -305,7 +301,7 @@ module tlp2dllp
         //bypass if current packet is last
         if (tlp_axis_tready) begin
           crc_in_c = crc_out16;
-          tlp_axis_tkeep  = '1;
+          tlp_axis_tkeep = '1;
           //handle shift crc placement
           case (keep_r)
             //complete the rest of crc placement
@@ -350,8 +346,7 @@ module tlp2dllp
       end
       ST_TLP_CRC_ALIGN: begin
         skid_axis_tready = '0;
-        //wait until pipeline is full and upstream ready
-        //bypass if current packet is last
+        //wait for upstream ready
         if (tlp_axis_tready) begin
           crc_in_c = crc_out16;
           //handle shift crc placement
@@ -387,7 +382,7 @@ module tlp2dllp
       ST_TLP_LAST: begin
         bram_addr_o         = word_offset_r;
         bram_wr_o           = '1;
-        crc_in_c = '1;
+        crc_in_c            = '1;
         bram_data_out_o     = {15'h0, m_axis_tkeep, word_count_r[15:0]};
         word_count_c        = '0;
         is_cpl_c            = '0;
@@ -408,11 +403,11 @@ module tlp2dllp
     npd_credits_consumed_c = npd_credits_consumed_r;
     max_payload_size_fc_c = 9'd8 << (MAX_PAYLOAD_SIZE);
     have_p_credit_c         = (tx_fc_ph_i > ph_credits_consumed_r ?
-  (tx_fc_ph_i - ph_credits_consumed_r) > 1: (ph_credits_consumed_r - tx_fc_ph_i) > 1 ) & (tx_fc_pd_i > pd_credits_consumed_r) ?
+      (tx_fc_ph_i - ph_credits_consumed_r) > 1:
+      (ph_credits_consumed_r - tx_fc_ph_i) > 1 )
+      & (tx_fc_pd_i > pd_credits_consumed_r) ?
     (tx_fc_pd_i - pd_credits_consumed_r) > max_payload_size_fc_c :
     (pd_credits_consumed_r - pd_credits_consumed_r) > 1;
-    // ((tx_fc_ph_i - ph_credits_consumed_r)> 8) &&
-    //                  ((tx_fc_pd_i - pd_credits_consumed_r)> (max_payload_size_fc_c << 1));
     have_np_credit_c = (tx_fc_nph_i - nph_credits_consumed_r) > 8;
 
     if (dllp_valid_o) begin
@@ -463,41 +458,6 @@ module tlp2dllp
   );
 
 
-  // axis skid buffer
-  // axis_register #(
-  // .DATA_WIDTH(DATA_WIDTH),
-  // .KEEP_ENABLE('1),
-  // .KEEP_WIDTH(KEEP_WIDTH),
-  // .LAST_ENABLE('1),
-  // .ID_ENABLE('0),
-  // .ID_WIDTH(1),
-  // .DEST_ENABLE('0),
-  // .DEST_WIDTH(1),
-  // .USER_ENABLE('1),
-  // .USER_WIDTH(3),
-  // .REG_TYPE(SkidBuffer)
-  // ) axis_stage2_register_inst (
-  // .clk(clk_i),
-  // .rst(rst_i),
-  // .s_axis_tdata( skid_axis_tdata),
-  // .s_axis_tkeep( skid_axis_tkeep),
-  // .s_axis_tvalid(skid_axis_tvalid),
-  // .s_axis_tready(skid_axis_tready),
-  // .s_axis_tlast( skid_axis_tlast),
-  // .s_axis_tid('0),
-  // .s_axis_tdest('0),
-  // .s_axis_tuser( skid_axis_tuser),
-  // .m_axis_tdata( tlp_axis_tdata),
-  // .m_axis_tkeep( tlp_axis_tkeep),
-  // .m_axis_tvalid(tlp_axis_tvalid),
-  // .m_axis_tready(tlp_axis_tready),
-  // .m_axis_tlast( tlp_axis_tlast),
-  // .m_axis_tid(),
-  // .m_axis_tdest(),
-  // .m_axis_tuser(tlp_axis_tuser)
-  // );
-
-
   //axis skid buffer
   axis_register #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -540,12 +500,6 @@ module tlp2dllp
       .crcOut(crc_out16)
   );
 
-
-  // assign m_axis_tdata  = m_axis_tdata_r3;
-  // assign m_axis_tkeep  = m_axis_tkeep_r3;
-  // assign m_axis_tvalid = m_axis_tvalid_r3;
-  // assign m_axis_tlast  = m_axis_tlast_r3;
-  // assign m_axis_tuser  = m_axis_tuser_r3;
   assign seq_num_o = next_transmit_seq_r;
 
 

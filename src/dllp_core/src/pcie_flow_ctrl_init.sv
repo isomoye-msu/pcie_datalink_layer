@@ -9,7 +9,7 @@ module pcie_flow_ctrl_init
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 3,
     parameter int S_COUNT = 1,
-    parameter int MAX_PAYLOAD_SIZE = 0
+    parameter int MAX_PAYLOAD_SIZE = 256
 ) (
     input logic clk_i,                 // Clock signal
     input logic rst_i,                 // Reset signal

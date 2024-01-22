@@ -77,13 +77,10 @@ module pcie_datalink_layer
   parameter int DEST_ENABLE = 0;
   parameter int DEST_WIDTH = 8;
   parameter int USER_ENABLE = 1;
-  // parameter int USER_WIDTH = 1;
   parameter int LAST_ENABLE = 1;
   parameter int ARB_TYPE_ROUND_ROBIN = 0;
   parameter int ARB_LSB_HIGH_PRIORITY = 1;
   parameter int M_COUNT = 2;
-
-
   //RETRY AXIS output
   logic            [(DATA_WIDTH)-1:0] phy_fc_axis_tdata;
   logic            [(KEEP_WIDTH)-1:0] phy_fc_axis_tkeep;
@@ -91,8 +88,6 @@ module pcie_datalink_layer
   logic                               phy_fc_axis_tlast;
   logic            [  USER_WIDTH-1:0] phy_fc_axis_tuser;
   logic                               phy_fc_axis_tready;
-
-
   //DLLP AXIS output
   logic            [(DATA_WIDTH)-1:0] phy_rx_axis_tdata;
   logic            [(KEEP_WIDTH)-1:0] phy_rx_axis_tkeep;
@@ -100,8 +95,6 @@ module pcie_datalink_layer
   logic                               phy_rx_axis_tlast;
   logic            [  USER_WIDTH-1:0] phy_rx_axis_tuser;
   logic                               phy_rx_axis_tready;
-
-
   //TLP AXIS output
   logic            [(DATA_WIDTH)-1:0] phy_tlp_axis_tdata;
   logic            [(KEEP_WIDTH)-1:0] phy_tlp_axis_tkeep;
@@ -109,7 +102,6 @@ module pcie_datalink_layer
   logic                               phy_tlp_axis_tlast;
   logic            [  USER_WIDTH-1:0] phy_tlp_axis_tuser;
   logic                               phy_tlp_axis_tready;
-
   //tlp ack/nak
   logic            [            11:0] seq_num;
   logic                               seq_num_vld;
@@ -123,8 +115,6 @@ module pcie_datalink_layer
   logic                               ack_nack;
   logic                               ack_nack_vld;
   logic                               ack_seq_num;
-
-
   //Ports
   logic                               init_flow_control;
   logic                               soft_reset;
@@ -283,13 +273,13 @@ module pcie_datalink_layer
       .m_axis_tuser(m_axis_phy_tuser)
   );
 
-  assign bus_num_o    = '0;
-  assign ext_tag_enable_o    = '0;
-  assign rcb_128b_o    = '0;
-  assign max_read_request_size_o    = '0;
-  assign max_payload_size_o    =   '0;
-  assign msix_enable_o    =   '0;
-  assign msix_mask_o    =   '0;
+  assign bus_num_o               = '0;
+  assign ext_tag_enable_o        = '0;
+  assign rcb_128b_o              = '0;
+  assign max_read_request_size_o = '0;
+  assign max_payload_size_o      = '0;
+  assign msix_enable_o           = '0;
+  assign msix_mask_o             = '0;
 
 
 endmodule

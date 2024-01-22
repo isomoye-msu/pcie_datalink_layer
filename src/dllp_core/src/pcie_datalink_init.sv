@@ -21,13 +21,11 @@ module pcie_datalink_init
     ST_DL_ACTIVE
   } pcie_dl_state_e;
 
-  //
   pcie_dl_state_e next_state, curr_state;
   // Internal state machine for link initialization
   logic [6:0] link_state;
 
   pcie_dl_status_e link_status_c, link_status_r;
-
   logic init_flow_control_c, init_flow_control_r;
   logic soft_reset_r, soft_reset_c;
 
@@ -43,7 +41,6 @@ module pcie_datalink_init
       link_status_r <= link_status_c;
       init_flow_control_r <= init_flow_control_c;
       soft_reset_r <= soft_reset_c;
-
     end
   end
 
