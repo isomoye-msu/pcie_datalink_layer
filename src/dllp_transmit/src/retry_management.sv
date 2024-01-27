@@ -64,13 +64,6 @@ module retry_management
   logic [              11:0]       seq_num_out;
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_c;
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_r;
-  //tx counters
-  logic [              31:0]       tx_word_count_c;
-  logic [              31:0]       tx_word_count_r;
-  logic [              31:0]       tlp_curr_count_c;
-  logic [              31:0]       tlp_curr_count_r;
-  logic [              31:0]       tx_addr_c;
-  logic [              31:0]       tx_addr_r;
 
   //main  sequential block
   always_ff @(posedge clk_i) begin : main_sequential_block
@@ -81,9 +74,6 @@ module retry_management
       retry_valid_r      <= '0;
       store_seq_r        <= '0;
       free_retry_r       <= '0;
-      tx_word_count_r    <= '0;
-      tlp_curr_count_r   <= '0;
-      tx_addr_r          <= '0;
     end else begin
       retrys_r           <= retrys_c;
       error_r            <= error_c;
@@ -91,9 +81,6 @@ module retry_management
       retry_valid_r      <= retry_valid_c;
       store_seq_r        <= store_seq_c;
       free_retry_r       <= free_retry_c;
-      tx_word_count_r    <= tx_word_count_c;
-      tlp_curr_count_r   <= tlp_curr_count_c;
-      tx_addr_r          <= tx_addr_c;
     end
     //non-resetable
     ack_seq_mem_r <= ack_seq_mem_c;

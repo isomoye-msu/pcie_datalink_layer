@@ -38,8 +38,6 @@ module dllp_handler
     output logic [          11:0] tx_fc_npd_o
 );
 
-
-  localparam int SkidBuffer = 2;
   localparam int UserIsDllp = 0;
 
   //tlp to dllp fsm emum

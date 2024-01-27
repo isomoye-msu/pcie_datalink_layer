@@ -44,7 +44,6 @@ module dllp2tlp
 );
   /* verilator lint_off WIDTHEXPAND */
   /* verilator lint_off WIDTHTRUNC */
-  localparam int SkidBuffer = 2;
   localparam int TlpAxis = 0;
   localparam int UserIsTlp = 1;
   localparam int MaxTlpHdrSizeDW = 4;

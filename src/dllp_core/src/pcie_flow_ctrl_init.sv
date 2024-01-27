@@ -34,7 +34,6 @@ module pcie_flow_ctrl_init
   localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
   localparam int HdrMinCredits = 8'h040;
   localparam int FcWaitPeriod = 8'hA0;
-  localparam int SkidBuffer = 2;
 
   typedef enum logic [4:0] {
     ST_IDLE,

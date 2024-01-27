@@ -43,7 +43,6 @@ module tlp2dllp
 
 );
 
-  localparam int SkidBuffer = 2;
   //tlp to dllp fsm emum
   typedef enum logic [2:0] {
     ST_IDLE,
@@ -93,8 +92,6 @@ module tlp2dllp
   logic       [          15:0] dllp_crc_out;
   logic       [          15:0] dllp_crc_reversed;
   //tlp nulled
-  logic       [KEEP_WIDTH-1:0] keep_c;
-  logic       [KEEP_WIDTH-1:0] keep_r;
   logic                        tlp_nullified_c;
   logic                        tlp_nullified_r;
   logic                        tlp_ack;
@@ -175,7 +172,6 @@ module tlp2dllp
     tlp_axis_tlast      = '0;
     tlp_axis_tuser      = 4'h2;
     crc_select          = '1;
-    keep_c              = keep_r;
     is_cpl_c            = is_cpl_r;
     is_np_c             = is_np_r;
     is_p_c              = is_p_r;
@@ -223,7 +219,6 @@ module tlp2dllp
           tlp_axis_tvalid = skid_axis_tvalid;
           word_count_c    = word_count_r + 1;
           if (s_axis_tlast) begin  //check if packet is last
-            keep_c = s_axis_tkeep;
             case (s_axis_tkeep)  //handle shift crc placement
               4'b0001: begin
                 tlp_axis_tvalid = '0;

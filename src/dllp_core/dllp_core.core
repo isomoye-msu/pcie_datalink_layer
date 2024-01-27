@@ -16,6 +16,7 @@ filesets:
       - fusesoc:pcie:axis
       - fusesoc:pcie:dllp_receive
       - fusesoc:pcie:dllp_transmit
+      - fusesoc:pcie:lint
 
   cocotb:
     files:
@@ -23,10 +24,6 @@ filesets:
       - tb/test_pcie_dllp_core.py : {file_type : user, copyto : .}
     depend:
         - fusesoc:pcie:base_uvm
-
-  lint:
-    files:
-      - lint/waiver.vlt : {file_type : user, copyto : .}
 
 
 targets:
@@ -63,7 +60,7 @@ targets:
 
   lint:
     default_tool : verilator
-    filesets : [rtl, lint]
+    filesets : [rtl]
     tools:
       verilator:
         mode : lint-only
