@@ -18,24 +18,26 @@ module axis_retry_fifo
     input logic rst_i,  // Reset signal
 
 
-    //TLP AXIS inputs
+    //! @virtualbus TLP_axis_inputs @dir in
     input  logic [DATA_WIDTH-1:0] s_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
     input  logic                  s_axis_tvalid,
     input  logic                  s_axis_tlast,
     input  logic [USER_WIDTH-1:0] s_axis_tuser,
     output logic                  s_axis_tready,
-    //dllp AXIS output
+    //! @end
+    //! @virtualbus TLP_axis_outputs @dir out
     output logic [DATA_WIDTH-1:0] m_axis_tdata,
     output logic [KEEP_WIDTH-1:0] m_axis_tkeep,
     output logic                  m_axis_tvalid,
     output logic                  m_axis_tlast,
     output logic [USER_WIDTH-1:0] m_axis_tuser,
     input  logic                  m_axis_tready
+    //! @end
 );
 
-  localparam MaxHdrSize = 4;
-  localparam MaxPktSize = MAX_PAYLOAD_SIZE + MaxHdrSize;
+  localparam int MaxHdrSize = 4;
+  localparam int MaxPktSize = MAX_PAYLOAD_SIZE + MaxHdrSize;
 
   typedef struct packed {
     logic                  tvalid;
@@ -49,23 +51,16 @@ module axis_retry_fifo
   axis_tlp_pkt_t                  s_axis;
   //outgoing surbodanate axis helper struct
   axis_tlp_pkt_t                  m_axis;
-
-
-
   //write pointer signals
   logic          [          15:0] wr_ptr_c;
   logic          [          15:0] wr_ptr_r;
   //read pointer signals
   logic          [          15:0] rd_ptr_c;
   logic          [          15:0] rd_ptr_r;
-
-
-  axis_tlp_pkt_t                  axis_mem_c        [MaxPktSize-1:0];
-  axis_tlp_pkt_t                  axis_mem_r        [MaxPktSize-1:0];
-
+  axis_tlp_pkt_t                  axis_mem_c        [MaxPktSize];
+  axis_tlp_pkt_t                  axis_mem_r        [MaxPktSize];
   logic                           frame_available_c;
   logic                           frame_available_r;
-
   //axis signals
   logic          [DATA_WIDTH-1:0] retry_axis_tdata;
   logic          [KEEP_WIDTH-1:0] retry_axis_tkeep;
@@ -75,7 +70,7 @@ module axis_retry_fifo
   logic                           retry_axis_tready;
 
 
-  always_ff @(posedge clk_i or posedge rst_i) begin : main_seq
+  always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       wr_ptr_r          <= '0;
       rd_ptr_r          <= '0;
@@ -105,7 +100,7 @@ module axis_retry_fifo
       axis_mem_c[wr_ptr_r] = s_axis;
       wr_ptr_c             = wr_ptr_r + 1'b1;
       if (s_axis_tlast) begin
-        wr_ptr_c = '0;
+        wr_ptr_c          = '0;
         frame_available_c = '1;
       end
     end

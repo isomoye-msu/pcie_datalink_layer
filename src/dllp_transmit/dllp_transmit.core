@@ -5,6 +5,7 @@ description: pcie datalink datalink layer transmit
 filesets:
   rtl:
     files:
+      - src/retry_transmit.sv
       - src/retry_management.sv
       - src/dllp_transmit.sv
       - src/tlp2dllp.sv

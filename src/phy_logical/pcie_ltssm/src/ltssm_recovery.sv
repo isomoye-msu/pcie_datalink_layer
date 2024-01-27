@@ -361,8 +361,14 @@ module ltssm_recovery
             end
           end
         end
+        //recovery speed scenario
+        //8 TS2 Ordered on any lane sets with speed_change bit...at_least_one_ts1_ts2
+        // and 8 TS2 OS are standard i.e no IEQUES TS2 if gen1/gen2
+        //
+        //8 consecutive EQ TS2 recived on all configured lanes, speed_change bit
+        //set to 1
+        //8 consecutive EQ TS2 OS
         ST_RCVR_CFG: begin
-          //TODO: WAY too much happening in this state... break it up man.
           //bounded counter for timeout scenario
           timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
           rcvr_axis_tvalid = '1;

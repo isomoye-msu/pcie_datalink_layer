@@ -1,3 +1,11 @@
+//! @title dllp_transmit
+//! @author Idris Somoye
+//! Module handles tlp packets recieved from the tlp layer.
+//! It incorporates one axis slave interface which accepts tlps and converts
+//! them to dllps as appropriate. Module keeps track of flow control packets, though
+//! this should be done at the tlp MAC layer. Module also implements the PCIe DLLP
+//! retry manangement system. The initial packets and the retry packets are muxed together and both
+//! are transmitted the phy through the single master axis.
 module dllp_transmit
   import pcie_datalink_pkg::*;
 #(
@@ -43,9 +51,9 @@ module dllp_transmit
 
 
   parameter int MaxTlpHdrSizeDW = 4;
+  parameter int RAM_DATA_WIDTH = DATA_WIDTH;
   parameter int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
   parameter int MinRxBufferSize = MaxTlpTotalSizeDW * (RETRY_TLP_SIZE);
-  parameter int RAM_DATA_WIDTH = DATA_WIDTH;
   parameter int RAM_ADDR_WIDTH = $clog2(MinRxBufferSize);
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
   parameter int ID_ENABLE = 0;
@@ -72,21 +80,14 @@ module dllp_transmit
   logic                      m_axis_tlp2dllp_tlast;
   logic [    USER_WIDTH-1:0] m_axis_tlp2dllp_tuser;
   logic                      m_axis_tlp2dllp_tready;
-  //bram retry signals
-  logic                      bram_retry_wr;
-  logic [RAM_ADDR_WIDTH-1:0] bram_retry_addr;
-  logic [RAM_DATA_WIDTH-1:0] bram_retry_data_in;
-  logic [RAM_DATA_WIDTH-1:0] bram_retry_data_out;
-  //bram dllp signals
-  logic                      bram_dllp_wr;
-  logic [RAM_ADDR_WIDTH-1:0] bram_dllp_addr;
-  logic [RAM_DATA_WIDTH-1:0] bram_dllp_data_in;
-  logic [RAM_DATA_WIDTH-1:0] bram_dllp_data_out;
   logic [              11:0] ackd_transmit_seq;
   logic                      dllp_valid;
   logic                      retry_available;
   logic [               7:0] retry_index;
   logic                      retry_err;
+  logic [RETRY_TLP_SIZE-1:0] retry_valid;
+  logic [RETRY_TLP_SIZE-1:0] retry_ack;
+  logic [RETRY_TLP_SIZE-1:0] retry_complete;
 
   retry_management #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -108,24 +109,45 @@ module dllp_transmit
       .retry_available_o(retry_available),
       .retry_index_o    (retry_index),
       .retry_err_o      (retry_err),
+      .retry_valid_o    (retry_valid),
+      .retry_ack_i      (retry_ack),
+      .retry_complete_i (retry_complete),
       //ack/nack from dllp
       .ack_nack_i       (ack_nack_i),
       .ack_nack_vld_i   (ack_nack_vld_i),
-      .ack_seq_num_i    (ack_seq_num_i),
+      .ack_seq_num_i    (ack_seq_num_i)
+  );
+
+  retry_transmit #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .STRB_WIDTH(STRB_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .USER_WIDTH(USER_WIDTH),
+      .S_COUNT(S_COUNT),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
+      .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
+      .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
+      .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
+  ) retry_transmit_inst (
+      .clk_i           (clk_i),
+      .rst_i           (rst_i),
+      .retry_valid_i   (retry_valid),
+      .retry_ack_o     (retry_ack),
+      .retry_complete_o(retry_complete),
       //axis tlp in
-      .s_axis_tdata     (m_axis_tlp2dllp_tdata),
-      .s_axis_tkeep     (m_axis_tlp2dllp_tkeep),
-      .s_axis_tvalid    (m_axis_tlp2dllp_tvalid),
-      .s_axis_tlast     (m_axis_tlp2dllp_tlast),
-      .s_axis_tuser     (m_axis_tlp2dllp_tuser),
-      .s_axis_tready    (),
+      .s_axis_tdata    (m_axis_tlp2dllp_tdata),
+      .s_axis_tkeep    (m_axis_tlp2dllp_tkeep),
+      .s_axis_tvalid   (m_axis_tlp2dllp_tvalid),
+      .s_axis_tlast    (m_axis_tlp2dllp_tlast),
+      .s_axis_tuser    (m_axis_tlp2dllp_tuser),
+      .s_axis_tready   (),
       //axis out to phy
-      .m_axis_tdata     (m_axis_retry_tdata),
-      .m_axis_tkeep     (m_axis_retry_tkeep),
-      .m_axis_tvalid    (m_axis_retry_tvalid),
-      .m_axis_tlast     (m_axis_retry_tlast),
-      .m_axis_tuser     (m_axis_retry_tuser),
-      .m_axis_tready    (m_axis_retry_tready)
+      .m_axis_tdata    (m_axis_retry_tdata),
+      .m_axis_tkeep    (m_axis_retry_tkeep),
+      .m_axis_tvalid   (m_axis_retry_tvalid),
+      .m_axis_tlast    (m_axis_retry_tlast),
+      .m_axis_tuser    (m_axis_retry_tuser),
+      .m_axis_tready   (m_axis_retry_tready)
   );
 
 
@@ -154,11 +176,6 @@ module dllp_transmit
       .m_axis_tlast     (m_axis_tlp2dllp_tlast),
       .m_axis_tuser     (m_axis_tlp2dllp_tuser),
       .m_axis_tready    (m_axis_tlp2dllp_tready),
-      //bram
-    //   .bram_wr_o        (bram_dllp_wr),
-    //   .bram_addr_o      (bram_dllp_addr),
-    //   .bram_data_out_o  (bram_dllp_data_in),
-    //   .bram_data_in_i   (bram_dllp_data_out),
       //sequence number
       .seq_num_o        (ackd_transmit_seq),
       .dllp_valid_o     (dllp_valid),
@@ -209,22 +226,5 @@ module dllp_transmit
       .m_axis_tuser(m_axis_tuser)
   );
 
-
-//   bram_dp #(
-//       .RAM_DATA_WIDTH(DATA_WIDTH),
-//       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
-//   ) retry_buffer_inst (
-//       .rst       (rst_i),
-//       .a_clk     (clk_i),
-//       .a_wr      (bram_retry_wr),
-//       .a_addr    (bram_retry_addr),
-//       .a_data_in (bram_retry_data_in),
-//       .a_data_out(bram_retry_data_out),
-//       .b_clk     (clk_i),
-//       .b_wr      (bram_dllp_wr),
-//       .b_addr    (bram_dllp_addr),
-//       .b_data_in (bram_dllp_data_in),
-//       .b_data_out(bram_dllp_data_out)
-//   );
 
 endmodule
