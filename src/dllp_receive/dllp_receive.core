@@ -33,7 +33,7 @@ targets:
       tool : icarus
       iverilog_options:
         - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
-      cocotb_module : phy_agent
+      cocotb_module : test_dllp_recieve
       timescale: 1ns/1ns
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
@@ -42,10 +42,11 @@ targets:
     flow: sim
     flow_options:
       tool : verilator
-      cocotb_module : phy_agent
+      cocotb_module : dllp_agent
       timescale: 1ns/1ns
       verilator_options:
         - --trace-fst
+        - waiver.vlt
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
 

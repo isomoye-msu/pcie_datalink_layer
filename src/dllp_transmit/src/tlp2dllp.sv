@@ -18,10 +18,10 @@ module tlp2dllp
     //TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
-    input  logic [   S_COUNT-1:0] s_axis_tvalid,
-    input  logic [   S_COUNT-1:0] s_axis_tlast,
+    input  logic                  s_axis_tvalid,
+    input  logic                  s_axis_tlast,
     input  logic [USER_WIDTH-1:0] s_axis_tuser,
-    output logic [   S_COUNT-1:0] s_axis_tready,
+    output logic                  s_axis_tready,
     //TLP AXI output
     output logic [DATA_WIDTH-1:0] m_axis_tdata,
     output logic [KEEP_WIDTH-1:0] m_axis_tkeep,
@@ -72,7 +72,14 @@ module tlp2dllp
   logic                        skid_axis_tlast;
   logic       [USER_WIDTH-1:0] skid_axis_tuser;
   logic                        skid_axis_tready;
-  //skid buffer axis signals
+  //flow buffer axis stage1 signals
+  logic       [DATA_WIDTH-1:0] flow_axis_tdata;
+  logic       [KEEP_WIDTH-1:0] flow_axis_tkeep;
+  logic                        flow_axis_tvalid;
+  logic                        flow_axis_tlast;
+  logic       [USER_WIDTH-1:0] flow_axis_tuser;
+  logic                        flow_axis_tready;
+  //tlp output buffer axis signals
   logic       [DATA_WIDTH-1:0] tlp_axis_tdata;
   logic       [KEEP_WIDTH-1:0] tlp_axis_tkeep;
   logic                        tlp_axis_tvalid;
@@ -185,16 +192,16 @@ module tlp2dllp
       ST_IDLE: begin
         crc_in_c         = '1;
         skid_axis_tready = tlp_axis_tready;
-        if (tlp_axis_tready && s_axis_tvalid) begin
+        if (tlp_axis_tready && skid_axis_tvalid) begin
           //assign seq number then first 2 bytes of tlp
-          tlp_axis_tdata = {s_axis_tvalid[15:0], 4'h0, next_transmit_seq_r[11:0]};
+          tlp_axis_tdata = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
           tlp_axis_tkeep = '1;
-          if (((s_axis_tvalid[7:0] == Cpl) || (s_axis_tvalid[7:0] == CplD))  //check tlp type
+          if (((skid_axis_tdata[7:0] == Cpl) || (skid_axis_tdata[7:0] == CplD))  //check tlp type
               && have_p_credit_r) begin
             is_cpl_c = '1;  //tlp is completion
           end
-          else if (((s_axis_tvalid[7:0]  ==? MW) || (s_axis_tvalid[7:0]  == CW0) ||
-                    (s_axis_tvalid[7:0] == CW1))  && have_p_credit_r)
+          else if (((skid_axis_tdata[7:0]  ==? MW) || (skid_axis_tdata[7:0]  == CW0) ||
+                    (skid_axis_tdata[7:0] == CW1))  && have_p_credit_r)
           begin
             is_p_c = '1;  //tlp is payload
           end else if (have_np_credit_r) begin
@@ -212,17 +219,17 @@ module tlp2dllp
       //bypass if current packet is last
       ST_TLP_STREAM: begin
         skid_axis_tready = tlp_axis_tready;
-        if (tlp_axis_tready && skid_axis_tvalid && s_axis_tvalid) begin
+        if (tlp_axis_tready && skid_axis_tvalid) begin
           crc_in_c        = crc_out16;
-          tlp_axis_tdata  = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
+          tlp_axis_tdata  = {skid_axis_tdata[15:0], flow_axis_tdata[31:16]};
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = skid_axis_tvalid;
           word_count_c    = word_count_r + 1;
-          if (s_axis_tlast) begin  //check if packet is last
-            case (s_axis_tkeep)  //handle shift crc placement
+          if (skid_axis_tlast) begin  //check if packet is last
+            case (skid_axis_tkeep)  //handle shift crc placement
               4'b0001: begin
                 tlp_axis_tvalid = '0;
-                tlp_axis_tdata  = {8'h0, s_axis_tdata[7:0], skid_axis_tdata[31:16]};
+                tlp_axis_tdata  = {8'h0, skid_axis_tdata[7:0], flow_axis_tdata[31:16]};
                 crc_select      = 2'b10;
               end
               default: begin
@@ -242,10 +249,10 @@ module tlp2dllp
           next_state     = ST_TLP_CRC_ALIGN;
           //handle shift crc placement
           //complete the rest of crc placement
-          case (skid_axis_tkeep)
+          case (flow_axis_tkeep)
             4'b0001: begin
               crc_in_c        = crc_in_r;
-              tlp_axis_tdata  = {crc_out32[7:0], skid_axis_tdata[23:0]};
+              tlp_axis_tdata  = {crc_out32[7:0], flow_axis_tdata[23:0]};
               tlp_axis_tvalid = '1;
               word_count_c    = word_count_r + 1;
             end
@@ -258,11 +265,11 @@ module tlp2dllp
               next_state      = ST_TLP_LAST;
             end
             4'b0111: begin
-              tlp_axis_tdata = {24'h0, skid_axis_tdata[31:24]};
+              tlp_axis_tdata = {24'h0, flow_axis_tdata[31:24]};
               crc_select     = 2'b00;
             end
             4'b1111: begin
-              tlp_axis_tdata = {16'h0, skid_axis_tdata[31:16]};
+              tlp_axis_tdata = {16'h0, flow_axis_tdata[31:16]};
               crc_select     = 2'b01;
             end
             default: begin
@@ -277,7 +284,7 @@ module tlp2dllp
           tlp_axis_tkeep = '1;
           tlp_axis_tvalid = '1;
           word_count_c = word_count_r + 1;
-          case (skid_axis_tkeep)  //handle shift crc placement
+          case (flow_axis_tkeep)  //handle shift crc placement
             4'b0001: begin
               tlp_axis_tdata = {8'h0, crc_out32[31:8]};
               tlp_axis_tkeep = 4'b0111;
@@ -286,12 +293,12 @@ module tlp2dllp
               next_state     = ST_TLP_LAST;
             end
             4'b0111: begin
-              tlp_axis_tdata = {crc_out32[23:0], skid_axis_tdata[31:24]};
+              tlp_axis_tdata = {crc_out32[23:0], flow_axis_tdata[31:24]};
               crc_select     = 2'b00;
               next_state     = ST_TLP_CRC_TLAST_ALIGN;
             end
             4'b1111: begin
-              tlp_axis_tdata = {crc_out32[15:0], skid_axis_tdata[31:16]};
+              tlp_axis_tdata = {crc_out32[15:0], flow_axis_tdata[31:16]};
               crc_select     = 2'b01;
               next_state     = ST_TLP_CRC_TLAST_ALIGN;
             end
@@ -307,7 +314,7 @@ module tlp2dllp
           tlp_axis_tvalid = '1;
           //handle shift crc placement
           //final crc alignment if necessary
-          case (skid_axis_tkeep)
+          case (flow_axis_tkeep)
             4'b0111: begin
               tlp_axis_tdata = {8'h0, crc_out32[31:24]};
               tlp_axis_tkeep = 4'b0001;
@@ -407,6 +414,43 @@ module tlp2dllp
       .m_axis_tid(),
       .m_axis_tdest()
   );
+
+
+
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(3),
+      .REG_TYPE(SkidBuffer)
+  ) axis_input_flow_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata( skid_axis_tdata),
+      .s_axis_tkeep( skid_axis_tkeep),
+      .s_axis_tvalid(skid_axis_tvalid),
+      .s_axis_tready(),
+      .s_axis_tlast( skid_axis_tlast),
+      .s_axis_tuser( skid_axis_tuser),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .m_axis_tdata( flow_axis_tdata),
+      .m_axis_tkeep( flow_axis_tkeep),
+      .m_axis_tvalid(flow_axis_tvalid),
+      .m_axis_tready(skid_axis_tready),
+      .m_axis_tlast( flow_axis_tlast),
+      .m_axis_tuser( flow_axis_tuser),
+      .m_axis_tid(),
+      .m_axis_tdest()
+  );
+
 
 
   //axis skid buffer

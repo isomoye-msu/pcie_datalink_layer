@@ -47,7 +47,7 @@ targets:
       verilator_options:
         - --trace-fst
         - waiver.vlt
-    filesets : [rtl,cocotb, lint]
+    filesets : [rtl,cocotb]
     toplevel : [pcie_datalink_layer]
 
   synth:

@@ -59,13 +59,12 @@ module dllp_receive
     output logic            [            11:0] tx_fc_npd_o
 );
 
+  localparam int UserIsTlp = 1;
+  localparam int UserIsDllp = 0;
+
 
   logic dllp_ready;
   logic tlp_ready;
-  localparam int UserIsTlp = 1;
-  localparam int UserIsDllp = 0;
-  assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
-    s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
 
   //dllp handler instance
   dllp_handler #(
@@ -103,15 +102,15 @@ module dllp_receive
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RX_FIFO_SIZE(RX_FIFO_SIZE)
   ) dllp2tlp_inst (
-      .clk_i                 (clk_i),
-      .rst_i                 (rst_i),
-      .link_status_i         (link_status_i),
-      .s_axis_tdata          (s_axis_tdata),
-      .s_axis_tkeep          (s_axis_tkeep),
-      .s_axis_tvalid         (s_axis_tvalid),
-      .s_axis_tlast          (s_axis_tlast),
-      .s_axis_tuser          (s_axis_tuser),
-      .s_axis_tready         (tlp_ready),
+      .clk_i            (clk_i),
+      .rst_i            (rst_i),
+      .link_status_i    (link_status_i),
+      .s_axis_tdata     (s_axis_tdata),
+      .s_axis_tkeep     (s_axis_tkeep),
+      .s_axis_tvalid    (s_axis_tvalid),
+      .s_axis_tlast     (s_axis_tlast),
+      .s_axis_tuser     (s_axis_tuser),
+      .s_axis_tready    (tlp_ready),
       .m_phy_axis_tdata (m_axis_dllp2phy_tdata),
       .m_phy_axis_tkeep (m_axis_dllp2phy_tkeep),
       .m_phy_axis_tvalid(m_axis_dllp2phy_tvalid),
@@ -125,6 +124,11 @@ module dllp_receive
       .m_tlp_axis_tuser (m_axis_dllp2tlp_tuser),
       .m_tlp_axis_tready(m_axis_dllp2tlp_tready)
   );
+
+
+  //mux the tready input...
+  assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
+    s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
 
 
   // the "macro" to dump signals

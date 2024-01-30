@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-//! @title pcie_datalink_layern
+//! @title pcie_datalink_layer
 //! @author Idris Somoye
 //
 //! Implements a pcie datalink layer.
@@ -71,7 +71,6 @@ module pcie_datalink_layer
 
 
   //localparam int SLAVE_COUNT = 2;
-  parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
   parameter int ID_ENABLE = 0;
   parameter int ID_WIDTH = 8;
   parameter int DEST_ENABLE = 0;
@@ -81,6 +80,8 @@ module pcie_datalink_layer
   parameter int ARB_TYPE_ROUND_ROBIN = 0;
   parameter int ARB_LSB_HIGH_PRIORITY = 1;
   parameter int M_COUNT = 2;
+  parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
+
   //RETRY AXIS output
   logic            [(DATA_WIDTH)-1:0] phy_fc_axis_tdata;
   logic            [(KEEP_WIDTH)-1:0] phy_fc_axis_tkeep;
