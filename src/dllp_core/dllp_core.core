@@ -38,7 +38,7 @@ targets:
     filesets : [rtl,cocotb]
     toplevel : [pcie_datalink_layer]
 
-  verilate:
+  sim:
     flow: sim
     flow_options:
       tool : verilator

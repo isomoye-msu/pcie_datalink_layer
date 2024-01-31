@@ -132,6 +132,8 @@ class PhySimPort(Port):
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(data)
+            print("\n\n sending dllp")
+            print(pkt)
             frame.tuser = 1
             
         elif isinstance(pkt,Tlp):
@@ -142,7 +144,10 @@ class PhySimPort(Port):
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,self.tlp_calculator))
+            print("\n\n sending tlp")
+            print(pkt)
             frame.tuser = 2
+            self.seq_num += 1
             
         await self.source.send(frame)
         await with_timeout(self.source.wait(), 100000, 'ns')
@@ -217,7 +222,7 @@ class tlp_seq(uvm_sequence):
         self.result = None
     
     def tlp2dllp(self,seq_num, data,tlp_calculator):
-        test_data = seq_num.to_bytes(2,'big')
+        test_data =  bytes(20) #seq_num.to_bytes(2,'big')
         test_data += data
         test_data += tlp_calculator.checksum(test_data).to_bytes(4,'big')
         # seq_num += 1
@@ -250,7 +255,9 @@ class tlp_seq(uvm_sequence):
             seq_item.Tlp.requester_id = 1
         data = seq_item.Tlp.pack()
         print(seq_item.Tlp)
-        seq_item.frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,tlp_calculator))
+        dllp_data = self.tlp2dllp(9,data,tlp_calculator)
+        print(dllp_data)
+        seq_item.frame = AxiStreamFrame(dllp_data)
         seq_item.frame.tuser = 0x2
         await self.finish_item(seq_item)
         # assert 1 == 0
@@ -362,12 +369,16 @@ class phy_driver(base_driver):
         self.dut = cocotb.top
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_axis_phy"), self.dut.clk_i, self.dut.rst_i)
+        self.source.log.setLevel(logging.ERROR)
         self.sink = AxiStreamSink(AxiStreamBus.from_prefix(
             self.dut, "m_axis_phy"), self.dut.clk_i, self.dut.rst_i)
+        self.sink.log.setLevel(logging.ERROR)
         self.tlp_sink = AxiStreamSink(AxiStreamBus.from_prefix(
             self.dut, "m_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
+        self.tlp_sink.log.setLevel(logging.ERROR)
         self.tlp_source = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
+        self.tlp_source.log.setLevel(logging.ERROR)
         self.datum = None
 
     async def reset(self):
@@ -396,7 +407,7 @@ class phy_driver(base_driver):
             # Wait for a sequence item from the sequencer
             seq_item = await self.seq_item_port.get_next_item()
             print("got item")
-            await self.port.send(seq_item.Tlp)
+            await self.port.send(Tlp(seq_item.Tlp))
             # print(self.port.tx_queue)
             # await self.source.send(seq_item.frame)
             # await with_timeout(self.source.wait(), 10000, 'ns')
@@ -408,6 +419,7 @@ class phy_driver(base_driver):
     async def read_tlp(self):
         while True:
             tlp = await self.tlp_sink.recv()
+            print(Tlp(tlp))
             await self.tlp_source.send(tlp)
             # await with_timeout(self.tlp_source.wait(), 10000, 'ns')
             
@@ -417,14 +429,26 @@ class phy_driver(base_driver):
             rx_tlp = self.datum
             if rx_tlp.tuser == 1:
                 pkt = Dllp()
+                pkt = pkt.unpack(rx_tlp.tdata)
+                print("recieved dllp")
             elif rx_tlp.tuser == 2:
-                pkt = Tlp()
-                print(pkt)
+                # pkt = Tlp()
+                # pkt = pkt.unpack(rx_tlp.tdata)
+                data = rx_tlp.tdata[2:len(rx_tlp.tdata)-4]
+                print("\n")
+                print(len(rx_tlp.tdata))
+                print("\n")
+                print(rx_tlp.tdata)
+                print(data)
+                pkt = Tlp(data)
+                pkt.seq = int.from_bytes(rx_tlp.tdata[:1], "big")
+                print("recieved tlp")
+                
             else:
                 pkt = None
-                
+            
             if pkt:
-                pkt = pkt.unpack(rx_tlp.tdata)
+                print(pkt)
                 await self.port.ext_recv(pkt)
             # if(rx_tlp.tuser == 1):
             #     pkt = Dllp()
@@ -539,5 +563,5 @@ class Fc1Test(uvm_test):
 
     async def run_phase(self):
         self.raise_objection()
-        await with_timeout(self.test_all.start(),9000,'ns')
+        await with_timeout(self.test_all.start(),900000,'ns')
         self.drop_objection()

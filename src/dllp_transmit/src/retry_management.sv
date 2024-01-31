@@ -101,17 +101,22 @@ module retry_management
         end
       end
     end else begin
-      if (tx_valid_i) begin
+      if (tx_valid_i) begin  //wait for dllp layer to send a tlp
         ack_seq_mem_c[next_retry_index_r] = tx_seq_num_i;
         retrys_c[next_retry_index_r]      = '1;
         for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
+          //check if there's a free retry fifo
           if (!retrys_r[i] && (i != next_retry_index_r)) begin
             retry_index_flag[i] = 1'b0;
+            //select lowest available index checking all indexes before
+            //this unrolled loop index
             for (int j = 1; j < RETRY_TLP_SIZE; j++) begin
               if (!retrys_r[j] && (j != next_retry_index_r) && (j < i)) begin
                 retry_index_flag[i] = 1'b1;
               end
             end
+            //this check ensures that either the zero index
+            //or the lowest index is selected
             if (!retry_index_flag || i == 0) begin
               next_retry_index_c = i;
             end
@@ -125,6 +130,7 @@ module retry_management
   always_comb begin : retry_free_combo
     free_retry_c = '0;
     store_seq_c  = store_seq_r;
+    //check if tlp is acked or nacked
     if (ack_nack_vld_i && ack_nack_i) begin
       free_retry_c = '1;
       store_seq_c  = ack_seq_num_i;
@@ -137,6 +143,7 @@ module retry_management
     retry_st_e curr_state, next_state;
     logic [1:0] replay_cnt_c, replay_cnt_r;
     logic [31:0] retry_timer_c, retry_timer_r;
+    //main sequential block
     always @(posedge clk_i) begin : retry_buffer_seq
       if (rst_i) begin
         retry_timer_r <= '0;
@@ -148,6 +155,7 @@ module retry_management
         curr_state    <= next_state;
       end
     end
+    //main retry combinational block
     always_comb begin : retry_timer
       replay_cnt_c     = replay_cnt_r;
       retry_timer_c    = retry_timer_r;
@@ -156,17 +164,20 @@ module retry_management
       error_c[i]       = error_r[i];
       case (curr_state)
         ST_RETRY_IDLE: begin
+          //wait for tlp send at this retry index
           if (retrys_r[i]) begin
             next_state = ST_CNT_RETRY;
           end
         end
         ST_CNT_RETRY: begin
+          //timer counter increment
           retry_timer_c = retry_timer_r + 1'b1;
-          if (!retrys_r[i]) begin
+          if (!retrys_r[i]) begin  //check if tlp acked
             replay_cnt_c  = '0;
             retry_timer_c = '0;
             next_state    = ST_RETRY_IDLE;
-          end else if (retry_timer_r >= RetryTimer) begin
+          end  //check if timeout reached
+          else if (retry_timer_r >= RetryTimer) begin
             replay_cnt_c  = replay_cnt_r + 1'b1;
             retry_timer_c = '0;
             if (replay_cnt_r == '1) begin
@@ -179,12 +190,14 @@ module retry_management
           end
         end
         ST_REPLAY: begin
+          //check if late ack
           if (!retrys_r[i]) begin
             replay_cnt_c     = '0;
             retry_timer_c    = '0;
             retry_valid_c[i] = '0;
             next_state       = ST_RETRY_IDLE;
-          end else begin
+          end  //check that retry fifo has accepted resend request
+          else begin
             if (retry_ack_i[i]) begin
               retry_timer_c    = '0;
               retry_valid_c[i] = '0;
@@ -193,14 +206,15 @@ module retry_management
           end
         end
         ST_WAIT_REPLAY: begin
+          //wait for an ack..
           if (!retrys_r[i]) begin
             replay_cnt_c  = '0;
             retry_timer_c = '0;
             next_state    = ST_RETRY_IDLE;
-          end else begin
+          end  //wait for a resend complete from retry fifo
+          else begin
             if (retry_complete_i[i]) begin
               next_state = ST_CNT_RETRY;
-              replay_cnt_c = '0;
               retry_timer_c = '0;
             end
           end

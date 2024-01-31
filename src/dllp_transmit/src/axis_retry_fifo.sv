@@ -39,6 +39,7 @@ module axis_retry_fifo
   localparam int MaxHdrSize = 4;
   localparam int MaxPktSize = MAX_PAYLOAD_SIZE + MaxHdrSize;
 
+  //axis packet holder struct
   typedef struct packed {
     logic                  tvalid;
     logic [USER_WIDTH-1:0] tuser;
@@ -106,7 +107,7 @@ module axis_retry_fifo
     end
   end
 
-
+  //read out data to master
   always_comb begin : read_logic
     retry_axis_tdata  = '0;
     retry_axis_tkeep  = '0;
@@ -129,7 +130,7 @@ module axis_retry_fifo
   end
 
 
-
+  //output register for axis fifo
   axis_register #(
       .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),

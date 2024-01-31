@@ -73,21 +73,21 @@ module dllp2tlp
   //tlp nulled
   logic                         tlp_nullified_c;
   logic                         tlp_nullified_r;
-  logic        [          31:0] tlp_in_c;
-  logic        [          31:0] tlp_in_r;
+  logic        [          31:0] delayed_tlp_c;
+  logic        [          31:0] delayed_tlp_r;
   //transmit sequence logic
   logic        [          15:0] next_transmit_seq_c;
   logic        [          15:0] next_transmit_seq_r;
-  logic        [          15:0] next_recv_seq_num_c;
-  logic        [          15:0] next_recv_seq_num_r;
+  logic        [          15:0] next_expected_seq_num_c;
+  logic        [          15:0] next_expected_seq_num_r;
   logic        [          11:0] ackd_transmit_seq_c;
   logic        [          15:0] ackd_transmit_seq_r;
   //crc helper signals
-  logic        [          31:0] crc_in_c;
-  logic        [          31:0] crc_in_r;
-  logic        [          31:0] crc_calc_c;
-  logic        [          31:0] crc_calc_r;
-  logic        [          31:0] crc_out16;
+  logic        [          31:0] crc_from_tlp_c;
+  logic        [          31:0] crc_from_tlp_r;
+  logic        [          31:0] crc_calculated_c;
+  logic        [          31:0] crc_calculated_r;
+  logic        [          31:0] crc_output;
   logic        [          31:0] crc_reversed;
   logic        [          15:0] dllp_crc_out;
   logic        [          15:0] dllp_crc_reversed;
@@ -97,14 +97,14 @@ module dllp2tlp
   logic        [          31:0] byte_count_r;
   logic        [           1:0] crc_byte_select;
   //tlp type signals
-  logic                         is_cpl_c;
-  logic                         is_cpl_r;
-  logic                         is_np_c;
-  logic                         is_np_r;
-  logic                         is_p_c;
-  logic                         is_p_r;
-  logic                         is_3dw_c;
-  logic                         is_3dw_r;
+  logic                         tlp_is_cpl_c;
+  logic                         tlp_is_cpl_r;
+  logic                         tlp_no_payload_c;
+  logic                         tlp_no_payload_r;
+  logic                         tlp_has_payload_c;
+  logic                         tlp_has_payload_r;
+  logic                         tlp_3dw_header_c;
+  logic                         tlp_3dw_header_r;
   //skid buffer axis signals
   logic        [DATA_WIDTH-1:0] skid_axis_tdata;
   logic        [KEEP_WIDTH-1:0] skid_axis_tkeep;
@@ -133,10 +133,6 @@ module dllp2tlp
   logic                         tlp_axis_tlast;
   logic        [USER_WIDTH-1:0] tlp_axis_tuser;
   logic                         tlp_axis_tready;
-  //tlp last date
-  logic        [DATA_WIDTH-1:0] last_tdata_c;
-  logic        [DATA_WIDTH-1:0] last_tdata_r;
-
   //credits tracking signals
   logic        [          15:0] tlp_header_offset;
   logic        [           7:0] ph_credits_consumed_c;
@@ -151,50 +147,44 @@ module dllp2tlp
   //main sequential block
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state             <= ST_IDLE;
-      next_transmit_seq_r    <= '0;
-      next_recv_seq_num_r    <= '0;
-      //crc signals
-      dllp_lcrc_r            <= '1;
-      crc_calc_r             <= '1;
-      //credits tracking
-      ph_credits_consumed_r  <= '0;
-      pd_credits_consumed_r  <= '0;
-      nph_credits_consumed_r <= '0;
-      npd_credits_consumed_r <= '0;
+      curr_state              <= ST_IDLE;
+      next_transmit_seq_r     <= '0;
+      next_expected_seq_num_r <= '0;
+      dllp_lcrc_r             <= '1;
+      crc_calculated_r        <= '1;
+      ph_credits_consumed_r   <= '0;
+      pd_credits_consumed_r   <= '0;
+      nph_credits_consumed_r  <= '0;
+      npd_credits_consumed_r  <= '0;
     end else begin
-      curr_state             <= next_state;
-      next_transmit_seq_r    <= next_transmit_seq_c;
-      next_recv_seq_num_r    <= next_recv_seq_num_c;
-      //crc signals
-      dllp_lcrc_r            <= dllp_lcrc_c;
-      crc_calc_r             <= crc_calc_c;
-      //credits tracking
-      ph_credits_consumed_r  <= ph_credits_consumed_c;
-      pd_credits_consumed_r  <= pd_credits_consumed_c;
-      nph_credits_consumed_r <= nph_credits_consumed_c;
-      npd_credits_consumed_r <= npd_credits_consumed_c;
+      curr_state              <= next_state;
+      next_transmit_seq_r     <= next_transmit_seq_c;
+      next_expected_seq_num_r <= next_expected_seq_num_c;
+      dllp_lcrc_r             <= dllp_lcrc_c;
+      crc_calculated_r        <= crc_calculated_c;
+      ph_credits_consumed_r   <= ph_credits_consumed_c;
+      pd_credits_consumed_r   <= pd_credits_consumed_c;
+      nph_credits_consumed_r  <= nph_credits_consumed_c;
+      npd_credits_consumed_r  <= npd_credits_consumed_c;
     end
     //non resetable
-    //tlp type
-    last_tdata_r    <= last_tdata_c;
-    byte_count_r    <= byte_count_c;
-    is_cpl_r        <= is_cpl_c;
-    is_np_r         <= is_np_c;
-    is_p_r          <= is_p_c;
-    tlp_nullified_r <= tlp_nullified_c;
-    crc_in_r        <= crc_in_c;
-    tlp_in_r        <= tlp_in_c;
-    is_3dw_r        <= is_3dw_c;
+    byte_count_r      <= byte_count_c;
+    tlp_is_cpl_r      <= tlp_is_cpl_c;
+    tlp_no_payload_r  <= tlp_no_payload_c;
+    tlp_has_payload_r <= tlp_has_payload_c;
+    tlp_nullified_r   <= tlp_nullified_c;
+    crc_from_tlp_r    <= crc_from_tlp_c;
+    delayed_tlp_r     <= delayed_tlp_c;
+    tlp_3dw_header_r  <= tlp_3dw_header_c;
   end
 
 
   always_comb begin : byteswap
     for (int i = 0; i < 8; i++) begin
-      crc_reversed[i]        = crc_calc_r[7-i];
-      crc_reversed[i+8]      = crc_calc_r[15-i];
-      crc_reversed[i+16]     = crc_calc_r[23-i];
-      crc_reversed[i+24]     = crc_calc_r[31-i];
+      crc_reversed[i]        = crc_calculated_r[7-i];
+      crc_reversed[i+8]      = crc_calculated_r[15-i];
+      crc_reversed[i+16]     = crc_calculated_r[23-i];
+      crc_reversed[i+24]     = crc_calculated_r[31-i];
       dllp_crc_reversed[i]   = dllp_lcrc_r[7-i];
       dllp_crc_reversed[i+8] = dllp_lcrc_r[15-i];
     end
@@ -202,60 +192,53 @@ module dllp2tlp
 
 
   always_comb begin : main_combo
-    next_state             = curr_state;
-    next_transmit_seq_c    = next_transmit_seq_r;
-    //crc signals
-    dllp_lcrc_c            = dllp_lcrc_r;
-    crc_calc_c             = crc_calc_r;
-    crc_byte_select        = '0;
-    crc_in_c               = crc_in_r;
-    byte_count_c           = byte_count_r;
-    //seq num
-    next_recv_seq_num_c    = next_recv_seq_num_r;
-    //tlp type
-    tlp_in_c               = tlp_in_r;
-    is_cpl_c               = is_cpl_r;
-    is_np_c                = is_np_r;
-    is_p_c                 = is_p_r;
-    is_3dw_c               = is_3dw_r;
-    //credits signals
-    ph_credits_consumed_c  = ph_credits_consumed_r;
-    pd_credits_consumed_c  = pd_credits_consumed_r;
-    nph_credits_consumed_c = nph_credits_consumed_r;
-    npd_credits_consumed_c = npd_credits_consumed_r;
-    //dllp rx to phy
-    phy_axis_tdata         = '0;
-    phy_axis_tkeep         = '0;
-    phy_axis_tvalid        = '0;
-    phy_axis_tlast         = '0;
-    phy_axis_tuser         = 4'h01;
-    //
-    //dllp rx to phy
-    tlp_axis_tdata         = '0;
-    tlp_axis_tkeep         = '0;
-    tlp_axis_tvalid        = '0;
-    tlp_axis_tlast         = '0;
-    tlp_axis_tuser         = '0;
-    //
-    skid_axis_tready       = '0;
-    dll_packet             = '0;
-    tlp_header_offset      = '0;
-    last_tdata_c           = last_tdata_r;
-    tlp_nullified_c        = tlp_nullified_r;
+    next_state              = curr_state;
+    next_transmit_seq_c     = next_transmit_seq_r;
+    dllp_lcrc_c             = dllp_lcrc_r;
+    crc_calculated_c        = crc_calculated_r;
+    crc_byte_select         = '0;
+    crc_from_tlp_c          = crc_from_tlp_r;
+    byte_count_c            = byte_count_r;
+    next_expected_seq_num_c = next_expected_seq_num_r;
+    delayed_tlp_c           = delayed_tlp_r;
+    tlp_is_cpl_c            = tlp_is_cpl_r;
+    tlp_no_payload_c        = tlp_no_payload_r;
+    tlp_has_payload_c       = tlp_has_payload_r;
+    tlp_3dw_header_c        = tlp_3dw_header_r;
+    ph_credits_consumed_c   = ph_credits_consumed_r;
+    pd_credits_consumed_c   = pd_credits_consumed_r;
+    nph_credits_consumed_c  = nph_credits_consumed_r;
+    npd_credits_consumed_c  = npd_credits_consumed_r;
+    skid_axis_tready        = '0;
+    dll_packet              = '0;
+    tlp_header_offset       = '0;
+    tlp_nullified_c         = tlp_nullified_r;
+    //phy response signals
+    phy_axis_tdata          = '0;
+    phy_axis_tkeep          = '0;
+    phy_axis_tvalid         = '0;
+    phy_axis_tlast          = '0;
+    phy_axis_tuser          = 4'h01;
+    //tlp axis signals
+    tlp_axis_tdata          = '0;
+    tlp_axis_tkeep          = '0;
+    tlp_axis_tvalid         = '0;
+    tlp_axis_tlast          = '0;
+    tlp_axis_tuser          = '0;
     case (curr_state)
       ST_IDLE: begin
         skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE);
         if (skid_axis_tvalid && skid_axis_tready && skid_axis_tuser[UserIsTlp]) begin
           //store incoming sequence number
           next_transmit_seq_c = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
-          tlp_in_c            = skid_axis_tdata;
+          delayed_tlp_c       = skid_axis_tdata;
           crc_byte_select     = 2'b01;
           //tlp type
-          is_cpl_c            = '0;
-          is_np_c             = '0;
-          is_p_c              = '0;
+          tlp_is_cpl_c        = '0;
+          tlp_no_payload_c    = '0;
+          tlp_has_payload_c   = '0;
           byte_count_c        = '0;
-          is_3dw_c            = '0;
+          tlp_3dw_header_c    = '0;
           //state control
           next_state          = ST_CHECK_TLP_TYPE;
         end
@@ -264,25 +247,25 @@ module dllp2tlp
         skid_axis_tready = tlp_axis_tready;
         crc_byte_select  = 2'b11;
         if (skid_axis_tready && skid_axis_tvalid && skid_axis_tuser[UserIsTlp]) begin
-          crc_calc_c      = crc_out16;
-          byte_count_c    = byte_count_r + 32'h4;
-          tlp_in_c        = skid_axis_tdata;
+          crc_calculated_c = crc_output;
+          byte_count_c     = byte_count_r + 32'h4;
+          delayed_tlp_c    = skid_axis_tdata;
           //bram store
-          tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
-          tlp_axis_tkeep  = '1;
-          tlp_axis_tvalid = '1;
+          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          tlp_axis_tkeep   = '1;
+          tlp_axis_tvalid  = '1;
           //check tlp type
-          if (pipeline_axis_tdata[21]) begin
-            is_3dw_c = '1;
+          if (tlp_axis_tdata[5]) begin
+            tlp_3dw_header_c = '1;
           end
-          if ((pipeline_axis_tdata[23:16] == Cpl) || (pipeline_axis_tdata[23:16] == CplD)) begin
-            is_cpl_c = '1;
-          end else if ((pipeline_axis_tdata[23:16]  ==? MW) ||
-            (pipeline_axis_tdata[23:16]  == CW0) ||
-            (pipeline_axis_tdata[23:16] == CW1)) begin
-            is_p_c = '1;
+          if ((tlp_axis_tdata[7:0] == Cpl) || (tlp_axis_tdata[7:0] == CplD)) begin
+            tlp_is_cpl_c = '1;
+          end else if ((tlp_axis_tdata[7:0]  ==? MW) ||
+            (tlp_axis_tdata[7:0]  == CW0) ||
+            (tlp_axis_tdata[7:0] == CW1)) begin
+            tlp_has_payload_c = '1;
           end else begin
-            is_np_c = '1;
+            tlp_no_payload_c = '1;
           end
           //next state
           next_state = ST_TLP_STREAM;
@@ -292,13 +275,12 @@ module dllp2tlp
         skid_axis_tready = tlp_axis_tready;
         crc_byte_select  = 2'b11;
         if (skid_axis_tready && skid_axis_tvalid && skid_axis_tuser[UserIsTlp]) begin
-          crc_calc_c      = crc_out16;
-          //bram store
-          tlp_in_c        = skid_axis_tdata;
-          tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
-          tlp_axis_tkeep  = skid_axis_tkeep;
-          tlp_axis_tvalid = '1;
-          byte_count_c    = byte_count_r + 32'h4;
+          crc_calculated_c = crc_output;
+          delayed_tlp_c    = skid_axis_tdata;
+          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          tlp_axis_tkeep   = skid_axis_tkeep;
+          tlp_axis_tvalid  = '1;
+          byte_count_c     = byte_count_r + 32'h4;
           if (skid_axis_tlast) begin
             byte_count_c    = byte_count_r;
             tlp_axis_tvalid = '0;
@@ -306,19 +288,19 @@ module dllp2tlp
             case (skid_axis_tkeep)
               4'b0001: begin
                 crc_byte_select = '0;
-                crc_in_c        = {skid_axis_tdata[7:0], pipeline_axis_tdata[31:8]};
+                crc_from_tlp_c  = {skid_axis_tdata[7:0], pipeline_axis_tdata[31:8]};
               end
               4'b0011: begin
                 crc_byte_select = 2'b01;
-                crc_in_c        = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+                crc_from_tlp_c  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
               end
               4'b0111: begin
                 crc_byte_select = 2'b10;
-                crc_in_c        = {skid_axis_tdata[23:0], pipeline_axis_tdata[31:24]};
+                crc_from_tlp_c  = {skid_axis_tdata[23:0], pipeline_axis_tdata[31:24]};
               end
               4'b1111: begin
                 crc_byte_select = '1;
-                crc_in_c        = pipeline_axis_tdata;
+                crc_from_tlp_c  = skid_axis_tdata;
               end
               default: begin
               end
@@ -326,54 +308,14 @@ module dllp2tlp
           end
         end
       end
-      // ST_TLP_LAST: begin
-      //   skid_axis_tready = '0;
-      //   if (skid_axis_tready && skid_axis_tvalid && skid_axis_tuser[UserIsTlp]) begin
-      //     crc_byte_select     = 2'b11;
-      //     crc_calc_c     = crc_out16;
-      //     tlp_axis_tdata = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
-      //     tlp_axis_tlast = '1;
-      //     tlp_axis_tkeep = skid_axis_tkeep;
-      //     next_state     = ST_CHECK_CRC;
-      //     case (skid_axis_tkeep)
-      //       4'b0001: begin
-      //         crc_byte_select = '0;
-      //         crc_in_c   = {skid_axis_tdata[7:0], tlp_in_r[31:8]};
-      //         // tlp_axis_tkeep = skid_axis_tkeep;
-      //       end
-      //       4'b0011: begin
-      //         crc_byte_select = 2'b01;
-      //         crc_in_c   = {skid_axis_tdata[15:0], tlp_in_r[31:16]};
-      //       end
-      //       4'b0111: begin
-      //         crc_byte_select = 2'b10;
-      //         last_tdata_c = tlp_axis_tdata;
-      //         tlp_axis_tvalid = '0;
-      //         tlp_axis_tlast = '1;
-      //         tlp_axis_tkeep = 4'b0001;
-      //         crc_in_c = {skid_axis_tdata[23:0], tlp_in_r[31:24]};
-      //       end
-      //       4'b1111: begin
-      //         crc_byte_select      = '1;
-      //         last_tdata_c    = tlp_axis_tdata;
-      //         tlp_axis_tvalid = '0;
-      //         tlp_axis_tlast  = '1;
-      //         tlp_axis_tkeep  = 4'b0011;
-      //         crc_in_c        = skid_axis_tdata;
-      //       end
-      //       default: begin
-      //       end
-      //     endcase
-      //   end
-      // end
       ST_CHECK_CRC: begin
-        tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
-        tlp_axis_tvalid = '1;
-        tlp_axis_tlast  = '1;
-        crc_calc_c      = '1;
+        tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+        tlp_axis_tvalid  = '1;
+        tlp_axis_tlast   = '1;
+        crc_calculated_c = '1;
         // tlp_axis_tuser = '1;
         //default to dllp ack state
-        next_state      = ST_SEND_ACK;
+        next_state       = ST_SEND_ACK;
         //assign tkeep based on last keep and alignement
         case (skid_axis_tkeep)
           4'b0001: begin
@@ -399,7 +341,7 @@ module dllp2tlp
           end
         endcase
         //check crc
-        if ((crc_reversed == crc_in_r) && (next_recv_seq_num_r == next_transmit_seq_r)) begin
+        if ((crc_reversed == crc_from_tlp_r) && (next_expected_seq_num_r == next_transmit_seq_r)) begin
           //build dllp ack for crc generation timing, not registered to prevent
           //utilization.
           set_ack_nack(dll_packet, Ack, next_transmit_seq_r[11:0]);
@@ -422,19 +364,19 @@ module dllp2tlp
       end
       ST_SEND_ACK_CRC: begin
         //build axis master output
-        tlp_header_offset = (is_3dw_r ? 16'd12 : 16'd16);
+        tlp_header_offset = (tlp_3dw_header_r ? 16'd12 : 16'd16);
         phy_axis_tdata    = dllp_crc_reversed;
         phy_axis_tkeep    = 8'h03;
         phy_axis_tvalid   = '1;
         phy_axis_tlast    = '1;
         if (phy_axis_tready) begin
-          if (is_p_r) begin
+          if (tlp_has_payload_r) begin
             ph_credits_consumed_c = ph_credits_consumed_r + 1;
             //to get credits consumed .. subtract word count by header count which is 4.
             //then multiply by 4 to get count in 4dw increment i.e credits
             pd_credits_consumed_c          = pd_credits_consumed_r +
               ((byte_count_r - tlp_header_offset) >> 2);
-          end else if (is_np_r) begin
+          end else if (tlp_no_payload_r) begin
             nph_credits_consumed_c = nph_credits_consumed_r + 1;
             //to get credits consumed .. subtract word count by header count which is 4.
             //then multiply by 4 to get count in 4dw increment i.e credits
@@ -447,11 +389,10 @@ module dllp2tlp
       end
       ST_SEND_FC_DLLP: begin
         //build dllp fc update for crc
-        send_fc_init(phy_axis_tdata, is_p_r ? UpdateFC_P : UpdateFC_NP, '0,
+        send_fc_init(phy_axis_tdata, tlp_has_payload_r ? UpdateFC_P : UpdateFC_NP, '0,
                      ph_credits_consumed_r + 1, pd_credits_consumed_r + FcPData);
         dllp_lcrc_c = dllp_crc_out;
         //build axis master output
-        // phy_axis_tdata    = dll_packet[31:0];
         phy_axis_tkeep    = '1;
         phy_axis_tvalid   = '1;
         //done with dllp
@@ -468,8 +409,8 @@ module dllp2tlp
         //done with dllp
         if (phy_axis_tready) begin
           //increment seq number
-          next_recv_seq_num_c = next_recv_seq_num_r + 1;
-          next_state          = ST_IDLE;
+          next_expected_seq_num_c = next_expected_seq_num_r + 1;
+          next_state              = ST_IDLE;
         end
       end
       default: begin
@@ -634,7 +575,7 @@ module dllp2tlp
 
 
   //dll crc instance
-  pcie_datalink_crc dllp_crc_inst (
+  pcie_datalink_crc dllp_crc_from_tlpst (
       .crcIn ('1),
       .data  (dll_packet[31:0]),
       .crcOut(dllp_crc_out)
@@ -642,10 +583,10 @@ module dllp2tlp
 
   //tlp crc instance
   pcie_lcrc16 tlp_crc16_inst (
-      .data  (tlp_in_r),
-      .crcIn (crc_calc_r),
+      .data  (delayed_tlp_r),
+      .crcIn (crc_calculated_r),
       .select(crc_byte_select),
-      .crcOut(crc_out16)
+      .crcOut(crc_output)
   );
   /* verilator lint_on WIDTHEXPAND */
   /* verilator lint_on WIDTHTRUNC */

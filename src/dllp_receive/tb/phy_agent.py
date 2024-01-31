@@ -153,6 +153,7 @@ class phy_driver(base_driver):
         self.dut = cocotb.top
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_axis"), self.dut.clk_i, self.dut.rst_i)
+        self.source.log.setLevel(logging.ERROR)
         
     async def reset(self):
         self.dut.rst_i.setimmediatevalue(0)
@@ -224,7 +225,7 @@ class phy_env(uvm_env):
     def build_phase(self):
         self.dut = cocotb.top
         self.log = logging.getLogger("cocotb.tb")
-        self.log.setLevel(logging.DEBUG)
+        self.log.setLevel(logging.INFO)
         cocotb.start_soon(Clock(self.dut.clk_i, 2, units="ns").start())
         self.agent = phy_agent.create("phy_agent", self)
         
