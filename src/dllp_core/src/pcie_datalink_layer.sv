@@ -21,7 +21,7 @@ module pcie_datalink_layer
     parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
     parameter int RETRY_TLP_SIZE = 3,
-    parameter int MAX_PAYLOAD_SIZE = 4
+    parameter int MAX_PAYLOAD_SIZE = 1024
 ) (
     input  logic                  clk_i,                    // Clock signal
     input  logic                  rst_i,                    // Reset signal
@@ -112,6 +112,7 @@ module pcie_datalink_layer
   logic            [            11:0] tx_fc_pd;
   logic            [             7:0] tx_fc_nph;
   logic            [            11:0] tx_fc_npd;
+  logic                               update_fc;
   logic                               init_ack;
   logic                               ack_nack;
   logic                               ack_nack_vld;
@@ -190,7 +191,8 @@ module pcie_datalink_layer
       .tx_fc_ph_i(tx_fc_ph),
       .tx_fc_pd_i(tx_fc_pd),
       .tx_fc_nph_i(tx_fc_nph),
-      .tx_fc_npd_i(tx_fc_npd)
+      .tx_fc_npd_i(tx_fc_npd),
+      .update_fc_i(update_fc)
   );
 
 
@@ -233,7 +235,8 @@ module pcie_datalink_layer
       .tx_fc_ph_o            (tx_fc_ph),
       .tx_fc_pd_o            (tx_fc_pd),
       .tx_fc_nph_o           (tx_fc_nph),
-      .tx_fc_npd_o           (tx_fc_npd)
+      .tx_fc_npd_o           (tx_fc_npd),
+      .update_fc_o           (update_fc)
   );
 
 

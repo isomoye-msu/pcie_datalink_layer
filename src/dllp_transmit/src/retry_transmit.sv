@@ -1,3 +1,6 @@
+//!module: retry_transmit
+//! Author: Idris Somoye
+//! Module transmits TLPs stored in the retry FIFO upon recieving a signal from the retry management controller.
 module retry_transmit
   import pcie_datalink_pkg::*;
 #(

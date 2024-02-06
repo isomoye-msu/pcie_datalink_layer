@@ -46,13 +46,14 @@ module dllp_transmit
     input  logic [           7:0] tx_fc_ph_i,
     input  logic [          11:0] tx_fc_pd_i,
     input  logic [           7:0] tx_fc_nph_i,
-    input  logic [          11:0] tx_fc_npd_i
+    input  logic [          11:0] tx_fc_npd_i,
+    input  logic                  update_fc_i
 );
 
 
   parameter int MaxTlpHdrSizeDW = 4;
   parameter int RAM_DATA_WIDTH = DATA_WIDTH;
-  parameter int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + (8 << (4 + MAX_PAYLOAD_SIZE)) + 1;
+  parameter int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MAX_PAYLOAD_SIZE + 1;
   parameter int MinRxBufferSize = MaxTlpTotalSizeDW * (RETRY_TLP_SIZE);
   parameter int RAM_ADDR_WIDTH = $clog2(MinRxBufferSize);
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
@@ -185,7 +186,8 @@ module dllp_transmit
       .tx_fc_ph_i       (tx_fc_ph_i),
       .tx_fc_pd_i       (tx_fc_pd_i),
       .tx_fc_nph_i      (tx_fc_nph_i),
-      .tx_fc_npd_i      (tx_fc_npd_i)
+      .tx_fc_npd_i      (tx_fc_npd_i),
+      .update_fc_i      (update_fc_i)
   );
 
 

@@ -23,7 +23,7 @@ class PhySimPort(Port):
     def __init__(self, source, fc_init=[[0]*6]*8, *args, **kwargs):
         super().__init__(*args, fc_init, **kwargs)
         self.fc_idle_timer_steps = get_sim_steps(1, 'us')
-        self.fc_update_steps = get_sim_steps(3, 'us')
+        self.fc_update_steps = get_sim_steps(1, 'us')
 
         self.other = None
 
@@ -78,7 +78,7 @@ class PhySimPort(Port):
         self._connect_int(port)
     
     async def tlp_handler(self,tlp):
-        ...
+        print("got tlp: " + str(tlp))
         # while True:
         #     await Timer(90000)
 
@@ -119,9 +119,6 @@ class PhySimPort(Port):
         await self._transmit(pkt)
 
     async def _transmit(self, pkt):
-        # pkt1 = self.tx_queue.get_nowait()
-        # print(self.tx_queue)
-        # await self._run_transmit()
         if self.source is None:
             raise Exception("Port not connected")
         await Timer(max(self.link_delay_steps, 1), 'step')
@@ -132,19 +129,19 @@ class PhySimPort(Port):
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(data)
-            print("\n\n sending dllp")
+            print("port sending dllp")
             print(pkt)
             frame.tuser = 1
             
         elif isinstance(pkt,Tlp):
-            print("sending tlp")
+            # print("sending tlp")
             seq_item = pkt
             seq_item.crc = self.calculator.checksum(
                 seq_item.pack()).to_bytes(2, 'big')
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,self.tlp_calculator))
-            print("\n\n sending tlp")
+            print("port sending tlp \n\n")
             print(pkt)
             frame.tuser = 2
             self.seq_num += 1
@@ -239,11 +236,11 @@ class tlp_seq(uvm_sequence):
         )
         tlp_calculator = Calculator(tlp_config)
         # Create and send a sequence item
-        length = random.randint(1, 32)
+        length = random.randint(1, 255)
         seq_item = dllp_seq_item("my_sequence_item")
         print("my seq" + str(seq_item))
         await self.start_item(seq_item)
-        seq_item.Tlp.fmt_type = random.choice([TlpType.MEM_WRITE])
+        seq_item.Tlp.fmt_type = TlpType.MEM_WRITE
         if seq_item.Tlp.fmt_type == TlpType.MEM_WRITE:
             test_data = bytearray(itertools.islice(itertools.cycle(range(255)), length))
             seq_item.Tlp.set_addr_be_data(1*4, test_data)
@@ -306,7 +303,7 @@ class flow_control_seq(base_sequence):
                 break
             
     async def send_tlp(self,seqr):
-        for i in range(10):
+        for i in range(65):
             tlp = tlp_seq("tlp seq item",i)
             await tlp.start(seqr)
             await Timer(9000000)
@@ -401,28 +398,22 @@ class phy_driver(base_driver):
         self.dut.phy_link_up_i.value = 1
 
     async def drive_item(self):
-        # while self.port.fc_initialized == False:
-            # ...
         while True:
             # Wait for a sequence item from the sequencer
             seq_item = await self.seq_item_port.get_next_item()
             print("got item")
             await self.port.send(Tlp(seq_item.Tlp))
-            # print(self.port.tx_queue)
-            # await self.source.send(seq_item.frame)
-            # await with_timeout(self.source.wait(), 10000, 'ns')
             seq_item.results = None
             self.datum = None
-            # self.ap.write(seq_item)
             self.seq_item_port.item_done()
     
     async def read_tlp(self):
         while True:
             tlp = await self.tlp_sink.recv()
+            print("rx saxis tlp")
             print(Tlp(tlp))
             await self.tlp_source.send(tlp)
-            # await with_timeout(self.tlp_source.wait(), 10000, 'ns')
-            
+       
     async def  read_dllp(self):
          while True:
             self.datum = await self.sink.recv()
@@ -430,57 +421,24 @@ class phy_driver(base_driver):
             if rx_tlp.tuser == 1:
                 pkt = Dllp()
                 pkt = pkt.unpack(rx_tlp.tdata)
-                print("recieved dllp")
             elif rx_tlp.tuser == 2:
-                # pkt = Tlp()
-                # pkt = pkt.unpack(rx_tlp.tdata)
+                pkt = Tlp()
                 data = rx_tlp.tdata[2:len(rx_tlp.tdata)-4]
-                print("\n")
-                print(len(rx_tlp.tdata))
-                print("\n")
-                print(rx_tlp.tdata)
-                print(data)
-                pkt = Tlp(data)
-                pkt.seq = int.from_bytes(rx_tlp.tdata[:1], "big")
-                print("recieved tlp")
-                
+                pkt = pkt.unpack(data)
+                pkt.seq = int.from_bytes(rx_tlp.tdata[:1], "big")     
             else:
                 pkt = None
-            
             if pkt:
+                print("recieved packet")
                 print(pkt)
                 await self.port.ext_recv(pkt)
-            # if(rx_tlp.tuser == 1):
-            #     pkt = Dllp()
-            #     pkt = pkt.unpack(rx_tlp.tdata)
-            # else:
-            #     pkt = Tlp()
-            #     pkt = pkt.unpack(rx_tlp.tdata)
-                
-                
-            # uvm_root().logger.info("flow control initiation Sequence: ")
-            # uvm_root().set_logging_level_hier(CRITICAL)
-            # self.datum = self.datuma.tdata
-            # print(f"\n\n\n\n\nMONITORED {self.datum}")
-            # self.source_ap.write(datum)
-
-    # async def connect_phase(self):
-    #     await self.port.connect(self.source)
         
     async def run_phase(self):
         await self.launch_tb()
         self.port = PhySimPort(self.source,fc_init=[[64, 1024, 64, 64, 64, 1024]]*8)
-        # NullTrigger()
-        # self.port.connect(self.source)
         self.port.send_fc.set()
-        # self.port.send_ack.set()
         print(self.port.send_fc.is_set())
         self.port.fc_initialized = False
-        # await self.port.fc_state.reset()
-        # while self.port.fc_initialized == False:
-        #     ...
-        # for i in range(20):
-        #     await RisingEdge(self.dut.clk_i)
         self.source.set_pause_generator(self.cycle_pause())
         self.sink.set_pause_generator(self.cycle_pause())
         while True:
@@ -489,18 +447,6 @@ class phy_driver(base_driver):
             coro2Thread = cocotb.start_soon(self.read_dllp())
             coro3Thread = cocotb.start_soon(self.read_tlp())
             await First(coro1Thread,coro2Thread,coro3Thread)
-            # Wait for a sequence item from the sequencer
-            # seq_item = await self.seq_item_port.get_next_item()
-            # print("got item")
-            # # Drive the sequence item to the DUT
-            # await self.drive_item(seq_item)
-            # Notify the sequencer that the item has been processed
-            # self.ap.write(seq_item)
-            # self.seq_item_port.item_done()
-        # super().run_phase()
-
-        # while True:
-        #     seq_item = await self.seq_item_port.get_next_item()
 
 
 class phy_sequencer(base_sequencer):
@@ -552,15 +498,7 @@ class Fc1Test(uvm_test):
 
     def end_of_elaboration_phase(self):
         self.test_all = flow_control_seq("test fc1")
-        # print(self.env.agent.monitor.source_ap)
-        # self.env.agent.monitor.source_ap.connect(self.test_all.cmd_export)
-        # self.test_all.mon_ap.connect(self.env.agent.monitor.source_ap)
-    
-    # def connect_phase(self):
-    #     ...
-        # self.env.agent.monitor.source_ap.connect(self.test_all.cmd_export)
-        # self.test_all.cmd_export.connect(self.env.agent.monitor.source_ap)
-
+        
     async def run_phase(self):
         self.raise_objection()
         await with_timeout(self.test_all.start(),900000,'ns')

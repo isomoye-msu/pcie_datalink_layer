@@ -31,8 +31,7 @@ module pcie_flow_ctrl_init
 );
 
 
-  localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
-  localparam int HdrMinCredits = 8'h040;
+  localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
   localparam int FcWaitPeriod = 8'hA0;
 
   typedef enum logic [4:0] {
@@ -184,7 +183,7 @@ module pcie_flow_ctrl_init
           fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            send_fc_init(fc_axis_tdata, InitFC1_Cpl, '0, '0, '0);
+            send_fc_init(fc_axis_tdata, InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -284,7 +283,7 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready) begin
           fc_axis_tvalid = '0;
           if (seq_count_r >= FcWaitPeriod) begin
-            send_fc_init(fc_axis_tdata, InitFC2_Cpl, '0, '0, '0);
+            send_fc_init(fc_axis_tdata, InitFC2_Cpl, '0, '0, PdMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;

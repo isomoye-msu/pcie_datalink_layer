@@ -56,15 +56,25 @@ module dllp_receive
     output logic            [             7:0] tx_fc_ph_o,
     output logic            [            11:0] tx_fc_pd_o,
     output logic            [             7:0] tx_fc_nph_o,
-    output logic            [            11:0] tx_fc_npd_o
+    output logic            [            11:0] tx_fc_npd_o,
+    output logic                               update_fc_o
 );
 
   localparam int UserIsTlp = 1;
   localparam int UserIsDllp = 0;
 
+  //internal signals
+  logic        dllp_ready;
+  logic        tlp_ready;
+  logic        start_flow_control;
+  logic        start_flow_control_ack;
+  logic [15:0] next_transmit_seq;
+  logic        tlp_nullified;
+  logic [ 7:0] ph_credits_consumed;
+  logic [11:0] pd_credits_consumed;
+  logic [ 7:0] nph_credits_consumed;
+  logic [11:0] npd_credits_consumed;
 
-  logic dllp_ready;
-  logic tlp_ready;
 
   //dllp handler instance
   dllp_handler #(
@@ -90,7 +100,34 @@ module dllp_receive
       .tx_fc_ph_o         (tx_fc_ph_o),
       .tx_fc_pd_o         (tx_fc_pd_o),
       .tx_fc_nph_o        (tx_fc_nph_o),
-      .tx_fc_npd_o        (tx_fc_npd_o)
+      .tx_fc_npd_o        (tx_fc_npd_o),
+      .update_fc_o        (update_fc_o)
+  );
+
+  //dllp flow control update module instance
+  dllp_fc_update #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .STRB_WIDTH(STRB_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .USER_WIDTH(USER_WIDTH),
+      .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE)
+  ) dllp_fc_update_inst (
+      .clk_i                   (clk_i),
+      .rst_i                   (rst_i),
+      .start_flow_control_i    (start_flow_control),
+      .start_flow_control_ack_o(start_flow_control_ack),
+      .next_transmit_seq_i     (next_transmit_seq),
+      .tlp_nullified_i         (tlp_nullified),
+      .ph_credits_consumed_i   (ph_credits_consumed),
+      .pd_credits_consumed_i   (pd_credits_consumed),
+      .nph_credits_consumed_i  (nph_credits_consumed),
+      .npd_credits_consumed_i  (npd_credits_consumed),
+      .m_axis_tdata            (m_axis_dllp2phy_tdata),
+      .m_axis_tkeep            (m_axis_dllp2phy_tkeep),
+      .m_axis_tvalid           (m_axis_dllp2phy_tvalid),
+      .m_axis_tlast            (m_axis_dllp2phy_tlast),
+      .m_axis_tuser            (m_axis_dllp2phy_tuser),
+      .m_axis_tready           (m_axis_dllp2phy_tready)
   );
 
   //dllp2tlp converter
@@ -102,27 +139,29 @@ module dllp_receive
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .RX_FIFO_SIZE(RX_FIFO_SIZE)
   ) dllp2tlp_inst (
-      .clk_i            (clk_i),
-      .rst_i            (rst_i),
-      .link_status_i    (link_status_i),
-      .s_axis_tdata     (s_axis_tdata),
-      .s_axis_tkeep     (s_axis_tkeep),
-      .s_axis_tvalid    (s_axis_tvalid),
-      .s_axis_tlast     (s_axis_tlast),
-      .s_axis_tuser     (s_axis_tuser),
-      .s_axis_tready    (tlp_ready),
-      .m_phy_axis_tdata (m_axis_dllp2phy_tdata),
-      .m_phy_axis_tkeep (m_axis_dllp2phy_tkeep),
-      .m_phy_axis_tvalid(m_axis_dllp2phy_tvalid),
-      .m_phy_axis_tlast (m_axis_dllp2phy_tlast),
-      .m_phy_axis_tuser (m_axis_dllp2phy_tuser),
-      .m_phy_axis_tready(m_axis_dllp2phy_tready),
-      .m_tlp_axis_tdata (m_axis_dllp2tlp_tdata),
-      .m_tlp_axis_tkeep (m_axis_dllp2tlp_tkeep),
-      .m_tlp_axis_tvalid(m_axis_dllp2tlp_tvalid),
-      .m_tlp_axis_tlast (m_axis_dllp2tlp_tlast),
-      .m_tlp_axis_tuser (m_axis_dllp2tlp_tuser),
-      .m_tlp_axis_tready(m_axis_dllp2tlp_tready)
+      .clk_i                   (clk_i),
+      .rst_i                   (rst_i),
+      .link_status_i           (link_status_i),
+      .s_axis_tdata            (s_axis_tdata),
+      .s_axis_tkeep            (s_axis_tkeep),
+      .s_axis_tvalid           (s_axis_tvalid),
+      .s_axis_tlast            (s_axis_tlast),
+      .s_axis_tuser            (s_axis_tuser),
+      .s_axis_tready           (tlp_ready),
+      .start_flow_control_o    (start_flow_control),
+      .start_flow_control_ack_i(start_flow_control_ack),
+      .next_transmit_seq_o     (next_transmit_seq),
+      .tlp_nullified_o         (tlp_nullified),
+      .ph_credits_consumed_o   (ph_credits_consumed),
+      .pd_credits_consumed_o   (pd_credits_consumed),
+      .nph_credits_consumed_o  (nph_credits_consumed),
+      .npd_credits_consumed_o  (npd_credits_consumed),
+      .m_tlp_axis_tdata        (m_axis_dllp2tlp_tdata),
+      .m_tlp_axis_tkeep        (m_axis_dllp2tlp_tkeep),
+      .m_tlp_axis_tvalid       (m_axis_dllp2tlp_tvalid),
+      .m_tlp_axis_tlast        (m_axis_dllp2tlp_tlast),
+      .m_tlp_axis_tuser        (m_axis_dllp2tlp_tuser),
+      .m_tlp_axis_tready       (m_axis_dllp2tlp_tready)
   );
 
 

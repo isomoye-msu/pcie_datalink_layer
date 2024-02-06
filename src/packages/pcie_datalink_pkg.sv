@@ -14,6 +14,7 @@ package pcie_datalink_pkg;
   parameter int LtssmDetect = 32'd1500;
   parameter int FcClpData = FcPData / FcPHdr;
   parameter int SkidBuffer = 2;
+  parameter int HdrMinCredits = 8'h1;
 
 
 
@@ -49,21 +50,6 @@ package pcie_datalink_pkg;
     DL_UP,
     DL_ACTIVE
   } pcie_dl_status_e;
-
-  typedef enum logic [3:0] {
-    INIT_FCDLE,
-    INIT_FC1,
-    INIT_FC1_P,
-    INIT_FC1_NP,
-    INIT_FC1_CPL,
-    CHECK_FC1_VALS,
-    INIT_FC2,
-    INIT_FC2_P,
-    INIT_FC2_NP,
-    INIT_FC2_CPL,
-    CHECK_FC2_VALS,
-    INIT_FC_COMPLETE
-  } flow_control_state_e;
 
 
   typedef enum logic [7:0] {

@@ -35,7 +35,8 @@ module dllp_handler
     output logic [           7:0] tx_fc_ph_o,
     output logic [          11:0] tx_fc_pd_o,
     output logic [           7:0] tx_fc_nph_o,
-    output logic [          11:0] tx_fc_npd_o
+    output logic [          11:0] tx_fc_npd_o,
+    output logic                  update_fc_o
 );
 
   localparam int UserIsDllp = 0;
@@ -87,6 +88,8 @@ module dllp_handler
   logic        [           7:0] tx_fc_ch_r;
   logic        [          11:0] tx_fc_cd_c;
   logic        [          11:0] tx_fc_cd_r;
+  logic                         update_fc_c;
+  logic                         update_fc_r;
   //fc1 vals
   logic                         fc1_np_stored_c;
   logic                         fc1_np_stored_r;
@@ -127,6 +130,7 @@ module dllp_handler
       fc2_np_stored_r     <= '0;
       fc2_p_stored_r      <= '0;
       fc2_c_stored_r      <= '0;
+      update_fc_r         <= '0;
     end else begin
       curr_state          <= next_state;
       next_transmit_seq_r <= next_transmit_seq_c;
@@ -147,6 +151,7 @@ module dllp_handler
       fc2_np_stored_r     <= fc2_np_stored_c;
       fc2_p_stored_r      <= fc2_p_stored_c;
       fc2_c_stored_r      <= fc2_c_stored_c;
+      update_fc_r         <= update_fc_c;
     end
   end
 
@@ -169,6 +174,7 @@ module dllp_handler
     tx_fc_npd_c         = tx_fc_npd_r;
     tx_fc_ch_c          = tx_fc_ch_r;
     tx_fc_cd_c          = tx_fc_cd_r;
+    update_fc_c         = '0;
     //capture signals
     fc1_np_stored_c     = fc1_np_stored_r;
     fc1_p_stored_c      = fc1_p_stored_r;
@@ -253,12 +259,14 @@ module dllp_handler
             fc2_c_stored_c = '1;
           end
           UpdateFC_P: begin
-            tx_fc_ph_c = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_pd_c = get_fc_data(dll_packet_r.flow_control);
+            tx_fc_ph_c  = get_fc_hdr(dll_packet_r.flow_control);
+            tx_fc_pd_c  = get_fc_data(dll_packet_r.flow_control);
+            update_fc_c = '1;
           end
           UpdateFC_NP: begin
             tx_fc_nph_c = get_fc_hdr(dll_packet_r.flow_control);
             tx_fc_npd_c = get_fc_data(dll_packet_r.flow_control);
+            update_fc_c = '1;
           end
           UpdateFC_Cpl: begin
           end
@@ -316,5 +324,6 @@ module dllp_handler
   assign tx_fc_pd_o  = tx_fc_pd_r;
   assign tx_fc_nph_o = tx_fc_nph_r;
   assign tx_fc_npd_o = tx_fc_npd_r;
+  assign update_fc_o = update_fc_r;
 
 endmodule

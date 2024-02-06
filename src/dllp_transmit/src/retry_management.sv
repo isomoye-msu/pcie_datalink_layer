@@ -1,3 +1,8 @@
+//!module: retry_management
+//! Author: Idris Somoye
+//! Module implements a retry management controller. It uses a timer to track the time
+//! between transmissions and ack/nack. Module resend TLPs stored in the retry FIFO and the
+//! PCIe mandated retry increments.
 module retry_management
   import pcie_datalink_pkg::*;
 #(
@@ -33,7 +38,7 @@ module retry_management
   //maxbytesper tlp
   localparam int MaxTlpHdrSizeDW = 4;
   localparam int RetryTimer = 8'hA0;
-  localparam int MaxBytesPerTLP = 8 << (4 + MAX_PAYLOAD_SIZE);
+  localparam int MaxBytesPerTLP = MAX_PAYLOAD_SIZE;
   localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
 
   //retry mechanism enum
