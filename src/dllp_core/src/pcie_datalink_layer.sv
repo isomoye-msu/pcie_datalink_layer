@@ -112,6 +112,8 @@ module pcie_datalink_layer
   logic            [            11:0] tx_fc_pd;
   logic            [             7:0] tx_fc_nph;
   logic            [            11:0] tx_fc_npd;
+  logic            [             7:0] tx_fc_cplh;
+  logic            [            11:0] tx_fc_cpld;
   logic                               update_fc;
   logic                               init_ack;
   logic                               ack_nack;
@@ -171,28 +173,30 @@ module pcie_datalink_layer
       .S_COUNT(S_COUNT),
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
   ) dllp_transmit_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i || soft_reset),
-      .s_axis_tdata(s_axis_tlp_tdata),
-      .s_axis_tkeep(s_axis_tlp_tkeep),
-      .s_axis_tvalid(s_axis_tlp_tvalid),
-      .s_axis_tlast(s_axis_tlp_tlast),
-      .s_axis_tuser(s_axis_tlp_tuser),
-      .s_axis_tready(s_axis_tlp_tready),
-      .m_axis_tdata(phy_tlp_axis_tdata),
-      .m_axis_tkeep(phy_tlp_axis_tkeep),
-      .m_axis_tvalid(phy_tlp_axis_tvalid),
-      .m_axis_tlast(phy_tlp_axis_tlast),
-      .m_axis_tuser(phy_tlp_axis_tuser),
-      .m_axis_tready(phy_tlp_axis_tready),
-      .ack_nack_i(seq_num_acknack),
+      .clk_i         (clk_i),
+      .rst_i         (rst_i || soft_reset),
+      .s_axis_tdata  (s_axis_tlp_tdata),
+      .s_axis_tkeep  (s_axis_tlp_tkeep),
+      .s_axis_tvalid (s_axis_tlp_tvalid),
+      .s_axis_tlast  (s_axis_tlp_tlast),
+      .s_axis_tuser  (s_axis_tlp_tuser),
+      .s_axis_tready (s_axis_tlp_tready),
+      .m_axis_tdata  (phy_tlp_axis_tdata),
+      .m_axis_tkeep  (phy_tlp_axis_tkeep),
+      .m_axis_tvalid (phy_tlp_axis_tvalid),
+      .m_axis_tlast  (phy_tlp_axis_tlast),
+      .m_axis_tuser  (phy_tlp_axis_tuser),
+      .m_axis_tready (phy_tlp_axis_tready),
+      .ack_nack_i    (seq_num_acknack),
       .ack_nack_vld_i(seq_num_vld),
-      .ack_seq_num_i(seq_num),
-      .tx_fc_ph_i(tx_fc_ph),
-      .tx_fc_pd_i(tx_fc_pd),
-      .tx_fc_nph_i(tx_fc_nph),
-      .tx_fc_npd_i(tx_fc_npd),
-      .update_fc_i(update_fc)
+      .ack_seq_num_i (seq_num),
+      .tx_fc_ph_i    (tx_fc_ph),
+      .tx_fc_pd_i    (tx_fc_pd),
+      .tx_fc_nph_i   (tx_fc_nph),
+      .tx_fc_npd_i   (tx_fc_npd),
+      .tx_fc_cplh_i  (tx_fc_cplh),
+      .tx_fc_cpld_i  (tx_fc_cpld),
+      .update_fc_i   (update_fc)
   );
 
 
@@ -236,6 +240,8 @@ module pcie_datalink_layer
       .tx_fc_pd_o            (tx_fc_pd),
       .tx_fc_nph_o           (tx_fc_nph),
       .tx_fc_npd_o           (tx_fc_npd),
+      .tx_fc_cplh_o          (tx_fc_cplh),
+      .tx_fc_cpld_o          (tx_fc_cpld),
       .update_fc_o           (update_fc)
   );
 

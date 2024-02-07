@@ -57,6 +57,8 @@ module dllp_receive
     output logic            [            11:0] tx_fc_pd_o,
     output logic            [             7:0] tx_fc_nph_o,
     output logic            [            11:0] tx_fc_npd_o,
+    output logic            [             7:0] tx_fc_cplh_o,
+    output logic            [            11:0] tx_fc_cpld_o,
     output logic                               update_fc_o
 );
 
@@ -101,6 +103,8 @@ module dllp_receive
       .tx_fc_pd_o         (tx_fc_pd_o),
       .tx_fc_nph_o        (tx_fc_nph_o),
       .tx_fc_npd_o        (tx_fc_npd_o),
+      .tx_fc_cplh_o       (tx_fc_cplh_o),
+      .tx_fc_cpld_o       (tx_fc_cpld_o),
       .update_fc_o        (update_fc_o)
   );
 

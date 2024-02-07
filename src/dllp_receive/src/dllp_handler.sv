@@ -36,6 +36,8 @@ module dllp_handler
     output logic [          11:0] tx_fc_pd_o,
     output logic [           7:0] tx_fc_nph_o,
     output logic [          11:0] tx_fc_npd_o,
+    output logic [           7:0] tx_fc_cplh_o,
+    output logic [          11:0] tx_fc_cpld_o,
     output logic                  update_fc_o
 );
 
@@ -84,10 +86,10 @@ module dllp_handler
   logic        [           7:0] tx_fc_nph_r;
   logic        [          11:0] tx_fc_npd_c;
   logic        [          11:0] tx_fc_npd_r;
-  logic        [           7:0] tx_fc_ch_c;
-  logic        [           7:0] tx_fc_ch_r;
-  logic        [          11:0] tx_fc_cd_c;
-  logic        [          11:0] tx_fc_cd_r;
+  logic        [           7:0] tx_fc_cplh_c;
+  logic        [           7:0] tx_fc_cplh_r;
+  logic        [          11:0] tx_fc_cpld_c;
+  logic        [          11:0] tx_fc_cpld_r;
   logic                         update_fc_c;
   logic                         update_fc_r;
   //fc1 vals
@@ -121,8 +123,8 @@ module dllp_handler
       tx_fc_pd_r          <= '0;
       tx_fc_nph_r         <= '0;
       tx_fc_npd_r         <= '0;
-      tx_fc_ch_r          <= '0;
-      tx_fc_cd_r          <= '0;
+      tx_fc_cplh_r        <= '0;
+      tx_fc_cpld_r        <= '0;
       //capture signals
       fc1_np_stored_r     <= '0;
       fc1_p_stored_r      <= '0;
@@ -142,8 +144,8 @@ module dllp_handler
       tx_fc_pd_r          <= tx_fc_pd_c;
       tx_fc_nph_r         <= tx_fc_nph_c;
       tx_fc_npd_r         <= tx_fc_npd_c;
-      tx_fc_ch_r          <= tx_fc_ch_c;
-      tx_fc_cd_r          <= tx_fc_cd_c;
+      tx_fc_cplh_r        <= tx_fc_cplh_c;
+      tx_fc_cpld_r        <= tx_fc_cpld_c;
       //capture signals
       fc1_np_stored_r     <= fc1_np_stored_c;
       fc1_p_stored_r      <= fc1_p_stored_c;
@@ -172,8 +174,8 @@ module dllp_handler
     tx_fc_pd_c          = tx_fc_pd_r;
     tx_fc_nph_c         = tx_fc_nph_r;
     tx_fc_npd_c         = tx_fc_npd_r;
-    tx_fc_ch_c          = tx_fc_ch_r;
-    tx_fc_cd_c          = tx_fc_cd_r;
+    tx_fc_cplh_c        = tx_fc_cplh_r;
+    tx_fc_cpld_c        = tx_fc_cpld_r;
     update_fc_c         = '0;
     //capture signals
     fc1_np_stored_c     = fc1_np_stored_r;
@@ -231,44 +233,41 @@ module dllp_handler
             //not implemented
           end
           InitFC1_P: begin
-            tx_fc_ph_c     = dll_packet_r.generic.header.hdr.HdrFC;
-            tx_fc_pd_c     = dll_packet_r.generic.seq_datafc.data_fc;
+            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
             fc1_p_stored_c = '1;
           end
           InitFC1_NP: begin
-            tx_fc_nph_c     = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_npd_c     = get_fc_data(dll_packet_r.flow_control);
+            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
             fc1_np_stored_c = '1;
           end
           InitFC1_Cpl: begin
-            //not implemented
+            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
             fc1_c_stored_c = '1;
           end
           InitFC2_P: begin
-            tx_fc_ph_c     = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_pd_c     = get_fc_data(dll_packet_r.flow_control);
+            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
             fc2_p_stored_c = '1;
           end
           InitFC2_NP: begin
-            tx_fc_nph_c     = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_npd_c     = get_fc_data(dll_packet_r.flow_control);
+            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
             fc2_np_stored_c = '1;
           end
           InitFC2_Cpl: begin
-            //not implemented
+            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
             fc2_c_stored_c = '1;
+            update_fc_c = '1;
           end
           UpdateFC_P: begin
-            tx_fc_ph_c  = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_pd_c  = get_fc_data(dll_packet_r.flow_control);
+            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
             update_fc_c = '1;
           end
           UpdateFC_NP: begin
-            tx_fc_nph_c = get_fc_hdr(dll_packet_r.flow_control);
-            tx_fc_npd_c = get_fc_data(dll_packet_r.flow_control);
+            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
             update_fc_c = '1;
           end
           UpdateFC_Cpl: begin
+            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
+            update_fc_c = '1;
           end
           default: begin
           end
@@ -320,10 +319,12 @@ module dllp_handler
       .m_axis_tuser(skid_s_axis_tuser)
   );
 
-  assign tx_fc_ph_o  = tx_fc_ph_r;
-  assign tx_fc_pd_o  = tx_fc_pd_r;
-  assign tx_fc_nph_o = tx_fc_nph_r;
-  assign tx_fc_npd_o = tx_fc_npd_r;
-  assign update_fc_o = update_fc_r;
+  assign tx_fc_ph_o   = tx_fc_ph_r;
+  assign tx_fc_pd_o   = tx_fc_pd_r;
+  assign tx_fc_nph_o  = tx_fc_nph_r;
+  assign tx_fc_npd_o  = tx_fc_npd_r;
+  assign tx_fc_cplh_o = tx_fc_cplh_r;
+  assign tx_fc_cpld_o = tx_fc_cpld_r;
+  assign update_fc_o  = update_fc_r;
 
 endmodule

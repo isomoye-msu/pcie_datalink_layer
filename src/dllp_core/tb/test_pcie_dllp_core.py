@@ -23,7 +23,7 @@ class PhySimPort(Port):
     def __init__(self, source, fc_init=[[0]*6]*8, *args, **kwargs):
         super().__init__(*args, fc_init, **kwargs)
         self.fc_idle_timer_steps = get_sim_steps(1, 'us')
-        self.fc_update_steps = get_sim_steps(1, 'us')
+        self.fc_update_steps = get_sim_steps(3, 'us')
 
         self.other = None
 
@@ -78,7 +78,7 @@ class PhySimPort(Port):
         self._connect_int(port)
     
     async def tlp_handler(self,tlp):
-        print("got tlp: " + str(tlp))
+        ...
         # while True:
         #     await Timer(90000)
 
@@ -303,7 +303,7 @@ class flow_control_seq(base_sequence):
                 break
             
     async def send_tlp(self,seqr):
-        for i in range(65):
+        for i in range(3):
             tlp = tlp_seq("tlp seq item",i)
             await tlp.start(seqr)
             await Timer(9000000)

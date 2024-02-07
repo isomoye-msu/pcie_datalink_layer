@@ -47,6 +47,8 @@ module dllp_transmit
     input  logic [          11:0] tx_fc_pd_i,
     input  logic [           7:0] tx_fc_nph_i,
     input  logic [          11:0] tx_fc_npd_i,
+    input  logic [           7:0] tx_fc_cplh_i,
+    input  logic [          11:0] tx_fc_cpld_i,
     input  logic                  update_fc_i
 );
 
@@ -187,6 +189,8 @@ module dllp_transmit
       .tx_fc_pd_i       (tx_fc_pd_i),
       .tx_fc_nph_i      (tx_fc_nph_i),
       .tx_fc_npd_i      (tx_fc_npd_i),
+      .tx_fc_cplh_i     (tx_fc_cplh_i),
+      .tx_fc_cpld_i     (tx_fc_cpld_i),
       .update_fc_i      (update_fc_i)
   );
 

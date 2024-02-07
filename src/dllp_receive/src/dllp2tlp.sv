@@ -257,9 +257,9 @@ module dllp2tlp
           end
           if ((tlp_axis_tdata[7:0] == Cpl) || (tlp_axis_tdata[7:0] == CplD)) begin
             tlp_is_cpl_c = '1;
-          end else if ((tlp_axis_tdata[7:0]  ==? MW) ||
-            (tlp_axis_tdata[7:0]  == CW0) ||
-            (tlp_axis_tdata[7:0] == CW1)) begin
+          end else if ((tlp_axis_tdata[7:0]  ==? MWr) ||
+            (tlp_axis_tdata[7:0]  == CfgWr0) ||
+            (tlp_axis_tdata[7:0] == CfgWr1)) begin
             tlp_has_payload_c = '1;
           end else begin
             tlp_no_payload_c = '1;

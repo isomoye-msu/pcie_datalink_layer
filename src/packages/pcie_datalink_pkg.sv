@@ -24,25 +24,24 @@ package pcie_datalink_pkg;
     SLVERR = 2'b10,
     DECERROR = 2'b11,
     RESP_X = 'X
-  } resp;
+  } resp_e;
 
 
-
-  typedef enum logic [7:0] {
-    MR     = 8'b00?_00000,  // Memory Read Request
-    MRL    = 8'b00?_00001,  // Memory Read Request Locked
-    MW     = 8'b01?_00000,  // Memory Write Request
-    IOR    = 8'b000_00010,  // I / O Read Request
-    IOW    = 8'b010_00010,  // I / O Write Request
-    CR0    = 8'b000_00100,  // Configuration Read Type 0
-    CW0    = 8'b010_00100,  // Configuration Write Type 0
-    CR1    = 8'b000_00101,  // Configuration Read Type 1
-    CW1    = 8'b010_00101,  // Configuration Write Type 1
-    Cpl    = 8'b000_01010,  // Completion without data (0 Bytes)
-    CplD   = 8'b010_01010,  // Completion with data (data will be present in TLP)
-    CplLk  = 8'b000_01011,  // Completion for Locked Memory read without data
-    CplDLk = 8'b010_01011   // Completion for Locked Memory Read
-  } pcie_fmt_e;
+  // typedef enum logic [7:0] {
+  //   MR     = 8'b00?_00000,  // Memory Read Request
+  //   MRL    = 8'b00?_00001,  // Memory Read Request Locked
+  //   MW     = 8'b01?_00000,  // Memory Write Request
+  //   IOR    = 8'b000_00010,  // I / O Read Request
+  //   IOW    = 8'b010_00010,  // I / O Write Request
+  //   CR0    = 8'b000_00100,  // Configuration Read Type 0
+  //   CW0    = 8'b010_00100,  // Configuration Write Type 0
+  //   CR1    = 8'b000_00101,  // Configuration Read Type 1
+  //   CW1    = 8'b010_00101,  // Configuration Write Type 1
+  //   Cpl    = 8'b000_01010,  // Completion without data (0 Bytes)
+  //   CplD   = 8'b010_01010,  // Completion with data (data will be present in TLP)
+  //   CplLk  = 8'b000_01011,  // Completion for Locked Memory read without data
+  //   CplDLk = 8'b010_01011   // Completion for Locked Memory Read
+  // } pcie_fmt_e;
 
 
   typedef enum logic [1:0] {
@@ -69,9 +68,77 @@ package pcie_datalink_pkg;
     UpdateFC_P        = 8'b10000000,
     UpdateFC_NP       = 8'b10010000,
     UpdateFC_Cpl      = 8'b10100000
-  } dllp_type_t;
+  } dllp_type_e;
+
+  typedef enum logic [2:0] {
+    TLP_3DW_ND = 3'b000,
+    TLP_4DW_ND = 3'b001,
+    TLP_3DW_WD = 3'b010,
+    TLP_4DW_WD = 3'b011,
+    TLP_PREFIX = 3'b100
+  } pcie_tlp_fmt_e;
+
+  typedef enum logic [7:0] {
+    MRd      = 8'b00?0_0000,  //Memory Read Request
+    MRdLk    = 8'b00?0_0001,  //Memory Read Request-Locked
+    MWr      = 8'b01?0_0000,  //Memory Write Request
+    IORd     = 8'b0000_0010,  //I/O Read Request
+    IOWr     = 8'b0100_0010,  //I/O Write Request
+    CfgRd0   = 8'b0000_0100,  //Configuration Read Type 0
+    CfgWr0   = 8'b0100_0100,  //Configuration Write Type 0
+    CfgRd1   = 8'b0000_0101,  //Configuration Read Type 1
+    CfgWr1   = 8'b0100_0101,  //Configuration Write Type 1
+    TCfgRd   = 8'b0001_1011,  //Deprecated TLP Type 3
+    TCfgWr   = 8'b0101_1011,  //Deprecated TLP Type 3
+    Msg      = 8'b0011_0???,  //Message Request
+    MsgD     = 8'b0111_0???,  //Message Request with data payload
+    Cpl      = 8'b0000_1010,  //Completion without Data
+    CplD     = 8'b0100_1010,  //Completion with Data
+    CplLk    = 8'b0000_1011,  //Completion for Locked Memory Read without Data
+    CplDLk   = 8'b0100_1011,  //Completion for Locked Memory Read
+    FetchAdd = 8'b01?0_1100,  //Fetch and Add AtomicOp Request
+    Swap     = 8'b01?0_1101,  //Unconditional Swap AtomicOp Request
+    CAS      = 8'b01?0_1110,  //Compare and Swap AtomicOp Request
+    LPrx     = 8'b1000_????,  //Local TLP Prefix
+    EPrfx    = 8'b1001_????   //End-End TLP Prefix
+  } pcie_tlp_type_e;
 
   typedef struct packed {logic [3:0] half_byte;} half_byte_t;
+
+  typedef struct packed {
+    logic [2:0] Fmt;
+    logic [4:0] Type;
+  } pcie_tlp_byte0_t;
+
+  typedef struct packed {
+    logic       RSVD2;
+    logic [2:0] TC;
+    logic       RSVD1;
+    logic       Attr;
+    logic       RSVD0;
+    logic       TH;
+  } pcie_tlp_byte1_t;
+
+
+  typedef struct packed {
+    logic       TD;
+    logic       EP;
+    logic [1:0] Attr;
+    logic [1:0] AT;
+    logic [1:0] Length1;
+  } pcie_tlp_byte2_t;
+
+
+  typedef struct packed {logic [7:0] Length0;} pcie_tlp_byte3_t;
+
+
+  typedef struct packed {
+    pcie_tlp_byte3_t byte3;
+    pcie_tlp_byte2_t byte2;
+    pcie_tlp_byte1_t byte1;
+    pcie_tlp_byte0_t byte0;
+  } pcie_tlp_header_dw0_t;
+
   typedef struct packed {
     logic [2:0] vcd;
     logic reserved;
@@ -85,7 +152,7 @@ package pcie_datalink_pkg;
   } dllp_byte_t;
 
   typedef union packed {
-    dllp_type_t type_byte_;
+    dllp_type_e type_byte_;
     dllp_type_hdr_t type_vc;
   } dllp_type_union_t;
 
@@ -175,15 +242,13 @@ package pcie_datalink_pkg;
     get_ack_nack_seq = {ack_nack_in.ack_nack1, ack_nack_in.ack_nack0};
   endfunction
 
-  function static logic [11:0] get_fc_hdr(input dllp_fc_t flow_control_in);
-    get_fc_hdr = {flow_control_in.byte1.hdrfc1, flow_control_in.byte2.hdrfc0};
+  function static void get_fc_values(output logic [7:0] hdr_fc_out, output logic [11:0] data_fc_out,
+                                     input dllp_fc_t flow_control_in);
+    hdr_fc_out  = {flow_control_in.byte1.hdrfc1, flow_control_in.byte2.hdrfc0};
+    data_fc_out = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
   endfunction
 
-  function static logic [11:0] get_fc_data(input dllp_fc_t flow_control_in);
-    get_fc_data = {flow_control_in.byte2.datafc1, flow_control_in.datafc0};
-  endfunction
-
-  function automatic void set_ack_nack(output dllp_ack_nack_t dllp_out, input dllp_type_t dllp_type,
+  function automatic void set_ack_nack(output dllp_ack_nack_t dllp_out, input dllp_type_e dllp_type,
                                        logic [11:0] seq_num, logic [15:0] crc_in = 16'h0);
     dllp_ack_nack_t temp_dllp = '0;
     temp_dllp.ack_nack_ = dllp_type;
@@ -195,7 +260,7 @@ package pcie_datalink_pkg;
   endfunction
 
 
-  function automatic void send_fc_init(output dllp_fc_t dllp_out, input dllp_type_t dllp_type,
+  function automatic void send_fc_init(output dllp_fc_t dllp_out, input dllp_type_e dllp_type,
                                        input logic [2:0] vcd, input logic [7:0] hdrfc,
                                        input logic [11:0] datafc);
     begin
