@@ -171,7 +171,7 @@ module ltssm_detect
     endcase
   end
 
-  //combination block to send idle packets at set increments
+  //! combination block to send idle packets at set increments
   always_comb begin : send_idle
     dllp_axis_tdata  = '0;
     dllp_axis_tkeep  = '0;

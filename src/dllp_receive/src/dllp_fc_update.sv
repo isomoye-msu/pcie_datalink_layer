@@ -2,25 +2,28 @@
 module dllp_fc_update
   import pcie_datalink_pkg::*;
 #(
+    parameter int CLK_RATE         = 100,
     // TLP data width
-    parameter int DATA_WIDTH = 32,
+    parameter int DATA_WIDTH       = 32,
     // TLP strobe width
-    parameter int STRB_WIDTH = DATA_WIDTH / 8,
-    parameter int KEEP_WIDTH = STRB_WIDTH,
-    parameter int USER_WIDTH = 3,
+    parameter int STRB_WIDTH       = DATA_WIDTH / 8,
+    parameter int KEEP_WIDTH       = STRB_WIDTH,
+    parameter int USER_WIDTH       = 3,
     parameter int MAX_PAYLOAD_SIZE = 256
 ) (
-    input  logic        clk_i,                     // Clock signal
-    input  logic        rst_i,                     // Reset signal
+    input  logic                   clk_i,                     // Clock signal
+    input  logic                   rst_i,                     // Reset signal
+    //link status
+    input  pcie_dl_status_e        link_status_i,
     //flow control signals
-    input  logic        start_flow_control_i,
-    output logic        start_flow_control_ack_o,
-    input  logic [15:0] next_transmit_seq_i,
-    input  logic        tlp_nullified_i,
-    input  logic [ 7:0] ph_credits_consumed_i,
-    input  logic [11:0] pd_credits_consumed_i,
-    input  logic [ 7:0] nph_credits_consumed_i,
-    input  logic [11:0] npd_credits_consumed_i,
+    input  logic                   start_flow_control_i,
+    output logic                   start_flow_control_ack_o,
+    input  logic            [15:0] next_transmit_seq_i,
+    input  logic                   tlp_nullified_i,
+    input  logic            [ 7:0] ph_credits_consumed_i,
+    input  logic            [11:0] pd_credits_consumed_i,
+    input  logic            [ 7:0] nph_credits_consumed_i,
+    input  logic            [11:0] npd_credits_consumed_i,
 
     /*
      * DLLP UPDATE AXI output
@@ -37,7 +40,8 @@ module dllp_fc_update
 
   // localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
   // localparam int HdrMinCredits = 8'h040;
-  // localparam int FcWaitPeriod = 8'hA0;
+  localparam int FcWaitPeriod = (CLK_RATE * (2 ** 5));
+  localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -60,7 +64,6 @@ module dllp_fc_update
   logic                              fc_axis_tlast;
   logic             [USER_WIDTH-1:0] fc_axis_tuser;
   logic                              fc_axis_tready;
-
   // Internal state machine for link flow control
   fc_update_state_e                  curr_state;
   fc_update_state_e                  next_state;
@@ -68,14 +71,14 @@ module dllp_fc_update
   dllp_fc_t                          dll_packet_r;
   logic             [          15:0] dllp_lcrc_c;
   logic             [          15:0] dllp_lcrc_r;
-  logic             [          15:0] seq_count_c;
-  logic             [          15:0] seq_count_r;
+  logic             [          15:0] timer_c;
+  logic             [          15:0] timer_r;
   logic             [          15:0] crc_out;
   logic             [          15:0] crc_reversed;
   logic                              start_ack_c;
   logic                              start_ack_r;
 
-
+  //crc byteswap
   always_comb begin : byteswap
     for (int i = 0; i < 8; i++) begin
       crc_reversed[i]   = dllp_lcrc_r[7-i];
@@ -86,17 +89,17 @@ module dllp_fc_update
   // Initialize to idle state
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state   <= ST_IDLE;
+      curr_state <= ST_IDLE;
       dll_packet_r <= '0;
-      seq_count_r  <= '0;
-      dllp_lcrc_r  <= '0;
-      start_ack_r  <= '0;
+      timer_r <= '0;
+      dllp_lcrc_r <= '0;
+      start_ack_r <= '0;
     end else begin
-      curr_state   <= next_state;
+      curr_state <= next_state;
       dll_packet_r <= dll_packet_c;
-      seq_count_r  <= seq_count_c;
-      dllp_lcrc_r  <= dllp_lcrc_c;
-      start_ack_r  <= start_ack_c;
+      timer_r <= timer_c;
+      dllp_lcrc_r <= dllp_lcrc_c;
+      start_ack_r <= start_ack_c;
 
     end
   end
@@ -105,7 +108,7 @@ module dllp_fc_update
   always_comb begin : combo_block
     next_state     = curr_state;
     dll_packet_c   = dll_packet_r;
-    seq_count_c    = seq_count_r;
+    timer_c        = timer_r;
     start_ack_c    = '0;
     //axis flow control defaults
     fc_axis_tdata  = '0;
@@ -117,8 +120,13 @@ module dllp_fc_update
     dllp_lcrc_c    = dllp_lcrc_r;
     case (curr_state)
       ST_IDLE: begin
+        timer_c = (timer_r >= FcWaitPeriod) ? FcWaitPeriod : timer_r + 1;
         if (start_flow_control_i) begin
           next_state = ST_SEND_ACK;
+          timer_c    = '0;
+        end else if ((timer_r >= FcWaitPeriod) && (link_status_i == DL_ACTIVE)) begin
+          timer_c    = '0;
+          next_state = ST_UPDATE_P;
         end
       end
       ST_SEND_ACK: begin
@@ -215,14 +223,9 @@ module dllp_fc_update
         fc_axis_tlast  = '1;
         //done with dllp
         if (fc_axis_tready) begin
-          if (seq_count_r == 8'h3) begin
-            seq_count_c = '0;
-            start_ack_c = '1;
-            next_state  = ST_WAIT_LOW;
-          end else begin
-            seq_count_c = seq_count_r + 8'h1;
-            next_state  = ST_UPDATE_P;
-          end
+          timer_c = '0;
+          start_ack_c = '1;
+          next_state = ST_WAIT_LOW;
         end
       end
       ST_WAIT_LOW: begin

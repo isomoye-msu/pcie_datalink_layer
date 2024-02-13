@@ -118,6 +118,7 @@ module dllp_receive
   ) dllp_fc_update_inst (
       .clk_i                   (clk_i),
       .rst_i                   (rst_i),
+      .link_status_i           (link_status_i),
       .start_flow_control_i    (start_flow_control),
       .start_flow_control_ack_o(start_flow_control_ack),
       .next_transmit_seq_i     (next_transmit_seq),

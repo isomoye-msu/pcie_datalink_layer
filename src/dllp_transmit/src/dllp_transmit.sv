@@ -137,6 +137,8 @@ module dllp_transmit
       .retry_valid_i   (retry_valid),
       .retry_ack_o     (retry_ack),
       .retry_complete_o(retry_complete),
+      .retry_available_i(retry_available),
+      .retry_index_i    (retry_index),
       //axis tlp in
       .s_axis_tdata    (m_axis_tlp2dllp_tdata),
       .s_axis_tkeep    (m_axis_tlp2dllp_tkeep),

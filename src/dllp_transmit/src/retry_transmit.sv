@@ -1,4 +1,4 @@
-//!module: retry_transmit
+//! module: retry_transmit
 //! Author: Idris Somoye
 //! Module transmits TLPs stored in the retry FIFO upon recieving a signal from the retry management controller.
 module retry_transmit
@@ -16,26 +16,28 @@ module retry_transmit
 
     parameter int RAM_ADDR_WIDTH = $clog2(RAM_DATA_WIDTH)  // number of address bits
 ) (
-    input  logic                      clk_i,            // Clock signal
-    input  logic                      rst_i,            // Reset signal
+    input  logic                      clk_i,              // Clock signal
+    input  logic                      rst_i,              // Reset signal
     input  logic [RETRY_TLP_SIZE-1:0] retry_valid_i,
     output logic [RETRY_TLP_SIZE-1:0] retry_ack_o,
     output logic [RETRY_TLP_SIZE-1:0] retry_complete_o,
-
+    //retry management
+    input  logic                      retry_available_i,
+    input  logic [               7:0] retry_index_i,
     //Input retry fifo signals
-    input  logic [(DATA_WIDTH)-1:0] s_axis_tdata,
-    input  logic [(KEEP_WIDTH)-1:0] s_axis_tkeep,
-    input  logic                    s_axis_tvalid,
-    input  logic                    s_axis_tlast,
-    input  logic [  USER_WIDTH-1:0] s_axis_tuser,
-    output logic                    s_axis_tready,
+    input  logic [  (DATA_WIDTH)-1:0] s_axis_tdata,
+    input  logic [  (KEEP_WIDTH)-1:0] s_axis_tkeep,
+    input  logic                      s_axis_tvalid,
+    input  logic                      s_axis_tlast,
+    input  logic [    USER_WIDTH-1:0] s_axis_tuser,
+    output logic                      s_axis_tready,
     //RETRY AXIS output
-    output logic [(DATA_WIDTH)-1:0] m_axis_tdata,
-    output logic [(KEEP_WIDTH)-1:0] m_axis_tkeep,
-    output logic                    m_axis_tvalid,
-    output logic                    m_axis_tlast,
-    output logic [  USER_WIDTH-1:0] m_axis_tuser,
-    input  logic                    m_axis_tready
+    output logic [  (DATA_WIDTH)-1:0] m_axis_tdata,
+    output logic [  (KEEP_WIDTH)-1:0] m_axis_tkeep,
+    output logic                      m_axis_tvalid,
+    output logic                      m_axis_tlast,
+    output logic [    USER_WIDTH-1:0] m_axis_tuser,
+    input  logic                      m_axis_tready
 );
 
 
@@ -49,8 +51,10 @@ module retry_transmit
     ST_TLP_RX_EOP
   } tlp_rx_st_e;
 
+  //!state signals
   tlp_rx_st_e                      tlp_curr_state;
   tlp_rx_st_e                      tlp_next_state;
+  //!internal signals
   logic       [RETRY_TLP_SIZE-1:0] retry_ack_c;
   logic       [RETRY_TLP_SIZE-1:0] retry_ack_r;
   logic       [RETRY_TLP_SIZE-1:0] retry_ready;
@@ -64,7 +68,7 @@ module retry_transmit
   logic       [               7:0] retry_index_c;
   logic       [               7:0] retry_index_r;
 
-  //main  sequential block
+  //! main sequential block
   always_ff @(posedge clk_i) begin : main_sequential_block
     if (rst_i) begin
       tlp_curr_state <= ST_TLP_RX_IDLE;
@@ -76,7 +80,7 @@ module retry_transmit
     retry_index_r <= retry_index_c;
   end
 
-  //retry generate loop
+  //!retry generate loop
   for (genvar i = 0; i < RETRY_TLP_SIZE; i++) begin : gen_retry_axis_fifo
     axis_retry_fifo #(
         .DATA_WIDTH(DATA_WIDTH),
@@ -89,7 +93,7 @@ module retry_transmit
         .rst_i(rst_i),
         .s_axis_tdata(s_axis_tdata),
         .s_axis_tkeep(s_axis_tkeep),
-        .s_axis_tvalid(s_axis_tvalid),
+        .s_axis_tvalid(s_axis_tvalid & retry_available_i & (retry_index_i == i)),
         .s_axis_tlast(s_axis_tlast),
         .s_axis_tuser(s_axis_tuser),
         .s_axis_tready(),
@@ -104,7 +108,7 @@ module retry_transmit
   end
 
 
-  //transmit tlp from fifo through axi stream
+  //!transmit tlp from fifo through axi stream
   always_comb begin : transmit_tlp_combo
     tlp_next_state   = tlp_curr_state;
     retry_ready      = '0;

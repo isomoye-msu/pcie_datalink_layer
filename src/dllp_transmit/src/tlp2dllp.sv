@@ -113,7 +113,6 @@ module tlp2dllp
   //tlp nulled
   logic                                  tlp_nullified_c;
   logic                                  tlp_nullified_r;
-  logic                                  tlp_ack;
   //tlp type signals
   pcie_tlp_header_dw0_t                  tlp_dw0;
   //credits consumed
@@ -297,35 +296,33 @@ module tlp2dllp
         //check that posted header credit is available
         if (nph_credit_limit_r >= nph_credits_consumed_r) begin
           if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
-            has_nph_credit         = '1;
+            has_nph_credit = '1;
           end
         end  //account for wrap around
         else begin
           if ((nph_credits_consumed_r - nph_credit_limit_r) >= 1'b1) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
-            has_nph_credit         = '1;
+            has_nph_credit = '1;
           end
         end
         //check that posted data credit is available
         if (npd_credit_limit_r >= npd_credits_consumed_r) begin
           if ((npd_credit_limit_r - npd_credits_consumed_r) >= data_credits_required) begin
-            npd_credits_consumed_c = npd_credits_consumed_r + data_credits_required;
-            has_npd_credit         = '1;
+            has_npd_credit = '1;
           end
         end  //account for wrap around
         else begin
           if ((npd_credits_consumed_r - npd_credit_limit_r) >= data_credits_required) begin
-            npd_credits_consumed_c = npd_credits_consumed_r + data_credits_required;
-            has_npd_credit         = '1;
+            has_npd_credit = '1;
           end
         end
         //check next_state criteria
         if (has_nph_credit && has_npd_credit) begin
-          crc_in_c         = crc_out16;
-          tlp_axis_tvalid  = skid_axis_tvalid;
-          skid_axis_tready = '1;
-          next_state       = ST_TLP_STREAM;
+          nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
+          npd_credits_consumed_c = npd_credits_consumed_r + data_credits_required;
+          crc_in_c               = crc_out16;
+          tlp_axis_tvalid        = skid_axis_tvalid;
+          skid_axis_tready       = '1;
+          next_state             = ST_TLP_STREAM;
         end
       end
       ST_CHECK_CREDITS_PH: begin
@@ -370,7 +367,6 @@ module tlp2dllp
         //check that posted header credit is available
         if (ph_credit_limit_r >= ph_credits_consumed_r) begin
           if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
-            ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
             has_ph_credit = '1;
           end
         end  //account for wrap around
@@ -383,22 +379,22 @@ module tlp2dllp
         //check that posted data credit is available
         if (pd_credit_limit_r >= pd_credits_consumed_r) begin
           if ((pd_credit_limit_r - pd_credits_consumed_r) >= data_credits_required) begin
-            pd_credits_consumed_c = pd_credits_consumed_r + data_credits_required;
-            has_pd_credit         = '1;
+            has_pd_credit = '1;
           end
         end  //account for wrap around
         else begin
           if ((pd_credits_consumed_r - pd_credit_limit_r) >= data_credits_required) begin
-            pd_credits_consumed_c = pd_credits_consumed_r + data_credits_required;
-            has_pd_credit         = '1;
+            has_pd_credit = '1;
           end
         end
         //check next_state criteria
         if (has_ph_credit && has_pd_credit) begin
-          crc_in_c         = crc_out16;
-          tlp_axis_tvalid  = skid_axis_tvalid;
-          skid_axis_tready = '1;
-          next_state       = ST_TLP_STREAM;
+          pd_credits_consumed_c = pd_credits_consumed_r + data_credits_required;
+          ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
+          crc_in_c              = crc_out16;
+          tlp_axis_tvalid       = skid_axis_tvalid;
+          skid_axis_tready      = '1;
+          next_state            = ST_TLP_STREAM;
         end
       end
       ST_CHECK_CREDITS_CPLH: begin
@@ -443,35 +439,33 @@ module tlp2dllp
         //check that posted header credit is available
         if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
           if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin
-            cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
             has_cplh_credit = '1;
           end
         end  //account for wrap around
         else begin
           if ((cplh_credits_consumed_r - cplh_credit_limit_r) >= 1'b1) begin
-            // ncplh_credits_consumed_c = ncplh_credits_consumed_r + 1'b1;
             has_cplh_credit = '1;
           end
         end
         //check that posted data credit is available
         if (cpld_credit_limit_r >= cpld_credits_consumed_r) begin
           if ((cpld_credit_limit_r - cpld_credits_consumed_r) >= data_credits_required) begin
-            cpld_credits_consumed_c = cpld_credits_consumed_r + data_credits_required;
-            has_cpld_credit         = '1;
+            has_cpld_credit = '1;
           end
         end  //account for wrap around
         else begin
           if ((cpld_credits_consumed_r - cpld_credit_limit_r) >= data_credits_required) begin
-            cpld_credits_consumed_c = cpld_credits_consumed_r + data_credits_required;
-            has_cpld_credit         = '1;
+            has_cpld_credit = '1;
           end
         end
         //check next_state criteria
         if (has_cplh_credit && has_cpld_credit) begin
-          crc_in_c         = crc_out16;
-          tlp_axis_tvalid  = skid_axis_tvalid;
-          skid_axis_tready = '1;
-          next_state       = ST_TLP_STREAM;
+          cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
+          cpld_credits_consumed_c = cpld_credits_consumed_r + data_credits_required;
+          crc_in_c                = crc_out16;
+          tlp_axis_tvalid         = skid_axis_tvalid;
+          skid_axis_tready        = '1;
+          next_state              = ST_TLP_STREAM;
         end
       end
       //wait until pipeline is full and upstream ready

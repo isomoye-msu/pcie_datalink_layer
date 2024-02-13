@@ -13,11 +13,36 @@ from cocotb.clock import Clock
 from cocotbext.axi import *
 from cocotb.triggers import *
 from crc import Calculator, Configuration, Crc32
+from cocotbext.pcie.core import RootComplex, MemoryEndpoint, Device, Switch
+from cocotbext.pcie.core.caps import MsiCapability
+from cocotbext.pcie.core.utils import PcieId
 from pyuvm import *
 from base_uvm import *
 from pathlib import Path
 sys.path.append(str(Path("..").resolve()))
 
+
+
+class TestEndpoint(MemoryEndpoint):
+    __test__ = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.vendor_id = 0x1234
+        self.device_id = 0x5678
+
+        self.msi_cap = MsiCapability()
+        self.msi_cap.msi_multiple_message_capable = 5
+        self.msi_cap.msi_64bit_address_capable = 1
+        self.msi_cap.msi_per_vector_mask_capable = 1
+        self.register_capability(self.msi_cap)
+
+        self.add_mem_region(1024*1024)
+        self.add_prefetchable_mem_region(1024*1024)
+        self.add_io_region(1024)
+        
+        
 class PhySimPort(Port):
     """Port to interconnect simulated PCIe devices"""
     def __init__(self, source, fc_init=[[0]*6]*8, *args, **kwargs):
@@ -78,7 +103,9 @@ class PhySimPort(Port):
         self._connect_int(port)
     
     async def tlp_handler(self,tlp):
-        ...
+        # ...
+        # print("tlp type " + str(tlp.get_fc_type) + "\n\n")
+         self.fc_state[0].ph.rx_credits_allocated = 50
         # while True:
         #     await Timer(90000)
 
@@ -129,8 +156,8 @@ class PhySimPort(Port):
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(data)
-            print("port sending dllp")
-            print(pkt)
+            # print("port sending dllp")
+            # print(pkt)
             frame.tuser = 1
             
         elif isinstance(pkt,Tlp):
@@ -141,8 +168,8 @@ class PhySimPort(Port):
             data = seq_item.pack()
             data += self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,self.tlp_calculator))
-            print("port sending tlp \n\n")
-            print(pkt)
+            # print("port sending tlp \n\n")
+            # print(pkt)
             frame.tuser = 2
             self.seq_num += 1
             
@@ -197,10 +224,10 @@ class dllp_seq(uvm_sequence):
         calculator = Calculator(config)
         # Create and send a sequence item
         seq_item = dllp_seq_item("my_sequence_item")
-        print("start sequence")
-        print(seq_item)
+        # print("start sequence")
+        # print(seq_item)
         await self.start_item(seq_item)
-        print("post sequence")
+        # print("post sequence")
         if (self.dllp_type != 0):
             seq_item.Dllp.type = self.dllp_type
         seq_item.crc = calculator.checksum(
@@ -236,9 +263,9 @@ class tlp_seq(uvm_sequence):
         )
         tlp_calculator = Calculator(tlp_config)
         # Create and send a sequence item
-        length = random.randint(1, 255)
+        length = random.randint(256, 512)
         seq_item = dllp_seq_item("my_sequence_item")
-        print("my seq" + str(seq_item))
+        # print("my seq" + str(seq_item))
         await self.start_item(seq_item)
         seq_item.Tlp.fmt_type = TlpType.MEM_WRITE
         if seq_item.Tlp.fmt_type == TlpType.MEM_WRITE:
@@ -251,9 +278,9 @@ class tlp_seq(uvm_sequence):
             seq_item.Tlp.tag = 1
             seq_item.Tlp.requester_id = 1
         data = seq_item.Tlp.pack()
-        print(seq_item.Tlp)
+        # print(seq_item.Tlp)
         dllp_data = self.tlp2dllp(9,data,tlp_calculator)
-        print(dllp_data)
+        # print(dllp_data)
         seq_item.frame = AxiStreamFrame(dllp_data)
         seq_item.frame.tuser = 0x2
         await self.finish_item(seq_item)
@@ -306,7 +333,7 @@ class flow_control_seq(base_sequence):
         for i in range(3):
             tlp = tlp_seq("tlp seq item",i)
             await tlp.start(seqr)
-            await Timer(9000000)
+            await Timer(90000000)
             
     async def get_dllp(self):
         ...
@@ -401,7 +428,7 @@ class phy_driver(base_driver):
         while True:
             # Wait for a sequence item from the sequencer
             seq_item = await self.seq_item_port.get_next_item()
-            print("got item")
+            # print("got item")
             await self.port.send(Tlp(seq_item.Tlp))
             seq_item.results = None
             self.datum = None
@@ -410,9 +437,23 @@ class phy_driver(base_driver):
     async def read_tlp(self):
         while True:
             tlp = await self.tlp_sink.recv()
-            print("rx saxis tlp")
-            print(Tlp(tlp))
-            await self.tlp_source.send(tlp)
+            # print("rx saxis tlp")
+            # print(Tlp.unpack(tlp.tdata))
+            await Timer(900)
+            length = random.randint(255, 512)
+            response_tlp = Tlp()
+            response_tlp.fmt_type = TlpType.MEM_WRITE
+            if response_tlp.fmt_type == TlpType.MEM_WRITE:
+                test_data = bytearray(itertools.islice(itertools.cycle(range(255)), length))
+                response_tlp.set_addr_be_data(1*4, test_data)
+                response_tlp.tag = 1
+                response_tlp.requester_id = 1
+            elif response_tlp.fmt_type == TlpType.MEM_READ:
+                response_tlp.set_addr_be(1*4, length)
+                response_tlp.tag = 1
+                response_tlp.requester_id = 1
+            data = response_tlp.pack()
+            await self.tlp_source.send(data)
        
     async def  read_dllp(self):
          while True:
@@ -429,15 +470,16 @@ class phy_driver(base_driver):
             else:
                 pkt = None
             if pkt:
-                print("recieved packet")
-                print(pkt)
+                # print("recieved packet")
+                # print(pkt)
                 await self.port.ext_recv(pkt)
         
     async def run_phase(self):
         await self.launch_tb()
         self.port = PhySimPort(self.source,fc_init=[[64, 1024, 64, 64, 64, 1024]]*8)
+        self.port.log.setLevel(logging.DEBUG)
         self.port.send_fc.set()
-        print(self.port.send_fc.is_set())
+        # print(self.port.send_fc.is_set())
         self.port.fc_initialized = False
         self.source.set_pause_generator(self.cycle_pause())
         self.sink.set_pause_generator(self.cycle_pause())

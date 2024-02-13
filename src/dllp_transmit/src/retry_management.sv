@@ -37,7 +37,7 @@ module retry_management
 
   //maxbytesper tlp
   localparam int MaxTlpHdrSizeDW = 4;
-  localparam int RetryTimer = 8'hA0;
+  localparam int RetryTimer = 16'hAA0;
   localparam int MaxBytesPerTLP = MAX_PAYLOAD_SIZE;
   localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
 
