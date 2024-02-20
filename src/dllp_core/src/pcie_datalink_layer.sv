@@ -55,6 +55,7 @@ module pcie_datalink_layer
     input  logic                  m_axis_phy_tready,
     //Configuration
     input  logic                  phy_link_up_i,
+    output logic                  fc_initialized_o,
     output logic [           7:0] bus_num_o,
     output logic                  ext_tag_enable_o,
     output logic                  rcb_128b_o,
@@ -127,6 +128,9 @@ module pcie_datalink_layer
 
 
   pcie_dl_status_e                    link_status;
+
+
+  assign fc_initialized_o = fc2_values_stored;
 
   pcie_datalink_init #() pcie_datalink_init_inst (
       .clk_i(clk_i),

@@ -261,7 +261,9 @@ module tlp2dllp
         static logic has_nph_credit;
         has_nph_credit = '0;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
         tlp_axis_tkeep = '1;
         //check that nph credit is available
         if (nph_credit_limit_r >= nph_credits_consumed_r) begin
@@ -287,12 +289,14 @@ module tlp2dllp
         static logic has_nph_credit;
         static logic has_npd_credit;
         static logic [15:0] data_credits_required;
-        has_nph_credit        = '0;
-        has_npd_credit        = '0;
+        has_nph_credit = '0;
+        has_npd_credit = '0;
         data_credits_required = 1'b1;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata        = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
-        tlp_axis_tkeep        = '1;
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        tlp_axis_tkeep = '1;
         //check that posted header credit is available
         if (nph_credit_limit_r >= nph_credits_consumed_r) begin
           if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
@@ -328,7 +332,9 @@ module tlp2dllp
       ST_CHECK_CREDITS_PH: begin
         static logic has_ph_credit;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
         if (ph_credit_limit_r >= ph_credits_consumed_r) begin
@@ -356,14 +362,16 @@ module tlp2dllp
         static logic has_pd_credit;
         static logic [15:0] data_length;
         static logic [15:0] data_credits_required;
-        tlp_dw0               = skid_axis_tdata;
-        has_ph_credit         = '0;
-        has_pd_credit         = '0;
-        data_length           = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+        tlp_dw0 = skid_axis_tdata;
+        has_ph_credit = '0;
+        has_pd_credit = '0;
+        data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
         data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata        = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
-        tlp_axis_tkeep        = '1;
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        tlp_axis_tkeep = '1;
         //check that posted header credit is available
         if (ph_credit_limit_r >= ph_credits_consumed_r) begin
           if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
@@ -401,8 +409,10 @@ module tlp2dllp
         static logic has_cplh_credit;
         has_cplh_credit = '0;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata  = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
-        tlp_axis_tkeep  = '1;
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        tlp_axis_tkeep = '1;
         //check that nph credit is available
         if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
           if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin
@@ -428,14 +438,17 @@ module tlp2dllp
         static logic has_cpld_credit;
         static logic [15:0] data_length;
         static logic [15:0] data_credits_required;
-        tlp_dw0               = skid_axis_tdata;
-        has_cplh_credit       = '0;
-        has_cpld_credit       = '0;
-        data_length           = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+        tlp_dw0 = skid_axis_tdata;
+        has_cplh_credit = '0;
+        has_cpld_credit = '0;
+        data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
         data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
         //assign seq number then first 2 bytes of tlp
-        tlp_axis_tdata        = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
-        tlp_axis_tkeep        = '1;
+        tlp_axis_tdata = {
+          skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        // tlp_axis_tdata        = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
+        tlp_axis_tkeep = '1;
         //check that posted header credit is available
         if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
           if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin

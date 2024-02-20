@@ -128,6 +128,13 @@ module dllp2tlp
   logic                                  pipeline_axis_tlast;
   logic                 [USER_WIDTH-1:0] pipeline_axis_tuser;
   logic                                  pipeline_axis_tready;
+  // tlp second stage pipeline axis bus
+  logic                 [DATA_WIDTH-1:0] pipeline_stg2_axis_tdata;
+  logic                 [KEEP_WIDTH-1:0] pipeline_stg2_axis_tkeep;
+  logic                                  pipeline_stg2_axis_tvalid;
+  logic                                  pipeline_stg2_axis_tlast;
+  logic                 [USER_WIDTH-1:0] pipeline_stg2_axis_tuser;
+  logic                                  pipeline_stg2_axis_tready;
   //phy response signals
   logic                 [DATA_WIDTH-1:0] phy_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] phy_axis_tkeep;
@@ -213,25 +220,17 @@ module dllp2tlp
 
   always_comb begin : main_combo
     next_state              = curr_state;
-    next_transmit_seq_c     = next_transmit_seq_r;
     dllp_lcrc_c             = dllp_lcrc_r;
     crc_calculated_c        = crc_calculated_r;
     crc_byte_select         = '0;
     crc_from_tlp_c          = crc_from_tlp_r;
     word_count_c            = word_count_r;
-    next_expected_seq_num_c = next_expected_seq_num_r;
     tlp_is_cplh_c           = tlp_is_cplh_r;
     tlp_is_nph_c            = tlp_is_nph_r;
     tlp_is_ph_c             = tlp_is_ph_r;
     tlp_is_cpld_c           = tlp_is_cpld_r;
     tlp_is_npd_c            = tlp_is_npd_r;
     tlp_is_pd_c             = tlp_is_pd_r;
-    ph_credits_consumed_c   = ph_credits_consumed_r;
-    pd_credits_consumed_c   = pd_credits_consumed_r;
-    nph_credits_consumed_c  = nph_credits_consumed_r;
-    npd_credits_consumed_c  = npd_credits_consumed_r;
-    cplh_credits_consumed_c = cplh_credits_consumed_r;
-    cpld_credits_consumed_c = cpld_credits_consumed_r;
     skid_axis_tready        = '0;
     tlp_dw0                 = '0;
     dll_packet              = '0;
@@ -244,13 +243,21 @@ module dllp2tlp
     tlp_axis_tvalid         = '0;
     tlp_axis_tlast          = '0;
     tlp_axis_tuser          = '0;
+    ph_credits_consumed_c   = ph_credits_consumed_r;
+    pd_credits_consumed_c   = pd_credits_consumed_r;
+    nph_credits_consumed_c  = nph_credits_consumed_r;
+    npd_credits_consumed_c  = npd_credits_consumed_r;
+    cplh_credits_consumed_c = cplh_credits_consumed_r;
+    cpld_credits_consumed_c = cpld_credits_consumed_r;
+    next_transmit_seq_c     = next_transmit_seq_r;
+    next_expected_seq_num_c = next_expected_seq_num_r;
     case (curr_state)
       ST_IDLE: begin
-        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE);
-        if (skid_axis_tvalid && skid_axis_tready && skid_axis_tuser[UserIsTlp]) begin
+        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE) && s_axis_tvalid;
+        if (skid_axis_tready && skid_axis_tvalid) begin
           //store incoming sequence number
           next_transmit_seq_c = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
-          crc_byte_select     = 2'b01;
+          crc_byte_select     = 2'b11;
           //tlp type
           tlp_is_nph_c        = '0;
           tlp_is_pd_c         = '0;
@@ -265,9 +272,9 @@ module dllp2tlp
         end
       end
       ST_CHECK_TLP_TYPE: begin
-        skid_axis_tready = tlp_axis_tready;
+        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
         crc_byte_select  = 2'b11;
-        if (skid_axis_tready && skid_axis_tvalid && skid_axis_tuser[UserIsTlp]) begin
+        if (skid_axis_tready) begin
           crc_calculated_c = crc_output;
           //shift data_in to account for seq_num offset
           tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
@@ -295,34 +302,39 @@ module dllp2tlp
         end
       end
       ST_TLP_STREAM: begin
-        skid_axis_tready = tlp_axis_tready;
+        // skid_axis_tready = tlp_axis_tready && skid_axis_tvalid;
+        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
         crc_byte_select  = 2'b11;
-        if (skid_axis_tready && skid_axis_tvalid && skid_axis_tuser[UserIsTlp]) begin
+        if (skid_axis_tready) begin
           crc_calculated_c = crc_output;
           tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
           tlp_axis_tkeep   = skid_axis_tkeep;
           tlp_axis_tvalid  = '1;
-          if (skid_axis_tlast) begin
+          // skid_axis_tready = skid_axis_tlast == '0;
+          if (s_axis_tlast) begin
             word_count_c    = word_count_r;
             tlp_axis_tvalid = '0;
-            next_state = ST_CHECK_CRC;
+            // skid_axis_tready = '1;
+            next_state      = ST_TLP_LAST;
             //if last packet of tlp, store crc from phy
-            case (skid_axis_tkeep)
+            case (s_axis_tkeep)
               4'b0001: begin
-                crc_byte_select = '0;
-                crc_from_tlp_c  = {skid_axis_tdata[7:0], pipeline_axis_tdata[31:8]};
+                crc_byte_select  = '1;
+                tlp_axis_tvalid  = '1;
+                skid_axis_tready = '1;
+                crc_from_tlp_c   = {s_axis_tdata[7:0], skid_axis_tdata[31:8]};
               end
               4'b0011: begin
-                crc_byte_select = 2'b01;
-                crc_from_tlp_c  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+                crc_byte_select = 2'b11;
+                crc_from_tlp_c  = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
               end
               4'b0111: begin
-                crc_byte_select = 2'b10;
-                crc_from_tlp_c  = {skid_axis_tdata[23:0], pipeline_axis_tdata[31:24]};
+                crc_byte_select = 2'b11;
+                crc_from_tlp_c  = {s_axis_tdata[23:0], skid_axis_tdata[31:24]};
               end
               4'b1111: begin
                 crc_byte_select = '1;
-                crc_from_tlp_c  = skid_axis_tdata;
+                crc_from_tlp_c  = s_axis_tdata;
               end
               default: begin
               end
@@ -330,8 +342,43 @@ module dllp2tlp
           end
         end
       end
+      ST_TLP_LAST: begin
+        // skid_axis_tready = tlp_axis_tready && skid_axis_tvalid;
+        crc_byte_select = 2'b11;
+        if (tlp_axis_tready) begin
+          crc_calculated_c = crc_output;
+          // tlp_axis_tdata   = {pipeline_axis_tdata[15:0], pipeline_stg2_axis_tdata[31:16]};
+          // tlp_axis_tkeep   = pipeline_axis_tkeep;
+          // skid_axis_tready = '1;
+          next_state = ST_CHECK_CRC;
+          //if last packet of tlp, store crc from phy
+          case (skid_axis_tkeep)
+            4'b0001: begin
+              crc_byte_select = '0;
+              // tlp_axis_tvalid  = '1;
+              // skid_axis_tready = '1;
+              // crc_from_tlp_c   = {skid_axis_tdata[7:0], pipeline_axis_tdata[31:8]};
+            end
+            4'b0011: begin
+              crc_byte_select = 2'b01;
+              // crc_from_tlp_c  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+            end
+            4'b0111: begin
+              crc_byte_select = 2'b10;
+              // crc_from_tlp_c  = {skid_axis_tdata[23:0], pipeline_axis_tdata[31:24]};
+            end
+            4'b1111: begin
+              crc_byte_select = '1;
+              // crc_from_tlp_c  = skid_axis_tdata;
+            end
+            default: begin
+            end
+          endcase
+          // end
+        end
+      end
       ST_CHECK_CRC: begin
-        tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+        tlp_axis_tdata   = {pipeline_axis_tdata[15:0], pipeline_stg2_axis_tdata[31:16]};
         tlp_axis_tvalid  = '1;
         tlp_axis_tlast   = '1;
         crc_calculated_c = '1;
@@ -344,7 +391,7 @@ module dllp2tlp
             tlp_axis_tkeep = 4'b0111;
           end
           4'b0011: begin
-            tlp_axis_tkeep = 4'b0011;
+            tlp_axis_tkeep = 4'b1111;
           end
           4'b0111: begin
             tlp_axis_tkeep = 4'b0001;
@@ -475,7 +522,7 @@ module dllp2tlp
       .rst(rst_i),
       .s_axis_tdata(s_axis_tdata),
       .s_axis_tkeep(s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid),
+      .s_axis_tvalid(s_axis_tvalid & !fc_start_c),
       .s_axis_tready(s_axis_tready),
       .s_axis_tlast(s_axis_tlast),
       .s_axis_tuser(s_axis_tuser),
@@ -484,7 +531,7 @@ module dllp2tlp
       .m_axis_tdata(skid_axis_tdata),
       .m_axis_tkeep(skid_axis_tkeep),
       .m_axis_tvalid(skid_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
+      .m_axis_tready(skid_axis_tready | fc_start_c),
       .m_axis_tlast(skid_axis_tlast),
       .m_axis_tuser(skid_axis_tuser),
       .m_axis_tid(),
@@ -509,7 +556,7 @@ module dllp2tlp
       .rst(rst_i),
       .s_axis_tdata(skid_axis_tdata),
       .s_axis_tkeep(skid_axis_tkeep),
-      .s_axis_tvalid(skid_axis_tvalid),
+      .s_axis_tvalid(skid_axis_tvalid & !fc_start_c),
       .s_axis_tready(),
       .s_axis_tlast(skid_axis_tlast),
       .s_axis_tuser(skid_axis_tuser),
@@ -518,11 +565,46 @@ module dllp2tlp
       .m_axis_tdata(pipeline_axis_tdata),
       .m_axis_tkeep(pipeline_axis_tkeep),
       .m_axis_tvalid(pipeline_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
+      .m_axis_tready(skid_axis_tready | fc_start_c),
       .m_axis_tlast(pipeline_axis_tlast),
       .m_axis_tid(),
       .m_axis_tdest(),
       .m_axis_tuser(pipeline_axis_tuser)
+  );
+
+
+  //axis pipeline skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_pipeline_stage_2_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(pipeline_axis_tdata),
+      .s_axis_tkeep(pipeline_axis_tkeep),
+      .s_axis_tvalid(pipeline_axis_tvalid & !fc_start_c),
+      .s_axis_tready(),
+      .s_axis_tlast(pipeline_axis_tlast),
+      .s_axis_tuser(pipeline_axis_tuser),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .m_axis_tdata(pipeline_stg2_axis_tdata),
+      .m_axis_tkeep(pipeline_stg2_axis_tkeep),
+      .m_axis_tvalid(pipeline_stg2_axis_tvalid),
+      .m_axis_tready(skid_axis_tready | fc_start_c),
+      .m_axis_tlast(pipeline_stg2_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(pipeline_stg2_axis_tuser)
   );
 
   //tlp crc instance

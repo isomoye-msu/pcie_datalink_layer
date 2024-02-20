@@ -80,6 +80,7 @@ module ltssm_detect
   logic       [   USER_WIDTH-1:0] dllp_axis_tuser;
   logic                           dllp_axis_tready;
 
+  //! main sequential logic block
   always_ff @(posedge clk_i or posedge rst_i) begin : main_seq
     if (rst_i) begin
       curr_state        <= ST_IDLE;
@@ -105,7 +106,7 @@ module ltssm_detect
     axis_tsos_cnt_r <= axis_tsos_cnt_c;
   end
 
-
+  //! combination block to detect end of electrical idle
   always_comb begin : main_combo
     next_state        = curr_state;
     timer_c           = timer_r;
@@ -203,7 +204,7 @@ module ltssm_detect
     endcase
   end
 
-
+  //axi-stream output register instance
   axis_register #(
       .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),
@@ -237,6 +238,7 @@ module ltssm_detect
       .m_axis_tdest()
   );
 
+  //output assignments
   assign lane_detected_o  = lanes_detected_r;
   assign lane_elec_idle_o = lane_elec_idle_r;
   assign txdetectrx_o     = ena_lane_detect_r;

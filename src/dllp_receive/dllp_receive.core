@@ -9,6 +9,7 @@ filesets:
       - src/dllp_receive.sv
       - src/dllp_fc_update.sv
       - src/dllp2tlp.sv
+      - src/axis_user_demux.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
