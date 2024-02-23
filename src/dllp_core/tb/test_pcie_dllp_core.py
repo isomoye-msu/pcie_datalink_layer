@@ -499,59 +499,68 @@ class phy_driver(base_driver):
             self.rx_cpl_sync[tlp.tag].set()
         elif tlp.fmt_type in {TlpType.MEM_WRITE, TlpType.MEM_WRITE_64}:
             self.log.info("Memory write")
-
-            # perform operation
-            region = 0 #frame.bar_range
-            addr = tlp.address % len(self.regions[region])
-            offset = 0
-            start_offset = None
-            mask = tlp.first_be
-            length = tlp.length
-
-            # perform write
-            data = tlp.get_data()
-
-            # first dword
-            for k in range(4):
-                if mask & (1 << k):
-                    if start_offset is None:
-                        start_offset = offset
-                else:
-                    if start_offset is not None and offset != start_offset:
-                        self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
+            for f in self.dev.functions:
+                bar = f.match_bar(tlp.address)
+                # bar = self.dev.f.match_bar(tlp.address)
+                self.log.info(bar)
+                if bar:
+                    # perform operation
+                    region = bar[0] #frame.bar_range
+                    addr = tlp.address % len(self.regions[region])
+                    offset = 0
                     start_offset = None
+                    mask = tlp.first_be
+                    length = tlp.length
 
-                offset += 1
+                    # perform write
+                    data = tlp.get_data()
 
-            if length > 2:
-                # middle dwords
-                if start_offset is None:
-                    start_offset = offset
-                offset += (length-2)*4
+                    # first dword
+                    for k in range(4):
+                        if mask & (1 << k):
+                            if start_offset is None:
+                                start_offset = offset
+                        else:
+                            if start_offset is not None and offset != start_offset:
+                                self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
+                            start_offset = None
 
-            if length > 1:
-                # last dword
-                mask = tlp.last_be
+                        offset += 1
 
-                for k in range(4):
-                    if mask & (1 << k):
+                    if length > 2:
+                        # middle dwords
                         if start_offset is None:
                             start_offset = offset
-                    else:
-                        if start_offset is not None and offset != start_offset:
-                            self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
-                        start_offset = None
+                        offset += (length-2)*4
 
-                    offset += 1
+                    if length > 1:
+                        # last dword
+                        mask = tlp.last_be
 
-            if start_offset is not None and offset != start_offset:
-                self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
+                        for k in range(4):
+                            if mask & (1 << k):
+                                if start_offset is None:
+                                    start_offset = offset
+                            else:
+                                if start_offset is not None and offset != start_offset:
+                                    self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
+                                start_offset = None
+
+                            offset += 1
+
+                    if start_offset is not None and offset != start_offset:
+                        self.regions[region][addr+start_offset:addr+offset] = data[start_offset:offset]
             self.log.info("Done Memory write")
         elif tlp.fmt_type in {TlpType.MEM_READ, TlpType.MEM_READ_64}:
-                    self.log.info("Memory read")
-
+            self.log.info("Memory read")
+            for f in self.dev.functions:
+                bar = f.match_bar(tlp.address)
+                self.log.info(bar)
+                # bar = self.dev.functions[0].match_bar(tlp.address)
+                # self.log.info(bar)
+                if bar:
                     # perform operation
-                    region = 0 #frame.bar_range
+                    region = bar[0] #frame.bar_range
                     addr = tlp.address % len(self.regions[region])
                     offset = 0
                     length = tlp.length

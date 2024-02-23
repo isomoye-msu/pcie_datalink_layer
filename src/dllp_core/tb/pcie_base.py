@@ -107,7 +107,6 @@ class PcieFunction(Endpoint):
         # PASID 0xcc
         # VSEC (RAS D.E.S.) 0xce
         # DL 0x11c
-        # VSEC (Intel) 0x340
 
 
 def init_signal(sig, width=None, initval=None):
@@ -120,7 +119,7 @@ def init_signal(sig, width=None, initval=None):
     return sig
 
 
-class PTilePcieDevice(Device):
+class PcieDevice(Device):
     def __init__(self,
             # configuration options
             port_num=0,
@@ -319,12 +318,8 @@ class PTilePcieDevice(Device):
 
         super().__init__(*args, **kwargs)
 
-        self.log.info("Intel P-tile PCIe hard IP core model")
-        self.log.info("cocotbext-pcie version %s", __version__)
-        self.log.info("Copyright (c) 2022 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-pcie")
 
-        self.default_function = PTilePcieFunction
+        self.default_function = PcieFunction()
 
         self.dw = None
 
@@ -592,7 +587,7 @@ class PTilePcieDevice(Device):
                     self.pld_clk_frequency = config[3]
                 break
 
-        self.log.info("Intel P-tile PCIe hard IP core configuration:")
+        self.log.info("  PCIe hard IP core configuration:")
         self.log.info("  PCIe speed: gen %d", self.pcie_generation)
         self.log.info("  PCIe link width: x%d", self.pcie_link_width)
         self.log.info("  PLD clock frequency: %d MHz", self.pld_clk_frequency/1e6)
@@ -740,19 +735,19 @@ class PTilePcieDevice(Device):
 
         # fork coroutines
 
-        if self.coreclkout_hip is not None:
-            cocotb.start_soon(Clock(self.coreclkout_hip, int(1e9/self.pld_clk_frequency), units="ns").start())
+        # if self.coreclkout_hip is not None:
+        #     cocotb.start_soon(Clock(self.coreclkout_hip, int(1e9/self.pld_clk_frequency), units="ns").start())
 
-        if self.rx_source:
-            cocotb.start_soon(self._run_rx_logic())
-        if self.tx_sink:
-            cocotb.start_soon(self._run_tx_logic())
-        if self.tx_cdts_limit:
-            cocotb.start_soon(self._run_tx_fc_logic())
-        if self.tl_cfg_ctl:
-            cocotb.start_soon(self._run_cfg_out_logic())
+        # if self.rx_source:
+        #     cocotb.start_soon(self._run_rx_logic())
+        # if self.tx_sink:
+        #     cocotb.start_soon(self._run_tx_logic())
+        # if self.tx_cdts_limit:
+        #     cocotb.start_soon(self._run_tx_fc_logic())
+        # if self.tl_cfg_ctl:
+        #     cocotb.start_soon(self._run_cfg_out_logic())
 
-        cocotb.start_soon(self._run_reset())
+        # cocotb.start_soon(self._run_reset())
 
     async def upstream_recv(self, tlp):
         self.log.debug("Got downstream TLP: %r", tlp)
