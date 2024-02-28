@@ -42,55 +42,9 @@ class pcie_seq(base_sequence):
         self.dev.upstream_port.max_link_speed = 3
         self.dev.upstream_port.max_link_width = 2
         # self.dev.upstream_port.max_payload_size = 128
-        # self.dev.upstream_port.port_delay = 5e-9
+        self.dev.upstream_port.port_delay = 8e-9
         
         self.rx_queue = Queue()
-        # self.dev1 = PcieDevice(
-        #     # configuration options
-        #     port_num=0,
-        #     pcie_generation=3,
-        #     pcie_link_width=2,
-        #     pld_clk_frequency = 200e6,
-        #     # user_clk_frequency=250e6,
-        #     pf_count=3,
-        #     max_payload_size=128,
-        #     enable_extended_tag=False,
-
-        #     pf0_msi_enable=True,
-        #     pf0_msi_count=32,
-        #     pf1_msi_enable=False,
-        #     pf1_msi_count=1,
-        #     pf2_msi_enable=False,
-        #     pf2_msi_count=1,
-        #     pf3_msi_enable=False,
-        #     pf3_msi_count=1,
-        #     pf0_msix_enable=self.msix,
-        #     pf0_msix_table_size=63,
-        #     pf0_msix_table_bir=4,
-        #     pf0_msix_table_offset=0x00000000,
-        #     pf0_msix_pba_bir=4,
-        #     pf0_msix_pba_offset=0x00008000,
-        #     pf1_msix_enable=False,
-        #     pf1_msix_table_size=0,
-        #     pf1_msix_table_bir=0,
-        #     pf1_msix_table_offset=0x00000000,
-        #     pf1_msix_pba_bir=0,
-        #     pf1_msix_pba_offset=0x00000000,
-        #     pf2_msix_enable=False,
-        #     pf2_msix_table_size=0,
-        #     pf2_msix_table_bir=0,
-        #     pf2_msix_table_offset=0x00000000,
-        #     pf2_msix_pba_bir=0,
-        #     pf2_msix_pba_offset=0x00000000,
-        #     pf3_msix_enable=False,
-        #     pf3_msix_table_size=0,
-        #     pf3_msix_table_bir=0,
-        #     pf3_msix_table_offset=0x00000000,
-        #     pf3_msix_pba_bir=0,
-        #     pf3_msix_pba_offset=0x00000000
-        # )
-        
-        # self.dev.upstream_send = self.send_tlp
         
         self.rc.make_port().connect(self.dev)
         
