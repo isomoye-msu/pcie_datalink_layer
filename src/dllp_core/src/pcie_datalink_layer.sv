@@ -21,7 +21,7 @@ module pcie_datalink_layer
     parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
     parameter int RETRY_TLP_SIZE = 3,
-    parameter int MAX_PAYLOAD_SIZE = 1024
+    parameter int MAX_PAYLOAD_SIZE = 4096
 ) (
     input  logic                  clk_i,                    // Clock signal
     input  logic                  rst_i,                    // Reset signal
@@ -125,12 +125,13 @@ module pcie_datalink_layer
   logic                               soft_reset;
   logic                               fc1_values_stored;
   logic                               fc2_values_stored;
+  logic                               fc2_values_sent;
 
 
   pcie_dl_status_e                    link_status;
 
 
-  assign fc_initialized_o = fc2_values_stored;
+  assign fc_initialized_o = fc2_values_sent;
 
   pcie_datalink_init #() pcie_datalink_init_inst (
       .clk_i(clk_i),
@@ -164,6 +165,7 @@ module pcie_datalink_layer
       .m_axis_tlast(phy_fc_axis_tlast),
       .m_axis_tuser(phy_fc_axis_tuser),
       .m_axis_tready(phy_fc_axis_tready),
+      .fc2_values_sent_o(fc2_values_sent),
       .init_ack_o(init_ack)
   );
 

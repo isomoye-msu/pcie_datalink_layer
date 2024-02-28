@@ -26,13 +26,13 @@ module pcie_flow_ctrl_init
     output logic                    m_axis_tlast,
     output logic [  USER_WIDTH-1:0] m_axis_tuser,
     input  logic                    m_axis_tready,
-
-    output logic init_ack_o
+    output logic                    fc2_values_sent_o,
+    output logic                    init_ack_o
 );
 
 
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
-  localparam int FcWaitPeriod = 8'h2;
+  localparam int FcWaitPeriod = 8'hA0;
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -116,6 +116,7 @@ module pcie_flow_ctrl_init
     dllp_lcrc_c    = dllp_lcrc_r;
     //init handshake
     init_ack_o     = '0;
+    fc2_values_sent_o = '0;
     case (curr_state)
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
@@ -283,7 +284,7 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready) begin
           fc_axis_tvalid = '0;
           if (seq_count_r >= FcWaitPeriod) begin
-            send_fc_init(fc_axis_tdata, InitFC2_Cpl, '0, '0, PdMinCredits);
+            send_fc_init(fc_axis_tdata, InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -320,6 +321,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC_COMPLETE: begin
+        fc2_values_sent_o = '1;
         //hang around
       end
       default: begin

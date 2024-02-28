@@ -1,13 +1,13 @@
 package pcie_datalink_pkg;
 
   /* verilator lint_off WIDTHEXPAND */
-  parameter byte HdrFc = 8'hFA;
-  parameter byte DataFc = 8'hDA;
-  parameter byte FcPHdr = 8'h01;
-  parameter byte FcNpHdr = 8'h01;
-  parameter byte FcCplHdr = 8'h01;
-  parameter int FcPData = 32'h040;
-  parameter int FcNpData = 32'h010;
+  parameter byte HdrFc = 8'hFA  * 8;
+  parameter byte DataFc = 8'hDA * 8;
+  parameter byte FcPHdr = 8'h01 * 8;
+  parameter byte FcNpHdr = 8'h01 * 8;
+  parameter byte FcCplHdr = 8'h01 * 8;
+  parameter int FcPData = 32'h040 * 8;
+  parameter int FcNpData = 32'h010 * 8;
   parameter int DllpHdrByteSize = 32'h2;
   parameter int ReplayTimer = 32'd999;
   parameter int ReplayNum = 32'd2;

@@ -20,6 +20,8 @@ filesets:
 
   cocotb:
     files:
+      - tb/pcie_base.py : {file_type : user, copyto : .}
+      - tb/pcie_sequences.py : {file_type : user, copyto : .}
       - tb/test_pcie_datalink_layer.py : {file_type : user, copyto : .}
       - tb/test_pcie_dllp_core.py : {file_type : user, copyto : .}
     depend:

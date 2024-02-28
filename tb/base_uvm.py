@@ -20,7 +20,7 @@ class base_sequence (uvm_sequence):
         seq_item = self.seq_item_t("my_sequence_item")
         self.start_item(seq_item)
         self.finish_item(seq_item)
-        uvm_info("base_sequence", "Running the sequence", UVM_LOW)
+        self.log.info("base_sequence Running the sequence")
         
         
 # Create a sequencer class

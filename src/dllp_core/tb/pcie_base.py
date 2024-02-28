@@ -32,7 +32,7 @@ from cocotbext.pcie.core.caps import MsiCapability, MsixCapability
 from cocotbext.pcie.core.caps import AerExtendedCapability, PcieExtendedCapability
 from cocotbext.pcie.core.utils import PcieId
 from cocotbext.pcie.core.tlp import Tlp, TlpType
-
+from crc import Calculator, Configuration
 # from .interface import PTilePcieFrame, PTilePcieSource, PTilePcieSink
 from cocotbext.axi import *
 
@@ -318,8 +318,8 @@ class PcieDevice(Device):
 
         super().__init__(*args, **kwargs)
 
-
-        self.default_function = PcieFunction()
+    
+        self.default_function = PcieFunction
 
         self.dw = None
 
@@ -397,7 +397,7 @@ class PcieDevice(Device):
         self.rx_par_err = init_signal(rx_par_err, 1, 0)
 
         if rx_bus is not None:
-            self.rx_source = AxiStreamSource(rx_bus,self.coreclkout_hip,self.pin_perst_n)
+            # self.rx_source = AxiStreamSource(rx_bus,self.coreclkout_hip,self.pin_perst_n)
             # self.rx_source.queue_occupancy_limit_frames = 2
             # self.rx_source.ready_latency = 27
             self.dw = self.rx_source.width
@@ -407,10 +407,10 @@ class PcieDevice(Device):
         self.tx_par_err = init_signal(tx_par_err, 1, 0)
 
         if tx_bus is not None:
-            self.tx_sink = AxiStreamSink(tx_bus,self.coreclkout_hip,self.pin_perst_n)
-            self.tx_sink.queue_occupancy_limit_frames = 2
+            # self.tx_sink = AxiStreamSink(tx_bus,self.coreclkout_hip,self.pin_perst_n)
+            # self.tx_sink.queue_occupancy_limit_frames = 2
             self.tx_sink.ready_latency = 3
-            self.dw = self.tx_sink.width
+            # self.dw = self.tx_sink.width
 
         # RX flow control
         self.rx_buffer_limit = init_signal(rx_buffer_limit, 12)
@@ -546,116 +546,119 @@ class PcieDevice(Device):
         self.virtio_pcicfg_rdbe = init_signal(virtio_pcicfg_rdbe, 4)
         self.virtio_pcicfg_data = init_signal(virtio_pcicfg_data, 32)
 
+
+        # self.upstream_port.ext_recv = self.handle_tx
         # validate parameters
-        assert self.dw in {32,128, 256, 512}
+        # assert self.dw in {32,128, 256, 512}
 
         # rescale clock frequency
-        if self.pld_clk_frequency is not None and self.pld_clk_frequency < 1e6:
-            self.pld_clk_frequency *= 1e6
+        # if self.pld_clk_frequency is not None and self.pld_clk_frequency < 1e6:
+        #     self.pld_clk_frequency *= 1e6
 
-        if not self.pcie_generation or not self.pcie_link_width or not self.pld_clk_frequency:
-            self.log.info("Incomplete configuration specified, attempting to select reasonable options")
-            # guess some reasonable values for unspecified parameters
-            for config in reversed(valid_configs):
-                # find configuration matching specified parameters
-                if self.pcie_generation is not None and self.pcie_generation != config[0]:
-                    continue
-                if self.pcie_link_width is not None and self.pcie_link_width != config[1]:
-                    continue
-                if self.dw != config[2]:
-                    continue
-                if self.pld_clk_frequency is not None and self.pld_clk_frequency != config[3]:
-                    continue
+        # if not self.pcie_generation or not self.pcie_link_width or not self.pld_clk_frequency:
+        #     self.log.info("Incomplete configuration specified, attempting to select reasonable options")
+        #     # guess some reasonable values for unspecified parameters
+        #     for config in reversed(valid_configs):
+        #         # find configuration matching specified parameters
+        #         if self.pcie_generation is not None and self.pcie_generation != config[0]:
+        #             continue
+        #         if self.pcie_link_width is not None and self.pcie_link_width != config[1]:
+        #             continue
+        #         if self.dw != config[2]:
+        #             continue
+        #         if self.pld_clk_frequency is not None and self.pld_clk_frequency != config[3]:
+        #             continue
 
-                if self.pcie_link_width is not None:
-                    if self.port_num == 1 and config[1] > 8:
-                        # port 1 only supports x4 and x8
-                        continue
-                    if self.port_num >= 2 and config[1] > 4:
-                        # ports 2 and 3 only supports x4
-                        continue
+        #         if self.pcie_link_width is not None:
+        #             if self.port_num == 1 and config[1] > 8:
+        #                 # port 1 only supports x4 and x8
+        #                 continue
+        #             if self.port_num >= 2 and config[1] > 4:
+        #                 # ports 2 and 3 only supports x4
+        #                 continue
 
-                # set the unspecified parameters
-                if self.pcie_generation is None:
-                    self.log.info("Setting PCIe speed to gen %d", config[0])
-                    self.pcie_generation = config[0]
-                if self.pcie_link_width is None:
-                    self.log.info("Setting PCIe link width to x%d", config[1])
-                    self.pcie_link_width = config[1]
-                if self.pld_clk_frequency is None:
-                    self.log.info("Setting user clock frequency to %d MHz", config[3]/1e6)
-                    self.pld_clk_frequency = config[3]
-                break
+        #         # set the unspecified parameters
+        #         if self.pcie_generation is None:
+        #             self.log.info("Setting PCIe speed to gen %d", config[0])
+        #             self.pcie_generation = config[0]
+        #         if self.pcie_link_width is None:
+        #             self.log.info("Setting PCIe link width to x%d", config[1])
+        #             self.pcie_link_width = config[1]
+        #         if self.pld_clk_frequency is None:
+        #             self.log.info("Setting user clock frequency to %d MHz", config[3]/1e6)
+        #             self.pld_clk_frequency = config[3]
+        #         break
 
-        self.log.info("  PCIe hard IP core configuration:")
-        self.log.info("  PCIe speed: gen %d", self.pcie_generation)
-        self.log.info("  PCIe link width: x%d", self.pcie_link_width)
-        self.log.info("  PLD clock frequency: %d MHz", self.pld_clk_frequency/1e6)
-        self.log.info("  PF count: %d", self.pf_count)
-        self.log.info("  Max payload size: %d", self.max_payload_size)
-        self.log.info("  Enable extended tag: %s", self.enable_extended_tag)
-        self.log.info("  P-tile port number: %d", self.port_num)
-        self.log.info("  Enable PF0 MSI: %s", self.pf0_msi_enable)
-        self.log.info("  PF0 MSI vector count: %d", self.pf0_msi_count)
-        self.log.info("  Enable PF1 MSI: %s", self.pf1_msi_enable)
-        self.log.info("  PF1 MSI vector count: %d", self.pf1_msi_count)
-        self.log.info("  Enable PF2 MSI: %s", self.pf2_msi_enable)
-        self.log.info("  PF2 MSI vector count: %d", self.pf2_msi_count)
-        self.log.info("  Enable PF3 MSI: %s", self.pf3_msi_enable)
-        self.log.info("  PF3 MSI vector count: %d", self.pf3_msi_count)
-        self.log.info("  Enable PF0 MSIX: %s", self.pf0_msix_enable)
-        self.log.info("  PF0 MSIX table size: %d", self.pf0_msix_table_size)
-        self.log.info("  PF0 MSIX table BIR: %d", self.pf0_msix_table_bir)
-        self.log.info("  PF0 MSIX table offset: 0x%08x", self.pf0_msix_table_offset)
-        self.log.info("  PF0 MSIX PBA BIR: %d", self.pf0_msix_pba_bir)
-        self.log.info("  PF0 MSIX PBA offset: 0x%08x", self.pf0_msix_pba_offset)
-        self.log.info("  Enable PF1 MSIX: %s", self.pf1_msix_enable)
-        self.log.info("  PF1 MSIX table size: %d", self.pf1_msix_table_size)
-        self.log.info("  PF1 MSIX table BIR: %d", self.pf1_msix_table_bir)
-        self.log.info("  PF1 MSIX table offset: 0x%08x", self.pf1_msix_table_offset)
-        self.log.info("  PF1 MSIX PBA BIR: %d", self.pf1_msix_pba_bir)
-        self.log.info("  PF1 MSIX PBA offset: 0x%08x", self.pf1_msix_pba_offset)
-        self.log.info("  Enable PF2 MSIX: %s", self.pf2_msix_enable)
-        self.log.info("  PF2 MSIX table size: %d", self.pf2_msix_table_size)
-        self.log.info("  PF2 MSIX table BIR: %d", self.pf2_msix_table_bir)
-        self.log.info("  PF2 MSIX table offset: 0x%08x", self.pf2_msix_table_offset)
-        self.log.info("  PF2 MSIX PBA BIR: %d", self.pf2_msix_pba_bir)
-        self.log.info("  PF2 MSIX PBA offset: 0x%08x", self.pf2_msix_pba_offset)
-        self.log.info("  Enable PF3 MSIX: %s", self.pf3_msix_enable)
-        self.log.info("  PF3 MSIX table size: %d", self.pf3_msix_table_size)
-        self.log.info("  PF3 MSIX table BIR: %d", self.pf3_msix_table_bir)
-        self.log.info("  PF3 MSIX table offset: 0x%08x", self.pf3_msix_table_offset)
-        self.log.info("  PF3 MSIX PBA BIR: %d", self.pf3_msix_pba_bir)
-        self.log.info("  PF3 MSIX PBA offset: 0x%08x", self.pf3_msix_pba_offset)
+        # self.log.info("  PCIe hard IP core configuration:")
+        # self.log.info("  PCIe speed: gen %d", self.pcie_generation)
+        # self.log.info("  PCIe link width: x%d", self.pcie_link_width)
+        # self.log.info("  PLD clock frequency: %d MHz", self.pld_clk_frequency/1e6)
+        # self.log.info("  PF count: %d", self.pf_count)
+        # self.log.info("  Max payload size: %d", self.max_payload_size)
+        # self.log.info("  Enable extended tag: %s", self.enable_extended_tag)
+        # self.log.info("  P-tile port number: %d", self.port_num)
+        # self.log.info("  Enable PF0 MSI: %s", self.pf0_msi_enable)
+        # self.log.info("  PF0 MSI vector count: %d", self.pf0_msi_count)
+        # self.log.info("  Enable PF1 MSI: %s", self.pf1_msi_enable)
+        # self.log.info("  PF1 MSI vector count: %d", self.pf1_msi_count)
+        # self.log.info("  Enable PF2 MSI: %s", self.pf2_msi_enable)
+        # self.log.info("  PF2 MSI vector count: %d", self.pf2_msi_count)
+        # self.log.info("  Enable PF3 MSI: %s", self.pf3_msi_enable)
+        # self.log.info("  PF3 MSI vector count: %d", self.pf3_msi_count)
+        # self.log.info("  Enable PF0 MSIX: %s", self.pf0_msix_enable)
+        # self.log.info("  PF0 MSIX table size: %d", self.pf0_msix_table_size)
+        # self.log.info("  PF0 MSIX table BIR: %d", self.pf0_msix_table_bir)
+        # self.log.info("  PF0 MSIX table offset: 0x%08x", self.pf0_msix_table_offset)
+        # self.log.info("  PF0 MSIX PBA BIR: %d", self.pf0_msix_pba_bir)
+        # self.log.info("  PF0 MSIX PBA offset: 0x%08x", self.pf0_msix_pba_offset)
+        # self.log.info("  Enable PF1 MSIX: %s", self.pf1_msix_enable)
+        # self.log.info("  PF1 MSIX table size: %d", self.pf1_msix_table_size)
+        # self.log.info("  PF1 MSIX table BIR: %d", self.pf1_msix_table_bir)
+        # self.log.info("  PF1 MSIX table offset: 0x%08x", self.pf1_msix_table_offset)
+        # self.log.info("  PF1 MSIX PBA BIR: %d", self.pf1_msix_pba_bir)
+        # self.log.info("  PF1 MSIX PBA offset: 0x%08x", self.pf1_msix_pba_offset)
+        # self.log.info("  Enable PF2 MSIX: %s", self.pf2_msix_enable)
+        # self.log.info("  PF2 MSIX table size: %d", self.pf2_msix_table_size)
+        # self.log.info("  PF2 MSIX table BIR: %d", self.pf2_msix_table_bir)
+        # self.log.info("  PF2 MSIX table offset: 0x%08x", self.pf2_msix_table_offset)
+        # self.log.info("  PF2 MSIX PBA BIR: %d", self.pf2_msix_pba_bir)
+        # self.log.info("  PF2 MSIX PBA offset: 0x%08x", self.pf2_msix_pba_offset)
+        # self.log.info("  Enable PF3 MSIX: %s", self.pf3_msix_enable)
+        # self.log.info("  PF3 MSIX table size: %d", self.pf3_msix_table_size)
+        # self.log.info("  PF3 MSIX table BIR: %d", self.pf3_msix_table_bir)
+        # self.log.info("  PF3 MSIX table offset: 0x%08x", self.pf3_msix_table_offset)
+        # self.log.info("  PF3 MSIX PBA BIR: %d", self.pf3_msix_pba_bir)
+        # self.log.info("  PF3 MSIX PBA offset: 0x%08x", self.pf3_msix_pba_offset)
 
-        assert self.pcie_generation in {3, 4}
-        assert self.pcie_link_width in {4, 8, 16}
-        assert self.pld_clk_frequency in {175e6, 200e6, 225e6, 250e6, 350e6, 400e6, 450e6, 500e6}
+        # assert self.pcie_generation in {3, 4}
+        # assert self.pcie_link_width in {4, 8, 16}
+        # assert self.pld_clk_frequency in {175e6, 200e6, 225e6, 250e6, 350e6, 400e6, 450e6, 500e6}
 
         # check for valid configuration
-        config_valid = False
-        for config in valid_configs:
-            if self.pcie_generation != config[0]:
-                continue
-            if self.pcie_link_width != config[1]:
-                continue
-            if self.dw != config[2]:
-                continue
-            if self.pld_clk_frequency != config[3]:
-                continue
+        # config_valid = False
+        # for config in valid_configs:
+        #     if self.pcie_generation != config[0]:
+        #         continue
+        #     if self.pcie_link_width != config[1]:
+        #         continue
+        #     if self.dw != config[2]:
+        #         continue
+        #     if self.pld_clk_frequency != config[3]:
+        #         continue
 
-            if self.port_num == 1 and config[1] > 8:
-                # port 1 only supports x4 and x8
-                continue
-            if self.port_num >= 2 and config[1] > 4:
-                # ports 2 and 3 only supports x4
-                continue
+        #     if self.port_num == 1 and config[1] > 8:
+        #         # port 1 only supports x4 and x8
+        #         continue
+        #     if self.port_num >= 2 and config[1] > 4:
+        #         # ports 2 and 3 only supports x4
+        #         continue
 
-            config_valid = True
-            break
+        #     config_valid = True
+        #     break
 
-        assert config_valid, "link speed/link width/clock speed/interface width setting combination not valid"
+        # assert config_valid, "link speed/link width/clock speed/interface width setting combination not valid"
 
+    
         # configure port
         self.upstream_port.max_link_speed = self.pcie_generation
         self.upstream_port.max_link_width = self.pcie_link_width
@@ -745,9 +748,18 @@ class PcieDevice(Device):
         # if self.tx_cdts_limit:
         #     cocotb.start_soon(self._run_tx_fc_logic())
         # if self.tl_cfg_ctl:
-        #     cocotb.start_soon(self._run_cfg_out_logic())
+        # cocotb.start_soon(self._run_cfg_out_logic())
 
         # cocotb.start_soon(self._run_reset())
+    
+    # async def handle_tx(self,pkt):
+    #     # print(pkt)
+    #     pass
+    # async def upstream_recv(self,tlp):
+    #     await self.function_upstream_recv(tlp)
+        # print("upstream_recv: %s",repr(tlp))
+        # pass
+        
 
     async def upstream_recv(self, tlp):
         self.log.debug("Got downstream TLP: %r", tlp)
@@ -779,9 +791,9 @@ class PcieDevice(Device):
             for f in self.functions:
                 if f.pcie_id == tlp.requester_id:
 
-                    frame = PTilePcieFrame.from_tlp(tlp)
+                    # frame = PTilePcieFrame.from_tlp(tlp)
 
-                    frame.func_num = tlp.requester_id.function
+                    # frame.func_num = tlp.requester_id.function
 
                     # check and track buffer occupancy
                     data_fc = tlp.get_data_credits()
@@ -789,7 +801,7 @@ class PcieDevice(Device):
                     if self.rx_buf_cplh_fc_count+1 <= self.rx_buf_cplh_fc_limit and self.rx_buf_cpld_fc_count+data_fc <= self.rx_buf_cpld_fc_limit:
                         self.rx_buf_cplh_fc_count += 1
                         self.rx_buf_cpld_fc_count += data_fc
-                        await self.rx_queue.put((tlp, frame))
+                        await self.rx_queue.put((tlp))
                     else:
                         self.log.warning("No space in RX completion buffer, dropping TLP: CPLH %d (limit %d), CPLD %d (limit %d)",
                             self.rx_buf_cplh_fc_count, self.rx_buf_cplh_fc_limit, self.rx_buf_cpld_fc_count, self.rx_buf_cpld_fc_limit)
@@ -809,12 +821,12 @@ class PcieDevice(Device):
                 bar = f.match_bar(tlp.address, True)
                 if bar:
 
-                    frame = PTilePcieFrame.from_tlp(tlp)
+                    # frame = PTilePcieFrame.from_tlp(tlp)
 
-                    frame.bar_range = 6
-                    frame.func_num = tlp.requester_id.function
+                    # frame.bar_range = 6
+                    # frame.func_num = tlp.requester_id.function
 
-                    await self.rx_queue.put((tlp, frame))
+                    await self.rx_queue.put((tlp))
 
                     tlp.release_fc()
 
@@ -830,12 +842,12 @@ class PcieDevice(Device):
                 bar = f.match_bar(tlp.address)
                 if bar:
 
-                    frame = PTilePcieFrame.from_tlp(tlp)
+                    # frame = PTilePcieFrame.from_tlp(tlp)
 
-                    frame.bar_range = bar[0]
-                    frame.func_num = tlp.requester_id.function
+                    # frame.bar_range = bar[0]
+                    # frame.func_num = tlp.requester_id.function
 
-                    await self.rx_queue.put((tlp, frame))
+                    await self.rx_queue.put((tlp))
 
                     tlp.release_fc()
 
@@ -856,87 +868,87 @@ class PcieDevice(Device):
         self.log.debug("UR Completion: %r", cpl)
         await self.upstream_send(cpl)
 
-    async def _run_reset(self):
-        clock_edge_event = RisingEdge(self.coreclkout_hip)
+    # async def _run_reset(self):
+    #     clock_edge_event = RisingEdge(self.coreclkout_hip)
 
-        while True:
-            await clock_edge_event
-            await clock_edge_event
+    #     while True:
+    #         await clock_edge_event
+    #         await clock_edge_event
 
-            if self.reset_status is not None:
-                self.reset_status.value = 1
-            if self.reset_status_n is not None:
-                self.reset_status_n.value = 0
+    #         if self.reset_status is not None:
+    #             self.reset_status.value = 1
+    #         if self.reset_status_n is not None:
+    #             self.reset_status_n.value = 0
 
-            if self.pin_perst_n is not None:
-                if not self.pin_perst_n.value:
-                    await RisingEdge(self.pin_perst_n)
-                await First(FallingEdge(self.pin_perst_n), Timer(100, 'ns'))
-                await First(FallingEdge(self.pin_perst_n), RisingEdge(self.coreclkout_hip))
-                if not self.pin_perst_n.value:
-                    continue
-            else:
-                await Timer(100, 'ns')
-                await clock_edge_event
+    #         if self.pin_perst_n is not None:
+    #             if not self.pin_perst_n.value:
+    #                 await RisingEdge(self.pin_perst_n)
+    #             await First(FallingEdge(self.pin_perst_n), Timer(100, 'ns'))
+    #             await First(FallingEdge(self.pin_perst_n), RisingEdge(self.coreclkout_hip))
+    #             if not self.pin_perst_n.value:
+    #                 continue
+    #         else:
+    #             await Timer(100, 'ns')
+    #             await clock_edge_event
 
-            if self.reset_status is not None:
-                self.reset_status.value = 0
-            if self.reset_status_n is not None:
-                self.reset_status_n.value = 1
+    #         if self.reset_status is not None:
+    #             self.reset_status.value = 0
+    #         if self.reset_status_n is not None:
+    #             self.reset_status_n.value = 1
 
-            if self.pin_perst_n is not None:
-                await FallingEdge(self.pin_perst_n)
-            else:
-                return
+    #         if self.pin_perst_n is not None:
+    #             await FallingEdge(self.pin_perst_n)
+    #         else:
+    #             return
 
-    async def _run_rx_logic(self):
-        while True:
-            tlp, frame = await self.rx_queue.get()
-            await self.rx_source.send(frame)
+    # async def _run_rx_logic(self):
+    #     while True:
+    #         tlp, frame = await self.rx_queue.get()
+    #         await self.rx_source.send(frame)
 
-            self.rx_buf_cplh_fc_count = max(self.rx_buf_cplh_fc_count-1, 0)
-            self.rx_buf_cpld_fc_count = max(self.rx_buf_cpld_fc_count-tlp.get_data_credits(), 0)
+    #         self.rx_buf_cplh_fc_count = max(self.rx_buf_cplh_fc_count-1, 0)
+    #         self.rx_buf_cpld_fc_count = max(self.rx_buf_cpld_fc_count-tlp.get_data_credits(), 0)
 
-    async def _run_tx_logic(self):
-        while True:
-            frame = await self.tx_sink.recv()
-            tlp = frame.to_tlp()
-            await self.send(tlp)
+    # async def _run_tx_logic(self):
+    #     while True:
+    #         frame = await self.tx_sink.recv()
+    #         tlp = frame.to_tlp()
+    #         await self.send(tlp)
 
-    async def _run_rx_fc_logic(self):
-        pass
+    # async def _run_rx_fc_logic(self):
+    #     pass
 
-        # RX flow control
-        # rx_buffer_limit
-        # rx_buffer_limit_tdm_idx
+    #     # RX flow control
+    #     # rx_buffer_limit
+    #     # rx_buffer_limit_tdm_idx
 
-    async def _run_tx_fc_logic(self):
-        clock_edge_event = RisingEdge(self.coreclkout_hip)
+    # async def _run_tx_fc_logic(self):
+    #     clock_edge_event = RisingEdge(self.coreclkout_hip)
 
-        while True:
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].ph.tx_credit_limit & 0xfff
-            self.tx_cdts_limit_tdm_idx.value = 0
-            await clock_edge_event
+    #     while True:
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].ph.tx_credit_limit & 0xfff
+    #         self.tx_cdts_limit_tdm_idx.value = 0
+    #         await clock_edge_event
 
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].nph.tx_credit_limit & 0xfff
-            self.tx_cdts_limit_tdm_idx.value = 1
-            await clock_edge_event
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].nph.tx_credit_limit & 0xfff
+    #         self.tx_cdts_limit_tdm_idx.value = 1
+    #         await clock_edge_event
 
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].cplh.tx_credit_limit & 0xfff
-            self.tx_cdts_limit_tdm_idx.value = 2
-            await clock_edge_event
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].cplh.tx_credit_limit & 0xfff
+    #         self.tx_cdts_limit_tdm_idx.value = 2
+    #         await clock_edge_event
 
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].pd.tx_credit_limit & 0xffff
-            self.tx_cdts_limit_tdm_idx.value = 4
-            await clock_edge_event
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].pd.tx_credit_limit & 0xffff
+    #         self.tx_cdts_limit_tdm_idx.value = 4
+    #         await clock_edge_event
 
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].npd.tx_credit_limit & 0xffff
-            self.tx_cdts_limit_tdm_idx.value = 5
-            await clock_edge_event
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].npd.tx_credit_limit & 0xffff
+    #         self.tx_cdts_limit_tdm_idx.value = 5
+    #         await clock_edge_event
 
-            self.tx_cdts_limit.value = self.upstream_port.fc_state[0].cpld.tx_credit_limit & 0xffff
-            self.tx_cdts_limit_tdm_idx.value = 6
-            await clock_edge_event
+    #         self.tx_cdts_limit.value = self.upstream_port.fc_state[0].cpld.tx_credit_limit & 0xffff
+    #         self.tx_cdts_limit_tdm_idx.value = 6
+    #         await clock_edge_event
 
     async def _run_pm_status_logic(self):
         pass
