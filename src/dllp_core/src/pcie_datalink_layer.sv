@@ -10,6 +10,8 @@
 //!
 //! Module accepts packets from the phy logical layer and either handles them as DLLPs,
 //! or converts them to TLPs to be output as AXI-Stream packets
+//!
+//! Module implements virtual channel 0 (default).
 module pcie_datalink_layer
   import pcie_datalink_pkg::*;
 #(

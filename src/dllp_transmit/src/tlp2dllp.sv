@@ -233,28 +233,6 @@ module tlp2dllp
           end else if (tlp_dw0.byte0 inside {CplD, CplDLk}) begin
             next_state = ST_CHECK_CREDITS_CPLH_CPLD;
           end
-
-
-          // if (((skid_axis_tdata[7:0] == Cpl) || (skid_axis_tdata[7:0] == CplD))  //check tlp type
-          //     && payload_credit_available_r) begin
-          //   tlp_is_cpl_c = '1;  //tlp is completion
-          // end
-          // else if (((skid_axis_tdata[7:0]  ==? MW) || (skid_axis_tdata[7:0]  == CW0) ||
-          //           (skid_axis_tdata[7:0] == CW1)))
-          // begin
-          //   //check if credit is available
-          //   if (payload_credit_available_r) begin
-          //     tlp_is_payload_c = '1;  //tlp is payload
-          //   end
-          // end else if (have_np_credit_r) begin
-          //   tlp_no_payload_c = '1;  //tlp is a no paylaod
-          // end
-          // if (tlp_is_cpl_c || tlp_is_payload_c || tlp_no_payload_c) begin
-          //   crc_in_c         = crc_out16;
-          //   tlp_axis_tvalid  = skid_axis_tvalid;
-          //   skid_axis_tready = '1;
-          //   next_state       = ST_TLP_STREAM;
-          // end
         end
       end
       ST_CHECK_CREDITS_NPH: begin
@@ -380,7 +358,6 @@ module tlp2dllp
         end  //account for wrap around
         else begin
           if ((ph_credits_consumed_r - ph_credit_limit_r) >= 1'b1) begin
-            // nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
             has_ph_credit = '1;
           end
         end

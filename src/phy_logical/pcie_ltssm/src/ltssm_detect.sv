@@ -18,31 +18,35 @@ module ltssm_detect
     parameter int CROSSLINK_EN  = 0,                  //crosslink not supported
     parameter int UPCONFIG_EN   = 0                   //upconfig not supported
 ) (
-    input  logic                     clk_i,             // Clock signal
-    input  logic                     rst_i,             // Reset signal
+    input  logic                         clk_i,             // Clock signal
+    input  logic                         rst_i,             // Reset signal
     // Control
-    input  logic                     en_i,
-    input  logic [              2:0] phy_rate_i,
+    input  logic                         en_i,
+    input  logic     [              2:0] phy_rate_i,
     //lane signals
-    input  logic [MAX_NUM_LANES-1:0] lane_status_i,
-    output logic [MAX_NUM_LANES-1:0] lane_detected_o,
-    output logic [MAX_NUM_LANES-1:0] lane_elec_idle_o,
-    output logic [MAX_NUM_LANES-1:0] txdetectrx_o,
+    input  logic     [MAX_NUM_LANES-1:0] lane_status_i,
+    output logic     [MAX_NUM_LANES-1:0] lane_detected_o,
+    output logic     [MAX_NUM_LANES-1:0] lane_elec_idle_o,
+    output logic     [MAX_NUM_LANES-1:0] txdetectrx_o,
+    input  rate_id_t                     curr_data_rate_i,
     // TLP AXI output
-    output logic [   DATA_WIDTH-1:0] m_axis_tdata,
-    output logic [   KEEP_WIDTH-1:0] m_axis_tkeep,
-    output logic                     m_axis_tvalid,
-    output logic                     m_axis_tlast,
-    output logic [   USER_WIDTH-1:0] m_axis_tuser,
-    input  logic                     m_axis_tready
+    output logic     [   DATA_WIDTH-1:0] m_axis_tdata,
+    output logic     [   KEEP_WIDTH-1:0] m_axis_tkeep,
+    output logic                         m_axis_tvalid,
+    output logic                         m_axis_tlast,
+    output logic     [   USER_WIDTH-1:0] m_axis_tuser,
+    input  logic                         m_axis_tready
 );
 
 
   localparam int TwentyFourMsTimeOut = (CLK_RATE * (24 ** 5));  //32'h015B8D80;  //temp value
   localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
+  localparam int OneMsTimeOut = (CLK_RATE * (2 ** 5));
+
 
   typedef enum logic {
     ST_IDLE,
+    ST_WAIT_ONE_MS,
     ST_DETECT_QUIET,
     ST_DETECT_ACTIVE,
     ST_DETECT_RX,
@@ -70,6 +74,8 @@ module ltssm_detect
   logic       [MAX_NUM_LANES-1:0] lane_elec_idle_r;
   logic       [              7:0] axis_tsos_cnt_c;
   logic       [              7:0] axis_tsos_cnt_r;
+  logic                           wait_1ms_c;
+  logic                           wait_1ms_r;
 
 
   //axis signals
@@ -121,6 +127,16 @@ module ltssm_detect
         if (en_i) begin
           timer_c = '0;
           gen_idle(tsos_c);
+          if (curr_data_rate_i.rate != gen1) begin
+            next_state = ST_WAIT_ONE_MS;
+          end else begin
+            next_state = ST_DETECT_QUIET;
+          end
+        end
+      end
+      ST_WAIT_ONE_MS: begin
+        timer_c = timer_r + 1;
+        if (timer_r >= OneMsTimeOut) begin
           next_state = ST_DETECT_QUIET;
         end
       end
