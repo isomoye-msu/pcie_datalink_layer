@@ -7,7 +7,7 @@
 //!
 //! Module does not support crosslink!
 module pcie_ltssm_downstream
-  import pcie_datalink_pkg::*;
+  import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,                //!Clock speed in MHz, Defualt is 100
     parameter int MAX_NUM_LANES = 4,                  //! Maximum number of lanes module can support
@@ -22,8 +22,8 @@ module pcie_ltssm_downstream
     parameter int CROSSLINK_EN  = 0,                  //crosslink not supported
     parameter int UPCONFIG_EN   = 0                   //upconfig not supported
 ) (
-    input  logic                           clk_i,                    //! 100MHz clock signal
-    input  logic                           rst_i,                    //! Reset signal
+    input  logic                           clk_i,                   //! 100MHz clock signal
+    input  logic                           rst_i,                   //! Reset signal
     // !Control
     input  logic                           en_i,
     input  logic                           link_up_i,
@@ -41,24 +41,25 @@ module pcie_ltssm_downstream
     input  logic [(MAX_NUM_LANES * 8)-1:0] link_num_i,
     input  logic [(MAX_NUM_LANES * 8)-1:0] lane_num_i,
     input  logic [(MAX_NUM_LANES * 8)-1:0] lane_num_transmitted_i,
-    input  logic [(MAX_NUM_LANES * 8)-1:0] training_ctrl_i,
     input  logic [      MAX_NUM_LANES-1:0] lane_active_i,
     input  logic [      MAX_NUM_LANES-1:0] lanes_ts2_satisfied_i,
     input  logic [      MAX_NUM_LANES-1:0] config_copmlete_ts2_i,
-    input  logic                           directed_speed_change_i,
     input  logic                           from_l0_i,
+    input  logic [      MAX_NUM_LANES-1:0] reciever_detected_i,
 
     output logic goto_cfg_o,
     output logic goto_detect_o,
 
     //training set configuration signals
     input  ts_symbol6_union_t [MAX_NUM_LANES-1:0] symbol6_i,
+    input  training_ctrl_t    [MAX_NUM_LANES-1:0] training_ctrl_i,
     input  rate_id_t          [MAX_NUM_LANES-1:0] rate_id_i,
     input  rate_id_e                              max_rate_i,
     input  logic                                  extended_synch_i,
     //TODO: this needs to be computed from ts1's/ ts2's with
     //speed change bit or sw active
     input  logic                                  directed_speed_change_i,
+    input  logic              [MAX_NUM_LANES-1:0] lane_status_i,
     input  rate_id_t                              curr_data_rate_i,
     output rate_id_t                              data_rate_o,
     output logic                                  changed_speed_recovery_o,
@@ -75,7 +76,7 @@ module pcie_ltssm_downstream
 
   localparam int TwentyFourMsTimeOut = (CLK_RATE * (24 ** 5));  //32'h015B8D80;  //temp value
   localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
-
+  localparam int OneMsTimeOut = (CLK_RATE * (1 ** 5));
 
   typedef enum logic [7:0] {
     ST_IDLE,
@@ -89,13 +90,20 @@ module pcie_ltssm_downstream
     ST_POLLING_CONFIGURATION,
     ST_POLLING_COMPLIANCE,
     ST_CONFIGURATION,
-    ST_CONFIG_LINKWIDTH_START,
-    ST_CONFIG_LINKWIDTH_ACCEPT,
-    ST_CONFIG_LANENUM_ACCEPT,
-    ST_CONFIG_LANENUM_WAIT,
-    ST_CONFIG_COMPLETE,
-    ST_CONFIG_IDLE,
+    ST_CONFIGURATION_LINKWIDTH_START,
+    ST_CONFIGURATION_LINKWIDTH_ACCEPT,
+    ST_CONFIGURATION_LANENUM_ACCEPT,
+    ST_CONFIGURATION_LANENUM_WAIT,
+    ST_CONFIGURATION_COMPLETE,
+    ST_CONFIGURATION_IDLE,
     ST_RECOVERY,
+    ST_RECOVERY_LOCK,
+    ST_RECOVERY_LOCK_TIMEOUT,
+    ST_RECOVERY_EQUAL,
+    ST_RECOVERY_SPEED,
+    ST_RECOVERY_CFG,
+    ST_RECOVERY_IDLE,
+    ST_RECOVERY_COMPLETE,
     ST_L0,
     ST_L0s,
     ST_L1,
@@ -107,8 +115,6 @@ module pcie_ltssm_downstream
 
   ltssm_state_e                          curr_state;
   ltssm_state_e                          next_state;
-  pcie_tsos_t                            tsos_c;
-  pcie_tsos_t                            tsos_r;
   pcie_ordered_set_t                     ordered_set_c;
   pcie_ordered_set_t                     ordered_set_r;
   logic              [             31:0] timer_c;
@@ -123,9 +129,6 @@ module pcie_ltssm_downstream
 
 
   logic              [MAX_NUM_LANES-1:0] at_least_one_ts1_ts2;
-
-  logic              [             15:0] ordered_set_sent_cnt_c;
-  logic              [             15:0] ordered_set_sent_cnt_r;
   logic              [              7:0] axis_pkt_cnt_c;
   logic              [              7:0] axis_pkt_cnt_r;
   logic              [              7:0] try_cnt_c;
@@ -152,13 +155,14 @@ module pcie_ltssm_downstream
 
   logic              [             15:0] ordered_set_sent_cnt_c;
   logic              [             15:0] ordered_set_sent_cnt_r;
-  logic              [              7:0] pkt_cnt_c;
-  logic              [              7:0] pkt_cnt_r;
 
   logic              [MAX_NUM_LANES-1:0] link_lanes_nums_match;
   logic              [MAX_NUM_LANES-1:0] link_lane_reconfig;
 
+  //   logic              [MAX_NUM_LANES-1:0] speed_change_bit_set;
   logic              [MAX_NUM_LANES-1:0] ts1_lanenum_wait_satisfied;
+  logic              [              7:0] idle_to_rlock_transitioned_c;
+  logic              [              7:0] idle_to_rlock_transitioned_r;
   // logic [MAX_NUM_LANES-1:0] link_lane_reconfig;
 
   logic              [MAX_NUM_LANES-1:0] lane_status_c;
@@ -174,7 +178,7 @@ module pcie_ltssm_downstream
   logic              [MAX_NUM_LANES-1:0] lanes_ts1_satisfied;
   logic              [MAX_NUM_LANES-1:0] lanes_ts2_satisfied;
 
-  logic                                  ts1_ts2_cnt_satisfied;
+  logic              [MAX_NUM_LANES-1:0] ts1_ts2_cnt_satisfied;
 
 
   //! main sequential block
@@ -185,7 +189,7 @@ module pcie_ltssm_downstream
       error_r                  <= '0;
       success_r                <= '0;
       lane_status_r            <= '0;
-      lanes_detected_r         <= '0;
+      //   lanes_detected_r         <= '0;
       ordered_set_sent_cnt_r   <= '0;
       axis_pkt_cnt_r           <= '0;
       try_cnt_r                <= '0;
@@ -194,8 +198,8 @@ module pcie_ltssm_downstream
       goto_cfg_o               <= '0;
       lane_status_r            <= '0;
       lanes_detected_r         <= '0;
-      ena_lane_detect_r        <= '0;
-      lane_elec_idle_r         <= '0;
+      //   ena_lane_detect_r        <= '0;
+      //   lane_elec_idle_r         <= '0;
       last_rate_r              <= gen3_basic;
     end else begin
       curr_state               <= next_state;
@@ -203,7 +207,7 @@ module pcie_ltssm_downstream
       error_r                  <= error_c;
       success_r                <= success_c;
       lane_status_r            <= lane_status_c;
-      lanes_detected_r         <= lanes_detected_c;
+      //   lanes_detected_r         <= lanes_detected_c;
       ordered_set_sent_cnt_r   <= ordered_set_sent_cnt_c;
       axis_pkt_cnt_r           <= axis_pkt_cnt_c;
       try_cnt_r                <= try_cnt_c;
@@ -213,51 +217,54 @@ module pcie_ltssm_downstream
       goto_cfg_o               <= goto_cfg_c;
       lane_status_r            <= lane_status_c;
       lanes_detected_r         <= lanes_detected_c;
-      ena_lane_detect_r        <= ena_lane_detect_c;
-      lane_elec_idle_r         <= lane_elec_idle_c;
+      //   ena_lane_detect_r        <= ena_lane_detect_c;
+      //   lane_elec_idle_r         <= lane_elec_idle_c;
     end
     //non-resetable
-    ordered_set_r   <= ordered_set_c;
-    tsos_r          <= tsos_c;
-    axis_tsos_cnt_r <= axis_tsos_cnt_c;
+    ordered_set_r                <= ordered_set_c;
+    // tsos_r                       <= tsos_c;
+    idle_to_rlock_transitioned_r <= idle_to_rlock_transitioned_c;
+    // axis_tsos_cnt_r <= axis_tsos_cnt_c;
   end
 
 
   always_comb begin : ltssm_combo
-    next_state               = curr_state;
-    timer_c                  = timer_r;
-    error_c                  = error_r;
-    success_c                = success_r;
-    lane_status_c            = lane_status_r;
-    lanes_detected_c         = lanes_detected_r;
-    ordered_set_sent_cnt_c   = ordered_set_sent_cnt_r;
-    axis_pkt_cnt_c           = axis_pkt_cnt_r;
-    try_cnt_c                = try_cnt_r;
-    last_rate_c              = last_rate_r;
-    goto_detect_c            = goto_detect_o;
-    goto_cfg_c               = goto_cfg_o;
+    next_state                   = curr_state;
+    timer_c                      = timer_r;
+    error_c                      = error_r;
+    success_c                    = success_r;
+    lane_status_c                = lane_status_r;
+    lanes_detected_c             = lanes_detected_r;
+    ordered_set_sent_cnt_c       = ordered_set_sent_cnt_r;
+    axis_pkt_cnt_c               = axis_pkt_cnt_r;
+    try_cnt_c                    = try_cnt_r;
+    last_rate_c                  = last_rate_r;
+    goto_detect_c                = goto_detect_o;
+    goto_cfg_c                   = goto_cfg_o;
     //axis signals
-    ltssm_axis_tdata         = '0;
-    ltssm_axis_tkeep         = '0;
-    ltssm_axis_tvalid        = '0;
-    ltssm_axis_tlast         = '0;
-    ltssm_axis_tuser         = 8'h01;
+    ltssm_axis_tdata             = '0;
+    ltssm_axis_tkeep             = '0;
+    ltssm_axis_tvalid            = '0;
+    ltssm_axis_tlast             = '0;
+    ltssm_axis_tuser             = 8'h01;
     //ordered set
-    ordered_set_c            = ordered_set_r;
-    changed_speed_recovery_c = changed_speed_recovery_r;
+    ordered_set_c                = ordered_set_r;
+    changed_speed_recovery_c     = changed_speed_recovery_r;
+    idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r;
     case (curr_state)
       ST_IDLE: begin
         if (en_i) begin
           timer_c = '0;
-          gen_idle(tsos_c);
+          idle_to_rlock_transitioned_c = '0;
+          gen_idle(ordered_set_c);
           if (curr_data_rate_i.rate != gen1) begin
-            next_state = ST_WAIT_ONE_MS;
+            next_state = ST_DETECT_WAIT_ONE_MS;
           end else begin
             next_state = ST_DETECT_QUIET;
           end
         end
       end
-      ST_WAIT_ONE_MS: begin
+      ST_DETECT_WAIT_ONE_MS: begin
         //bounded timeout counter
         timer_c = (timer_r >= OneMsTimeOut) ? OneMsTimeOut : timer_r + 1;
         if (timer_r >= OneMsTimeOut) begin
@@ -270,30 +277,30 @@ module pcie_ltssm_downstream
         //pkt empty
         if (ltssm_axis_tready) begin
           //increment packet counter
-          pkt_cnt_c         = pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis pkt
-          ltssm_axis_tdata  = tsos_r[32*pkt_cnt_r+:32];
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
           ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
           ltssm_axis_tlast  = '0;
           ltssm_axis_tuser  = 8'h01;
           //check if last packet in frame
-          if (pkt_cnt_r == 8'h03) begin
-            m_axis_tlast_c         = '1;
-            pkt_cnt_c              = '0;
+          if (axis_pkt_cnt_r == 8'h03) begin
+            ltssm_axis_tlast       = '1;
+            axis_pkt_cnt_c         = '0;
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
           end
           //check if last packet sent or first packet
-          if (pkt_cnt_r == 8'h00) begin
+          if (axis_pkt_cnt_r == 8'h00) begin
             //check if timer reached or TSOS sent count met
             if ((|lane_status_i) || (timer_r >= TwoMsTimeOut)) begin
               //reset counts
-              pkt_cnt_c       = '0;
-              timer_c         = '0;
-              m_axis_tvalid_c = '0;
-              next_state      = ST_DETECT_ACTIVE;
-              timer_c         = '0;
-              lane_status_c   = lane_status_i;
+              axis_pkt_cnt_c    = '0;
+              timer_c           = '0;
+              ltssm_axis_tvalid = '0;
+              next_state        = ST_DETECT_ACTIVE;
+              timer_c           = '0;
+              lane_status_c     = lane_status_i;
             end
           end
         end
@@ -307,19 +314,19 @@ module pcie_ltssm_downstream
           error_c    = '1;
           next_state = ST_IDLE;
         end else begin
-          next_state        = ST_DETECT_RX;
-          ena_lane_detect_c = ~lane_status_i;
+          next_state = ST_DETECT_RX;
+          //   ena_lane_detect_c = ~lane_status_i;
         end
       end
       ST_DETECT_RX: begin
         timer_c = timer_r + 1;
         if (timer_r >= TwoMsTimeOut) begin
           if ((lane_status_i == '1) || (lane_status_i == lane_status_r)) begin
-            success_c         = '1;
-            ena_lane_detect_c = '0;
-            lanes_detected_c  = lane_status_i;
-            lane_elec_idle_c  = ~lane_status_i;
-            next_state        = ST_POLLING;
+            success_c        = '1;
+            // ena_lane_detect_c = '0;
+            lanes_detected_c = lane_status_i;
+            // lane_elec_idle_c  = ~lane_status_i;
+            next_state       = ST_POLLING;
           end else begin
             error_c    = '1;
             next_state = ST_IDLE;
@@ -330,7 +337,8 @@ module pcie_ltssm_downstream
         timer_c                = '0;
         next_state             = ST_POLLING_ACTIVE;
         ordered_set_sent_cnt_c = '0;
-        gen_tsos(tsos_c, TS1);
+        gen_tsos(ordered_set_c, gen1, TS1);
+        // gen_tsos(tsos_c, TS1);
       end
       ST_POLLING_ACTIVE: begin
         //bounded timeout counter
@@ -341,31 +349,31 @@ module pcie_ltssm_downstream
         //pkt empty
         if (ltssm_axis_tready) begin
           //increment packet counter
-          pkt_cnt_c         = pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis pkt
-          ltssm_axis_tdata  = tsos_r[32*pkt_cnt_r+:32];
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
           ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
           ltssm_axis_tlast  = '0;
           ltssm_axis_tuser  = 8'h01;
           //check if last packet in frame
-          if (pkt_cnt_r == 8'h03) begin
-            m_axis_tlast_c         = '1;
-            pkt_cnt_c              = '0;
+          if (axis_pkt_cnt_r == 8'h03) begin
+            ltssm_axis_tlast       = '1;
+            axis_pkt_cnt_c         = '0;
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
           end
           //check if last packet sent or first packet
-          if (pkt_cnt_r == 8'h00) begin
+          if (axis_pkt_cnt_r == 8'h00) begin
             //check if timer reached or TSOS sent count met
             if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= 1024)) begin
               //reset counts
-              pkt_cnt_c       = '0;
-              timer_c         = '0;
-              m_axis_tvalid_c = '0;
+              axis_pkt_cnt_c    = '0;
+              timer_c           = '0;
+              ltssm_axis_tvalid = '0;
               //check if ts1 reqs satisfied
               if (&lanes_ts1_satisfied) begin
                 //build ts2 ordered set
-                gen_tsos(tsos_c, TS2);
+                gen_tsos(ordered_set_c, gen1, TS2);
                 //goto cofig
                 next_state = ST_POLLING_CONFIGURATION;
               end else begin
@@ -389,22 +397,22 @@ module pcie_ltssm_downstream
         //bounded timeout counter
         timer_c = (timer_r >= FourtyEightMsTimeOut) ? FourtyEightMsTimeOut : timer_r + 1;
         //empty packet
-        if (m_axis_tready | !m_axis_tvalid_r) begin
+        if (ltssm_axis_tready) begin
           //increment packet count
-          pkt_cnt_c         = pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis pkt
-          ltssm_axis_tdata  = tsos_r[32*pkt_cnt_r+:32];
+          ltssm_axis_tdata  = ordered_set_r[32* axis_pkt_cnt_r+:32];
           ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
           ltssm_axis_tlast  = '0;
           ltssm_axis_tuser  = 8'h01;
           //check if last pkt
-          if (pkt_cnt_r == 8'h03) begin
-            pkt_cnt_c      = '0;
-            m_axis_tlast_c = '1;
+          if (axis_pkt_cnt_r == 8'h03) begin
+            axis_pkt_cnt_c   = '0;
+            ltssm_axis_tlast = '1;
           end
           //check if last packet sent or first packet
-          if (pkt_cnt_r == 8'h00) begin
+          if (axis_pkt_cnt_r == 8'h00) begin
             if (&lanes_ts2_satisfied) begin
               //assert success
               success_c  = '1;
@@ -424,10 +432,9 @@ module pcie_ltssm_downstream
         end
       end
       ST_CONFIGURATION: begin
-        next_state = ST_CONFIG_LINKWIDTH_START;
+        next_state = ST_CONFIGURATION_LINKWIDTH_START;
         gen_tsos(ordered_set_c, gen1, TS1);
         ordered_set_sent_cnt_c = '0;
-        transfer_timer_c = '0;
         // if (recovery_i && !is_timeout_i) begin
         //   ordered_set_c.rate_id[6] = '1;
         // end
@@ -435,20 +442,19 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       //  Configuration.Linkwidth.Start
       //-----------------------------------------------------------
-      ST_CONFIG_LINKWIDTH_START: begin
+      ST_CONFIGURATION_LINKWIDTH_START: begin
         //bounded counter for timeout scenario
-        timer_c          = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
+        timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         //packet accepted or empty
         if (ltssm_axis_tready) begin
           //increment packet frame counter
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis packet
-          ltssm_axis_tdata = ordered_set_r[32*axis_pkt_cnt_r+:32];
-          ltssm_axis_tkeep = '1;
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
+          ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
-          ltssm_axis_tlast = '0;
-          ltssm_axis_tuser = 8'h01;
+          ltssm_axis_tlast  = '0;
+          ltssm_axis_tuser  = 8'h01;
           //check if last packet in frame
           if (axis_pkt_cnt_r == 8'h03) begin
             //assert last
@@ -470,13 +476,13 @@ module pcie_ltssm_downstream
               //reset timer
               timer_c = '0;
               //goto next pcie ltssm state
-              next_state = ST_CONFIG_LINKWIDTH_ACCEPT;
+              next_state = ST_CONFIGURATION_LINKWIDTH_ACCEPT;
             end  //check timeout counter
               else if (timer_r >= TwentyFourMsTimeOut) begin
               //assert error
               error_c    = '1;
               //goto detect
-              next_state = ST_WAIT_EN_LOW;
+              next_state = ST_IDLE;
             end
           end
         end
@@ -484,20 +490,19 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       //  Configuration.Linkwidth.Accept
       //-----------------------------------------------------------
-      ST_CONFIG_LINKWIDTH_ACCEPT: begin
+      ST_CONFIGURATION_LINKWIDTH_ACCEPT: begin
         //bounded counter for timeout scenario
-        timer_c          = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
+        timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
         //packet accepted or empty
         if (ltssm_axis_tready) begin
           //increment packet frame counter
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis packet
-          ltssm_axis_tdata = ordered_set_r[32*axis_pkt_cnt_r+:32];
-          ltssm_axis_tkeep = '1;
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
+          ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
-          ltssm_axis_tlast = '0;
-          ltssm_axis_tuser = 8'h03;
+          ltssm_axis_tlast  = '0;
+          ltssm_axis_tuser  = 8'h03;
           //check if last packet in frame
           if (axis_pkt_cnt_r == 8'h03) begin
             ltssm_axis_tlast = '1;
@@ -510,12 +515,12 @@ module pcie_ltssm_downstream
               ltssm_axis_tvalid = '0;
               axis_pkt_cnt_c    = '0;
               timer_c           = '0;
-              next_state        = ST_CONFIG_LANENUM_WAIT;
+              next_state        = ST_CONFIGURATION_LANENUM_WAIT;
             end  //check timeout counter
               else if (timer_r >= TwoMsTimeOut) begin
               error_c        = '1;
               axis_pkt_cnt_c = '0;
-              next_state     = ST_WAIT_EN_LOW;
+              next_state     = ST_IDLE;
             end
           end
         end
@@ -523,19 +528,18 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       // Configuration.Lanenum.Accept
       //-----------------------------------------------------------
-      ST_CONFIG_LANENUM_ACCEPT: begin
+      ST_CONFIGURATION_LANENUM_ACCEPT: begin
         //bounded counter for timeout scenario
         timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
         //packet accepted or empty
         if (ltssm_axis_tready) begin
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis packet
-          ltssm_axis_tdata = ordered_set_r[32*axis_pkt_cnt_r+:32];
-          ltssm_axis_tkeep = '1;
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
+          ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
-          ltssm_axis_tlast = '0;
-          ltssm_axis_tuser = 8'h03;
+          ltssm_axis_tlast  = '0;
+          ltssm_axis_tuser  = 8'h03;
           //check if last packet in frame
           if (axis_pkt_cnt_r == 8'h03) begin
             ltssm_axis_tlast = '1;
@@ -551,11 +555,11 @@ module pcie_ltssm_downstream
               ltssm_axis_tvalid = '0;
               timer_c           = '0;
               //goto config complete
-              next_state        = ST_CONFIG_COMPLETE;
+              next_state        = ST_CONFIGURATION_COMPLETE;
             end  //check reconfiguration scenario
               else if (|link_lane_reconfig) begin
               timer_c    = '0;
-              next_state = ST_CONFIG_LANENUM_WAIT;
+              next_state = ST_CONFIGURATION_LANENUM_WAIT;
             end  //check timeout counter
               else if (timer_r >= TwoMsTimeOut) begin
               //assert error
@@ -563,7 +567,7 @@ module pcie_ltssm_downstream
               //reset counter
               axis_pkt_cnt_c = '0;
               //goto detect
-              next_state     = ST_WAIT_EN_LOW;
+              next_state     = ST_IDLE;
             end
           end
         end
@@ -571,20 +575,19 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       //  Configuration.Lanenum.Wait
       //-----------------------------------------------------------
-      ST_CONFIG_LANENUM_WAIT: begin
+      ST_CONFIGURATION_LANENUM_WAIT: begin
         //bounded timeout counter increment
         timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
         //packet accepted or empty
         if (ltssm_axis_tready) begin
           //increment packet count
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis packet
-          ltssm_axis_tdata = ordered_set_r[32*axis_pkt_cnt_r+:32];
-          ltssm_axis_tkeep = '1;
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
+          ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
-          ltssm_axis_tlast = '0;
-          ltssm_axis_tuser = 8'h03;
+          ltssm_axis_tlast  = '0;
+          ltssm_axis_tuser  = 8'h03;
           //check if last packet in frame
           if (axis_pkt_cnt_r == 8'h03) begin
             //assert last
@@ -599,13 +602,13 @@ module pcie_ltssm_downstream
               ltssm_axis_tvalid = '0;
               timer_c           = '0;
               //goto lanenum accept
-              next_state        = ST_CONFIG_LANENUM_ACCEPT;
+              next_state        = ST_CONFIGURATION_LANENUM_ACCEPT;
             end  //check timeout counter
               else if (timer_r >= TwoMsTimeOut) begin
               //assert error
               error_c    = '1;
               //goto detect
-              next_state = ST_WAIT_EN_LOW;
+              next_state = ST_IDLE;
             end
           end
         end
@@ -613,10 +616,9 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       //  Configuration.Complete
       //-----------------------------------------------------------
-      ST_CONFIG_COMPLETE: begin
+      ST_CONFIGURATION_COMPLETE: begin
         //bounded timeout counter
         timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
         //packet sent or empty
         if (ltssm_axis_tready) begin
           //increment packet counter
@@ -637,20 +639,20 @@ module pcie_ltssm_downstream
             //check exit scenario
             if (&lane_num_formed) begin
               //decrement counts
-              axis_pkt_cnt_c = '0;
+              axis_pkt_cnt_c         = '0;
               ordered_set_sent_cnt_c = '0;
-              ltssm_axis_tvalid = '0;
-              timer_c = '0;
+              ltssm_axis_tvalid      = '0;
+              timer_c                = '0;
               //build idle ordered set
               gen_idle(ordered_set_c);
               //goto config idle
-              next_state = ST_CONFIG_IDLE;
+              next_state = ST_CONFIGURATION_IDLE;
             end  //check timeout counter
               else if (timer_r >= TwoMsTimeOut) begin
               //assert error
-              error_c = '1;
+              error_c    = '1;
               //goto idle
-              next_state = ST_WAIT_EN_LOW;
+              next_state = ST_IDLE;
             end
           end
         end
@@ -658,20 +660,19 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       //  Configuration.Idle
       //-----------------------------------------------------------
-      ST_CONFIG_IDLE: begin
+      ST_CONFIGURATION_IDLE: begin
         //bounded timeout counter
         timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        transfer_timer_c = transfer_timer_r + 1;
         //pkt empty
         if (ltssm_axis_tready) begin
           //increment pkt cnt
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          axis_pkt_cnt_c    = axis_pkt_cnt_r + 1;
           //build axis pkt
-          ltssm_axis_tdata = ordered_set_r[32*axis_pkt_cnt_r+:32];
-          ltssm_axis_tkeep = '1;
+          ltssm_axis_tdata  = ordered_set_r[32*axis_pkt_cnt_r+:32];
+          ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
-          ltssm_axis_tlast = '0;
-          ltssm_axis_tuser = 8'h03;
+          ltssm_axis_tlast  = '0;
+          ltssm_axis_tuser  = 8'h03;
           //check if pkt is last
           if (axis_pkt_cnt_r == 8'h03) begin
             //reset pkt count
@@ -689,36 +690,36 @@ module pcie_ltssm_downstream
             //check if number of idle OS recieved and idle OS sent
             if (link_idle_satisfied && (ordered_set_sent_cnt_r >= 16)) begin
               //assert success.. tells ltssm hierarchy to move to its next state
-              success_c = '1;
+              success_c                    = '1;
               //reset counters
-              ordered_set_sent_cnt_c = '0;
+              ordered_set_sent_cnt_c       = '0;
               //deassert valid
-              ltssm_axis_tvalid = '0;
-              axis_pkt_cnt_c = '0;
+              ltssm_axis_tvalid            = '0;
+              axis_pkt_cnt_c               = '0;
               //increment idle_to_rlock_transitioned_c
               idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
               //goto wait for ena low
-              next_state = ST_WAIT_EN_LOW;
+              next_state                   = ST_IDLE;
             end  //check timeout counter
               else if (timer_r >= TwoMsTimeOut) begin
               //deassert valid
-              ltssm_axis_tvalid = '0;
+              ltssm_axis_tvalid            = '0;
               idle_to_rlock_transitioned_c = '1;
               //assert error
-              error_c = '1;
+              error_c                      = '1;
               //goto wait low
-              next_state = ST_WAIT_EN_LOW;
+              next_state                   = ST_IDLE;
             end
           end
         end
       end
-      ST_IDLE: begin
-        if (!en_i) begin
-          next_state = ST_IDLE;
-          success_c  = '0;
-          error_c    = '0;
-        end
-      end
+      //   ST_IDLE: begin
+      //     if (!en_i) begin
+      //       next_state = ST_IDLE;
+      //       success_c  = '0;
+      //       error_c    = '0;
+      //     end
+      //   end
       default: begin
       end
     endcase
@@ -757,8 +758,8 @@ module pcie_ltssm_downstream
     assign speed_change_bit_set[lane]       = ts1_ts2_cnt_satisfied & lane_speed_change_bit;
     assign at_least_one_ts1_ts2[lane]       = (ts1_cnt != '0) | (ts2_cnt != '0);
     //assignments for state exit scenarios
-    assign lanes_ts1_satisfied[lane]           = reciever_detected_i[lane] ? (ts1_cnt == 8'h8) : '1;
-    assign lanes_ts2_satisfied[lane]           = reciever_detected_i[lane] ? (ts2_cnt == 8'h8) : '1;
+    assign lanes_ts1_satisfied[lane]        = reciever_detected_i[lane] ? (ts1_cnt == 8'h8) : '1;
+    assign lanes_ts2_satisfied[lane]        = reciever_detected_i[lane] ? (ts2_cnt == 8'h8) : '1;
     //sequential block
     always_ff @(posedge clk_i) begin : cnt_ts1
       if (rst_i) begin
@@ -769,7 +770,7 @@ module pcie_ltssm_downstream
         lane_in_save               <= '0;
         single_idle_recieved[lane] <= '0;
         temp_ts6                   <= '0;
-        speed_change_bit           <= '0;
+        lane_speed_change_bit      <= '0;
       end else begin
         case (curr_state)
           ST_IDLE: begin
@@ -809,42 +810,43 @@ module pcie_ltssm_downstream
               end
             end
           end
-          ST_RCVR_LOCK, ST_RCVR_LOCK_TIMEOUT: begin
-            if (next_state != curr_state && (next_state != ST_RCVR_LOCK_TIMEOUT)) begin
+          ST_RECOVERY_LOCK, ST_RECOVERY_LOCK_TIMEOUT: begin
+            if (next_state != curr_state && (next_state != ST_RECOVERY_LOCK_TIMEOUT)) begin
               ts1_cnt                    <= '0;
               ts2_cnt                    <= '0;
               single_idle_recieved[lane] <= '0;
             end else
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts1_valid_i[lane]) begin
-              if ((symbol6_i[lane].ec != '0) || !((lane_num_i[lane*8+:8] == cfg_lane_num_i[lane*8+:8]) &&
+              if ((symbol6_i[lane].ts1.ec != '0) ||
+              !((lane_num_i[lane*8+:8] == cfg_lane_num_i[lane*8+:8]) &&
               link_num_i[lane*8+:8] && cfg_link_num_i[lane*8+:8])) begin
                 ts1_cnt <= '0;
               end else begin
                 ts1_cnt <= ts1_cnt + 1;
-                if (rate_id_i.speed_change) begin
-                  speed_change_bit <= '1;
+                if (rate_id_i[lane].speed_change) begin
+                  lane_speed_change_bit <= '1;
                 end else begin
-                  speed_change_bit <= '0;
+                  lane_speed_change_bit <= '0;
                 end
               end
             end
             //wait for incoming ts2-os...//skip if threshhold already reached
             if (ts2_valid_i[lane]) begin
-              if ((symbol6_i.ec != '0) || !((lane_num_i[lane*8+:8] == cfg_lane_num_i[lane*8+:8]) &&
+              if ((symbol6_i[lane].ts1.ec != '0) || !((lane_num_i[lane*8+:8] == cfg_lane_num_i[lane*8+:8]) &&
               link_num_i[lane*8+:8] && cfg_link_num_i[lane*8+:8])) begin
                 ts2_cnt <= '0;
               end else begin
                 ts2_cnt <= ts2_cnt + 1;
-                if (rate_id_i.speed_change) begin
-                  speed_change_bit <= '1;
+                if (rate_id_i[lane].speed_change) begin
+                  lane_speed_change_bit <= '1;
                 end else begin
-                  speed_change_bit <= '0;
+                  lane_speed_change_bit <= '0;
                 end
               end
             end
           end
-          ST_RCVR_CFG: begin
+          ST_RECOVERY_CFG: begin
             if (next_state != curr_state) begin
               ts1_cnt                    <= '0;
               ts2_cnt                    <= '0;
@@ -854,19 +856,19 @@ module pcie_ltssm_downstream
             if (ts2_valid_i[lane]) begin
               temp_ts6 <= symbol6_i;
               temp_rate_id <= curr_data_rate_i;
-              if (curr_data_rate_i.rate != gen3 && symbol6_i.ts2.req_equal 
+              if (curr_data_rate_i.rate != gen3 && symbol6_i[lane].ts2.req_equal
               && symbol6_i == temp_ts6) begin
                 ts2_cnt <= ts2_cnt + 1;
               end
               else if((curr_data_rate_i.rate == gen3) && (
-                curr_data_rate_i == temp_rate_id) && (curr_data_rate_i.speed == '1)) begin
+                curr_data_rate_i == temp_rate_id) && (curr_data_rate_i.speed_change == '1)) begin
                 ts2_cnt <= ts2_cnt + 1;
               end else begin
                 ts2_cnt <= '0;
               end
             end
           end
-          ST_CONFIG_LINKWIDTH_START: begin
+          ST_CONFIGURATION_LINKWIDTH_START: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -890,12 +892,12 @@ module pcie_ltssm_downstream
             if (link_width_satisfied[lane]) begin
               //select link number by choosing lowest significant lane satisfied
               //ignore all other lanes
-              if ((i == 0) || (link_width_satisfied[i:0] == '0)) begin
+              if ((lane == 0) || (link_width_satisfied[lane:0] == '0)) begin
                 link_selected <= link_num_i[lane];
               end
             end
           end
-          ST_CONFIG_LINKWIDTH_ACCEPT: begin
+          ST_CONFIGURATION_LINKWIDTH_ACCEPT: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -915,7 +917,7 @@ module pcie_ltssm_downstream
               end
             end
           end
-          ST_CONFIG_LANENUM_WAIT: begin
+          ST_CONFIGURATION_LANENUM_WAIT: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -928,7 +930,7 @@ module pcie_ltssm_downstream
               end
             end
           end
-          ST_CONFIG_LANENUM_ACCEPT: begin
+          ST_CONFIGURATION_LANENUM_ACCEPT: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -941,7 +943,7 @@ module pcie_ltssm_downstream
               end
             end
           end
-          ST_CONFIG_COMPLETE: begin
+          ST_CONFIGURATION_COMPLETE: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -949,7 +951,7 @@ module pcie_ltssm_downstream
             end else if (ts2_valid_i[lane] && (ts2_cnt != 8'h8)) begin
               if ((link_num_i[lane] == link_selected) &&
               (lane_num_i[lane] == lane_num_transmitted_i[lane]) &&
-              rate_id_i == gen3) begin
+              rate_id_i[lane] == gen3) begin
                 ts2_cnt <= ts2_cnt + 1;
                 ts1_cnt <= '0;
               end else begin
@@ -958,7 +960,7 @@ module pcie_ltssm_downstream
               end
             end
           end
-          ST_CONFIG_IDLE: begin
+          ST_CONFIGURATION_IDLE: begin
             if (next_state != curr_state) begin
               ts1_cnt <= '0;
               ts2_cnt <= '0;
@@ -1016,8 +1018,8 @@ module pcie_ltssm_downstream
   );
 
   //output assignments
-  assign lane_detected_o  = lanes_detected_r;
-  assign lane_elec_idle_o = lane_elec_idle_r;
-  assign txdetectrx_o     = ena_lane_detect_r;
+  //   assign lane_detected_o  = lanes_detected_r;
+  //   assign lane_elec_idle_o = lane_elec_idle_r;
+  //   assign txdetectrx_o     = ena_lane_detect_r;
 
 endmodule
