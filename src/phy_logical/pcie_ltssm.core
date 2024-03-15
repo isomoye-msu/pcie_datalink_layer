@@ -5,7 +5,20 @@ description: pcie link training state machine
 filesets:
   rtl:
     files:
-      - src/pcie_ltssm_downstream.sv
+      - pcie_ltssm/src/pcie_ltssm_downstream.sv
+      - phy_trasmit/lane_management.sv
+      - phy_trasmit/frame_symbols.sv
+      - phy_trasmit/byte_scramble.sv
+      - phy_trasmit/gen3_byte_scramble.sv
+      - phy_trasmit/os_generator.sv
+      - phy_recieve/src/ordered_set_handler.sv
+      - phy_trasmit/scrambler.sv
+      - phy_trasmit/gen1_scramble.sv
+      - phy_trasmit/gen3_scramble.sv
+      - phy_recieve/src/descrambler.sv
+      - phy_recieve/src/gen1_descramble.sv
+      - phy_recieve/src/gen3_descramble.sv
+      - pcie_phy_core/pcie_phy_top.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
@@ -18,7 +31,7 @@ filesets:
 
   cocotb:
     files:
-      - tb/test_ltssm_configuration.py : {file_type : user, copyto : .}
+      - pcie_ltssm/tb/test_ltssm_configuration.py : {file_type : user, copyto : .}
 
 targets:
   default:
@@ -42,7 +55,7 @@ targets:
         - --trace-fst
         - waiver.vlt
     filesets : [rtl,cocotb]
-    toplevel : [pcie_ltssm_downstream]
+    toplevel : [pcie_phy_top]
 
   verilate:
     flow: sim
@@ -63,7 +76,7 @@ targets:
     tools:
       vivado:
         part : xc7a100tcsg324-1
-    toplevel : pcie_ltssm_downstream
+    toplevel : pcie_phy_top
 
 scripts:
   iceprog:

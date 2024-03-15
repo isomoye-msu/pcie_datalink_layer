@@ -55,6 +55,8 @@ module tlp2dllp
   localparam int FCDataFieldSize = 12;
   localparam int FcHeaderFieldSizeDiv2 = FcHeaderFieldSize / 2;
   localparam int FCDataFieldSizeDiv2 = FCDataFieldSize / 2;
+
+
   //tlp to dllp fsm emum
   typedef enum logic [3:0] {
     ST_IDLE,

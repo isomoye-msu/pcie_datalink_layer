@@ -31,7 +31,7 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.ERROR)
 
-        cocotb.start_soon(Clock(dut.clk_i, 2, units="ns").start())
+        cocotb.start_soon(Clock(dut.clk_i, 5, units="ns").start())
         #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk_i, dut.rst_i) for k in range(ports)]
         self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk_i, dut.rst_i)
         # self.sink.set_pause_generator(self.cycle_pause())
@@ -51,52 +51,64 @@ def cycle_pause():
     return itertools.cycle([1, 1, 1, 0])
 
 
-@cocotb.test()
-async def run_test_error(dut):
-    tb = TB(dut)
-    seq_num = 0x02
+# @cocotb.test()
+# async def run_test_error(dut):
+#     tb = TB(dut)
+#     seq_num = 0x02
 
-    await tb.reset()
+#     await tb.reset()
 
     
-    await RisingEdge(dut.clk_i)
-    await RisingEdge(dut.clk_i)
-    await RisingEdge(dut.clk_i)
-    dut.en_i.value = 1
-    dut.link_up_i.value = 0
-    dut.ts1_valid_i.value = 0xF
-    dut.ts2_valid_i.value = 0x0
-    dut.idle_valid_i.value = 0x0
-    dut.link_num_i.value = 0xf7f7f7f7
-    dut.lane_num_i.value = 0xf7f7f7f7
-    dut.rate_id_i.value =  0xf7f7f7f7
-    dut.lane_num_transmitted_i.value = 0x03020100
-    dut.lane_active_i.value = 0xF
-    await RisingEdge(dut.clk_i)
-    length = random.randint(1, 32)
-    for i in range(20):
-        await RisingEdge(dut.clk_i)
-    for i in range(20):
-        await RisingEdge(dut.clk_i)
-    for i in range(200):
-        await RisingEdge(dut.clk_i)
-    await RisingEdge(dut.clk_i)
-    dut.link_num_i.value = 0x01010101
-    for i in range(200):
-        await RisingEdge(dut.clk_i)
-    dut.lane_num_i.value = 0x03020100
-    for i in range(2000):
-        await RisingEdge(dut.clk_i)
-    flag = 0
-    while(dut.error_o.value == 0 and flag < 5000):
-        await RisingEdge(dut.clk_i)
-        flag += 1
+#     await RisingEdge(dut.clk_i)
+#     await RisingEdge(dut.clk_i)
+#     await RisingEdge(dut.clk_i)
+#     dut.en_i.value = 1
+#     dut.link_up_i.value = 0
+#     dut.num_active_lanes_i.value = 0x8
+#     dut.ts1_valid_i.value = 0xF
+#     dut.ts2_valid_i.value = 0x0
+#     dut.idle_valid_i.value = 0x0
+#     dut.idle_valid_i.value = 0x0
+#     dut.link_num_i.value = 0xf7f7f7f7
+#     dut.lane_num_i.value = 0xf7f7f7f7
+#     dut.rate_id_i.value =  0xf7f7f7f7
+#     # dut.curr_data_rate_i.value = 0x7
+#     dut.lane_num_transmitted_i.value = 0x03020100
+#     dut.lane_active_i.value = 0xF
+#     await RisingEdge(dut.clk_i)
+#     length = random.randint(1, 32)
+    
+#     dut.lane_status_i.value = 0x3
+#     dut.idle_valid_i.value = 0x1
+#     for i in range(20000):
+#         await RisingEdge(dut.clk_i)
+#     dut.idle_valid_i.value = 0x0
+#     for i in range(20):
+#         await RisingEdge(dut.clk_i)
+#     for i in range(20):
+#         await RisingEdge(dut.clk_i)
+#     for i in range(200):
+#         await RisingEdge(dut.clk_i)
+#     await RisingEdge(dut.clk_i)
+#     dut.link_num_i.value = 0x00000000
+#     for i in range(200):
+#         await RisingEdge(dut.clk_i)
+#     dut.lane_num_i.value = 0x03020100
+#     dut.ts2_valid_i.value = 0xF
+#     for i in range(2000):
+#         await RisingEdge(dut.clk_i)
+#     flag = 0
+#     while(dut.error_o.value == 0 and flag < 5000):
+#         await RisingEdge(dut.clk_i)
+#         flag += 1
         
 @cocotb.test()
 async def run_test_complete(dut):
     tb = TB(dut)
     cur_id = 1
     seq_num = 0x02
+    # dut.curr_data_rate_i = 0x2
+    tb.sink.log.setLevel(logging.ERROR)
 
     await tb.reset()
     tb.sink.set_pause_generator(cycle_pause())
@@ -106,94 +118,146 @@ async def run_test_complete(dut):
     await RisingEdge(dut.clk_i)
     dut.en_i.value = 1
     dut.link_up_i.value = 0
-    dut.ts1_valid_i.value = 0xF
+    dut.ts1_valid_i.value = 0x0
     dut.ts2_valid_i.value = 0x0
     dut.idle_valid_i.value = 0x0
-    dut.link_num_i.value = 0xf7f7f7f7
-    dut.lane_num_i.value = 0xf7f7f7f7
-    dut.rate_id_i.value =  0xf7f7f7f7
-    dut.lane_num_transmitted_i.value = 0x03020100
-    dut.lane_active_i.value = 0xF
+    dut.lane_status_i.value = 0x0
+    # dut.curr_data_rate_i = 0x2
+    dut.link_num_i.value = 0xf7f7f7f7f7f7f7f7
+    dut.lane_num_i.value = 0xf7f7f7f7f7f7f7f7
+    dut.rate_id_i.value =  0x0e0e0e0e0e0e0e
+    dut.num_active_lanes_i.value = 8
+    dut.lane_num_transmitted_i.value = 0x0706050403020100
+    dut.lane_active_i.value = 0xFF
     
-    await RisingEdge(dut.clk_i)
+    
+    dut.lane_status_i.value = 0xFF
+    dut.idle_valid_i.value = 0x1
+    for i in range(50):
+        await RisingEdge(dut.clk_i)
+    dut.idle_valid_i.value = 0x0
+    
+    for k in range(3000):
+      await RisingEdge(dut.clk_i)
+    
     ts1_cnt = 0
-    # send ts1 linkwidth accept
-    for k in range(100):
-        await RisingEdge(dut.clk_i)
-        dut.ts1_valid_i.value = 0x0
-        dut.link_num_i.value = 0x0
-        for i in range(1):
-            await RisingEdge(dut.clk_i)
-        data = await with_timeout(tb.sink.recv(),100000,'ns')
-        data_bytes = bytes(data)
-        # print(int.from_bytes(data_bytes[6:7],"big"))
-        if(int.from_bytes(data_bytes[1:2],"big") == 45):
-            ts1_cnt += 1
-        if(ts1_cnt >= 16):
-            ts1_cnt = 0
-            break
-        dut.ts1_valid_i.value = 0xF
+    dut.ts1_valid_i.value = 0xFF
+     # send ts1 linkwidth accept
+#     for k in range(50):
+#         await RisingEdge(dut.clk_i)
+#         # dut.ts1_valid_i.value = 0x0
+#         # dut.link_num_i.value = 0x0
+#         for i in range(1):
+#             await RisingEdge(dut.clk_i)
+#         data = await with_timeout(tb.sink.recv(),100000,'ns')
+#         data_bytes = bytes(data)
+#         # print(int.from_bytes(data_bytes[6:7],"big"))
+#         if(int.from_bytes(data_bytes[1:2],"big") == 45):
+#             ts1_cnt += 1
+#         if(ts1_cnt >= 16):
+#             ts1_cnt = 0
+#             break
+#         # dut.ts1_valid_i.value = 0xF
         
-
-  # send ts1 lanewidth accept
-    for k in range(100):
-        await RisingEdge(dut.clk_i)
-        dut.ts1_valid_i.value = 0x0
-        dut.lane_num_i.value = 0x03020100
-        for i in range(1):
-            await RisingEdge(dut.clk_i)
-        data = await with_timeout(tb.sink.recv(),100000,'ns')
-        data_bytes = bytes(data)
-        print(int.from_bytes(data_bytes[7:8],"big"))
-        if(int.from_bytes(data_bytes[7:8],"big") == 69):
-            ts1_cnt += 1
-        if(ts1_cnt >= 16):
-            ts1_cnt = 0
-            break
-        dut.ts1_valid_i.value = 0xF
+#     await RisingEdge(dut.clk_i)
+#     ts1_cnt = 0
+#     dut.link_num_i.value = 0x0
+#     # send ts1 linkwidth accept
+#     for k in range(20):
+#         await RisingEdge(dut.clk_i)
+#         # dut.ts1_valid_i.value = 0x0
+#         for i in range(1):
+#             await RisingEdge(dut.clk_i)
+#         data = await with_timeout(tb.sink.recv(),100000,'ns')
+#         data_bytes = bytes(data)
+#         # print(int.from_bytes(data_bytes[6:7],"big"))
+#         if(int.from_bytes(data_bytes[1:2],"big") == 45):
+#             ts1_cnt += 1
+#         if(ts1_cnt >= 16):
+#             ts1_cnt = 0
+#             break
+#         # dut.ts1_valid_i.value = 0xF
         
-
-    # send ts2 config accept
-    for k in range(100):
-        await RisingEdge(dut.clk_i)
-        dut.ts2_valid_i.value = 0x0
-        dut.rate_id_i.value = 0b00000111
-        dut.lane_num_i.value = 0x03020100
-        for i in range(1):
-            await RisingEdge(dut.clk_i)
-        data = await with_timeout(tb.sink.recv(),100000,'ns')
-        data_bytes = bytes(data)
-        # print(int.from_bytes(data_bytes[7:8],"big"))
-        if(int.from_bytes(data_bytes[7:8],"big") == 69):
-            ts1_cnt += 1
-        if(ts1_cnt >= 9):
-            ts1_cnt = 0
-            break
-        dut.ts2_valid_i.value = 0xF
+#     dut.ts1_valid_i.value = 0xFF
+#     # dut.ts2_valid_i.value = 0xFF
+# #   send ts1 lanewidth accept
+#     for k in range(10):
+#         await RisingEdge(dut.clk_i)
+#         # dut.ts1_valid_i.value = 0x0
+#         dut.lane_num_i.value = 0x0706050403020100
+#         for i in range(1):
+#             await RisingEdge(dut.clk_i)
+#         data = await with_timeout(tb.sink.recv(),100000,'ns')
+#         data_bytes = bytes(data)
+#         # print(int.from_bytes(data_bytes[7:8],"big"))
+#         if(int.from_bytes(data_bytes[7:8],"big") == 69):
+#             ts1_cnt += 1
+#         if(ts1_cnt >= 16):
+#             ts1_cnt = 0
+#             break
+        
+#     dut.ts1_valid_i.value = 0x00
+#     dut.ts2_valid_i.value = 0xFF
+# #   send ts1 lanewidth accept
+#     for k in range(20):
+#         await RisingEdge(dut.clk_i)
+#         # dut.ts1_valid_i.value = 0x0
+#         dut.lane_num_i.value = 0x0706050403020100
+#         for i in range(1):
+#             await RisingEdge(dut.clk_i)
+#         data = await with_timeout(tb.sink.recv(),100000,'ns')
+#         data_bytes = bytes(data)
+#         # print(int.from_bytes(data_bytes[7:8],"big"))
+#         if(int.from_bytes(data_bytes[7:8],"big") == 69):
+#             ts1_cnt += 1
+#         if(ts1_cnt >= 16):
+#             ts1_cnt = 0
+#             break
+#         # dut.ts1_valid_i.value = 0xF
+#     dut.ts1_valid_i.value = 0x00
+#     dut.ts2_valid_i.value = 0x00
+#     dut.idle_valid_i.value = 0xFF
+#     # send ts2 config accept
+#     for k in range(200):
+#         await RisingEdge(dut.clk_i)
+        # dut.rate_id_i.value = 0b00000111
+        # dut.lane_num_i.value = 0x03020100
+        # for i in range(1):
+        #     await RisingEdge(dut.clk_i)
+        # data = await with_timeout(tb.sink.recv(),100000,'ns')
+        # data_bytes = bytes(data)
+        # # print(int.from_bytes(data_bytes[7:8],"big"))
+        # if(int.from_bytes(data_bytes[7:8],"big") == 69):
+        #     ts1_cnt += 1
+        # if(ts1_cnt >= 9):
+        #     ts1_cnt = 0
+        #     break
+        # dut.ts2_valid_i.value = 0xF
         
         
-    # send ts2 config accept
-    for k in range(100):
-        await RisingEdge(dut.clk_i)
-        dut.ts2_valid_i.value = 0x0
-        dut.rate_id_i.value = 0b00000111
-        dut.idle_valid_i.value = 0x0
-        dut.lane_num_i.value = 0x03020100
-        for i in range(1):
-            await RisingEdge(dut.clk_i)
-        data = await with_timeout(tb.sink.recv(),100000,'ns')
-        data_bytes = bytes(data)
-        print(int.from_bytes(data_bytes[7:8],"big"))
-        if(int.from_bytes(data_bytes[7:8],"big") == 124):
-            ts1_cnt += 1
-        if(ts1_cnt >= 16):
-            ts1_cnt = 0
-            break
-        dut.idle_valid_i.value = 0xF
+#     # # send ts2 config accept
+#     # for k in range(100):
+#     #     await RisingEdge(dut.clk_i)
+#     #     dut.ts2_valid_i.value = 0xFF
+#     #     dut.rate_id_i.value = 0b00000111
+#     #     dut.idle_valid_i.value = 0x0
+#     #     dut.lane_num_i.value = 0x03020100
+#     #     for i in range(1):
+#     #         await RisingEdge(dut.clk_i)
+#     #     data = await with_timeout(tb.sink.recv(),100000,'ns')
+#     #     data_bytes = bytes(data)
+#     #     print(int.from_bytes(data_bytes[7:8],"big"))
+#     #     if(int.from_bytes(data_bytes[7:8],"big") == 124):
+#     #         ts1_cnt += 1
+#     #     if(ts1_cnt >= 16):
+#     #         ts1_cnt = 0
+#     #         break
+#     #     # dut.idle_valid_i.value = 0xF
         
-    dut.en_i.value = 0
-    for i in range(100):
-        await RisingEdge(dut.clk_i)
+#     # dut.en_i.value = 0
+    await Timer(500,'us')
+    # for i in range(10000000):
+    #     await RisingEdge(dut.clk_i)
         
         
         

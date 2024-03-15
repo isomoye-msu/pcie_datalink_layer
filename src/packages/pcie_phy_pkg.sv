@@ -2,7 +2,7 @@ package pcie_phy_pkg;
 
 
 
-  localparam int FourtyEightMsTimeOut = 32'h2B71B00;  //temp value
+  // localparam int FourtyEightMsTimeOut = 32'h2B71B00;  //temp value
   // localparam int TwentyFourMsTimeOut = 32'h015B8D80;  //temp value
   // localparam int TimeOutPeriod = 32'h0000DACA;
   localparam int SkidBuffer = 2;
@@ -73,26 +73,40 @@ package pcie_phy_pkg;
     logic [7:0]   whole;
   } ts_symbol6_union_t;
 
+
   typedef struct packed {logic [7:0] symbol;} ts_generic_symbol_t;
 
 
   typedef enum logic [7:0] {
-    COM   = 8'hbc,  // K28.5
-    STP   = 8'hfb,  // K27.7
-    SDP   = 8'h5c,  // K28.2
-    ENDP  = 8'hfd,  // K29.7
-    EDB   = 8'hfe,  // K30.7
-    PAD   = 8'hf7,  // K23.7
-    SKP   = 8'h1c,  // K28.0
-    FTS   = 8'h3c,  // K28.1
-    IDL   = 8'h7c,  // K28.3
-    EIE   = 8'hfc,  // K28.7
-    RV2   = 8'h9c,  // K28.4
-    RV3   = 8'hdc,  // K28.6
-    TS1OS = 8'h1E
+    COM      = 8'hbc,  // K28.5
+    STP      = 8'hfb,  // K27.7
+    SDP      = 8'h5c,  // K28.2
+    ENDP     = 8'hfd,  // K29.7
+    EDB      = 8'hfe,  // K30.7
+    PAD      = 8'hf7,  // K23.7
+    SKP      = 8'h1c,  // K28.0
+    FTS      = 8'h3c,  // K28.1
+    IDL      = 8'h7c,  // K28.3
+    EIE      = 8'hfc,  // K28.7
+    RV2      = 8'h9c,  // K28.4
+    RV3      = 8'hdc,  // K28.6
+    TS1OS    = 8'h1E,
+    TS2OS    = 8'h2D,
+    EIOS     = 8'h66,
+    EIEOS    = 8'h00,
+    GEN3_SKP = 8'hAA,
+    SKP_END  = 8'hE1
+
 
   } phy_layer_special_symbols_e;
 
+
+  typedef enum logic [31:0] {
+    GEN3_IDL = '0,
+    GEN3_SDP = {16'h0, 8'b10101100, 8'b11110000},
+    GEN3_EDB = {8'b11000000, 8'b11000000, 8'b11000000, 8'b11000000},
+    GEN3_EDS = {8'h0, 8'b10010000, 8'b10000000, 8'b00011111}
+  } gen3_special_symbols_e;
 
   typedef struct packed {
     logic use_link_in;
@@ -100,6 +114,67 @@ package pcie_phy_pkg;
     logic is_polling_tsos;
   } phy_user_t;
 
+  typedef struct packed {
+    logic [3:0] tlp_len0;
+    logic [3:0] rsvd;
+  } gen_3_stp_byte0_t;
+
+  typedef struct packed {
+    logic fp;
+    logic [6:0] tlp_len1;
+  } gen_3_stp_byte1_t;
+
+  typedef struct packed {
+    logic [3:0] fcrc;
+    logic [3:0] tlp_seq1;
+  } gen_3_stp_byte2_t;
+
+  typedef struct packed {logic [7:0] tlp_seq0;} gen_3_stp_byte3_t;
+
+  typedef struct packed {
+    gen_3_stp_byte0_t byte_3;
+    gen_3_stp_byte2_t byte_2;
+    gen_3_stp_byte1_t byte_1;
+    gen_3_stp_byte0_t byte_0;
+  } gen_3_stp_t;
+
+
+  typedef enum logic [31:0] {
+    lane0_seed = 24'h1DBFBC,
+    lane1_seed = 24'h0607BB,
+    lane2_seed = 24'h1EC760,
+    lane3_seed = 24'h18C0DB,
+    lane4_seed = 24'h010F12,
+    lane5_seed = 24'h19CFC9,
+    lane6_seed = 24'h0277CE,
+    lane7_seed = 24'h1BB807
+
+  } gen3_seed_values_e;
+
+  logic [23:0] gen3_seed_values[8] = {
+    lane7_seed, lane6_seed, lane5_seed, lane4_seed, lane3_seed, lane2_seed, lane1_seed, lane0_seed
+  };
+
+  typedef logic[7:0] data_t;
+
+  logic [127:0] GEN3_SDS = {
+    8'h55,
+    8'h47,
+    8'h4E,
+    8'hC7,
+    8'hCC,
+    8'hC6,
+    8'hC9,
+    8'h25,
+    8'h6E,
+    8'hEC,
+    8'h88,
+    8'h7F,
+    8'h80,
+    8'h8D,
+    8'h8B,
+    8'h8E
+  };
 
   typedef struct packed {
     logic [7:4] rsvd;
@@ -125,24 +200,25 @@ package pcie_phy_pkg;
   // Bit 7 – speed_change. This bit can be set to 1b only in the Recovery.RcvrLock LTSSM state. In
   // all other LTSSM states, it is Reserved.
 
-  typedef enum logic [2:0] {
-    gen1_basic = 3'b0000_0001,
-    gen2_basic = 3'b0000_0011,
-    gen3_basic = 3'b0000_0111
+  typedef enum logic [8:0] {
+    gen1_basic = 5'b000_00010,
+    gen2_basic = 5'b000_00110,
+    gen3_basic = 5'b000_01110
   } rate_id_e;
 
-  typedef enum logic [2:0] {
-    gen1 = 3'b001,
-    gen2 = 3'b011,
-    gen3 = 3'b111
+  typedef enum logic [4:0] {
+    gen1 = 5'b00001,
+    gen2 = 5'b00011,
+    gen3 = 5'b00111,
+    gen4 = 5'b01111,
+    gen5 = 5'b11111
   } rate_speed_e;
 
   typedef struct packed {
-    logic       speed_change;
-    logic       autonomous_change;
-    logic [1:0] rsvd5_6;
-    rate_id_e   rate;
-    logic       rsvd0;
+    logic        speed_change;
+    logic        autonomous_change;
+    rate_speed_e rate;
+    logic        rsvd0;
   } rate_id_t;
 
   typedef struct packed {
@@ -159,6 +235,20 @@ package pcie_phy_pkg;
     phy_layer_special_symbols_e com;
   } pcie_tsos_t;
 
+
+  typedef struct packed {
+    ts2_symbol6_t ts6_sym;
+    rate_id_t     rate_id;
+    logic [7:0]   link_number;
+    logic         set_lane;
+    logic         set_link;
+    logic         gen_idle;
+    logic         gen_skp;
+    logic         gen_eieos;
+    logic         gen_ts2;
+    logic         gen_ts1;
+    logic         valid;
+  } gen_os_struct_t;
 
 
   typedef struct packed {logic [7:0][15:0] symbols;} pcie_ordered_set_t;
@@ -180,6 +270,23 @@ package pcie_phy_pkg;
   //     TLP_HEADER = 8'hFC         // TLP Header
   //   } pcie_ordered_set_e;
 
+  function static void gen_fcrc_parity(output logic [3:0] fcrc_out, output logic parity_out,
+                                       input logic [10:0] tlp_length);
+    begin
+      fcrc_out[0] = tlp_length[10] ^ tlp_length[7] ^ tlp_length[6] ^ tlp_length[4] ^ tlp_length[2]
+      ^ tlp_length[1] ^ tlp_length[0];
+      fcrc_out[1] = tlp_length[10] ^ tlp_length[9] ^ tlp_length[7] ^ tlp_length[5] ^ tlp_length[4]
+       ^ tlp_length[3] ^ tlp_length[2];
+      fcrc_out[2] = tlp_length[9] ^ tlp_length[8] ^ tlp_length[6] ^ tlp_length[4] ^ tlp_length[3]
+      ^ tlp_length[2] ^ tlp_length[1];
+      fcrc_out[3] = tlp_length[8] ^ tlp_length[7] ^ tlp_length[5] ^ tlp_length[3] ^ tlp_length[2]
+      ^ tlp_length[1] ^ tlp_length[0];
+      parity_out = tlp_length[10] ^ tlp_length[9] ^ tlp_length[8] ^ tlp_length[7] ^ tlp_length[6]
+      ^ tlp_length[5] ^ tlp_length[4] ^ tlp_length[3] ^ tlp_length[2] ^ tlp_length[1] ^ tlp_length[0]
+      ^ fcrc_out[3] ^ fcrc_out[2] ^ fcrc_out[1] ^  fcrc_out[0];
+    end
+  endfunction
+
 
   function static void gen_tsos(
       output pcie_ordered_set_t tsos_out, input rate_speed_e rate_speed = gen1,
@@ -199,7 +306,13 @@ package pcie_phy_pkg;
         temp_os.lane_num   = lane_num;
         temp_os.rate_id    = rate_id;
         temp_os.train_ctrl = train_ctrl;
-        for (int i = 0; i < 10; i++) begin
+        temp_os.n_fts      = 8'h04;
+        temp_os.ts_s6      = TSOS;
+        temp_os.ts_s7      = TSOS;
+        temp_os.ts_s7      = TSOS;
+        temp_os.ts_s8      = TSOS;
+        temp_os.ts_s9      = TSOS;
+        for (int i = 0; i < 6; i++) begin
           temp_os.ts_id[i] = TSOS;
         end
       end else if (rate_speed == gen3) begin
@@ -208,6 +321,7 @@ package pcie_phy_pkg;
         temp_os.lane_num   = lane_num;
         temp_os.rate_id    = rate_id;
         temp_os.train_ctrl = train_ctrl;
+        temp_os.n_fts      = 8'h04;
         if (TSOS == TS1) begin
           temp_os.ts_s6.ts1 = ts_s6;
           temp_os.ts_s7     = ts_s7;
@@ -216,7 +330,7 @@ package pcie_phy_pkg;
           for (int i = 0; i < 6; i++) begin
             temp_os.ts_id[i] = TSOS;
           end
-        end else if (TSOS == TS1) begin
+        end else if (TSOS == TS2) begin
           temp_os.ts_s6 = TSOS;
           temp_os.ts_s7 = TSOS;
           temp_os.ts_s8 = TSOS;
@@ -231,57 +345,44 @@ package pcie_phy_pkg;
     end
   endfunction
 
-  function automatic void gen_idle_gen3(output pcie_ordered_set_t tsos_out);
+  // function automatic void gen_idle_gen3(output pcie_ordered_set_t tsos_out);
+  //   begin
+  //     pcie_ordered_set_t temp_os;
+  //     temp_os = '0;
+  //     for (int i = 0; i < 15; i++) begin
+  //       temp_os[8*i+:8] = IDLE;
+  //     end
+  //     tsos_out = temp_os;
+  //   end
+  // endfunction
+
+  function automatic void gen_stp_gen3(output gen_3_stp_t stp_out, input logic fp_in,
+                                       input logic [3:0] fcrc_in, input logic [10:0] tlp_length,
+                                       input logic [31:0] dllp_frame_in);
     begin
-      pcie_ordered_set_t temp_os;
-      temp_os = '0;
-      for (int i = 0; i < 15; i++) begin
-        temp_os[8*i+:8] = IDLE;
-      end
-      tsos_out = temp_os;
+      gen_3_stp_t temp_stp = '0;
+      {temp_stp.byte_2, temp_stp.byte_3} = dllp_frame_in[15:0];
+      temp_stp.byte_2.fcrc               = fcrc_in;
+      temp_stp.byte_0.tlp_len0           = tlp_length[3:0];
+      temp_stp.byte_0.rsvd               = '1;
+      temp_stp.byte_1.tlp_len1           = tlp_length[10:4];
+      temp_stp.byte_1.fp                 = fp_in;
+      stp_out                            = temp_stp;
     end
   endfunction
-
-
 
 
   function static void gen_idle(output pcie_ordered_set_t idle_out);
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
-      temp_os[8*0+:8] = COM;
-      for (int i = 1; i < 4; i++) begin
-        temp_os[8*i+:8] = IDL;
+      for (int i = 0; i < 16; i++) begin
+        if (i[1:0] == '0) begin
+          temp_os[8*i+:8] = COM;
+        end else begin
+          temp_os[8*i+:8] = IDL;
+        end
       end
-      //temp_os[0] = COM;
-      // temp_os[1] = IDL;
-      // temp_os[2] = IDL;
-      // temp_os[3] = IDL;
-      temp_os[8*4+:8] = COM;
-      for (int i = 5; i < 8; i++) begin
-        temp_os[8*i+:8] = IDL;
-      end
-      temp_os[8*8+:8] = COM;
-      for (int i = 9; i < 12; i++) begin
-        temp_os[8*i+:8] = IDL;
-      end
-      temp_os[8*12+:8] = COM;
-      for (int i = 13; i < 16; i++) begin
-        temp_os[8*i+:8] = IDL;
-      end
-      // temp_os[8*8 +: 8] = COM;
-      // temp_os[4] = COM;
-      // temp_os[5] = IDL;
-      // temp_os[6] = IDL;
-      // temp_os[7] = IDL;
-      // temp_os[8] = COM;
-      // temp_os[9] =  IDL;
-      // temp_os[10] = IDL;
-      // temp_os[11] = IDL;
-      // temp_os[12] = COM;
-      // temp_os[13] = IDL;
-      // temp_os[14] = IDL;
-      // temp_os[15] = IDL;
       idle_out = temp_os;
     end
   endfunction
@@ -311,22 +412,81 @@ package pcie_phy_pkg;
     end
   endfunction
 
-  // function automatic pcie_ordered_set_t gen3_eieos();
-  //   begin
-  //     pcie_ordered_set_t temp_os;
-  //     temp_os = '0;
-  //     for (int i = 0; i < 15; i++) begin
-  //       //even
-  //       if (i % 2) begin
-  //         temp_os.symbols[i] = 8'h00;
-  //       end  //odd
-  //       else begin
-  //         temp_os.symbols[i] = 8'hFF;
-  //       end
-  //     end
-  //     gen3_eieos = temp_os;
-  //   end
-  // endfunction
+  function automatic pcie_ordered_set_t gen_skp(output pcie_ordered_set_t skp_out,
+                                                input rate_speed_e rate_speed = gen1);
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      if (rate_speed < gen3) begin
+        for (int i = 0; i < 16; i++) begin
+          if (i[1:0] == '0) begin
+            temp_os[8*i+:8] = COM;
+          end else begin
+            temp_os[8*i+:8] = SKP;
+          end
+        end
+      end else begin
+        for (int i = 0; i < 15; i++) begin
+          if (i < 11) begin
+            temp_os[8*i+:8] = GEN3_SKP;
+          end else if (i == 12) begin
+            temp_os[8*i+:8] = SKP_END;
+          end else begin
+            temp_os[8*i+:8] = 8'hff;
+          end
+        end
+      end
+      skp_out = temp_os;
+    end
+  endfunction
+
+  function automatic pcie_ordered_set_t gen_eios(output pcie_ordered_set_t idle_out,
+                                                 input rate_speed_e rate_speed = gen1);
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      if (rate_speed < gen3) begin
+        for (int i = 0; i < 16; i++) begin
+          if (i[1:0] == '0) begin
+            temp_os[8*i+:8] = COM;
+          end else begin
+            temp_os[8*i+:8] = IDL;
+          end
+        end
+      end else begin
+        for (int i = 0; i < 16; i++) begin
+          temp_os[8*i+:8] = IDLE;
+        end
+      end
+      idle_out = temp_os;
+    end
+  endfunction
+
+
+  function automatic pcie_ordered_set_t gen_eieos(output pcie_ordered_set_t eieos_out,
+                                                  input rate_speed_e rate_speed = gen2);
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      if (rate_speed == gen2) begin
+        temp_os.symbols[7:0] = COM;
+        for (int i = 1; i < 15; i++) begin
+          temp_os[8*i+:8] = EIE;
+        end
+        temp_os[8*15+:8] = TS1;
+      end else begin
+        for (int i = 0; i < 15; i++) begin
+          //even
+          if (i[0]) begin
+            temp_os.symbols[i] = 8'h00;
+          end else begin
+            temp_os.symbols[i] = 8'hFF;
+          end
+        end
+      end
+      eieos_out = temp_os;
+    end
+  endfunction
 
 
   /* verilator lint_on WIDTHTRUNC */

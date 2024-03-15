@@ -1,11 +1,7 @@
 import cocotb
-import random
 import itertools
 import pyuvm
-import mmap
 import sys
-import math
-from cocotb.queue import Queue
 from cocotbext.pcie.core import *
 from cocotbext.pcie.core.dllp import *
 from cocotbext.pcie.core.tlp import *
@@ -13,10 +9,8 @@ from cocotbext.pcie.core.port import *
 from cocotb.clock import Clock
 from cocotbext.axi import *
 from cocotb.triggers import *
-from crc import Calculator, Configuration
-from cocotbext.pcie.core import RootComplex, MemoryEndpoint, Device
+from cocotbext.pcie.core import MemoryEndpoint
 from cocotbext.pcie.core.caps import MsiCapability
-from cocotbext.pcie.core.utils import PcieId
 from pyuvm import *
 from base_uvm import *
 from pcie_base import *
@@ -46,6 +40,37 @@ class TestEndpoint(MemoryEndpoint):
         self.add_io_region(1024)
         
 
+class config_read_seq(pcie_seq):
+    def __init__(self, name,msix, config=None):
+        super().__init__(name,msix,config)
+        self.tx_source = self
+        self.rx_sink = self
+        self.log.setLevel(logging.INFO)
+        self.dut = cocotb.top
+        
+        
+    async def body(self):
+        self.seqr = ConfigDB().get(None, "", "phy_sequencer")
+        self.sequencer = self.seqr
+        await super().body()
+        
+        mem = self.rc.mem_pool.alloc_region(16*1024*1024)
+        mem_base = mem.get_absolute_address(0)
+        io = self.rc.io_pool.alloc_region(1024)
+        io_base = io.get_absolute_address(0)
+    
+        while self.dut.fc_initialized_o == 0:
+            await RisingEdge(self.dut.clk_i)
+            
+        await self.rc.enumerate()
+        
+
+        dev = self.rc.find_device(self.dev.functions[0].pcie_id)
+        cfg =  await self.rc.config_read(self.dev.functions[0].pcie_id, 0x000, 256, timeout=1000, timeout_unit='ns')    
+        # self.log.info(cfg)
+        for i in range(0, len(cfg), 4):
+            chunk = cfg[i:i+4]
+            self.log.info(chunk)
 
 class flow_control_seq(pcie_seq):
     def __init__(self, name,msix, config=None):
@@ -55,45 +80,6 @@ class flow_control_seq(pcie_seq):
         self.log.setLevel(logging.INFO)
         self.dut = cocotb.top
         
-    
-    # async def send(self,tlp):
-    #     await self.send_tlp.start(self.seqr,tlp)
-    #     # seq_item =  pcie_seq_item("pcie_sequence_item")
-        # await self.start_item(seq_item)
-        # seq_item.frame = AxiStreamFrame(tlp.pack())
-        # await self.finish_item(seq_item)
-        # self.result = seq_item.results
-
-    # async def send_tlp(self,tlp):
-    #     seq_item =  pcie_seq_item("pcie_sequence_item")
-    #     await self.start_item(seq_item)
-    #     seq_item.is_tlp = True
-    #     seq_item.frame = AxiStreamFrame(tlp.pack())
-    #     await self.finish_item(seq_item)
-    #     self.result = seq_item.results
-    #     # await tlp.start(self.seqr)
-                # await Timer(90000000)
-                
-    # async def send_dllp(self):
-    #     while True:
-    #         frame = await self.dllp_queue.get()
-    #         seq_item =  pcie_seq_item("pcie_sequence_item")
-    #         self.sequencer = self.seqr
-    #         await self.start_item(seq_item)
-    #         seq_item.is_dllp = True
-    #         seq_item.frame = frame
-    #         await self.finish_item(seq_item)
-    #         self.result = seq_item.results
-        
-    # async def response_tlp(self):
-    #     pkt = await self.respond_fifo.get()
-    #     await self.dev.upstream_port._transmit(pkt)
-            
-    # async def send_tlp(self,seqr):
-    #     for i in range(100):
-    #         tlp = tlp_seq("tlp seq item",i)
-    #         await tlp.start(seqr)
-    #         # await Timer(90000000)
             
     async def body(self):
         self.seqr = ConfigDB().get(None, "", "phy_sequencer")
@@ -107,12 +93,12 @@ class flow_control_seq(pcie_seq):
     
         while self.dut.fc_initialized_o == 0:
             await RisingEdge(self.dut.clk_i)
+            
         await self.rc.enumerate()
         
 
         dev = self.rc.find_device(self.dev.functions[0].pcie_id)
         await dev.enable_device()
-        
         await dev.set_master()
         
         dev_bar0 = dev.bar_window[0]
@@ -352,6 +338,24 @@ class Fc1Test(uvm_test):
 
     def end_of_elaboration_phase(self):
         self.test_all = flow_control_seq("test fc1",1)
+        
+    async def run_phase(self):
+        self.raise_objection()
+        await with_timeout(self.test_all.start(),50000000,'ns')
+        self.drop_objection()
+
+
+@pyuvm.test()
+class CfgTest(uvm_test):
+    """Test Dllp layer by going through flow control init sequence"""
+
+    def build_phase(self):
+        self.log = logging.getLogger("Fc1Test.tb")
+        self.log.setLevel(logging.DEBUG)
+        self.env = phy_env.create("phy_env", self)
+
+    def end_of_elaboration_phase(self):
+        self.test_all = config_read_seq("test fc1",1)
         
     async def run_phase(self):
         self.raise_objection()
