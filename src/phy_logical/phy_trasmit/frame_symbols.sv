@@ -141,9 +141,11 @@ module frame_symbols
       ST_IDLE: begin
         if (phy_axis_tready && s_axis_tvalid) begin
           phy_axis_tvalid = '1;
+          phy_axis_tkeep  = '1;
           if (curr_data_rate_i < gen3) begin
             s_axis_tready = '1;
             phy_axis_tdata = {s_axis_tdata[23:0], s_axis_tuser[0] ? SDP : STP};
+            phy_axis_tuser = 4'b0001;
             next_state = ST_FRAME_STREAM;
           end else begin
             if (s_axis_tuser[0]) begin
@@ -170,23 +172,25 @@ module frame_symbols
           phy_axis_tdata  = {s_axis_tdata[23:0], buffer_axis_tdata[31:24]};
           phy_axis_tkeep  = {s_axis_tkeep[2:0], buffer_axis_tkeep[3]};
           if (s_axis_tlast) begin
-            next_state     = ST_IDLE;
-            phy_axis_tlast = '1;
-            // case (s_axis_tkeep)
-            //   4'b0001: begin
-            //     phy_axis_tdata[23:16] = ENDP;
-            //     phy_axis_tuser = 4'b0100;
-            //     phy_axis_tlast = '1;
-            //   end
-            //   4'b0011: begin
-            //     phy_axis_tdata[31:24] = ENDP;
-            //     phy_axis_tuser = 4'b1000;
-            //     phy_axis_tlast = '1;
-            //   end
-            //   default: begin
-            //     next_state = ST_FRAME_LAST;
-            //   end
-            // endcase
+            next_state = ST_IDLE;
+            // phy_axis_tlast = '1;
+            case (s_axis_tkeep)
+              4'b0001: begin
+                phy_axis_tdata[23:16] = ENDP;
+                phy_axis_tkeep[2]     = '1;
+                phy_axis_tuser        = 4'b0100;
+                phy_axis_tlast        = '1;
+              end
+              4'b0011: begin
+                phy_axis_tdata[31:24] = ENDP;
+                phy_axis_tuser        = 4'b1000;
+                phy_axis_tlast        = '1;
+                phy_axis_tkeep[3]     = '1;
+              end
+              default: begin
+                next_state = ST_FRAME_LAST;
+              end
+            endcase
           end
         end
       end

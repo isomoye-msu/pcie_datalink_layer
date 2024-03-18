@@ -119,6 +119,8 @@ module lane_management
   logic             [             31:0] data_out;
   logic             [              3:0] data_k_out;
   logic             [              7:0] lane_idx;
+  logic             [              7:0] lane_shift_idx;
+  logic             [              7:0] pipewidth_shift_idx;
 
 
   assign is_ordered_set = s_phy_axis_tvalid & s_phy_axis_tready;
@@ -234,6 +236,8 @@ module lane_management
     data_out                 = '0;
     lane_idx                 = '0;
     data_k_out               = '0;
+    pipewidth_shift_idx      = (pipe_width_r >> 3) - 1;
+    lane_shift_idx           = (num_active_lanes_i >> 1);
     case (curr_state)
       ST_IDLE: begin
         if (s_phy_axis_tvalid) begin
@@ -291,8 +295,8 @@ module lane_management
         if (s_dllp_axis_tvalid && s_dllp_axis_tready) begin
           pkt_count_c = pkt_count_r + 1'b1;
           for (int i = 0; i < 4; i++) begin
-            data_in_c[(i*8)+(pkt_count_r*32)+:8] = s_dllp_axis_tkeep[i] ?
-                s_dllp_axis_tdata[i*8+:8] : (curr_data_rate_i >= gen3) ? 8'hf7 : '0;
+            data_in_c[(i<<3)+(pkt_count_r<<5)+:8] = s_dllp_axis_tkeep[i] ?
+                s_dllp_axis_tdata[i<<3+:8] : (curr_data_rate_i >= gen3) ? 8'hf7 : '0;
             if (s_dllp_axis_tuser[i]) begin
               data_k_in_c[(pkt_count_r*4)+i] = '1;
             end
@@ -305,9 +309,9 @@ module lane_management
       end
       ST_LANE_MNGT_TX_DATA: begin
         word_count_c = word_count_r + 1'b1;
-        data_in_c    = data_in_r >> (num_active_lanes_i * (pipe_width_r));
+        data_in_c    = data_in_r >> (num_active_lanes_i << pipewidth_shift_idx);
         data_k_in_c  = data_k_in_r >> num_active_lanes_i;
-        if (word_count_r >= ((pkt_count_r * 32) / (num_active_lanes_i * pipe_width_r))) begin
+        if (word_count_r >= ((pkt_count_r << 5) / (num_active_lanes_i << pipewidth_shift_idx))) begin
           next_state   = complete_r ? ST_IDLE : ST_LANE_MNGT_DATA;
           pkt_count_c  = '0;
           word_count_c = '0;
@@ -322,8 +326,8 @@ module lane_management
             for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
               lane_idx = ((pipe_width_r >> 3) - 1 - byte_idx);
               if (byte_idx < (pipe_width_r >> 3)) begin
-                data_out[byte_idx*8+:8] = data_in_r[((lane)*8)+(lane_idx*8*num_active_lanes_i)+:8];
-                data_k_out[byte_idx] = data_k_in_r[((lane)*1)+(lane_idx*1*num_active_lanes_i)+:1];
+                data_out[byte_idx<<3+:8] = data_in_r[((lane)<<3)+((lane_idx<<3)*num_active_lanes_i)+:8];
+                data_k_out[byte_idx] = data_k_in_r[((lane))+(lane_idx*num_active_lanes_i)+:1];
               end
             end
           end
@@ -335,7 +339,7 @@ module lane_management
         word_count_c = word_count_r + 1'b1;
         data_in_c    = data_in_r >> pipe_width_r;
         data_k_in_c  = data_k_in_r >> (pipe_width_r>>3);
-        if (word_count_r >= ((pkt_count_r * 32) / ((pipe_width_r)) - 1)) begin
+        if (word_count_r >= ((pkt_count_r << (3 - (pipe_width_r >> 3))) - 1)) begin
           next_state   = complete_r ? ST_IDLE : ST_LANE_MNGT_PHY;
           pkt_count_c  = '0;
           word_count_c = '0;
@@ -348,14 +352,14 @@ module lane_management
           if (lane < num_active_lanes_i) begin
             data_valid_c[lane] = '1;
             for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
-              if (byte_idx < (pipe_width_r >> 3)) begin
-                lane_idx = ((pipe_width_r >> 3) - 1 - byte_idx);
+              if (byte_idx < (pipewidth_shift_idx + 1)) begin
+                lane_idx = (pipewidth_shift_idx - byte_idx);
                 data_k_out[byte_idx] = data_k_in_r[byte_idx];
                 if((replace_lane_r && word_replacement_index_r == word_count_r) &&
                 (lane_replacement_byte_r == lane_idx)) begin
-                  data_out[byte_idx*8+:8] = lane_reverse_i ? num_active_lanes_i - lane : lane;
+                  data_out[byte_idx<<3+:8] = lane_reverse_i ? num_active_lanes_i - lane : lane;
                 end else begin
-                  data_out[byte_idx*8+:8] = data_in_r[(lane_idx)*8+:8];
+                  data_out[byte_idx<<3+:8] = data_in_r[(lane_idx)<<3+:8];
                 end
               end
             end

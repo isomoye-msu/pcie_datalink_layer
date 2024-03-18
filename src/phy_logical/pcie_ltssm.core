@@ -5,19 +5,22 @@ description: pcie link training state machine
 filesets:
   rtl:
     files:
-      - pcie_ltssm/src/pcie_ltssm_downstream.sv
       - phy_trasmit/lane_management.sv
       - phy_trasmit/frame_symbols.sv
       - phy_trasmit/byte_scramble.sv
       - phy_trasmit/gen3_byte_scramble.sv
       - phy_trasmit/os_generator.sv
-      - phy_recieve/src/ordered_set_handler.sv
       - phy_trasmit/scrambler.sv
       - phy_trasmit/gen1_scramble.sv
       - phy_trasmit/gen3_scramble.sv
       - phy_recieve/src/descrambler.sv
       - phy_recieve/src/gen1_descramble.sv
       - phy_recieve/src/gen3_descramble.sv
+      - phy_recieve/src/ordered_set_handler.sv
+      - phy_recieve/src/block_alignment.sv
+      - phy_recieve/src/pack_data.sv
+      - phy_recieve/src/synchronous_fifo.sv
+      - pcie_ltssm/src/pcie_ltssm_downstream.sv
       - pcie_phy_core/pcie_phy_top.sv
     file_type: systemVerilogSource
     depend:

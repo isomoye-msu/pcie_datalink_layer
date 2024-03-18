@@ -26,7 +26,7 @@ module pcie_ltssm_downstream
     input  logic                           rst_i,                   //! Reset signal
     // !Control
     input  logic                           en_i,
-    input  logic                           link_up_i,
+    output logic                           link_up_o,
     input  logic                           is_timeout_i,
     input  logic                           recovery_i,
     output logic                           error_o,
@@ -81,11 +81,11 @@ module pcie_ltssm_downstream
 );
 
   localparam int ClockPeriodNs = ((10 ** 3) / CLK_RATE);
-  localparam longint TwentyFourMsTimeOut = (24 * (10 ** 6)) / ClockPeriodNs;
-  localparam longint FourtyEightMsTimeOut = (48 * (10 ** 6)) / ClockPeriodNs;
-  localparam longint TwelveMsTimeOut = (12 * (10 ** 6)) / ClockPeriodNs;
-  localparam longint TwoMsTimeOut = (2 * (10 ** 5)) / ClockPeriodNs;
-  localparam longint OneMsTimeOut = (1 * (10 ** 6)) / ClockPeriodNs;
+  localparam longint TwentyFourMsTimeOut = (24 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint FourtyEightMsTimeOut = (48 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint TwelveMsTimeOut = (12 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint TwoMsTimeOut = (2 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint OneMsTimeOut = (1 * (10 ** 4)) / ClockPeriodNs;
   localparam int SixUsTimeOut = (6 * (10 ** 3)) / ClockPeriodNs;
   localparam int EigthHundredNanoSecondTimeOut = (800) / ClockPeriodNs;
   localparam int TwentyNanoSeconds = 20* (10 **0)/ ClockPeriodNs;//(20 * (10** -9)); //)) / int'((1 / (CLK_RATE * $pow(10, 6))));
@@ -264,6 +264,7 @@ module pcie_ltssm_downstream
     tx_enter_elec_idle_o           = '0;
     curr_data_rate_c               = curr_data_rate_r;
     ts2_symbol6                    = '0;
+    link_up_o                      = '0;
     //ordered set
     ordered_set_c                  = ordered_set_r;
     changed_speed_recovery_c       = changed_speed_recovery_r;
@@ -607,6 +608,12 @@ module pcie_ltssm_downstream
             //goto wait low
             next_state                   = ST_IDLE;
           end
+        end
+      end
+      ST_L0: begin
+        link_up_o = '1;
+        if (|ts1_valid_i || |ts2_valid_i) begin
+          next_state = ST_IDLE;
         end
       end
       ST_RECOVERY: begin
