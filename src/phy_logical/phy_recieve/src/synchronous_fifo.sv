@@ -29,7 +29,7 @@ module synchronous_fifo #(
   always @(posedge clk_i) begin
     if (w_en_i & !full_o) begin
       fifo[w_ptr] <= data_in;
-      w_ptr <= w_ptr + 1;
+      w_ptr <= w_ptr == DEPTH-1 ? '0 : w_ptr + 1;
     end
   end
 
@@ -37,10 +37,10 @@ module synchronous_fifo #(
   always @(posedge clk_i) begin
     if (r_en_i & !empty_o) begin
       data_out <= fifo[r_ptr];
-      r_ptr <= r_ptr + 1;
+      r_ptr <= r_ptr == DEPTH-1 ? '0 : r_ptr + 1;
     end
   end
 
-  assign full_o  = ((w_ptr + 1'b1) == r_ptr);
+  assign full_o  = w_ptr == DEPTH-1 ? r_ptr == '0 : ((w_ptr + 1'b1) == r_ptr);
   assign empty_o = (w_ptr == r_ptr);
 endmodule

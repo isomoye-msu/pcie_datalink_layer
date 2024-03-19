@@ -74,24 +74,39 @@ module pcie_phy_top
 );
 
   localparam int PcieDataSize = $size(
-      lm_data_out
+      flat_descrambler_data
   ) + $size(
-      lm_data_valid
+      flat_descrambler_data_valid
   ) + $size(
-      lm_d_k_out
+      flat_descrambler_data_k
   ) + $size(
-      lm_sync_header
+      flat_descrambler_sync_header
   );
 
 
-  //! @virtualbus master_axis_bus @dir out
   logic [DATA_WIDTH-1:0] ltssm_axis_tdata;
   logic [KEEP_WIDTH-1:0] ltssm_axis_tkeep;
-  logic ltssm_axis_tvalid;
-  logic ltssm_axis_tlast;
+  logic                  ltssm_axis_tvalid;
+  logic                  ltssm_axis_tlast;
   logic [USER_WIDTH-1:0] ltssm_axis_tuser;
-  logic ltssm_axis_tready;
+  logic                  ltssm_axis_tready;
 
+  logic [DATA_WIDTH-1:0] rx_dllp_axis_tdata;
+  logic [KEEP_WIDTH-1:0] rx_dllp_axis_tkeep;
+  logic                  rx_dllp_axis_tvalid;
+  logic                  rx_dllp_axis_tlast;
+  logic [USER_WIDTH-1:0] rx_dllp_axis_tuser;
+  logic                  rx_dllp_axis_tready;
+
+  logic [DATA_WIDTH-1:0] rx_tlp_axis_tdata;
+  logic [KEEP_WIDTH-1:0] rx_tlp_axis_tkeep;
+  logic                  rx_tlp_axis_tvalid;
+  logic                  rx_tlp_axis_tlast;
+  logic [USER_WIDTH-1:0] rx_tlp_axis_tuser;
+  logic                  rx_tlp_axis_tready;
+
+  assign rx_dllp_axis_tready = '1;
+  assign rx_tlp_axis_tready  = '1;
 
 
 
@@ -276,6 +291,7 @@ module pcie_phy_top
         .sync_header_o(de_scrambler_sync_header[lane])
     );
 
+
     ordered_set_handler #(
         .CLK_RATE  (CLK_RATE),
         .DATA_WIDTH(DATA_WIDTH),
@@ -356,12 +372,7 @@ module pcie_phy_top
       .rst_i(rst_i),
       .w_en_i(wr_en),
       .r_en_i(rd_en),
-      .data_in({
-        packer_data,
-        packer_data_k,
-        packer_data_valid,
-        packer_sync_header
-      }),
+      .data_in({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
       .data_out({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
       .full_o(fifo_full),
       .empty_o(fifo_empty)
@@ -473,6 +484,42 @@ module pcie_phy_top
       .m_axis_tuser(ltssm_axis_tuser),
       .m_axis_tready(ltssm_axis_tready)
   );
+
+
+  data_handler #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .STRB_WIDTH(STRB_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .USER_WIDTH(USER_WIDTH),
+      .MAX_NUM_LANES(MAX_NUM_LANES)
+  ) data_handler_inst (
+      .clk_i(clk_i),
+      .rst_i(rst_i),
+      .phy_link_up_i(link_up),
+      .phy_fifo_empty_i(fifo_empty),
+      .phy_fifo_rd_en_o(rd_en),
+      .lane_reverse_i('0),
+      .curr_data_rate_i(curr_data_rate),
+      .data_i(fifo_data),
+      .data_valid_i(fifo_data_valid),
+      .data_k_i(fifo_data_k),
+      .sync_header_i(fifo_sync_header),
+      .m_dllp_axis_tdata( rx_dllp_axis_tdata),
+      .m_dllp_axis_tkeep( rx_dllp_axis_tkeep),
+      .m_dllp_axis_tvalid(rx_dllp_axis_tvalid),
+      .m_dllp_axis_tlast( rx_dllp_axis_tlast),
+      .m_dllp_axis_tuser( rx_dllp_axis_tuser),
+      .m_dllp_axis_tready(rx_dllp_axis_tready),
+      .m_tlp_axis_tdata( rx_tlp_axis_tdata),
+      .m_tlp_axis_tkeep( rx_tlp_axis_tkeep),
+      .m_tlp_axis_tvalid(rx_tlp_axis_tvalid),
+      .m_tlp_axis_tlast( rx_tlp_axis_tlast),
+      .m_tlp_axis_tuser( rx_tlp_axis_tuser),
+      .m_tlp_axis_tready(rx_tlp_axis_tready),
+      .pipe_width_i(lm_pipe_width),
+      .num_active_lanes_i(num_active_lanes_i)
+  );
+
 
   logic send_ordered_set;
   pcie_ordered_set_t ordered_set;

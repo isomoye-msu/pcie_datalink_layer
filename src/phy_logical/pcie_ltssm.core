@@ -18,6 +18,7 @@ filesets:
       - phy_recieve/src/gen3_descramble.sv
       - phy_recieve/src/ordered_set_handler.sv
       - phy_recieve/src/block_alignment.sv
+      - phy_recieve/src/data_handler.sv
       - phy_recieve/src/pack_data.sv
       - phy_recieve/src/synchronous_fifo.sv
       - pcie_ltssm/src/pcie_ltssm_downstream.sv

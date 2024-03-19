@@ -5,7 +5,7 @@ module data_handler
     parameter int DATA_WIDTH    = 32,
     // TLP strobe width
     parameter int STRB_WIDTH    = DATA_WIDTH / 8,
-    parameter int KEEP_WIDTH    = STRB_WI1DTH,
+    parameter int KEEP_WIDTH    = STRB_WIDTH,
     parameter int USER_WIDTH    = 1,
     parameter int MAX_NUM_LANES = 4
 ) (
@@ -68,6 +68,9 @@ module data_handler
   //data_handler mechanism enum
   typedef enum logic [4:0] {
     ST_IDLE,
+    ST_TX,
+    ST_CHECK_FRAME,
+    ST_CHECK_END,
     ST_TX_TLP,
     ST_TX_DLLP
   } data_handler_state_e;
@@ -84,6 +87,14 @@ module data_handler
   logic                [                  USER_WIDTH-1:0] data_handler_axis_tuser;
   logic                                                   data_handler_axis_tready;
 
+
+  logic                [                  DATA_WIDTH-1:0] m_axis_tdata;
+  logic                [                  KEEP_WIDTH-1:0] m_axis_tkeep;
+  logic                                                   m_axis_tvalid;
+  logic                                                   m_axis_tlast;
+  logic                [                  USER_WIDTH-1:0] m_axis_tuser;
+  logic                                                   m_axis_tready;
+
   logic                [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_c;
   logic                [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_r;
   logic                [               MAX_NUM_LANES-1:0] data_valid_c;
@@ -98,13 +109,18 @@ module data_handler
   logic                [                             5:0] word_count_c;
   logic                [                             5:0] word_count_r;
 
-  logic                                                   is_dllp;
-  logic                                                   is_tlp;
+  logic                                                   is_dllp_c;
+  logic                                                   is_dllp_r;
+  logic                                                   is_tlp_c;
+  logic                                                   is_tlp_r;
+  logic                                                   skid_c;
+  logic                                                   skid_r;
   logic                                                   ready_out;
 
-  logic                [                             1:0] sync_header_c            [MAX_NUM_LANES];
-  logic                [                             1:0] sync_header_r            [MAX_NUM_LANES];
+  // logic                [                             1:0] sync_header_c            [MAX_NUM_LANES];
+  // logic                [                             1:0] sync_header_r            [MAX_NUM_LANES];
 
+  logic                                                   fifo_rd;
 
   always_ff @(posedge clk_i) begin : main_seq_block
     if (rst_i) begin
@@ -116,6 +132,10 @@ module data_handler
     sync_header_r <= sync_header_c;
     data_k_r      <= data_k_c;
     data_r        <= data_c;
+    is_tlp_r      <= is_tlp_c;
+    is_dllp_r     <= is_dllp_c;
+    word_count_r  <= word_count_c;
+    skid_r        <= skid_c;
   end
 
   always_comb begin : lane_data_sync
@@ -127,39 +147,98 @@ module data_handler
     data_handler_axis_tuser  = '0;
 
 
-    d_k_out_c                = d_k_out_r;
-    data_k_in_c              = data_k_in_r;
-    data_out_c               = data_out_r;
-    data_valid_c             = '0;
+    // d_k_out_c                = d_k_out_r;
+    // data_k_in_c              = data_k_in_r;
+    // data_valid_c             = data_valid_r;
     // data_in_c                = data_in_r;
     is_tlp_c                 = is_tlp_r;
     is_dllp_c                = is_dllp_r;
-    lane_replacement_byte_c  = lane_replacement_byte_r;
-    pkt_count_c              = pkt_count_r;
+    // pkt_count_c              = pkt_count_r;
     word_count_c             = word_count_r;
     next_state               = curr_state;
-    word_replacement_index_c = word_replacement_index_r;
-    replace_lane_c           = replace_lane_r;
-    ready_out                = '0;
-    complete_c               = complete_r;
-    data_out                 = '0;
-    lane_idx                 = '0;
-    data_k_out               = '0;
+    data_valid_c             = data_valid_r;
+    sync_header_c            = sync_header_r;
+    data_k_c                 = data_k_r;
+    data_c                   = data_r;
+    // word_replacement_index_c = word_replacement_index_r;
+    // replace_lane_c           = replace_lane_r;
+    // ready_out                = '0;
+    // complete_c               = complete_r;
+    // data_out                 = '0;
+    // lane_idx                 = '0;
+    // data_k_out               = '0;
+    phy_fifo_rd_en_o         = '0;
+    skid_c                   = skid_r;
     case (curr_state)
       ST_IDLE: begin
-        if (phy_link_up_i && !phy_fifo_empty_i)
-          if (curr_data_rate_i < gen3) begin
-            data_c        = data_i;
-            data_valid_c  = data_valid_i;
-            data_k_c      = data_k_i;
-            sync_header_c = sync_header_r;
-            if (data_i[7:0] == SDP) begin
-              next_state = ST_TX_DLLP;
-            end
-            if (data_i[7:0] == STP) begin
-              next_state = ST_TX_DLLP;
+        if (phy_link_up_i && !phy_fifo_empty_i) begin
+          phy_fifo_rd_en_o = '1;
+          next_state = ST_CHECK_FRAME;
+          skid_c = '0;
+        end
+      end
+      ST_CHECK_FRAME: begin
+        if (curr_data_rate_i < gen3) begin
+          data_c        = data_i >> 8;
+          data_valid_c  = data_valid_i >> 1;
+          data_k_c      = data_k_i >> 1;
+          sync_header_c = sync_header_r;
+          word_count_c  = '0;
+          next_state    = ST_TX;
+          if (data_i[7:0] == SDP) begin
+            is_tlp_c = '1;
+          end
+          if (data_i[7:0] == STP) begin
+            is_tlp_c = '1;
+          end
+        end
+      end
+      ST_TX: begin
+        if (m_axis_tready) begin
+          word_count_c             = word_count_r + 1'b1;
+          data_c                   = data_r >> 32;
+          data_valid_c             = data_valid_r >> 1;
+          data_k_c                 = data_k_r >> 4;
+          data_handler_axis_tdata  = data_r[31:0];
+          data_handler_axis_tkeep  = '1;
+          data_handler_axis_tvalid = '1;
+          if (skid_r) begin
+            data_handler_axis_tdata  = data_r[31:0];
+            data_handler_axis_tkeep  = '1;
+            data_handler_axis_tvalid = '1;
+            data_c                   = data_i;
+            data_valid_c             = data_valid_i;
+            data_k_c                 = data_k_i;
+            skid_c                   = '0;
+          end
+          if (word_count_r >= (512 / 32) - 1) begin
+            next_state               = ST_CHECK_END;
+            data_c                   = data_r;
+            data_valid_c             = data_valid_r;
+            data_k_c                 = data_k_r;
+            data_handler_axis_tvalid = '0;
+          end
+          for (int i = 0; i < 4; i++) begin
+            if (data_k_r[i] && data_r[8*i+:8] == ENDP) begin
+              next_state = ST_IDLE;
+              for (int k = '0; k < 4; k++) begin
+                if (k >= i) begin
+                  data_handler_axis_tkeep[k] = '0;
+                  is_dllp_c                  = '0;
+                  is_tlp_c                   = '0;
+                end
+              end
             end
           end
+        end
+      end
+      ST_CHECK_END: begin
+        if (!phy_fifo_empty_i) begin
+          phy_fifo_rd_en_o = '1;
+          skid_c           = '1;
+          word_count_c     = '0;
+          next_state       = ST_TX;
+        end
       end
       ST_TX_TLP: begin
       end
@@ -205,6 +284,20 @@ module data_handler
       .m_axis_tid(),
       .m_axis_tdest()
   );
+
+
+  assign m_dllp_axis_tdata = m_axis_tdata;
+  assign m_dllp_axis_tkeep = m_axis_tkeep;
+  assign m_dllp_axis_tvalid = m_axis_tvalid & is_dllp_r;
+  assign m_dllp_axis_tlast = m_axis_tlast;
+  assign m_dllp_axis_tuser = m_axis_tuser;
+  assign m_axis_tready = (m_dllp_axis_tready & is_dllp_r) | (m_tlp_axis_tready & is_tlp_r);
+
+  assign m_tlp_axis_tdata = m_axis_tdata;
+  assign m_tlp_axis_tkeep = m_axis_tkeep;
+  assign m_tlp_axis_tvalid = m_axis_tvalid & is_tlp_r;
+  assign m_tlp_axis_tlast = m_axis_tlast;
+  assign m_tlp_axis_tuser = m_axis_tuser;
 
 
 
