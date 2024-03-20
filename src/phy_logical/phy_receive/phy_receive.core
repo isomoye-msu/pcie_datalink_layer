@@ -1,5 +1,5 @@
 CAPI=2:
-name: fusesoc:pcie:phy_recieve:1.0.0
+name: fusesoc:pcie:phy_receive:1.0.0
 description: pcie physical layer receive block
 
 filesets:
@@ -13,7 +13,7 @@ filesets:
       - src/data_handler.sv
       - src/pack_data.sv
       - src/synchronous_fifo.sv
-      - src/phy_recieve.sv
+      - src/phy_receive.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
@@ -32,7 +32,7 @@ targets:
       cocotb_module : test_ltssm_configuration
       timescale: 1ns/1ns
     filesets : [rtl]
-    toplevel : [phy_recieve]
+    toplevel : [phy_receive]
   
   sim:
     flow: sim
@@ -44,7 +44,7 @@ targets:
         - --trace-fst
         - waiver.vlt
     filesets : [rtl]
-    toplevel : [phy_recieve]
+    toplevel : [phy_receive]
 
   verilate:
     flow: sim
@@ -57,7 +57,7 @@ targets:
         - -Iincludes/
         - waiver.vlt
     filesets : [rtl]
-    toplevel : [phy_recieve]
+    toplevel : [phy_receive]
 
   synth:
     default_tool : vivado
@@ -65,8 +65,8 @@ targets:
     tools:
       vivado:
         part : xc7a100tcsg324-1
-    toplevel : phy_recieve
+    toplevel : phy_receive
 
 scripts:
   iceprog:
-    cmd : [MODULE=phy_recieve]
+    cmd : [MODULE=phy_receive]

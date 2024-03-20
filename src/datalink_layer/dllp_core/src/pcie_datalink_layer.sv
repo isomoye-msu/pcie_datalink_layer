@@ -207,7 +207,7 @@ module pcie_datalink_layer
   );
 
 
-  //dllp recieve
+  //dllp receive
   dllp_receive #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),

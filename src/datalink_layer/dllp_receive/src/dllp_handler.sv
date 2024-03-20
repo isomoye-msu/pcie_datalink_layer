@@ -1,6 +1,6 @@
 //! @title dllp_handler
 //! @author Idris Somoye
-//! Module handles datalink packets recieved from the physical layer
+//! Module handles datalink packets received from the physical layer
 //! intended for the datalink layer. Datalink packets are decoded and replies are sent to
 //! the physical layer through the phy master axis bus.
 module dllp_handler

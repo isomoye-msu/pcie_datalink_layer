@@ -1,4 +1,4 @@
-module phy_recieve
+module phy_receive
   import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100

@@ -166,7 +166,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC1_NP_CRC: begin
-        //we never recieved an ack restart FC1P
+        //we never received an ack restart FC1P
         if (fc_axis_tready) begin
           fc_axis_tdata  = crc_reversed;
           fc_axis_tkeep  = 8'h3;
@@ -194,7 +194,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC1_CPL_CRC: begin
-        //we never recieved an ack restart FC1P
+        //we never received an ack restart FC1P
         if (fc_axis_tready) begin
           fc_axis_tdata  = crc_reversed;
           fc_axis_tkeep  = 8'h3;
@@ -239,7 +239,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC2_CRC: begin
-        //we never recieved an ack restart FC1P
+        //we never received an ack restart FC1P
         if (fc_axis_tready) begin
           fc_axis_tdata  = crc_reversed;
           fc_axis_tkeep  = 8'h3;
@@ -267,7 +267,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC2_NP_CRC: begin
-        //we never recieved an ack restart FC1P
+        //we never received an ack restart FC1P
         if (fc_axis_tready) begin
           fc_axis_tdata  = crc_reversed;
           fc_axis_tkeep  = 8'h3;
@@ -294,7 +294,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC2_CPL_CRC: begin
-        //we never recieved an ack restart FC1P
+        //we never received an ack restart FC1P
         if (fc_axis_tready) begin
           fc_axis_tdata  = crc_reversed;
           fc_axis_tkeep  = 8'h3;

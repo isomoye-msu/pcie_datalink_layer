@@ -87,14 +87,14 @@ module pcie_phy_top
   logic                                      s_dllp_axis_tready;
 
 
-  phy_recieve #(
+  phy_receive #(
       .CLK_RATE(CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
       .USER_WIDTH(USER_WIDTH)
-  ) phy_recieve_inst (
+  ) phy_receive_inst (
       .clk_i(clk_i),
       .rst_i(rst_i),
       .en_i(en_i),
@@ -185,7 +185,7 @@ module pcie_phy_top
       .lanes_ts2_satisfied_i(),
       .config_copmlete_ts2_i(),
       .from_l0_i(),
-      .reciever_detected_i(),
+      .receiver_detected_i(),
       .electrical_idle_i(),
       .tx_enter_elec_idle_o(),
       .goto_cfg_o(),

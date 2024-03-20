@@ -16,7 +16,7 @@ filesets:
       - fusesoc:pcie:base_uvm
       - fusesoc:pcie:dllp_core
       - fusesoc:pcie:lint
-      - fusesoc:pcie:phy_recieve
+      - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
 
   cocotb:
