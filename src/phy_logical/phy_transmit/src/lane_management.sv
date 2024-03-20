@@ -29,14 +29,14 @@ module lane_management
     input  logic [USER_WIDTH-1:0] s_phy_axis_tuser,
     output logic                  s_phy_axis_tready,
 
-    input  logic                            lane_reverse_i,
-    input  rate_speed_e                     curr_data_rate_i,
-    output logic        [             31:0] data_out_o        [MAX_NUM_LANES],
-    output logic        [MAX_NUM_LANES-1:0] data_valid_o,
-    output logic        [              3:0] d_k_out_o         [MAX_NUM_LANES],
-    output logic        [              1:0] sync_header_o     [MAX_NUM_LANES],
-    output logic        [              5:0] pipe_width_o,
-    input  logic        [              5:0] num_active_lanes_i
+    input  logic                                           lane_reverse_i,
+    input  rate_speed_e                                    curr_data_rate_i,
+    output logic        [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_o,
+    output logic        [               MAX_NUM_LANES-1:0] data_valid_o,
+    output logic        [           (4*MAX_NUM_LANES)-1:0] d_k_out_o,
+    output logic        [           (2*MAX_NUM_LANES)-1:0] sync_header_o,
+    output logic        [                             5:0] pipe_width_o,
+    input  logic        [                             5:0] num_active_lanes_i
 );
 
 
@@ -374,12 +374,22 @@ module lane_management
   end
 
 
-  assign sync_header_o      = sync_header_r;
+  always_comb begin : flatten_decrambler
+    for (int i = 0; i < MAX_NUM_LANES; i++) begin
+      data_out_o[32*i+:32]  = data_out_r[i];
+      data_valid_o[i]       = data_valid_r[i];
+      d_k_out_o[4*i+:4]     = d_k_out_r[i];
+      sync_header_o[2*i+:2] = sync_header_r[i];
+    end
+  end
+
+
+  // assign sync_header_o      = sync_header_r;
   assign s_dllp_axis_tready = ready_out & is_dllp_r;
   assign s_phy_axis_tready  = ready_out & is_phy_r;
-  assign data_valid_o       = data_valid_r;
-  assign d_k_out_o          = d_k_out_r;
-  assign data_out_o         = data_out_r;
+  // assign data_valid_o       = data_valid_r;
+  // assign d_k_out_o          = d_k_out_r;
+  // assign data_out_o         = data_out_r;
   assign pipe_width_o       = pipe_width_r;
 
 endmodule

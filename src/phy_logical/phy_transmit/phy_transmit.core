@@ -1,27 +1,25 @@
 CAPI=2:
-name: fusesoc:pcie:ltssm:1.0.0
-description: pcie link training state machine
+name: fusesoc:pcie:phy_transmit:1.0.0
+description: pcie physical layer transmit block
 
 filesets:
   rtl:
     files:
-      - pcie_ltssm/src/pcie_ltssm_downstream.sv
-      - pcie_phy_core/pcie_phy_top.sv
+      - src/lane_management.sv
+      - src/frame_symbols.sv
+      - src/byte_scramble.sv
+      - src/gen3_byte_scramble.sv
+      - src/os_generator.sv
+      - src/scrambler.sv
+      - src/gen1_scramble.sv
+      - src/gen3_scramble.sv
+      - src/phy_transmit.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
-      - fusesoc:pcie:crc
-      - fusesoc:pcie:bram
       - fusesoc:pcie:axis
-      - fusesoc:pcie:base_uvm
-      - fusesoc:pcie:dllp_core
       - fusesoc:pcie:lint
-      - fusesoc:pcie:phy_recieve
-      - fusesoc:pcie:phy_transmit
 
-  cocotb:
-    files:
-      - pcie_ltssm/tb/test_ltssm_configuration.py : {file_type : user, copyto : .}
 
 targets:
   default:
@@ -32,8 +30,8 @@ targets:
         - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
       cocotb_module : test_ltssm_configuration
       timescale: 1ns/1ns
-    filesets : [rtl,cocotb]
-    toplevel : [dllp_receive]
+    filesets : [rtl]
+    toplevel : [phy_transmit]
   
   sim:
     flow: sim
@@ -44,8 +42,8 @@ targets:
       verilator_options:
         - --trace-fst
         - waiver.vlt
-    filesets : [rtl,cocotb]
-    toplevel : [pcie_phy_top]
+    filesets : [rtl]
+    toplevel : [phy_transmit]
 
   verilate:
     flow: sim
@@ -57,8 +55,8 @@ targets:
         - --trace-fst
         - -Iincludes/
         - waiver.vlt
-    filesets : [rtl,cocotb]
-    toplevel : [pcie_ltssm_downstream]
+    filesets : [rtl]
+    toplevel : [phy_transmit]
 
   synth:
     default_tool : vivado
@@ -66,7 +64,7 @@ targets:
     tools:
       vivado:
         part : xc7a100tcsg324-1
-    toplevel : pcie_phy_top
+    toplevel : phy_transmit
 
 scripts:
   iceprog:

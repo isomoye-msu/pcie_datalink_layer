@@ -106,10 +106,17 @@ module dllp_handler
   logic                         fc2_p_stored_r;
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
+  logic                [          15:0] crc_reversed;
 
   assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
 
+  always_comb begin : byteswap
+    for (int i = 0; i < 8; i++) begin
+      crc_reversed[i]   = crc_in_r[7-i];
+      crc_reversed[i+8] = crc_in_r[15-i];
+    end
+  end
 
   always @(posedge clk_i) begin : main_seq
     if (rst_i) begin
@@ -198,7 +205,7 @@ module dllp_handler
       ST_CHECK_CRC: begin
         skid_s_axis_tready = '1;
         if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
-          if (crc_in_r == skid_s_axis_tdata[15:0]) begin
+          if (crc_reversed == skid_s_axis_tdata[15:0]) begin
             //process tlp
             next_state = ST_PROCESS_DLLP;
           end

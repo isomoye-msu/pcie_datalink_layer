@@ -42,18 +42,8 @@ module data_handler
     output logic                  m_dllp_axis_tlast,
     output logic [USER_WIDTH-1:0] m_dllp_axis_tuser,
     input  logic                  m_dllp_axis_tready,
-
-    //physical layer ordered sets AXIS inputs
-    output logic [DATA_WIDTH-1:0] m_tlp_axis_tdata,
-    output logic [KEEP_WIDTH-1:0] m_tlp_axis_tkeep,
-    output logic                  m_tlp_axis_tvalid,
-    output logic                  m_tlp_axis_tlast,
-    output logic [USER_WIDTH-1:0] m_tlp_axis_tuser,
-    input  logic                  m_tlp_axis_tready,
-
-
-    input logic [5:0] pipe_width_i,
-    input logic [5:0] num_active_lanes_i
+    input  logic [           5:0] pipe_width_i,
+    input  logic [           5:0] num_active_lanes_i
 );
 
 
@@ -88,12 +78,12 @@ module data_handler
   logic                                                   data_handler_axis_tready;
 
 
-  logic                [                  DATA_WIDTH-1:0] m_axis_tdata;
-  logic                [                  KEEP_WIDTH-1:0] m_axis_tkeep;
-  logic                                                   m_axis_tvalid;
-  logic                                                   m_axis_tlast;
-  logic                [                  USER_WIDTH-1:0] m_axis_tuser;
-  logic                                                   m_axis_tready;
+  // logic                [                  DATA_WIDTH-1:0] m_axis_tdata;
+  // logic                [                  KEEP_WIDTH-1:0] m_axis_tkeep;
+  // logic                                                   m_axis_tvalid;
+  // logic                                                   m_axis_tlast;
+  // logic                [                  USER_WIDTH-1:0] m_axis_tuser;
+  // logic                                                   m_axis_tready;
 
   logic                [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_c;
   logic                [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_r;
@@ -194,7 +184,7 @@ module data_handler
         end
       end
       ST_TX: begin
-        if (m_axis_tready) begin
+        if (data_handler_axis_tready) begin
           word_count_c             = word_count_r + 1'b1;
           data_c                   = data_r >> 32;
           data_valid_c             = data_valid_r >> 1;
@@ -220,7 +210,8 @@ module data_handler
           end
           for (int i = 0; i < 4; i++) begin
             if (data_k_r[i] && data_r[8*i+:8] == ENDP) begin
-              next_state = ST_IDLE;
+              next_state              = ST_IDLE;
+              data_handler_axis_tlast = '1;
               for (int k = '0; k < 4; k++) begin
                 if (k >= i) begin
                   data_handler_axis_tkeep[k] = '0;
@@ -272,32 +263,27 @@ module data_handler
       .s_axis_tvalid(data_handler_axis_tvalid),
       .s_axis_tready(data_handler_axis_tready),
       .s_axis_tlast(data_handler_axis_tlast),
-      .s_axis_tuser(data_handler_axis_tuser),
+      .s_axis_tuser(is_tlp_r ? 4'b0001 : 4'b0010),
       .s_axis_tid('0),
       .s_axis_tdest('0),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
-      .m_axis_tvalid(m_axis_tvalid),
-      .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tuser(m_axis_tuser),
+      .m_axis_tdata(m_dllp_axis_tdata),
+      .m_axis_tkeep(m_dllp_axis_tkeep),
+      .m_axis_tvalid(m_dllp_axis_tvalid),
+      .m_axis_tready(m_dllp_axis_tready),
+      .m_axis_tlast(m_dllp_axis_tlast),
+      .m_axis_tuser(m_dllp_axis_tuser),
       .m_axis_tid(),
       .m_axis_tdest()
   );
 
 
-  assign m_dllp_axis_tdata = m_axis_tdata;
-  assign m_dllp_axis_tkeep = m_axis_tkeep;
-  assign m_dllp_axis_tvalid = m_axis_tvalid & is_dllp_r;
-  assign m_dllp_axis_tlast = m_axis_tlast;
-  assign m_dllp_axis_tuser = m_axis_tuser;
-  assign m_axis_tready = (m_dllp_axis_tready & is_dllp_r) | (m_tlp_axis_tready & is_tlp_r);
+  // assign m_dllp_axis_tdata  = m_axis_tdata;
+  // assign m_dllp_axis_tkeep  = m_axis_tkeep;
+  // assign m_dllp_axis_tvalid = m_axis_tvalid;
+  // assign m_dllp_axis_tlast  = m_axis_tlast;
+  // assign m_dllp_axis_tuser  = is_tlp_r ? 4'b0001 : 4'b0010;
+  // assign m_axis_tready      = m_dllp_axis_tready;
 
-  assign m_tlp_axis_tdata = m_axis_tdata;
-  assign m_tlp_axis_tkeep = m_axis_tkeep;
-  assign m_tlp_axis_tvalid = m_axis_tvalid & is_tlp_r;
-  assign m_tlp_axis_tlast = m_axis_tlast;
-  assign m_tlp_axis_tuser = m_axis_tuser;
 
 
 

@@ -33,7 +33,7 @@ class TB:
 
         cocotb.start_soon(Clock(dut.clk_i, 5, units="ns").start())
         #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk_i, dut.rst_i) for k in range(ports)]
-        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk_i, dut.rst_i)
+        # self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis"), dut.clk_i, dut.rst_i)
         # self.sink.set_pause_generator(self.cycle_pause())
         
     async def reset(self):
@@ -101,8 +101,71 @@ def cycle_pause():
 #     while(dut.error_o.value == 0 and flag < 5000):
 #         await RisingEdge(dut.clk_i)
 #         flag += 1
+
+async def loopback(dut):
+    while(1):
+        dut.pipe_data_i.value        = dut.pipe_data_o.value
+        dut.pipe_data_valid_i.value  = dut.pipe_data_valid_o.value
+        dut.pipe_data_k_i.value      = dut.pipe_data_k_o.value
+        dut.pipe_sync_header_i.value = dut.pipe_sync_header_o.value
+        await RisingEdge(dut.clk_i)
         
+    # dut.ts1_valid_i.value = 0x0
+    # dut.ts2_valid_i.value = 0x0
+    # dut.idle_valid_i.value = 0x0
+    # dut.lane_status_i.value = 0x0
+    # dut.curr_data_rate_i = 0x2
+    
+
 @cocotb.test()
+async def run_test_loopback(dut):
+    tb = TB(dut)
+    cur_id = 1
+    seq_num = 0x02
+    # dut.curr_data_rate_i = 0x2
+    # tb.sink.log.setLevel(logging.ERROR)
+
+    await tb.reset()
+    cocotb.start_soon(loopback(dut))
+    # tb.sink.set_pause_generator(cycle_pause())
+    
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    dut.en_i.value = 1
+    dut.num_active_lanes_i.value = 8
+    dut.lane_active_i.value = 0xFF
+    dut.lane_status_i.value = 0xFF
+    
+    await Timer(500,'us')
+    # dut.link_up_i.value = 0
+    # dut.ts1_valid_i.value = 0x0
+    # dut.ts2_valid_i.value = 0x0
+    # dut.idle_valid_i.value = 0x0
+    # dut.lane_status_i.value = 0x0
+    # dut.curr_data_rate_i = 0x2
+    # dut.link_num_i.value = 0xf7f7f7f7f7f7f7f7
+    # dut.lane_num_i.value = 0xf7f7f7f7f7f7f7f7
+    # dut.rate_id_i.value =  0x0e0e0e0e0e0e0e
+    # dut.num_active_lanes_i.value = 8
+    # dut.lane_num_transmitted_i.value = 0x0706050403020100
+    # dut.lane_active_i.value = 0xFF
+    
+    
+    # dut.lane_status_i.value = 0xFF
+    # dut.idle_valid_i.value = 0x1
+    # for i in range(50):
+        # await RisingEdge(dut.clk_i)
+    # dut.idle_valid_i.value = 0x0
+    # 
+    # for k in range(3000):
+    #   await RisingEdge(dut.clk_i)
+    # 
+    # ts1_cnt = 0
+    # dut.ts1_valid_i.value = 0xFF
+
+
+# @cocotb.test()
 async def run_test_complete(dut):
     tb = TB(dut)
     cur_id = 1

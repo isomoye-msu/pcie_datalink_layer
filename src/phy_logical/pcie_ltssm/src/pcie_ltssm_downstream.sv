@@ -991,9 +991,7 @@ module pcie_ltssm_downstream
               ts2_cnt <= '0;
               single_idle_recieved[lane] <= '0;
             end else if (ts2_valid_i[lane] && (ts2_cnt != 8'h8)) begin
-              if ((link_num_i[lane*8+:8] == link_selected) &&
-              (lane_num_i[lane*8+:8] == lane_num_transmitted_i[lane*8+:8]) &&
-              rate_id_i[lane] == gen3_basic) begin
+              if ((link_num_i[lane*8+:8] == link_selected) && (lane_num_i[lane*8+:8] == lane)) begin
                 ts2_cnt <= ts2_cnt + 1;
                 ts1_cnt <= '0;
               end else begin
