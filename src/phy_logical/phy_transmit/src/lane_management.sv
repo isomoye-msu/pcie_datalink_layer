@@ -199,18 +199,14 @@ module lane_management
     if (curr_data_rate_i >= gen3) begin
       //increment count only if valid transaction
       if (is_phy_r || is_dllp_r) begin
-        if (sync_count == sync_width) begin
-          sync_count_c = '0;
-        end else begin
-          sync_count_c = sync_count_r + 1'b1;
-        end
+        sync_count_c = sync_count_r >= sync_width_r ? '0 : sync_count_r + 1'b1;
       end
     end else begin
       sync_count_c = '0;
     end
     //per lane sync header output
     for (int i = 0; i < MAX_NUM_LANES; i++) begin
-      if (sync_count == '0 && (curr_data_rate_i >= gen3)) begin
+      if (sync_count_r == '0 && (curr_data_rate_i >= gen3)) begin
         sync_header_c[i] = is_phy_r ? 2'b10 : 2'b01;
       end
     end

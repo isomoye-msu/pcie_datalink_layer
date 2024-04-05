@@ -23,7 +23,7 @@ module pcie_datalink_layer
     parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
     parameter int RETRY_TLP_SIZE = 3,
-    parameter int MAX_PAYLOAD_SIZE = 4096
+    parameter int MAX_PAYLOAD_SIZE = 1024
 ) (
     input  logic                  clk_i,                    // Clock signal
     input  logic                  rst_i,                    // Reset signal

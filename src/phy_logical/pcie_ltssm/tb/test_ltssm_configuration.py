@@ -4,7 +4,7 @@ import os
 import random
 import subprocess
 import sys
-
+from cocotb.binary import BinaryValue
 import cocotb_test.simulator
 import pytest
 import zlib, binascii, struct
@@ -104,10 +104,10 @@ def cycle_pause():
 
 async def loopback(dut):
     while(1):
-        dut.pipe_data_i.value        = dut.pipe_data_o.value
-        dut.pipe_data_valid_i.value  = dut.pipe_data_valid_o.value
-        dut.pipe_data_k_i.value      = dut.pipe_data_k_o.value
-        dut.pipe_sync_header_i.value = dut.pipe_sync_header_o.value
+        dut.phy_rxdata.value        = dut.phy_txdata.value
+        dut.phy_rxdata_valid.value  = dut.phy_txdata_valid.value
+        dut.phy_rxdatak.value       = dut.phy_txdatak.value
+        dut.phy_rxsync_header.value = dut.phy_txsync_header.value
         await RisingEdge(dut.clk_i)
         
     # dut.ts1_valid_i.value = 0x0
@@ -134,8 +134,28 @@ async def run_test_loopback(dut):
     await RisingEdge(dut.clk_i)
     dut.en_i.value = 1
     dut.num_active_lanes_i.value = 8
+    phy_status = BinaryValue(0)
+    rxstatus = BinaryValue(0)
+    
+    
+    for i in range(8):
+        phy_status = (phy_status << 1) | 0x1
+        rxstatus = (rxstatus << 3) | 0b011 
+        
+    
+    dut.phy_phystatus.value = phy_status
+    dut.phy_rxstatus.value = rxstatus 
+    print(phy_status)
+    print(rxstatus)
+    
+    # assert 1 == 0
+        
+    # dut.phy_phystatus.value = 
     dut.lane_active_i.value = 0xFF
     dut.lane_status_i.value = 0xFF
+    dut.phy_rxelecidle.value = 0xFF
+    
+    # dut.directed_speed_change_i.value =
     
     await Timer(500,'us')
     # dut.link_up_i.value = 0

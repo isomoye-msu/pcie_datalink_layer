@@ -40,8 +40,10 @@ module dllp_fc_update
 
   // localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
   // localparam int HdrMinCredits = 8'h040;
-  localparam int FcWaitPeriod = (CLK_RATE * (2 ** 5));
-  localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
+  localparam int ClockPeriodNs = ((10 ** 3) / CLK_RATE);
+  localparam int TwoMsTimeOut  = (2 * (10 ** 4)) / ClockPeriodNs;
+  localparam int FcWaitPeriod  = TwoMsTimeOut;
+  // localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
 
   typedef enum logic [4:0] {
     ST_IDLE,

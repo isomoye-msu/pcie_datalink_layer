@@ -5,7 +5,8 @@ module gen3_byte_scramble (
 );
 
 
-  always_comb begin : lfsr_outomputation
+  always_comb begin : lfsr_out_computation
+    lfsr_out = '0;
     if (disable_lfsr_advance) begin
       lfsr_out = lfsr_r;
     end else begin

@@ -149,29 +149,29 @@ module gen3_scramble
       //check if special symbol
       if (is_os_c) begin
         //check if EIEOS
-        if (data_in_i[i*8+:8] == EIEOS) begin
+        if (data_in_i[i<<3+:8] == EIEOS || is_eieos_c) begin
           //reset lfsr
           scramble_reset[i] = '1;
           eieos_detected[i] = '1;
-          scrambled_data[i] = data_in_i[byte_idx*8+:8];
-        end else if (data_in_i[byte_idx*8+:8] inside {TS1OS, TS2OS}) begin
+          scrambled_data[i] = data_in_i[i<<3+:8];
+        end else if (data_in_i[byte_idx<<3+:8] inside {TS1OS, TS2OS}) begin
           ts_detected[i] = '1;
           //   disable_lfsr_advance[i] = '1;
-          scrambled_data[i] = data_in_i[byte_idx*8+:8];
-        end else if (data_in_i[byte_idx*8+:8] == GEN3_SKP || is_skp_c) begin
+          scrambled_data[i] = data_in_i[byte_idx<<3+:8];
+        end else if (data_in_i[byte_idx<<3+:8] == GEN3_SKP || is_skp_c) begin
           disable_lfsr_advance[i] = '1;
-          scrambled_data[i] = data_in_i[byte_idx*8+:8];
+          scrambled_data[i] = data_in_i[byte_idx<<3+:8];
           skip_detected[i] = '1;
         end else begin
           //scramble data
-          scrambled_data[i] = (data_in_i[byte_idx*8+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+          scrambled_data[i] = (data_in_i[byte_idx<<3+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
         end
       end else begin
         //scramble data
-        scrambled_data[i] = (data_in_i[byte_idx*8+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+        scrambled_data[i] = (data_in_i[byte_idx<<3+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
       end
       //update out
-      data_out_o_c[i*8+:8] = scrambled_data[i];
+      data_out_o_c[i<<3+:8] = scrambled_data[i];
     end
   end
   assign data_out_o = data_out_o_r;

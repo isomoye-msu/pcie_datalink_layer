@@ -23,16 +23,16 @@ module ordered_set_handler
     input logic        [ 3:0] data_k_in_i,
     input logic        [ 5:0] pipe_width_i,
 
-    output logic              [(1 * 8)-1:0] link_num_o,
-    output logic              [(1 * 8)-1:0] lane_num_o,
-    output logic              [        7:0] nfts_o,
-    output ts_symbol6_union_t [      1-1:0] symbol6_o,
-    output training_ctrl_t    [      1-1:0] training_ctrl_o,
-    output rate_id_t                        rate_id_o,
-    output logic                            idle_valid_o,
-    output logic                            ts1_valid_o,
-    output logic                            ts2_valid_o,
-    output logic                            eieos_valid_o
+    output logic              [7:0] link_num_o,
+    output logic              [7:0] lane_num_o,
+    output logic              [7:0] nfts_o,
+    output ts_symbol6_union_t       symbol6_o,
+    output training_ctrl_t          training_ctrl_o,
+    output rate_id_t                rate_id_o,
+    output logic                    idle_valid_o,
+    output logic                    ts1_valid_o,
+    output logic                    ts2_valid_o,
+    output logic                    eieos_valid_o
 
 
 );
@@ -93,6 +93,7 @@ module ordered_set_handler
   assign nfts_o          = training_set.n_fts;
   assign training_ctrl_o = training_set.train_ctrl;
   assign rate_id_o       = training_set.rate_id;
+  assign symbol6_o       = training_set.ts_s6;
 
 
   logic [7:0] byte_index;
@@ -161,11 +162,12 @@ module ordered_set_handler
                   ordered_set_c[8*i+:8] = data_in_i[8*(byte_index-i)+:8];
                 end
               end
-              axis_pkt_cnt_c = 1'b1;
               if (data_in_i[(8*byte_index)+:8] == GEN3_SKP) begin
                 next_state = ST_RX_GEN3_SKP;
+                axis_pkt_cnt_c = 1'b1;
               end
               if (data_in_i[(8*byte_index)+:8] inside {TS1OS, TS2OS, EIOS, EIEOS}) begin
+                axis_pkt_cnt_c = 1'b1;
                 next_state = ST_RX_GEN3;
               end
             end
@@ -184,8 +186,9 @@ module ordered_set_handler
           if (pipe_width_i == 8'd16) begin
             if ((data_k_in_i[1]) && data_in_i[(8*1)+:8] inside {IDL}
             || (data_k_in_i[0]) && data_in_i[(8*0)+:8] inside {IDL}) begin
-              idle_valid_c = '1;
-              next_state   = ST_IDLE;
+              idle_valid_c   = '1;
+              axis_pkt_cnt_c = '0;
+              next_state     = ST_IDLE;
             end else begin
               next_state = ST_RX_FULL_GEN1;
             end
@@ -193,8 +196,9 @@ module ordered_set_handler
             if (axis_pkt_cnt_r >= 8'd3) begin
               if ((data_k_in_i[0]) && data_in_i[(8*0)+:8] == IDL
               && ordered_set_r[8*1 +:8]  == IDL && ordered_set_r[8*2 +:8]  == IDL) begin
-                idle_valid_c = '1;
-                next_state   = ST_IDLE;
+                idle_valid_c   = '1;
+                axis_pkt_cnt_c = '0;
+                next_state     = ST_IDLE;
               end else begin
                 next_state = ST_RX_FULL_GEN1;
               end
@@ -213,10 +217,12 @@ module ordered_set_handler
           end
           if (pipe_width_i == 8'd16 && axis_pkt_cnt_r >= 8'd7) begin
             check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
             next_state          = ST_IDLE;
           end else begin
             if (axis_pkt_cnt_r >= 8'd15) begin
               check_ordered_set_c = '1;
+              axis_pkt_cnt_c      = '0;
               next_state          = ST_IDLE;
             end
           end
@@ -233,14 +239,17 @@ module ordered_set_handler
           end
           if (pipe_width_i == 8'd32 && axis_pkt_cnt_r >= 8'd3) begin
             check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
             next_state          = ST_IDLE;
           end else if (pipe_width_i == 8'd16 && axis_pkt_cnt_r >= 8'd7) begin
             check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
             next_state          = ST_IDLE;
           end else begin
             if (axis_pkt_cnt_r >= 8'd15) begin
               //bad tlp
               check_ordered_set_c = '1;
+              axis_pkt_cnt_c      = '0;
               next_state          = ST_IDLE;
             end
           end
@@ -254,10 +263,11 @@ module ordered_set_handler
               ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
                  data_in_i[8*(byte_index-i)+:8];
               if ((data_in_i[8*(byte_index-i)+:8] == SKP_END) && ((byte_index - i) == 8'd0)) begin
-                skp0_c = data_in_i[8*(byte_index-2)+:8];
-                skp1_c = data_in_i[8*(byte_index-1)+:8];
-                skp2_c = data_in_i[8*(byte_index-0)+:8];
-                next_state = ST_IDLE;
+                skp0_c         = data_in_i[8*(byte_index-2)+:8];
+                skp1_c         = data_in_i[8*(byte_index-1)+:8];
+                skp2_c         = data_in_i[8*(byte_index-0)+:8];
+                axis_pkt_cnt_c = '0;
+                next_state     = ST_IDLE;
               end
             end
           end

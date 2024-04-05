@@ -17,43 +17,90 @@ module pcie_phy_top
     parameter int CROSSLINK_EN  = 0,               //crosslink not supported
     parameter int UPCONFIG_EN   = 0                //upconfig not supported
 ) (
-    input  logic                                    clk_i,               //! 100MHz clock signal
-    input  logic                                    rst_i,               //! Reset signal
+    input  logic                                    clk_i,                 //! 100MHz clock signal
+    input  logic                                    rst_i,                 //! Reset signal
     input  logic                                    en_i,
     input  logic [                             5:0] num_active_lanes_i,
     input  logic [               MAX_NUM_LANES-1:0] lane_active_i,
     input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
     output logic                                    fc_initialized_o,
     //pipe interface output
-    output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
-    output logic [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
-    output logic [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
-    output logic [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
+    output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata,
+    output logic [               MAX_NUM_LANES-1:0] phy_txdata_valid,
+    output logic [           (4*MAX_NUM_LANES)-1:0] phy_txdatak,
+    output logic [               MAX_NUM_LANES-1:0] phy_txstart_block,
+    output logic [           (2*MAX_NUM_LANES)-1:0] phy_txsync_header,
     //pipe interface input
-    input  logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
-    input  logic [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
-    input  logic [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
-    input  logic [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
+    input  logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_rxdata,
+    input  logic [               MAX_NUM_LANES-1:0] phy_rxdata_valid,
+    input  logic [           (4*MAX_NUM_LANES)-1:0] phy_rxdatak,
+    input  logic [               MAX_NUM_LANES-1:0] phy_rxstart_block,
+    input  logic [           (2*MAX_NUM_LANES)-1:0] phy_rxsync_header,
+    // PHY Command
+    output wire                                     phy_txdetectrx,
+    output wire  [               MAX_NUM_LANES-1:0] phy_txelecidle,
+    output wire  [               MAX_NUM_LANES-1:0] phy_txcompliance,
+    output wire  [               MAX_NUM_LANES-1:0] phy_rxpolarity,
+    output wire  [                             1:0] phy_powerdown,
+    output wire  [                             2:0] phy_rate,
+    // PHY Status
+    input  wire  [               MAX_NUM_LANES-1:0] phy_rxvalid,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_phystatus,
+    input  wire                                     phy_phystatus_rst,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_rxelecidle,
+    input  wire  [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+    // TX Driver
+    output wire  [                             2:0] phy_txmargin,
+    output wire                                     phy_txswing,
+    output wire                                     phy_txdeemph,
+    // TX Equalization (Gen3/4)
+    output wire  [           (MAX_NUM_LANES*2)-1:0] phy_txeq_ctrl,
+    output wire  [           (MAX_NUM_LANES*4)-1:0] phy_txeq_preset,
+    output wire  [           (MAX_NUM_LANES*6)-1:0] phy_txeq_coeff,
+    input  wire  [                             5:0] phy_txeq_fs,
+    input  wire  [                             5:0] phy_txeq_lf,
+    input  wire  [          (MAX_NUM_LANES*18)-1:0] phy_txeq_new_coeff,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_txeq_done,
+    // RX Equalization (Gen3/4)
+    output wire  [           (MAX_NUM_LANES*2)-1:0] phy_rxeq_ctrl,
+    output wire  [           (MAX_NUM_LANES*4)-1:0] phy_rxeq_txpreset,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_preset_sel,
+    input  wire  [          (MAX_NUM_LANES*18)-1:0] phy_rxeq_new_txcoeff,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_adapt_done,
+    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_done,
+    //detect phy signals
+    output reg                                      as_mac_in_detect,
+    output reg                                      as_cdr_hold_req,
+
+    // Debug output
+
+    (* mark_debug *) output wire [7:0] debug_state,
+
+    // Bringup Control Inputs
+    (* mark_debug *) input wire tx_elec_idle,
+    (* mark_debug *) input wire phy_ready_en,
+
+
     //TLP AXIS inputs
-    input  logic [                  DATA_WIDTH-1:0] s_tlp_axis_tdata,
-    input  logic [                  KEEP_WIDTH-1:0] s_tlp_axis_tkeep,
-    input  logic                                    s_tlp_axis_tvalid,
-    input  logic                                    s_tlp_axis_tlast,
-    input  logic [                  USER_WIDTH-1:0] s_tlp_axis_tuser,
-    output logic                                    s_tlp_axis_tready,
+    input  logic [DATA_WIDTH-1:0] s_tlp_axis_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_tlp_axis_tkeep,
+    input  logic                  s_tlp_axis_tvalid,
+    input  logic                  s_tlp_axis_tlast,
+    input  logic [USER_WIDTH-1:0] s_tlp_axis_tuser,
+    output logic                  s_tlp_axis_tready,
     //TLP AXIS output
-    output logic [                  DATA_WIDTH-1:0] m_tlp_axis_tdata,
-    output logic [                  KEEP_WIDTH-1:0] m_tlp_axis_tkeep,
-    output logic                                    m_tlp_axis_tvalid,
-    output logic                                    m_tlp_axis_tlast,
-    output logic [                  USER_WIDTH-1:0] m_tlp_axis_tuser,
-    input  logic                                    m_tlp_axis_tready
+    output logic [DATA_WIDTH-1:0] m_tlp_axis_tdata,
+    output logic [KEEP_WIDTH-1:0] m_tlp_axis_tkeep,
+    output logic                  m_tlp_axis_tvalid,
+    output logic                  m_tlp_axis_tlast,
+    output logic [USER_WIDTH-1:0] m_tlp_axis_tuser,
+    input  logic                  m_tlp_axis_tready
 );
 
 
   parameter int RX_FIFO_SIZE = 3;
   parameter int RETRY_TLP_SIZE = 3;
-  parameter int MAX_PAYLOAD_SIZE = 4096;
+  parameter int MAX_PAYLOAD_SIZE = 1024;
 
   logic                                      link_up;
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
@@ -87,6 +134,9 @@ module pcie_phy_top
   logic                                      s_dllp_axis_tready;
 
 
+  assign phy_rate = curr_data_rate;
+
+
   phy_receive #(
       .CLK_RATE(CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
@@ -99,10 +149,10 @@ module pcie_phy_top
       .rst_i(rst_i),
       .en_i(en_i),
       .link_up_i(link_up),
-      .pipe_data_i(pipe_data_i),
-      .pipe_data_valid_i(pipe_data_valid_i),
-      .pipe_data_k_i(pipe_data_k_i),
-      .pipe_sync_header_i(pipe_sync_header_i),
+      .pipe_data_i(phy_rxdata),
+      .pipe_data_valid_i(phy_rxdata_valid),
+      .pipe_data_k_i(phy_rxdatak),
+      .pipe_sync_header_i(phy_rxsync_header),
       .pipe_width_i(pipe_width),
       .num_active_lanes_i(num_active_lanes_i),
       .ts1_valid_o(ts1_valid),
@@ -135,10 +185,10 @@ module pcie_phy_top
       .rst_i(rst_i),
       .en_i(en_i),
       .link_up_i(link_up),
-      .pipe_data_o(pipe_data_o),
-      .pipe_data_valid_o(pipe_data_valid_o),
-      .pipe_data_k_o(pipe_data_k_o),
-      .pipe_sync_header_o(pipe_sync_header_o),
+      .pipe_data_o(phy_txdata),
+      .pipe_data_valid_o(phy_txdata_valid),
+      .pipe_data_k_o(phy_txdatak),
+      .pipe_sync_header_o(phy_txsync_header),
       .pipe_width_o(pipe_width),
       //   .num_active_lanes_o(num_active_lanes_o),
       .num_active_lanes_i(num_active_lanes_i),
@@ -181,21 +231,24 @@ module pcie_phy_top
       .link_num_i(link_number),
       .lane_num_i(lane_number),
       .lane_num_transmitted_i(),
-      .lane_active_i(lane_active_i),
+      .phy_rxstatus_i(phy_rxstatus),
+      .phy_phystatus_i(phy_phystatus),
+      .phy_phystatus_rst_i(phy_phystatus_rst),
+      .phy_txdetectrx_o(phy_txdetectrx),
+      //   .lane_active_i(lane_active_i),
       .lanes_ts2_satisfied_i(),
       .config_copmlete_ts2_i(),
       .from_l0_i(),
       .receiver_detected_i(),
-      .electrical_idle_i(),
+      .phy_rxelecidle_i(phy_rxelecidle),
       .tx_enter_elec_idle_o(),
       .goto_cfg_o(),
       .goto_detect_o(),
       .symbol6_i(symbol6),
       .training_ctrl_i(training_ctrl),
       .rate_id_i(rate_id),
-      .max_rate_i(),
       .extended_synch_i(),
-      .directed_speed_change_i(),
+      .directed_speed_change_i('1),
       .lane_status_i(lane_status_i),
       .curr_data_rate_o(curr_data_rate),
       .data_rate_o(),

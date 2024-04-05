@@ -106,7 +106,7 @@ module pack_data
     sync_header_c    = sync_header_r;
     // lane_number      = '0;
     fifo_wr_c        = '0;
-    bytes_per_packet = num_active_lanes_i * (pipe_width_i >> 3);
+    bytes_per_packet = (pipe_width_i >> 3) << (num_active_lanes_i-1);
     next_state       = curr_state;
     end_packet       = '0;
     case (curr_state)
@@ -124,9 +124,9 @@ module pack_data
               if (i < bytes_per_packet) begin
                 // data_c[8*i+:8]                                          = data_r[8*i+:8];
                 data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8]      = data_i[8*i+:8];
-                data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
-                data_k_c[(bytes_per_packet*word_count_r)+(4*i)+:4]      = data_k_i[4*i+:4];
-                sync_header_c[(bytes_per_packet*word_count_r)+(2*i)+:2] = sync_header_r[2*i+:2];
+                // data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
+                // data_k_c[(bytes_per_packet*word_count_r)+(1*i)+:1]      = data_k_i[1*i+:1];
+                // sync_header_c[(bytes_per_packet*word_count_r)+(1*i)+:1] = sync_header_r[1*i+:1];
                 if (data_i[8*i+:8] == ENDP) begin
                   end_packet = '1;
                 end
@@ -144,18 +144,18 @@ module pack_data
         if (|data_valid_i) begin
           word_count_c = word_count_r + 1'b1;
           // data_c        = data_i;
-          // data_valid_c  = data_valid_i;
-          // data_k_c      = data_k_i;
-          // sync_header_c = sync_header_r;
+          data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
+          data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
+          sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
           // data_c[(bytes_per_packet*word_count_r*8):512] = data_i;
           for (int i = 0; i < BytesPerTransaction; i++) begin
             // data_c[8*i+:8] = data_r[8*i+:8];
             if (i < bytes_per_packet) begin
               // data_c[8*i+:8]                                          = data_r[8*i+:8];
               data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8]      = data_i[8*i+:8];
-              data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
-              data_k_c[(bytes_per_packet*word_count_r)+(4*i)+:4]      = data_k_i[4*i+:4];
-              sync_header_c[(bytes_per_packet*word_count_r)+(2*i)+:2] = sync_header_r[2*i+:2];
+              // data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
+              // data_k_c[(bytes_per_packet*word_count_r)+(1*i)+:1]      = data_k_i[1*i+:1];
+              // sync_header_c[(bytes_per_packet*word_count_r)+(1*i)+:1] = sync_header_r[1*i+:1];
               if (data_i[8*i+:8] == ENDP) begin
                 end_packet = '1;
               end

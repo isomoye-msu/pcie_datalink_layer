@@ -6,6 +6,7 @@ from cocotbext.pcie.core import *
 from cocotbext.pcie.core.dllp import *
 from cocotbext.pcie.core.tlp import *
 from cocotbext.pcie.core.port import *
+import bitstring
 import mmap
 
 class pcie_seq_item(uvm_sequence_item):
@@ -17,7 +18,12 @@ class pcie_seq_item(uvm_sequence_item):
         self.is_tlp = None
         self.is_dllp = None
         self.results = None        
-        
+
+def reverse_bits_in_byte(byte):
+    bit_array = bitstring.BitArray(int=byte, length=9)
+    bit_array.reverse()
+    return bit_array.uint
+
 class pcie_seq(base_sequence):
     
     def __init__(self, name, msix,config=None):
@@ -204,8 +210,22 @@ class pcie_seq(base_sequence):
             seq_item = pkt
             seq_item.crc = self.calculator.checksum(
                 seq_item.pack()).to_bytes(2, 'big')
+            crc_array = bytearray(seq_item.crc)
+            # print(crc_array)
+            crc_reverse = 0
+            for byte in crc_array:
+                # print(hex(byte))
+                # print(hex((reverse_bits_in_byte(byte)>>1) & 0xff))
+                crc_reverse = (crc_reverse <<8) | ((reverse_bits_in_byte(byte)>>1) & 0xff)
+            # assert 1 == 0
             data = seq_item.pack()
-            data += self.calculator.checksum(data).to_bytes(2, 'big')
+            
+            # print(bin(hex(crc_reverse)))
+            # assert 1 == 0
+            # print(crc_reverse.to_bytes(2, 'big'))
+            data += crc_reverse.to_bytes(2, 'big')
+            # print(data)
+            # self.calculator.checksum(data).to_bytes(2, 'big')
             frame = AxiStreamFrame(data)
             frame.tuser = 1
             

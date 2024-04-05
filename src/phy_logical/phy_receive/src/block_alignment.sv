@@ -66,6 +66,7 @@ module block_alignment
   logic                                    ready_out;
   logic [                             7:0] lane_number;
   logic [                             7:0] pipewidth_shift_idx;
+  logic [                             7:0] lanes_shift_idx;
   logic [                             7:0] lane_idx;
 
 
@@ -92,6 +93,7 @@ module block_alignment
     sync_header_c       = '0;
     lane_number         = '0;
     pipewidth_shift_idx = (pipe_width_i >> 3) - 1;
+    lanes_shift_idx     = (num_active_lanes_i >> 3) - 1;
     if (phy_link_up_i) begin
       if (pipe_width_i == 8'd8 && |data_valid_i) begin
         for (int lane = 0; lane < MAX_NUM_LANES; lane++) begin
@@ -107,15 +109,17 @@ module block_alignment
       if (|data_valid_i) begin
         for (int lane = 0; lane < MAX_NUM_LANES; lane++) begin
           lane_number = lane_reverse_i ? (num_active_lanes_i - 1) - lane : lane;
-          sync_header_c[lane*2+:2] = sync_header_i[lane_number*2+:2];
+          sync_header_c[lane<<1+:2] = sync_header_i[lane_number<<1+:2];
           if (lane < num_active_lanes_i) begin
             data_valid_c[lane] = data_valid_i[lane_number];
-            sync_header_c[lane*2+:2] = sync_header_i[lane_number*2+:2];
+            sync_header_c[lane<<1+:2] = sync_header_i[lane_number<<1+:2];
             for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
               if (byte_idx < (pipe_width_i >> 3)) begin
                 lane_idx = ((pipe_width_i >> 3) - 1 - byte_idx);
-                data_c[(lane*8)+(8*byte_idx*num_active_lanes_i)+:8] = data_i[(4*8*lane)+(8*lane_idx)+:8];
-                data_k_c[((lane))+(byte_idx*num_active_lanes_i)+:1] = data_k_i[(4*1*lane)+(1*lane_idx)+:1];
+                data_c[(lane<<3)+((byte_idx<<3)<<lanes_shift_idx)+:8]
+                = data_i[((lane<<2)<<3)+(lane_idx<<3)+:8];
+                data_k_c[((lane))+(byte_idx<<lanes_shift_idx)+:1] =
+                data_k_i[(lane<<2)+(lane_idx)+:1];
 
               end
             end

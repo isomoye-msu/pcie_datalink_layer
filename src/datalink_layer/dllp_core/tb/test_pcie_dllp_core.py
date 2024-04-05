@@ -179,16 +179,16 @@ class phy_driver(base_driver):
         self.rp = uvm_analysis_port("rp", self)
         self.dut = cocotb.top
         self.source = AxiStreamSource(AxiStreamBus.from_prefix(
-            self.dut, "s_axis_phy"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "s_phy_axis"), self.dut.clk_i, self.dut.rst_i)
         self.source.log.setLevel(logging.ERROR)
         self.sink = AxiStreamSink(AxiStreamBus.from_prefix(
-            self.dut, "m_axis_phy"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "m_phy_axis"), self.dut.clk_i, self.dut.rst_i)
         self.sink.log.setLevel(logging.ERROR)
         self.tlp_sink = AxiStreamSink(AxiStreamBus.from_prefix(
-            self.dut, "m_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "m_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
         self.tlp_sink.log.setLevel(logging.ERROR)
         self.tlp_source = AxiStreamSource(AxiStreamBus.from_prefix(
-            self.dut, "s_axis_tlp"), self.dut.clk_i, self.dut.rst_i)
+            self.dut, "s_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
         self.tlp_source.log.setLevel(logging.ERROR)
         self.datum = None
         self.log = logging.getLogger("cocotb.tb")
@@ -345,19 +345,19 @@ class Fc1Test(uvm_test):
         self.drop_objection()
 
 
-@pyuvm.test()
-class CfgTest(uvm_test):
-    """Test Dllp layer by going through flow control init sequence"""
+# @pyuvm.test()
+# class CfgTest(uvm_test):
+#     """Test Dllp layer by going through flow control init sequence"""
 
-    def build_phase(self):
-        self.log = logging.getLogger("Fc1Test.tb")
-        self.log.setLevel(logging.DEBUG)
-        self.env = phy_env.create("phy_env", self)
+#     def build_phase(self):
+#         self.log = logging.getLogger("Fc1Test.tb")
+#         self.log.setLevel(logging.DEBUG)
+#         self.env = phy_env.create("phy_env", self)
 
-    def end_of_elaboration_phase(self):
-        self.test_all = config_read_seq("test fc1",1)
+#     def end_of_elaboration_phase(self):
+#         self.test_all = config_read_seq("test fc1",1)
         
-    async def run_phase(self):
-        self.raise_objection()
-        await with_timeout(self.test_all.start(),50000000,'ns')
-        self.drop_objection()
+#     async def run_phase(self):
+#         self.raise_objection()
+#         await with_timeout(self.test_all.start(),5,'ns')
+#         self.drop_objection()

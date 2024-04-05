@@ -155,7 +155,7 @@ package pcie_phy_pkg;
     lane7_seed, lane6_seed, lane5_seed, lane4_seed, lane3_seed, lane2_seed, lane1_seed, lane0_seed
   };
 
-  typedef logic[7:0] data_t;
+  typedef logic [7:0] data_t;
 
   logic [127:0] GEN3_SDS = {
     8'h55,
@@ -440,8 +440,8 @@ package pcie_phy_pkg;
     end
   endfunction
 
-  function automatic pcie_ordered_set_t gen_eios(output pcie_ordered_set_t idle_out,
-                                                 input rate_speed_e rate_speed = gen1);
+  function automatic void gen_eios(output pcie_ordered_set_t idle_out,
+                                   input rate_speed_e rate_speed = gen1);
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
@@ -463,8 +463,8 @@ package pcie_phy_pkg;
   endfunction
 
 
-  function automatic pcie_ordered_set_t gen_eieos(output pcie_ordered_set_t eieos_out,
-                                                  input rate_speed_e rate_speed = gen2);
+  function automatic void gen_eieos(output pcie_ordered_set_t eieos_out,
+                                    input rate_speed_e rate_speed = gen2);
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
@@ -475,12 +475,12 @@ package pcie_phy_pkg;
         end
         temp_os[8*15+:8] = TS1;
       end else begin
-        for (int i = 0; i < 15; i++) begin
+        for (logic [7:0] i = 0; i < 16; i++) begin
           //even
-          if (i[0]) begin
-            temp_os.symbols[i] = 8'h00;
+          if (!i[0]) begin
+            temp_os[i*8+:8] = 8'h00;
           end else begin
-            temp_os.symbols[i] = 8'hFF;
+            temp_os[i*8+:8] = 8'hFF;
           end
         end
       end

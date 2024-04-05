@@ -63,12 +63,12 @@ module axis_retry_fifo
   logic                           frame_available_c;
   logic                           frame_available_r;
   //axis signals
-  logic          [DATA_WIDTH-1:0] retry_axis_tdata;
-  logic          [KEEP_WIDTH-1:0] retry_axis_tkeep;
-  logic                           retry_axis_tvalid;
-  logic                           retry_axis_tlast;
-  logic          [USER_WIDTH-1:0] retry_axis_tuser;
-  logic                           retry_axis_tready;
+  // logic          [DATA_WIDTH-1:0] retry_axis_tdata;
+  // logic          [KEEP_WIDTH-1:0] retry_axis_tkeep;
+  // logic                           retry_axis_tvalid;
+  // logic                           retry_axis_tlast;
+  // logic          [USER_WIDTH-1:0] retry_axis_tuser;
+  // logic                           retry_axis_tready;
 
 
   always_ff @(posedge clk_i) begin : main_seq
@@ -109,19 +109,19 @@ module axis_retry_fifo
 
   //read out data to master
   always_comb begin : read_logic
-    retry_axis_tdata  = '0;
-    retry_axis_tkeep  = '0;
-    retry_axis_tvalid = '0;
-    retry_axis_tlast  = '0;
-    retry_axis_tuser  = '0;
+    m_axis_tdata  = '0;
+    m_axis_tkeep  = '0;
+    m_axis_tvalid = '0;
+    m_axis_tlast  = '0;
+    m_axis_tuser  = '0;
     rd_ptr_c          = rd_ptr_r;
     m_axis            = axis_mem_r[rd_ptr_r];
-    if (retry_axis_tready && frame_available_r) begin
-      retry_axis_tvalid = m_axis.tvalid;
-      retry_axis_tdata  = m_axis.tdata;
-      retry_axis_tkeep  = m_axis.tkeep;
-      retry_axis_tlast  = m_axis.tlast;
-      retry_axis_tuser  = m_axis.tuser;
+    if (m_axis_tready && frame_available_r) begin
+      m_axis_tvalid = m_axis.tvalid;
+      m_axis_tdata  = m_axis.tdata;
+      m_axis_tkeep  = m_axis.tkeep;
+      m_axis_tlast  = m_axis.tlast;
+      m_axis_tuser  = m_axis.tuser;
       rd_ptr_c          = rd_ptr_r + 1'b1;
       if (m_axis.tlast) begin
         rd_ptr_c = '0;
@@ -131,38 +131,38 @@ module axis_retry_fifo
 
 
   //output register for axis fifo
-  axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
-      .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
-  ) axis_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(retry_axis_tdata),
-      .s_axis_tkeep(retry_axis_tkeep),
-      .s_axis_tvalid(retry_axis_tvalid),
-      .s_axis_tready(retry_axis_tready),
-      .s_axis_tlast(retry_axis_tlast),
-      .s_axis_tuser(retry_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
-      .m_axis_tvalid(m_axis_tvalid),
-      .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tuser(m_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest()
-  );
+  // axis_register #(
+  //     .DATA_WIDTH(DATA_WIDTH),
+  //     .KEEP_ENABLE('1),
+  //     .KEEP_WIDTH(KEEP_WIDTH),
+  //     .LAST_ENABLE('1),
+  //     .ID_ENABLE('0),
+  //     .ID_WIDTH(1),
+  //     .DEST_ENABLE('0),
+  //     .DEST_WIDTH(1),
+  //     .USER_ENABLE('1),
+  //     .USER_WIDTH(USER_WIDTH),
+  //     .REG_TYPE(SkidBuffer)
+  // ) axis_register_inst (
+  //     .clk(clk_i),
+  //     .rst(rst_i),
+  //     .s_axis_tdata(retry_axis_tdata),
+  //     .s_axis_tkeep(retry_axis_tkeep),
+  //     .s_axis_tvalid(retry_axis_tvalid),
+  //     .s_axis_tready(retry_axis_tready),
+  //     .s_axis_tlast(retry_axis_tlast),
+  //     .s_axis_tuser(retry_axis_tuser),
+  //     .s_axis_tid('0),
+  //     .s_axis_tdest('0),
+  //     .m_axis_tdata(m_axis_tdata),
+  //     .m_axis_tkeep(m_axis_tkeep),
+  //     .m_axis_tvalid(m_axis_tvalid),
+  //     .m_axis_tready(m_axis_tready),
+  //     .m_axis_tlast(m_axis_tlast),
+  //     .m_axis_tuser(m_axis_tuser),
+  //     .m_axis_tid(),
+  //     .m_axis_tdest()
+  // );
 
 
 endmodule

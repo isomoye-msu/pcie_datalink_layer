@@ -14,31 +14,31 @@ module phy_receive
     input logic rst_i,  // Reset signal
 
     //Control
-    input  logic                                                 en_i,
-    input  logic                                                 link_up_i,
-    input  logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
-    input  logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
-    input  logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
-    input  logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
-    input  logic              [                             5:0] pipe_width_i,
-    input  logic              [                             5:0] num_active_lanes_i,
+    input  logic                                           en_i,
+    input  logic                                           link_up_i,
+    input  logic        [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
+    input  logic        [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
+    input  logic        [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
+    input  logic        [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
+    input  logic        [                             5:0] pipe_width_i,
+    input  logic        [                             5:0] num_active_lanes_i,
     //training set configuration signals
-    output logic              [               MAX_NUM_LANES-1:0] ts1_valid_o,
-    output logic              [               MAX_NUM_LANES-1:0] ts2_valid_o,
-    output logic              [               MAX_NUM_LANES-1:0] idle_valid_o,
-    output logic              [         (MAX_NUM_LANES * 8)-1:0] link_num_o,
-    output logic              [         (MAX_NUM_LANES * 8)-1:0] lane_num_o,
-    output ts_symbol6_union_t [               MAX_NUM_LANES-1:0] symbol6_o,
-    output training_ctrl_t    [               MAX_NUM_LANES-1:0] training_ctrl_o,
-    output rate_id_t          [               MAX_NUM_LANES-1:0] rate_id_o,
-    input  rate_speed_e                                          curr_data_rate_i,
+    output logic        [               MAX_NUM_LANES-1:0] ts1_valid_o,
+    output logic        [               MAX_NUM_LANES-1:0] ts2_valid_o,
+    output logic        [               MAX_NUM_LANES-1:0] idle_valid_o,
+    output logic        [         (MAX_NUM_LANES * 8)-1:0] link_num_o,
+    output logic        [         (MAX_NUM_LANES * 8)-1:0] lane_num_o,
+    output logic        [         (MAX_NUM_LANES * 8)-1:0] symbol6_o,
+    output logic        [         (MAX_NUM_LANES * 8)-1:0] training_ctrl_o,
+    output logic        [         (MAX_NUM_LANES * 8)-1:0] rate_id_o,
+    input  rate_speed_e                                    curr_data_rate_i,
     //pcie dllp outputs
-    output logic              [                  DATA_WIDTH-1:0] m_dllp_axis_tdata,
-    output logic              [                  KEEP_WIDTH-1:0] m_dllp_axis_tkeep,
-    output logic                                                 m_dllp_axis_tvalid,
-    output logic                                                 m_dllp_axis_tlast,
-    output logic              [                  USER_WIDTH-1:0] m_dllp_axis_tuser,
-    input  logic                                                 m_dllp_axis_tready
+    output logic        [                  DATA_WIDTH-1:0] m_dllp_axis_tdata,
+    output logic        [                  KEEP_WIDTH-1:0] m_dllp_axis_tkeep,
+    output logic                                           m_dllp_axis_tvalid,
+    output logic                                           m_dllp_axis_tlast,
+    output logic        [                  USER_WIDTH-1:0] m_dllp_axis_tuser,
+    input  logic                                           m_dllp_axis_tready
 );
 
   localparam int PcieDataSize = $size(
