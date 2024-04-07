@@ -65,62 +65,62 @@ module lane_management
   } lane_mngt_state_e;
 
 
-  lane_mngt_state_e                     curr_state;
-  lane_mngt_state_e                     next_state;
+  lane_mngt_state_e                                    curr_state;
+  lane_mngt_state_e                                    next_state;
   //   logic [5:0] pipe_width_o;
-  logic             [              4:0] sync_width_c;
-  logic             [              4:0] sync_width_r;
+  logic             [                             4:0] sync_width_c;
+  logic             [                             4:0] sync_width_r;
 
 
-  logic             [              4:0] sync_count_c;
-  logic             [              4:0] sync_count_r;
-  logic             [              4:0] sync_width;
-  logic             [              4:0] sync_count;
-  logic             [              4:0] axis_sync_c;
-  logic             [              4:0] axis_sync_r;
-  logic             [              5:0] pipe_width_c;
-  logic             [              5:0] pipe_width_r;
-  logic             [              5:0] pkt_count_c;
-  logic             [              5:0] pkt_count_r;
+  logic             [                             4:0] sync_count_c;
+  logic             [                             4:0] sync_count_r;
+  logic             [                             4:0] sync_width;
+  logic             [                             4:0] sync_count;
+  logic             [                             4:0] axis_sync_c;
+  logic             [                             4:0] axis_sync_r;
+  logic             [                             5:0] pipe_width_c;
+  logic             [                             5:0] pipe_width_r;
+  logic             [                             5:0] pkt_count_c;
+  logic             [                             5:0] pkt_count_r;
 
-  logic             [              5:0] word_count_c;
-  logic             [              5:0] word_count_r;
-  logic             [             31:0] data_out_c               [MAX_NUM_LANES];
-  logic             [             31:0] data_out_r               [MAX_NUM_LANES];
-  logic             [             31:0] lane_replacement_byte_c;
-  logic             [             31:0] lane_replacement_byte_r;
-  logic             [MAX_NUM_LANES-1:0] data_valid_c;
-  logic             [MAX_NUM_LANES-1:0] data_valid_r;
-  logic             [              3:0] d_k_out_c                [MAX_NUM_LANES];
-  logic             [              3:0] d_k_out_r                [MAX_NUM_LANES];
+  logic             [                             5:0] word_count_c;
+  logic             [                             5:0] word_count_r;
+  logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_c;
+  logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_r;
+  logic             [                            31:0] lane_replacement_byte_c;
+  logic             [                            31:0] lane_replacement_byte_r;
+  logic             [               MAX_NUM_LANES-1:0] data_valid_c;
+  logic             [               MAX_NUM_LANES-1:0] data_valid_r;
+  logic             [                             3:0] d_k_out_c                [MAX_NUM_LANES];
+  logic             [                             3:0] d_k_out_r                [MAX_NUM_LANES];
 
-  logic                                 is_ordered_set;
-  logic                                 is_data;
-  logic                                 ready_out;
+  logic                                                is_ordered_set;
+  logic                                                is_data;
+  logic                                                ready_out;
 
-  logic             [              1:0] sync_header_c            [MAX_NUM_LANES];
-  logic             [              1:0] sync_header_r            [MAX_NUM_LANES];
+  logic             [                             1:0] sync_header_c            [MAX_NUM_LANES];
+  logic             [                             1:0] sync_header_r            [MAX_NUM_LANES];
 
 
-  logic             [            511:0] data_in_c;
-  logic             [            511:0] data_in_r;
-  logic             [     (512/8) -1:0] data_k_in_c;
-  logic             [     (512/8) -1:0] data_k_in_r;
-  logic             [              1:0] word_replacement_index_c;
-  logic             [              1:0] word_replacement_index_r;
-  logic                                 is_phy_c;
-  logic                                 is_phy_r;
-  logic                                 is_dllp_c;
-  logic                                 is_dllp_r;
-  logic                                 replace_lane_c;
-  logic                                 replace_lane_r;
-  logic                                 complete_c;
-  logic                                 complete_r;
-  logic             [             31:0] data_out;
-  logic             [              3:0] data_k_out;
-  logic             [              7:0] lane_idx;
-  logic             [              7:0] lane_shift_idx;
-  logic             [              7:0] pipewidth_shift_idx;
+  logic             [                           511:0] data_in_c;
+  logic             [                           511:0] data_in_r;
+  logic             [                    (512/8) -1:0] data_k_in_c;
+  logic             [                    (512/8) -1:0] data_k_in_r;
+  logic             [                             1:0] word_replacement_index_c;
+  logic             [                             1:0] word_replacement_index_r;
+  logic                                                is_phy_c;
+  logic                                                is_phy_r;
+  logic                                                is_dllp_c;
+  logic                                                is_dllp_r;
+  logic                                                replace_lane_c;
+  logic                                                replace_lane_r;
+  logic                                                complete_c;
+  logic                                                complete_r;
+  logic             [                            31:0] data_out;
+  logic             [                             3:0] data_k_out;
+  logic             [                             7:0] lane_idx;
+  logic             [                             7:0] lane_shift_idx;
+  logic             [                             7:0] pipewidth_shift_idx;
 
 
   assign is_ordered_set = s_phy_axis_tvalid & s_phy_axis_tready;
@@ -327,8 +327,8 @@ module lane_management
               end
             end
           end
-          d_k_out_c[lane]  = data_k_out;
-          data_out_c[lane] = data_out;
+          d_k_out_c[lane] = data_k_out;
+          data_out_c[lane*32+:32] = data_out;
         end
       end
       ST_LANE_MNGT_TX_PHY: begin
@@ -360,8 +360,8 @@ module lane_management
               end
             end
           end
-          d_k_out_c[lane]  = data_k_out;
-          data_out_c[lane] = data_out;
+          d_k_out_c[lane]         = data_k_out;
+          data_out_c[lane*32+:32] = data_out;
         end
       end
       default: begin
@@ -372,7 +372,7 @@ module lane_management
 
   always_comb begin : flatten_decrambler
     for (int i = 0; i < MAX_NUM_LANES; i++) begin
-      data_out_o[32*i+:32]  = data_out_r[i];
+      // data_out_o[32*i+:32]  = data_out_r[32*i+:32];
       data_valid_o[i]       = data_valid_r[i];
       d_k_out_o[4*i+:4]     = d_k_out_r[i];
       sync_header_o[2*i+:2] = sync_header_r[i];
@@ -385,7 +385,7 @@ module lane_management
   assign s_phy_axis_tready  = ready_out & is_phy_r;
   // assign data_valid_o       = data_valid_r;
   // assign d_k_out_o          = d_k_out_r;
-  // assign data_out_o         = data_out_r;
+  assign data_out_o         = data_out_r;
   assign pipe_width_o       = pipe_width_r;
 
 endmodule

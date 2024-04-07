@@ -240,17 +240,29 @@ module ordered_set_handler
           if (pipe_width_i == 8'd32 && axis_pkt_cnt_r >= 8'd3) begin
             check_ordered_set_c = '1;
             axis_pkt_cnt_c      = '0;
-            next_state          = ST_IDLE;
+            if (data_in_i[(8*0)+:8] == EIOS
+            && ordered_set_r[8*1 +:8]  == EIOS && ordered_set_r[8*2 +:8]  == EIOS) begin
+              idle_valid_c = '1;
+            end
+            next_state = ST_IDLE;
           end else if (pipe_width_i == 8'd16 && axis_pkt_cnt_r >= 8'd7) begin
             check_ordered_set_c = '1;
             axis_pkt_cnt_c      = '0;
-            next_state          = ST_IDLE;
+            if (data_in_i[(8*0)+:8] == EIOS
+            && ordered_set_r[8*1 +:8]  == EIOS && ordered_set_r[8*2 +:8]  == EIOS) begin
+              idle_valid_c = '1;
+            end
+            next_state = ST_IDLE;
           end else begin
             if (axis_pkt_cnt_r >= 8'd15) begin
               //bad tlp
               check_ordered_set_c = '1;
               axis_pkt_cnt_c      = '0;
-              next_state          = ST_IDLE;
+              if (data_in_i[(8*0)+:8] == EIOS  && ordered_set_r[8*1 +:8]  == EIOS
+               && ordered_set_r[8*2 +:8]  == EIOS) begin
+                idle_valid_c = '1;
+              end
+              next_state = ST_IDLE;
             end
           end
         end

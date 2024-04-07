@@ -269,6 +269,29 @@ package pcie_phy_pkg;
   //     // TLP Header Ordered Set
   //     TLP_HEADER = 8'hFC         // TLP Header
   //   } pcie_ordered_set_e;
+  function automatic logic [0:0] check_sdp(input logic [31:0] data_i);
+    begin
+      if ((data_i[15:0] == GEN3_SDP[15:0])) begin
+        return '1;
+      end else begin
+        return '0;
+      end
+    end
+  endfunction
+
+
+
+  function automatic logic [0:0] check_stp(input logic [31:0] data_i);
+    begin
+      if ((data_i[3:0] == '1)) begin
+        return '1;
+      end else begin
+        return '0;
+      end
+    end
+  endfunction
+
+
 
   function static void gen_fcrc_parity(output logic [3:0] fcrc_out, output logic parity_out,
                                        input logic [10:0] tlp_length);
@@ -331,7 +354,7 @@ package pcie_phy_pkg;
             temp_os.ts_id[i] = TSOS;
           end
         end else if (TSOS == TS2) begin
-          temp_os.ts_s6 = TSOS;
+          temp_os.ts_s6 = ts_s6;
           temp_os.ts_s7 = TSOS;
           temp_os.ts_s8 = TSOS;
           temp_os.ts_s9 = TSOS;
@@ -371,6 +394,13 @@ package pcie_phy_pkg;
     end
   endfunction
 
+  function automatic void get_tlp_len(output logic [7:0] length, input logic [31:0] data_i);
+    begin
+      gen_3_stp_t temp_stp = data_i;
+      length = {temp_stp.byte_1.tlp_len1, temp_stp.byte_0.tlp_len0};
+    end
+  endfunction
+
 
   function static void gen_idle(output pcie_ordered_set_t idle_out);
     begin
@@ -388,7 +418,7 @@ package pcie_phy_pkg;
   endfunction
 
 
-  function automatic pcie_ordered_set_t gen_sds_os();
+  function automatic void gen_sds_os(output pcie_ordered_set_t sds_out);
     begin
       pcie_ordered_set_t temp_os;
       temp_os     = '0;
@@ -408,7 +438,7 @@ package pcie_phy_pkg;
       temp_os[13] = SDS_BODY;
       temp_os[14] = SDS_BODY;
       temp_os[15] = SDS_BODY;
-      gen_sds_os  = temp_os;
+      sds_out     = temp_os;
     end
   endfunction
 

@@ -61,6 +61,7 @@ module data_handler
     ST_TX,
     ST_CHECK_FRAME,
     ST_CHECK_END,
+    ST_CHECK_END_GEN3,
     ST_TX_TLP,
     ST_TX_DLLP
   } data_handler_state_e;
@@ -176,10 +177,25 @@ module data_handler
           word_count_c  = '0;
           next_state    = ST_TX;
           if (data_i[7:0] == SDP) begin
-            is_tlp_c = '1;
+            is_dllp_c = '1;
           end
           if (data_i[7:0] == STP) begin
             is_tlp_c = '1;
+          end
+        end else begin
+          word_count_c = '0;
+          if (check_sdp(data_i)) begin
+            data_c        = data_i >> 16;
+            data_valid_c  = data_valid_i >> 2;
+            data_k_c      = data_k_i >> 2;
+            sync_header_c = sync_header_r;
+            is_dllp_c     = '1;
+            next_state    = ST_TX_DLLP;
+          end else if (check_stp(data_i) && sync_header_r[1:0] == 2'b01) begin
+            is_tlp_c   = '1;
+            next_state = ST_TX_TLP;
+          end else begin
+            next_state = ST_IDLE;
           end
         end
       end
@@ -231,9 +247,55 @@ module data_handler
           next_state       = ST_TX;
         end
       end
+      ST_CHECK_END_GEN3: begin
+        if (!phy_fifo_empty_i) begin
+          phy_fifo_rd_en_o = '1;
+          skid_c           = '1;
+          word_count_c     = '0;
+          next_state       = ST_TX_DLLP;
+        end
+      end
       ST_TX_TLP: begin
       end
       ST_TX_DLLP: begin
+        if (data_handler_axis_tready) begin
+          word_count_c             = word_count_r + 1'b1;
+          data_c                   = data_r >> 32;
+          data_valid_c             = data_valid_r >> 1;
+          data_k_c                 = data_k_r >> 4;
+          data_handler_axis_tdata  = data_r[31:0];
+          data_handler_axis_tkeep  = '1;
+          data_handler_axis_tvalid = '1;
+          if (skid_r) begin
+            data_handler_axis_tdata  = data_r[31:0];
+            data_handler_axis_tkeep  = '1;
+            data_handler_axis_tvalid = '1;
+            data_c                   = data_i;
+            data_valid_c             = data_valid_i;
+            data_k_c                 = data_k_i;
+            skid_c                   = '0;
+          end
+          if (word_count_r >= 8'd1) begin
+            next_state               = ST_IDLE;
+            data_c                   = data_r;
+            data_valid_c             = data_valid_r;
+            data_k_c                 = data_k_r;
+            data_handler_axis_tvalid = '1;
+          end
+          // for (int i = 0; i < 4; i++) begin
+          //   if (data_k_r[i] && data_r[8*i+:8] == ENDP) begin
+          //     next_state              = ST_IDLE;
+          //     data_handler_axis_tlast = '1;
+          //     for (int k = '0; k < 4; k++) begin
+          //       if (k >= i) begin
+          //         data_handler_axis_tkeep[k] = '0;
+          //         is_dllp_c                  = '0;
+          //         is_tlp_c                   = '0;
+          //       end
+          //     end
+          //   end
+          // end
+        end
       end
       default: begin
       end
@@ -263,7 +325,7 @@ module data_handler
       .s_axis_tvalid(data_handler_axis_tvalid),
       .s_axis_tready(data_handler_axis_tready),
       .s_axis_tlast(data_handler_axis_tlast),
-      .s_axis_tuser(is_tlp_r ? 4'b0001 : 4'b0010),
+      .s_axis_tuser(!is_tlp_r ? 4'b0001 : 4'b0010),
       .s_axis_tid('0),
       .s_axis_tdest('0),
       .m_axis_tdata(m_dllp_axis_tdata),

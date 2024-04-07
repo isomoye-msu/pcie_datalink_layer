@@ -152,7 +152,7 @@ module frame_symbols
               is_dllp_c      = '1;
               is_tlp_c       = '0;
               s_axis_tready  = '1;
-              phy_axis_tdata = {s_axis_tdata[15:0], GEN3_SDP};
+              phy_axis_tdata = {s_axis_tdata[15:0], GEN3_SDP[15:0]};
               phy_axis_tuser = 4'b0011;
               next_state     = ST_FRAME_GEN_3_DLLP;
             end else if (s_axis_tuser[1] && fifo_ready) begin

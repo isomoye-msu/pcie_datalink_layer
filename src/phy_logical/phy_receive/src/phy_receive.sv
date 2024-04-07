@@ -199,7 +199,7 @@ module phy_receive
       .DATA_WIDTH(PcieDataSize)
   ) synchronous_fifo_inst (
       .clk_i(clk_i),
-      .rst_i(rst_i),
+      .rst_i(rst_i || !link_up_i),
       .w_en_i(wr_en),
       .r_en_i(rd_en),
       .data_in({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
