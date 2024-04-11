@@ -1,18 +1,18 @@
 CAPI=2:
-name: fusesoc:pcie:phy_transmit:1.0.0
-description: pcie physical layer transmit block
+name: fusesoc:pcie:phy_scrambler:1.0.0
+description: pcie physical layer scrambler block
 
 filesets:
   rtl:
     files:
-      - src/lane_management.sv
-      - src/frame_symbols.sv
-      - src/os_generator.sv
-      - src/phy_transmit.sv
+      - src/byte_scramble.sv
+      - src/gen3_byte_scramble.sv
+      - src/scrambler.sv
+      - src/gen1_scramble.sv
+      - src/gen3_scramble.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
-      - fusesoc:pcie:phy_scrambler
       - fusesoc:pcie:axis
       - fusesoc:pcie:lint
 
@@ -27,7 +27,7 @@ targets:
       cocotb_module : test_ltssm_configuration
       timescale: 1ns/1ns
     filesets : [rtl]
-    toplevel : [phy_transmit]
+    toplevel : [scrambler]
   
   sim:
     flow: sim
@@ -39,7 +39,7 @@ targets:
         - --trace-fst
         - waiver.vlt
     filesets : [rtl]
-    toplevel : [phy_transmit]
+    toplevel : [scrambler]
 
   verilate:
     flow: sim
@@ -49,10 +49,9 @@ targets:
       timescale: 1ns/1ns
       verilator_options:
         - --trace-fst
-        - -Iincludes/
         - waiver.vlt
     filesets : [rtl]
-    toplevel : [phy_transmit]
+    toplevel : [scrambler]
 
   synth:
     default_tool : vivado
@@ -60,8 +59,4 @@ targets:
     tools:
       vivado:
         part : xc7a100tcsg324-1
-    toplevel : phy_transmit
-
-scripts:
-  iceprog:
-    cmd : [MODULE=pcie_ltssm_downstream]
+    toplevel : scrambler

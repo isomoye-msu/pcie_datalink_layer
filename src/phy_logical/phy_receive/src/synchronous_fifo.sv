@@ -17,30 +17,35 @@ module synchronous_fifo #(
   logic [DATA_WIDTH-1:0] fifo[DEPTH];
 
   // Set Default values on reset.
-  always @(posedge clk_i) begin
-    if (rst_i) begin
-      w_ptr <= 0;
-      r_ptr <= 0;
-      data_out <= 0;
-    end
-  end
+  // always @(posedge clk_i) begin
+  //   if (rst_i) begin
+  //     w_ptr <= 0;
+  //     r_ptr <= 0;
+  //     data_out <= 0;
+  //   end
+  // end
 
   // To write data to FIFO
   always @(posedge clk_i) begin
-    if (w_en_i & !full_o) begin
+    if (rst_i) begin
+      w_ptr <= 0;
+    end else if (w_en_i & !full_o) begin
       fifo[w_ptr] <= data_in;
-      w_ptr <= w_ptr == DEPTH-1 ? '0 : w_ptr + 1;
+      w_ptr <= w_ptr == DEPTH - 1 ? '0 : w_ptr + 1;
     end
   end
 
   // To read data from FIFO
   always @(posedge clk_i) begin
-    if (r_en_i & !empty_o) begin
+    if (rst_i) begin
+      r_ptr <= 0;
+      data_out <= 0;
+    end else if (r_en_i & !empty_o) begin
       data_out <= fifo[r_ptr];
-      r_ptr <= r_ptr == DEPTH-1 ? '0 : r_ptr + 1;
+      r_ptr <= r_ptr == DEPTH - 1 ? '0 : r_ptr + 1;
     end
   end
 
-  assign full_o  = w_ptr == DEPTH-1 ? r_ptr == '0 : ((w_ptr + 1'b1) == r_ptr);
+  assign full_o  = w_ptr == DEPTH - 1 ? r_ptr == '0 : ((w_ptr + 1'b1) == r_ptr);
   assign empty_o = (w_ptr == r_ptr);
 endmodule

@@ -60,7 +60,7 @@ module gen3_scramble
 
 
   always_ff @(posedge clk_i) begin : scramble_seq_block
-    if (rst_i) begin
+    if (rst_i || is_eieos_r) begin
       lfsr_r       <= gen3_seed_values[lane_number[2:0]];
       data_valid_o <= '0;
       is_os_r      <= '0;
@@ -167,7 +167,7 @@ module gen3_scramble
               eieos_detected[i] = '1;
               data_out_o_c[byte_idx<<3+:8] = data_in_i[byte_idx<<3+:8];
             end else if (data_in_i[byte_idx<<3+:8] inside {TS1OS, TS2OS}
-              && (lane_number == '0) && (byte_idx == '0)) begin
+              && (lane_number == '0) && (i == '0)) begin
               ts_detected[i] = '1;
               //   disable_lfsr_advance[i] = '1;
               data_out_o_c[byte_idx<<3+:8] = data_in_i[byte_idx<<3+:8];

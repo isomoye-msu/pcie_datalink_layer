@@ -63,31 +63,6 @@ module gen1_scramble
     lfsr_c             = lfsr_r;
     data_in_swapped    = '0;
     data_k_swapped     = '0;
-    for (int i = 0; i < 4; i++) begin
-      byte_idx = ((pipe_width_i >> 3) - 1) - i;
-      scrambled_data[i] = '0;
-      //check if special symbol
-      if (data_k_in_i[byte_idx]) begin
-        //check if comma
-        if (data_in_i[i*8+:8] == COM) begin
-          //reset lfsr
-          scramble_reset[i]     = '1;
-          disable_scrambling[i] = '1;
-          //don't scramble
-          scrambled_data[i]     = data_in_i[byte_idx*8+:8];
-        end else if (data_in_i[byte_idx*8+:8] inside {STP,SDP,ENDP,EDB,PAD,
-        SKP,FTS ,IDL,EIE,RV2,RV3 ,TS1OS}) begin
-          disable_scrambling[i] = '1;
-          //don't scramble
-          scrambled_data[i] = data_in_i[byte_idx*8+:8];
-        end
-      end else begin
-        //scramble data
-        scrambled_data[i] = (data_in_i[byte_idx*8+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
-      end
-      //update out
-      data_out_c[i*8+:8] = scrambled_data[i];
-    end
 
     if (scramble_reset != '0) begin
       lfsr_c = '1;
@@ -96,6 +71,31 @@ module gen1_scramble
       lfsr_c = lfsr_out[(pipe_width_i>>3)];
     end
 
+    if (data_valid_i) begin
+      data_out_c = data_in_i;
+      for (int i = 0; i < 4; i++) begin
+        byte_idx = ((pipe_width_i >> 3) - 1) - i;
+        scrambled_data[i] = '0;
+        if (i < (pipe_width_i >> 3)) begin
+          //check if special symbol
+          if (data_k_in_i[byte_idx]) begin
+            disable_scrambling[i] = '1;
+            //don't scramble
+            data_out_c[byte_idx<<3+:8] = data_in_i[byte_idx<<3+:8];
+            //check if comma
+            if (data_in_i[i*8+:8] == COM && i == '0) begin
+              //reset lfsr
+              scramble_reset[i] = '1;
+            end
+          end else begin
+            //scramble data
+            data_out_c[byte_idx<<3+:8] = (data_in_i[byte_idx<<3+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+          end
+          //update out
+          // data_out_c[i*8+:8] = scrambled_data[i];
+        end
+      end
+    end
   end
 
   assign data_out_o = data_out_r;

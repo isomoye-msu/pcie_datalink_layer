@@ -86,7 +86,7 @@ module ordered_set_handler
   //   logic              [USER_WIDTH-1:0] ltssm_axis_tuser;
   //   logic                               ltssm_axis_tready;
   pcie_tsos_t              training_set;
-  assign training_set    = buffered_ordered_set_r;
+  assign training_set    = ordered_set_r;
 
   assign link_num_o      = training_set.link_num;
   assign lane_num_o      = training_set.lane_num;
@@ -303,15 +303,15 @@ module ordered_set_handler
       ts2_valid              = '1;
       eieos_valid            = '1;
       for (int i = 7; i < 15; i++) begin
-        if (buffered_ordered_set_c[8*i+:8] != TS1) begin
+        if (ordered_set_r[8*i+:8] != TS1) begin
           ts1_valid = '0;
         end
-        if (buffered_ordered_set_c[8*i+:8] != TS2) begin
+        if (ordered_set_r[8*i+:8] != TS2) begin
           ts2_valid &= '0;
         end
       end
       for (int i = 1; i < 15; i++) begin
-        if (buffered_ordered_set_c[8*i+:8] != EIE || buffered_ordered_set_c[8*15+:8] != TS1) begin
+        if (ordered_set_r[8*i+:8] != EIE || ordered_set_r[8*15+:8] != TS1) begin
           eieos_valid = '0;
         end
       end

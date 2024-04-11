@@ -5,9 +5,6 @@ description: pcie physical layer receive block
 filesets:
   rtl:
     files:
-      - src/descrambler.sv
-      - src/gen1_descramble.sv
-      - src/gen3_descramble.sv
       - src/ordered_set_handler.sv
       - src/block_alignment.sv
       - src/data_handler.sv
@@ -20,7 +17,7 @@ filesets:
       - fusesoc:pcie:axis
       - fusesoc:pcie:base_uvm
       - fusesoc:pcie:lint
-      - fusesoc:pcie:phy_transmit
+      - fusesoc:pcie:phy_scrambler
 
 targets:
   default:

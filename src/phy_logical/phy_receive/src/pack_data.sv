@@ -3,7 +3,7 @@ module pack_data
 #(
     // TLP data width
     parameter int DATA_WIDTH    = 32,
-    parameter int MAX_NUM_LANES = 4
+    parameter int MAX_NUM_LANES = 16
 ) (
     //clocks and resets
     input  logic                                           clk_i,              // Clock signal
@@ -82,6 +82,7 @@ module pack_data
   logic                                        fifo_wr_c;
   logic                                        fifo_wr_r;
   logic                                        end_packet;
+  logic     [                            31:0] byte_shift;
 
 
 
@@ -102,6 +103,17 @@ module pack_data
     tlp_byte_count_r <= tlp_byte_count_c;
   end
 
+  //assign bytes per packet based on number of lanes
+  //will only work with number of lanes that are powers of two
+  always_comb begin : calc_bytes_per_packet
+    bytes_per_packet = '0;
+    for (int i = 0; i < 8; i++) begin
+      if (num_active_lanes_i == (1 << i)) begin
+        bytes_per_packet = (pipe_width_i) << i;
+      end
+    end
+  end
+
 
 
   always_comb begin : block_alignment_combinational_logic
@@ -112,150 +124,110 @@ module pack_data
     tlp_byte_count_c = tlp_byte_count_r;
     // lane_number      = '0;
     fifo_wr_c        = '0;
-    bytes_per_packet = '0;
-    //assign bytes per packet based on number of lanes
-    //will only work with number of lanes that are powers of two
-    for(int i = 0; i < 8; i++) begin
-      if(num_active_lanes_i == (1<<i)) begin
-        bytes_per_packet = (pipe_width_i >> 3) << i;
-      end
-    end
-    // if (num_active_lanes_i >= 8'd8) begin
-    //   bytes_per_packet = (pipe_width_i >> 3) << ((num_active_lanes_i >> 2) + 1);
-    // end else begin
-    //   bytes_per_packet = (pipe_width_i >> 3) << ((num_active_lanes_i >> 1));
-    // end
-    next_state = curr_state;
-    end_packet = '0;
+    next_state       = curr_state;
+    end_packet       = '0;
+    byte_shift       = (bytes_per_packet * word_count_r);
     case (curr_state)
       ST_IDLE: begin
-        if (phy_link_up_i && (|data_valid_i))
-          if (curr_data_rate_i < gen3) begin
-            if ((data_i[7:0] inside {SDP, STP})) begin
-              word_count_c  = '0;
-              data_c        = data_i;
-              data_valid_c  = data_valid_i;
-              data_k_c      = data_k_i;
-              sync_header_c = sync_header_i;
-              fifo_wr_c     = '1;
-              for (int i = 0; i < BytesPerTransaction; i++) begin
-                // data_c[8*i+:8] = data_r[8*i+:8];
-                if (i < bytes_per_packet) begin
-                  // data_c[8*i+:8]                                          = data_r[8*i+:8];
-                  // data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8] = data_i[8*i+:8];
-                  // data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
-                  // data_k_c[(bytes_per_packet*word_count_r)+(1*i)+:1]      = data_k_i[1*i+:1];
-                  // sync_header_c[(bytes_per_packet*word_count_r)+(1*i)+:1] = sync_header_r[1*i+:1];
-                  if (data_i[8*i+:8] == ENDP) begin
-                    end_packet = '1;
-                  end
-                end
-              end
-              if (bytes_per_packet < BytesPerTransaction && !end_packet) begin
-                next_state   = ST_SEND_DATA;
-                word_count_c = 1'b1;
-                fifo_wr_c    = '0;
-              end
-            end
-          end else begin
-            //check for sdp or stp
-            if ((check_sdp(data_i) || check_stp(data_i))) begin
-              word_count_c  = '0;
-              data_c        = data_i;
-              data_valid_c  = data_valid_i;
-              data_k_c      = data_k_i;
-              sync_header_c = sync_header_i;
-              fifo_wr_c     = '1;
-              // for (int i = 0; i < BytesPerTransaction; i++) begin
-              //   // data_c[8*i+:8] = data_r[8*i+:8];
-              //   if (i < bytes_per_packet) begin
-              //     // data_c[8*i+:8]                                          = data_r[8*i+:8];
-              //     data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8] = data_i[8*i+:8];
-              //     // data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
-              //     // data_k_c[(bytes_per_packet*word_count_r)+(1*i)+:1]      = data_k_i[1*i+:1];
-              //     // sync_header_c[(bytes_per_packet*word_count_r)+(1*i)+:1] = sync_header_r[1*i+:1];
-              //     if (data_i[8*i+:8] == ENDP) begin
-              //       end_packet = '1;
-              //     end
-              //   end
-              // end
-              if (check_sdp(
-                      data_i
-                  ) && (bytes_per_packet < BytesPerTransaction) && (bytes_per_packet < 8'h8)) begin
-                next_state   = ST_GEN3_DLLP;
-                word_count_c = 1'b1;
-                fifo_wr_c    = '0;
-              end
-              if (check_stp(data_i) && (bytes_per_packet >= 8'h4)) begin
-                get_tlp_len(tlp_byte_count_c, data_i);
-                if (bytes_per_packet < tlp_byte_count_c + 8'h4) begin
-                  next_state   = ST_GEN3_TLP;
-                  word_count_c = 1'b1;
-                  fifo_wr_c    = '0;
-                end
-              end
-            end
-          end
-      end
-      ST_SEND_DATA: begin
-        if (|data_valid_i) begin
-          word_count_c  = word_count_r + 1'b1;
-          // data_c        = data_i;
-          data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
-          data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
-          sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
-          // data_c[(bytes_per_packet*word_count_r*8):512] = data_i;
-          for (int i = 0; i < BytesPerTransaction; i++) begin
-            // data_c[8*i+:8] = data_r[8*i+:8];
-            if (i < bytes_per_packet) begin
-              // data_c[8*i+:8]                                          = data_r[8*i+:8];
-              data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8] = data_i[8*i+:8];
-              // data_valid_c[(bytes_per_packet*word_count_r)+(i)]       = data_valid_i[i];
-              // data_k_c[(bytes_per_packet*word_count_r)+(1*i)+:1]      = data_k_i[1*i+:1];
-              // sync_header_c[(bytes_per_packet*word_count_r)+(1*i)+:1] = sync_header_r[1*i+:1];
-              if (data_i[8*i+:8] == ENDP) begin
-                end_packet = '1;
-              end
-            end
-          end
-          if (((bytes_per_packet * word_count_r) >= BytesPerTransaction) || end_packet) begin
-            next_state = ST_IDLE;
-            word_count_c = '0;
-            fifo_wr_c = '1;
-          end
+        if (phy_link_up_i && (|data_valid_i)) begin
+          word_count_c  = '0;
+          data_c        = data_i;
+          data_valid_c  = data_valid_i;
+          data_k_c      = data_k_i;
+          sync_header_c = sync_header_i;
+          fifo_wr_c     = '1;
         end
       end
-      ST_GEN3_DLLP: begin
-        if (|data_valid_i) begin
-          word_count_c  = word_count_r + 1'b1;
-          // data_c        = data_i;
-          data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
-          data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
-          sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
-          if (((bytes_per_packet * word_count_r) >= BytesPerTransaction) ||
-              ((bytes_per_packet * word_count_r) >= 8'h8)
-          ) begin
-            next_state = ST_IDLE;
-            word_count_c = '0;
-            fifo_wr_c = '1;
-          end
-        end
-      end
-      ST_GEN3_TLP: begin
-        if (|data_valid_i) begin
-          word_count_c  = word_count_r + 1'b1;
-          // data_c        = data_i;
-          data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
-          data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
-          sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
-          if (((bytes_per_packet * word_count_r) >= BytesPerTransaction) ||
-              ((bytes_per_packet * word_count_r) >= 8'h8)) begin
-            next_state = ST_IDLE;
-            word_count_c = '0;
-            fifo_wr_c = '1;
-          end
-        end
-      end
+      // ST_SEND_DATA: begin
+      //   if (|data_valid_i) begin
+      //     word_count_c = word_count_r + 1'b1;
+      //     // data_c        = data_i;
+      //     // data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
+      //     // data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
+      //     // sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
+      //     // data_c[(byte_shift*8):512] = data_i;
+      //     for (int i = 0; i < MAX_NUM_LANES; i++) begin
+      //       sync_header_c[(byte_shift)+(2*i)+:2] = sync_header_r[2*i+:2];
+      //     end
+      //     for (int i = 0; i < BytesPerTransaction; i++) begin
+      //       // data_c[8*i+:8] = data_r[8*i+:8];
+      //       if (i < bytes_per_packet) begin
+      //         // data_c[8*i+:8]                                          = data_r[8*i+:8];
+      //         data_c[(byte_shift*8)+(8*i)+:8] = data_i[8*i+:8];
+      //         data_valid_c[byte_shift+(i)]    = data_valid_i[i];
+      //         data_k_c[(byte_shift)+(1*i)+:1] = data_k_i[1*i+:1];
+      //         if (data_i[8*i+:8] == ENDP) begin
+      //           end_packet = '1;
+      //         end
+      //       end
+      //     end
+      //     if (((byte_shift) >= BytesPerTransaction) || end_packet) begin
+      //       next_state = ST_IDLE;
+      //       word_count_c = '0;
+      //       fifo_wr_c = '1;
+      //     end
+      //   end
+      // end
+      // ST_GEN3_DLLP: begin
+      //   if (|data_valid_i) begin
+      //     word_count_c = word_count_r + 1'b1;
+      //     // data_c        = data_i;
+      //     // data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
+      //     // data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
+      //     // sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
+      //     for (int i = 0; i < MAX_NUM_LANES; i++) begin
+      //       sync_header_c[(byte_shift)+(2*i)+:2] = sync_header_r[2*i+:2];
+      //     end
+      //     for (int i = 0; i < BytesPerTransaction; i++) begin
+      //       // data_c[8*i+:8] = data_r[8*i+:8];
+      //       if (i < bytes_per_packet) begin
+      //         // data_c[8*i+:8]                                          = data_r[8*i+:8];
+      //         data_c[(byte_shift*8)+(8*i)+:8] = data_i[8*i+:8];
+      //         data_valid_c[(byte_shift)+(i)]  = data_valid_i[i];
+      //         data_k_c[(byte_shift)+(1*i)+:1] = data_k_i[1*i+:1];
+      //         // sync_header_c[(byte_shift)+(1*i)+:1] = sync_header_r[1*i+:1];
+      //         // if (data_i[8*i+:8] == ENDP) begin
+      //         //   end_packet = '1;
+      //         // end
+      //       end
+      //     end
+      //     if (((byte_shift) >= BytesPerTransaction) || ((byte_shift) >= 8'h8)) begin
+      //       next_state = ST_IDLE;
+      //       word_count_c = '0;
+      //       fifo_wr_c = '1;
+      //     end
+      //   end
+      // end
+      // ST_GEN3_TLP: begin
+      //   if (|data_valid_i) begin
+      //     word_count_c = word_count_r + 1'b1;
+      //     // data_c        = data_i;
+      //     // data_valid_c  = (data_valid_r << num_active_lanes_i) | data_valid_i;
+      //     // data_k_c      = (data_k_r << bytes_per_packet) | data_k_i;
+      //     // sync_header_c = (sync_header_r << num_active_lanes_i) | sync_header_i;
+      //     for (int i = 0; i < MAX_NUM_LANES; i++) begin
+      //       sync_header_c[(byte_shift)+(2*i)+:2] = sync_header_r[2*i+:2];
+      //     end
+      //     for (int i = 0; i < BytesPerTransaction; i++) begin
+      //       // data_c[8*i+:8] = data_r[8*i+:8];
+      //       if (i < bytes_per_packet) begin
+      //         // data_c[8*i+:8]                                          = data_r[8*i+:8];
+      //         data_c[(bytes_per_packet*8*word_count_r)+(8*i)+:8] = data_i[8*i+:8];
+      //         data_valid_c[(byte_shift)+(i)]                     = data_valid_i[i];
+      //         data_k_c[(byte_shift)+(1*i)+:1]                    = data_k_i[1*i+:1];
+      //         // sync_header_c[(byte_shift)+(1*i)+:1] = sync_header_r[1*i+:1];
+      //         // if (data_i[8*i+:8] == ENDP) begin
+      //         //   end_packet = '1;
+      //         // end
+      //       end
+      //     end
+      //     if (((byte_shift) >= BytesPerTransaction) || ((byte_shift) >= 8'h8)) begin
+      //       next_state = ST_IDLE;
+      //       word_count_c = '0;
+      //       fifo_wr_c = '1;
+      //     end
+      //   end
+      // end
       default: begin
       end
     endcase

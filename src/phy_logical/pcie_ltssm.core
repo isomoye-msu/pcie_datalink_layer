@@ -65,7 +65,7 @@ targets:
     filesets : [rtl]
     tools:
       vivado:
-        part : xc7a100tcsg324-1
+        part : xczu5ev-sfvc784-1-e
     toplevel : pcie_phy_top
 
 scripts:

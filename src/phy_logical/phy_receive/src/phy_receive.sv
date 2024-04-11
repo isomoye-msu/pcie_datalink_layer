@@ -106,7 +106,7 @@ module phy_receive
 
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_lane_descramble
 
-    descrambler descrambler_inst (
+    scrambler descrambler_inst (
         .clk_i(clk_i),
         .rst_i(rst_i),
         .lane_number(lane),
