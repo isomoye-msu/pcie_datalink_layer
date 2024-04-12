@@ -37,6 +37,7 @@ module ordered_set_handler
 
 );
 
+  localparam int MaxBytesPerPacket = DATA_WIDTH / 8;
 
   typedef enum logic [7:0] {
     ST_IDLE,
@@ -60,10 +61,6 @@ module ordered_set_handler
 
   logic                    check_ordered_set_c;
   logic                    check_ordered_set_r;
-
-  pcie_ordered_set_t       buffered_ordered_set_c;
-  pcie_ordered_set_t       buffered_ordered_set_r;
-
   logic                    idle_valid_c;
   logic                    ts1_valid;
   logic                    ts2_valid;
@@ -78,25 +75,21 @@ module ordered_set_handler
   logic              [7:0] skp2_r;
   logic              [7:0] skp3_c;
   logic              [7:0] skp3_r;
-  //! internal_axis_signals
-  //   logic              [DATA_WIDTH-1:0] ltssm_axis_tdata;
-  //   logic              [KEEP_WIDTH-1:0] ltssm_axis_tkeep;
-  //   logic                               ltssm_axis_tvalid;
-  //   logic                               ltssm_axis_tlast;
-  //   logic              [USER_WIDTH-1:0] ltssm_axis_tuser;
-  //   logic                               ltssm_axis_tready;
-  pcie_tsos_t              training_set;
-  assign training_set    = ordered_set_r;
 
+  pcie_tsos_t              training_set;
+
+  logic              [7:0] bytes_per_packet;
+  logic              [7:0] packets_per_words;
+  logic              [7:0] byte_shift;
+  logic              [7:0] byte_index;
+
+  assign training_set    = ordered_set_r;
   assign link_num_o      = training_set.link_num;
   assign lane_num_o      = training_set.lane_num;
   assign nfts_o          = training_set.n_fts;
   assign training_ctrl_o = training_set.train_ctrl;
   assign rate_id_o       = training_set.rate_id;
   assign symbol6_o       = training_set.ts_s6;
-
-
-  logic [7:0] byte_index;
 
 
 
@@ -114,17 +107,16 @@ module ordered_set_handler
       check_ordered_set_r <= check_ordered_set_c;
     end
     //non-resetable
-    ordered_set_r          <= ordered_set_c;
-    idle_valid_o           <= idle_valid_c;
-    ts1_valid_o            <= ts1_valid;
-    ts2_valid_o            <= ts2_valid;
-    eieos_valid_o          <= eieos_valid;
-    axis_pkt_cnt_r         <= axis_pkt_cnt_c;
-    buffered_ordered_set_r <= buffered_ordered_set_c;
-    skp0_r                 <= skp0_c;
-    skp1_r                 <= skp1_c;
-    skp2_r                 <= skp2_c;
-    skp3_r                 <= skp3_c;
+    ordered_set_r  <= ordered_set_c;
+    idle_valid_o   <= idle_valid_c;
+    ts1_valid_o    <= ts1_valid;
+    ts2_valid_o    <= ts2_valid;
+    eieos_valid_o  <= eieos_valid;
+    axis_pkt_cnt_r <= axis_pkt_cnt_c;
+    skp0_r         <= skp0_c;
+    skp1_r         <= skp1_c;
+    skp2_r         <= skp2_c;
+    skp3_r         <= skp3_c;
   end
 
 
@@ -135,13 +127,20 @@ module ordered_set_handler
     //ordered set
     ordered_set_c       = ordered_set_r;
     check_ordered_set_c = '0;
-    idle_valid_c        = '0;
+    // idle_valid_c        = '0;
     temp_os             = ordered_set_r;
     skp0_c              = skp0_r;
     skp1_c              = skp1_r;
     skp2_c              = skp2_r;
     skp3_c              = skp3_r;
-    byte_index          = ((pipe_width_i >> 3) - 1'b1);
+    byte_shift          = pipe_width_i >> 3;
+    for (int i = 0; i < MaxBytesPerPacket; i++) begin
+      if ((pipe_width_i >> 3) == (1 << i)) begin
+        packets_per_words = MaxBytesPerPacket >> i;
+      end
+    end
+    // bytes_per_packet = (byte_shift - 1'b1);
+    byte_index = (byte_shift - 1'b1);
     case (curr_state)
       ST_IDLE: begin
         if (data_valid_i) begin
@@ -158,15 +157,14 @@ module ordered_set_handler
           end else begin
             if ((sync_header_i == 2'b10)) begin
               for (int i = 0; i < 4; i++) begin
-                if (i < byte_index + 1) begin
+                if (i < byte_shift) begin
                   ordered_set_c[8*i+:8] = data_in_i[8*(byte_index-i)+:8];
                 end
               end
               if (data_in_i[(8*byte_index)+:8] == GEN3_SKP) begin
                 next_state = ST_RX_GEN3_SKP;
                 axis_pkt_cnt_c = 1'b1;
-              end
-              if (data_in_i[(8*byte_index)+:8] inside {TS1OS, TS2OS, EIOS, EIEOS}) begin
+              end else begin
                 axis_pkt_cnt_c = 1'b1;
                 next_state = ST_RX_GEN3;
               end
@@ -178,52 +176,20 @@ module ordered_set_handler
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
           for (int i = 0; i < 4; i++) begin
-            if (i < byte_index + 1) begin
-              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
-                 data_in_i[8*(byte_index-i)+:8];
-            end
-          end
-          if (pipe_width_i == 8'd16) begin
-            if ((data_k_in_i[1]) && data_in_i[(8*1)+:8] inside {IDL}
-            || (data_k_in_i[0]) && data_in_i[(8*0)+:8] inside {IDL}) begin
-              idle_valid_c   = '1;
-              axis_pkt_cnt_c = '0;
-              next_state     = ST_IDLE;
-            end else begin
-              next_state = ST_RX_FULL_GEN1;
-            end
-          end else begin
-            if (axis_pkt_cnt_r >= 8'd3) begin
-              if ((data_k_in_i[0]) && data_in_i[(8*0)+:8] == IDL
-              && ordered_set_r[8*1 +:8]  == IDL && ordered_set_r[8*2 +:8]  == IDL) begin
-                idle_valid_c   = '1;
-                axis_pkt_cnt_c = '0;
-                next_state     = ST_IDLE;
-              end else begin
-                next_state = ST_RX_FULL_GEN1;
+            if (i < byte_shift) begin
+              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8]
+              = data_in_i[8*(byte_index-i)+:8];
+              if (data_k_in_i[byte_index] && (data_in_i[8*(byte_index-i)+:8] == IDL) &&
+              (axis_pkt_cnt_r >= packets_per_words)) begin
+                check_ordered_set_c = '1;
+                axis_pkt_cnt_c      = '0;
+                next_state          = ST_IDLE;
               end
-            end
-          end
-        end
-      end
-      ST_RX_FULL_GEN1: begin
-        if (data_valid_i) begin
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_index + 1) begin
-              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
-                 data_in_i[8*(byte_index-i)+:8];
-            end
-          end
-          if (pipe_width_i == 8'd16 && axis_pkt_cnt_r >= 8'd7) begin
-            check_ordered_set_c = '1;
-            axis_pkt_cnt_c      = '0;
-            next_state          = ST_IDLE;
-          end else begin
-            if (axis_pkt_cnt_r >= 8'd15) begin
-              check_ordered_set_c = '1;
-              axis_pkt_cnt_c      = '0;
-              next_state          = ST_IDLE;
+              if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
+                check_ordered_set_c = '1;
+                axis_pkt_cnt_c      = '0;
+                next_state          = ST_IDLE;
+              end
             end
           end
         end
@@ -232,54 +198,39 @@ module ordered_set_handler
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
           for (int i = 0; i < 4; i++) begin
-            if (i < byte_index + 1) begin
+            if (i < byte_shift) begin
               ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
                  data_in_i[8*(byte_index-i)+:8];
             end
-          end
-          if (pipe_width_i == 8'd32 && axis_pkt_cnt_r >= 8'd3) begin
-            check_ordered_set_c = '1;
-            axis_pkt_cnt_c      = '0;
-            if (data_in_i[(8*0)+:8] == EIOS
-            && ordered_set_r[8*1 +:8]  == EIOS && ordered_set_r[8*2 +:8]  == EIOS) begin
-              idle_valid_c = '1;
-            end
-            next_state = ST_IDLE;
-          end else if (pipe_width_i == 8'd16 && axis_pkt_cnt_r >= 8'd7) begin
-            check_ordered_set_c = '1;
-            axis_pkt_cnt_c      = '0;
-            if (data_in_i[(8*0)+:8] == EIOS
-            && ordered_set_r[8*1 +:8]  == EIOS && ordered_set_r[8*2 +:8]  == EIOS) begin
-              idle_valid_c = '1;
-            end
-            next_state = ST_IDLE;
-          end else begin
-            if (axis_pkt_cnt_r >= 8'd15) begin
-              //bad tlp
+            if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
               check_ordered_set_c = '1;
               axis_pkt_cnt_c      = '0;
-              if (data_in_i[(8*0)+:8] == EIOS  && ordered_set_r[8*1 +:8]  == EIOS
-               && ordered_set_r[8*2 +:8]  == EIOS) begin
-                idle_valid_c = '1;
-              end
-              next_state = ST_IDLE;
+              next_state          = ST_IDLE;
             end
           end
         end
       end
       ST_RX_GEN3_SKP: begin
+        //This is assuming a byte width of 32... will not work otherwise
+        //once the SKP_END symbols is seen capture the three other bytes 
+        //
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
           for (int i = 0; i < 4; i++) begin
-            if (i < byte_index + 1) begin
+            if (i < byte_shift) begin
               ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
                  data_in_i[8*(byte_index-i)+:8];
-              if ((data_in_i[8*(byte_index-i)+:8] == SKP_END) && ((byte_index - i) == 8'd0)) begin
-                skp0_c         = data_in_i[8*(byte_index-2)+:8];
-                skp1_c         = data_in_i[8*(byte_index-1)+:8];
-                skp2_c         = data_in_i[8*(byte_index-0)+:8];
+              if ((data_in_i[8*(byte_index-i)+:8] == SKP_END) && (i == 8'd0)) begin
+                // skp0_c         = data_in_i[8*(byte_index-2)+:8];
+                // skp1_c         = data_in_i[8*(byte_index-1)+:8];
+                // skp2_c         = data_in_i[8*(byte_index-0)+:8];
                 axis_pkt_cnt_c = '0;
                 next_state     = ST_IDLE;
+              end
+              if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
+                // check_ordered_set_c = '1;
+                axis_pkt_cnt_c      = '0;
+                next_state          = ST_IDLE;
               end
             end
           end
@@ -296,12 +247,15 @@ module ordered_set_handler
     ts1_valid              = '0;
     ts2_valid              = '0;
     eieos_valid            = '0;
-    buffered_ordered_set_c = buffered_ordered_set_r;
+    idle_valid_c           = '0;
+    // buffered_ordered_set_c = buffered_ordered_set_r;
     if (check_ordered_set_r) begin
-      buffered_ordered_set_c = ordered_set_r;
-      ts1_valid              = '1;
-      ts2_valid              = '1;
-      eieos_valid            = '1;
+      // buffered_ordered_set_c = ordered_set_r;
+      ts1_valid    = '1;
+      ts2_valid    = '1;
+      eieos_valid  = '1;
+      idle_valid_c = '1;
+      //check for TS1 or TS2
       for (int i = 7; i < 15; i++) begin
         if (ordered_set_r[8*i+:8] != TS1) begin
           ts1_valid = '0;
@@ -310,50 +264,45 @@ module ordered_set_handler
           ts2_valid &= '0;
         end
       end
-      for (int i = 1; i < 15; i++) begin
-        if (ordered_set_r[8*i+:8] != EIE || ordered_set_r[8*15+:8] != TS1) begin
-          eieos_valid = '0;
+
+      //data rate based checks
+      if (curr_data_rate_i < gen3) begin
+        if (curr_data_rate_i == gen1) begin
+          //check for IDL
+          for (int i = 1; i < 4; i++) begin
+            if (ordered_set_r[8*i+:8] != IDL) begin
+              idle_valid_c = '0;
+            end
+          end
+        end
+        if (curr_data_rate_i == gen2) begin
+          //check for gen 2 eios
+          for (int i = 0; i < 14; i++) begin
+            if (ordered_set_r[8*i+:8] != EIOS) begin
+              idle_valid_c = '0;
+            end
+          end
+        end
+        //check for eieos gen 1
+        for (int i = 1; i < 15; i++) begin
+          if (ordered_set_r[8*i+:8] != EIE || ordered_set_r[8*15+:8] != TS1) begin
+            eieos_valid = '0;
+          end
+        end
+      end else begin
+        //check for gen3 eieos
+        for (logic [7:0] i = 1; i < 15; i++) begin
+          if (i[0]) begin
+            if (ordered_set_r[8*i+:8] != 8'hFF) begin
+              eieos_valid = '0;
+            end
+          end else begin
+            if (ordered_set_r[8*i+:8] != 8'h00) begin
+              eieos_valid = '0;
+            end
+          end
         end
       end
     end
   end
-
-  //   //axi-stream output register instance
-  //   axis_register #(
-  //       .DATA_WIDTH(DATA_WIDTH),
-  //       .KEEP_ENABLE('1),
-  //       .KEEP_WIDTH(KEEP_WIDTH),
-  //       .LAST_ENABLE('1),
-  //       .ID_ENABLE('0),
-  //       .ID_WIDTH(1),
-  //       .DEST_ENABLE('0),
-  //       .DEST_WIDTH(1),
-  //       .USER_ENABLE('1),
-  //       .USER_WIDTH(USER_WIDTH),
-  //       .REG_TYPE(SkidBuffer)
-  //   ) axis_register_inst (
-  //       .clk(clk_i),
-  //       .rst(rst_i),
-  //       .s_axis_tdata(ltssm_axis_tdata),
-  //       .s_axis_tkeep(ltssm_axis_tkeep),
-  //       .s_axis_tvalid(ltssm_axis_tvalid),
-  //       .s_axis_tready(ltssm_axis_tready),
-  //       .s_axis_tlast(ltssm_axis_tlast),
-  //       .s_axis_tuser(ltssm_axis_tuser),
-  //       .s_axis_tid('0),
-  //       .s_axis_tdest('0),
-  //       .m_axis_tdata(m_axis_tdata),
-  //       .m_axis_tkeep(m_axis_tkeep),
-  //       .m_axis_tvalid(m_axis_tvalid),
-  //       .m_axis_tready(m_axis_tready),
-  //       .m_axis_tlast(m_axis_tlast),
-  //       .m_axis_tuser(m_axis_tuser),
-  //       .m_axis_tid(),
-  //       .m_axis_tdest()
-  //   );
-
-  // assign os_sent_o = os_sent_r;
-
-
-
 endmodule

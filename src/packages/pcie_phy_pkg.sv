@@ -280,7 +280,6 @@ package pcie_phy_pkg;
   endfunction
 
 
-
   function automatic logic [0:0] check_stp(input logic [31:0] data_i);
     begin
       if ((data_i[3:0] == '1)) begin

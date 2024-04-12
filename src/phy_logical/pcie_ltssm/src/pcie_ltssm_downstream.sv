@@ -990,13 +990,13 @@ module pcie_ltssm_downstream
 
 
     //determine if TS1 req satisfied for lane by its count
-    assign link_width_satisfied[lane]       = (ts1_cnt == 8'h2) | (ts2_cnt == 8'h2);
+    assign link_width_satisfied[lane]       = (ts1_cnt >= 8'h2) | (ts2_cnt == 8'h2);
     //determine if TS1 req satisfied for lane by its count
-    assign link_lanes_formed[lane]          = (ts1_cnt == 8'h2);
+    assign link_lanes_formed[lane]          = (ts1_cnt >= 8'h2);
     //determine if TS1 req satisfied
-    assign ts1_lanenum_wait_satisfied[lane] = (ts1_cnt == 8'h2);
-    assign link_lanes_nums_match[lane]      = (ts1_cnt == 8'h2);
-    assign link_lane_reconfig[lane]         = (ts1_cnt == 8'h2);
+    assign ts1_lanenum_wait_satisfied[lane] = (ts1_cnt >= 8'h2);
+    assign link_lanes_nums_match[lane]      = (ts1_cnt >= 8'h2) | (ts2_cnt >= 8'h2);
+    assign link_lane_reconfig[lane]         = (ts1_cnt >= 8'h2);
     assign lane_num_formed[lane]            = lane_active_r[lane] ? (ts2_cnt == 8'h8) : '1;
     //determine if TS1 req satisfied for lane by its count
     assign link_idle_satisfied[lane]        = (ts1_cnt >= 8'h8);
@@ -1151,14 +1151,14 @@ module pcie_ltssm_downstream
           end
           ST_CONFIGURATION_LINKWIDTH_START: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
-            if (ts1_valid_i[lane] && (ts1_cnt != 8'h2)) begin
+            if (ts1_valid_i[lane]) begin
               if (((link_num_i[lane*8+:8] == PAD) && (lane_num_i[lane*8+:8] == PAD))) begin
                 first_ts1 <= '1;
               end
               //check that link number is not pad and that lane number is pad
               if ((link_num_i[lane*8+:8] != PAD) && (lane_num_i[lane*8+:8] == PAD) && first_ts1) begin
                 //incrment ts1 count
-                ts1_cnt <= ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
               end else begin
                 //reset ts1 cnt... this ensures that the TS1-OS are consecutive per the spec
                 ts1_cnt <= '0;
@@ -1175,13 +1175,13 @@ module pcie_ltssm_downstream
           end
           ST_CONFIGURATION_LINKWIDTH_ACCEPT: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
-            if (ts1_valid_i[lane] && (ts1_cnt != 8'h2)) begin
+            if (ts1_valid_i[lane]) begin
               //check that incoming link number matches the "link_number_selected"
               //that we are now transmitting and that lane number is different
               //from the one stored when we entered this state
               if ((link_num_i[lane*8+:8] == link_number_selected)) begin
                 //increment count
-                ts1_cnt <= ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
                 lane_in_save <= link_num_i[lane*8+:8];
               end else begin
                 ts1_cnt <= '0;
@@ -1189,27 +1189,27 @@ module pcie_ltssm_downstream
             end
           end
           ST_CONFIGURATION_LANENUM_WAIT: begin
-            if (ts1_valid_i[lane] && (ts1_cnt != 8'h2)) begin
+            if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
               if (((link_num_i[lane*8+:8] != PAD) && (lane_num_i[lane*8+:8] != lane_in_save))) begin
-                ts1_cnt <= ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
               end else begin
                 ts1_cnt <= '0;
               end
             end
           end
           ST_CONFIGURATION_LANENUM_ACCEPT: begin
-            if (ts1_valid_i[lane] && (ts1_cnt != 8'h2)) begin
+            if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
               if ((link_num_i[lane*8+:8] == link_number_selected) && (lane_num_i[lane*8+:8] != PAD)) begin
-                ts1_cnt <= ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
               end else begin
                 ts1_cnt <= '0;
               end
             end
           end
           ST_CONFIGURATION_COMPLETE: begin
-            if (ts2_valid_i[lane] && (ts2_cnt != 8'h8)) begin
+            if (ts2_valid_i[lane]) begin
               if ((link_num_i[lane*8+:8] == link_number_selected) && (lane_num_i[lane*8+:8] == lane)) begin
-                ts2_cnt <= ts2_cnt + 1;
+                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h3 : ts2_cnt + 1;
                 ts1_cnt <= '0;
               end else begin
                 ts1_cnt <= '0;
@@ -1220,9 +1220,9 @@ module pcie_ltssm_downstream
           ST_CONFIGURATION_IDLE: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             //using ts1_cnt as idle count
-            if (idle_valid_i[lane] && (ts1_cnt != 8'h8)) begin
+            if (idle_valid_i[lane]) begin
               single_idle_received[lane] <= '1;
-              ts1_cnt <= ts1_cnt + 1;
+              ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
             end else if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
               ts1_cnt <= '0;
             end
