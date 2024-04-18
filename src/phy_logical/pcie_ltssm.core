@@ -43,6 +43,7 @@ targets:
       timescale: 1ns/1ns
       verilator_options:
         - --trace-fst
+        - -j 4
         - waiver.vlt
     filesets : [rtl,cocotb]
     toplevel : [pcie_phy_top]

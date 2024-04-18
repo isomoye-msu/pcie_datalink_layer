@@ -15,8 +15,8 @@ module phy_transmit
     input logic rst_i,  //! Reset signal
 
 
-    input logic                                                 en_i,
-    input logic                                                 link_up_i,
+    input  logic                                                 en_i,
+    input  logic                                                 link_up_i,
     output logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
     output logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
     output logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
@@ -27,13 +27,13 @@ module phy_transmit
     input  pcie_ordered_set_t                                    ordered_set_i,
     input  rate_speed_e                                          curr_data_rate_i,
     output logic                                                 ordered_set_tranmitted_o,
-
-    input  logic [DATA_WIDTH-1:0] s_dllp_axis_tdata,
-    input  logic [KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
-    input  logic                  s_dllp_axis_tvalid,
-    input  logic                  s_dllp_axis_tlast,
-    input  logic [USER_WIDTH-1:0] s_dllp_axis_tuser,
-    output logic                  s_dllp_axis_tready
+    input  gen_os_struct_t                                       gen_os_ctrl_i,
+    input  logic              [                  DATA_WIDTH-1:0] s_dllp_axis_tdata,
+    input  logic              [                  KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
+    input  logic                                                 s_dllp_axis_tvalid,
+    input  logic                                                 s_dllp_axis_tlast,
+    input  logic              [                  USER_WIDTH-1:0] s_dllp_axis_tuser,
+    output logic                                                 s_dllp_axis_tready
 );
 
 
@@ -53,11 +53,11 @@ module phy_transmit
   logic [                  USER_WIDTH-1:0] framed_axis_tuser;
   logic                                    framed_axis_tready;
 
-  logic [                  DATA_WIDTH-1:0] phy_axis_tdata;
-  logic [                  KEEP_WIDTH-1:0] phy_axis_tkeep;
+  logic [  (DATA_WIDTH*MAX_NUM_LANES)-1:0] phy_axis_tdata;
+  logic [  (KEEP_WIDTH*MAX_NUM_LANES)-1:0] phy_axis_tkeep;
   logic                                    phy_axis_tvalid;
   logic                                    phy_axis_tlast;
-  logic [                  USER_WIDTH-1:0] phy_axis_tuser;
+  logic [  (USER_WIDTH*MAX_NUM_LANES)-1:0] phy_axis_tuser;
   logic                                    phy_axis_tready;
 
   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] lm_data_out;
@@ -148,16 +148,18 @@ module phy_transmit
 
 
   os_generator #(
-      .CLK_RATE  (CLK_RATE),
+      .CLK_RATE(CLK_RATE),
       .DATA_WIDTH(DATA_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH)
+      .USER_WIDTH(USER_WIDTH),
+      .MAX_NUM_LANES(MAX_NUM_LANES)
   ) os_generator_inst (
       .clk_i(clk_i),
       .rst_i(rst_i),
-      .gen_os_ctrl_i('0),
       .curr_data_rate_i(curr_data_rate_i),
       .send_ltssm_os_i(send_ordered_set_i),
+      .preset_i('0),
+      .gen_os_ctrl_i(gen_os_ctrl_i),
       .os_sent_o(ordered_set_tranmitted_o),
       .ordered_set_i(ordered_set_i),
       .m_axis_tdata(phy_axis_tdata),

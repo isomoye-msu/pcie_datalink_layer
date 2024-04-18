@@ -73,6 +73,13 @@ package pcie_phy_pkg;
     logic [7:0]   whole;
   } ts_symbol6_union_t;
 
+  typedef struct packed {
+    logic [7:0] rx_preset;
+    logic [7:0] tx_preset;
+    logic [7:0] pre_cursor;
+    logic [7:0] cursor_coef;
+  } presets_coeff_t;
+
 
   typedef struct packed {logic [7:0] symbol;} ts_generic_symbol_t;
 
@@ -107,6 +114,14 @@ package pcie_phy_pkg;
     GEN3_EDB = {8'b11000000, 8'b11000000, 8'b11000000, 8'b11000000},
     GEN3_EDS = {8'h0, 8'b10010000, 8'b10000000, 8'b00011111}
   } gen3_special_symbols_e;
+
+  typedef enum logic [63:0] {
+    ReceiverpresetHintDSP    = 48'hAABBCCDD1122,
+    // TransmitterPresetHintDSP = 64'h11AA22BB33CC44DD,
+    ReceiverpresetHintUSP    = 48'h2211DDCCBBAA,
+    TransmitterPresetHintUSP = 64'h11AA22BB33CC44DD
+
+  } rx_tx_presets_e;
 
   typedef struct packed {
     logic use_link_in;
@@ -240,11 +255,13 @@ package pcie_phy_pkg;
     ts2_symbol6_t ts6_sym;
     rate_id_t     rate_id;
     logic [7:0]   link_number;
+    logic         set_speed_change;
     logic         set_lane;
     logic         set_link;
     logic         gen_idle;
     logic         gen_skp;
-    logic         gen_eieos;
+    logic         gen3_eieos;
+    logic         gen2_eieos;
     logic         gen_ts2;
     logic         gen_ts1;
     logic         valid;
@@ -310,6 +327,8 @@ package pcie_phy_pkg;
   endfunction
 
 
+
+
   function static void gen_tsos(
       output pcie_ordered_set_t tsos_out, input rate_speed_e rate_speed = gen1,
       input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD_,
@@ -338,13 +357,13 @@ package pcie_phy_pkg;
           temp_os.ts_id[i] = TSOS;
         end
       end else if (rate_speed == gen3) begin
-        temp_os.com        = TS1OS;
         temp_os.link_num   = link_num;
         temp_os.lane_num   = lane_num;
         temp_os.rate_id    = rate_id;
         temp_os.train_ctrl = train_ctrl;
         temp_os.n_fts      = 8'h04;
         if (TSOS == TS1) begin
+          temp_os.com       = TS1OS;
           temp_os.ts_s6.ts1 = ts_s6;
           temp_os.ts_s7     = ts_s7;
           temp_os.ts_s8     = ts_s8;
@@ -353,6 +372,7 @@ package pcie_phy_pkg;
             temp_os.ts_id[i] = TSOS;
           end
         end else if (TSOS == TS2) begin
+          temp_os.com   = TS2OS;
           temp_os.ts_s6 = ts_s6;
           temp_os.ts_s7 = TSOS;
           temp_os.ts_s8 = TSOS;
@@ -366,6 +386,49 @@ package pcie_phy_pkg;
       tsos_out = temp_os;
     end
   endfunction
+
+
+  function static void gen_eq_tsos(
+      output pcie_ordered_set_t tsos_out, input rate_speed_e rate_speed = gen1,
+      input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD_,
+      input train_seq_e lane_num = PAD_, input rate_id_t rate_id = gen3_basic,
+      input training_ctrl_t train_ctrl = '0, input ts_symbol6_union_t ts_s6 = TSOS,
+      input ts1_symbol6_t ts_s7 = TSOS, input ts1_symbol6_t ts_s8 = TSOS,
+      input ts1_symbol6_t ts_s9 = TSOS);
+    begin
+
+      pcie_tsos_t temp_os;
+      gen_tsos(temp_os,rate_speed,TSOS,link_num,lane_num,rate_id,train_ctrl,ts_s6,ts_s7,ts_s8,ts_s9);
+      // temp_os            = '0;
+      // temp_os.link_num   = link_num;
+      // temp_os.lane_num   = lane_num;
+      // temp_os.rate_id    = rate_id;
+      // temp_os.train_ctrl = train_ctrl;
+      // temp_os.n_fts      = 8'h04;
+      // if (TSOS == TS1) begin
+      //   temp_os.com       = TS1OS;
+      //   temp_os.ts_s6.ts1 = ts_s6;
+      //   temp_os.ts_s7     = ts_s7;
+      //   temp_os.ts_s8     = ts_s8;
+      //   temp_os.ts_s9     = ts_s9;
+      //   for (int i = 0; i < 6; i++) begin
+      //     temp_os.ts_id[i] = TSOS;
+      //   end
+      // end else if (TSOS == TS2) begin
+      //   temp_os.com   = TS2OS;
+      //   temp_os.ts_s6 = ts_s6;
+      //   temp_os.ts_s7 = TSOS;
+      //   temp_os.ts_s8 = TSOS;
+      //   temp_os.ts_s9 = TSOS;
+      //   for (int i = 0; i < 6; i++) begin
+      //     temp_os.ts_id[i] = TSOS;
+      //   end
+      // end
+      //return
+      tsos_out = temp_os;
+    end
+  endfunction
+
 
   // function automatic void gen_idle_gen3(output pcie_ordered_set_t tsos_out);
   //   begin

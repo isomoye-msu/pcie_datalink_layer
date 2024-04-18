@@ -118,6 +118,7 @@ module pcie_phy_top
   logic              [                  5:0] pipe_width;
 
 
+  pcie_ordered_set_t [    MAX_NUM_LANES-1:0] rx_ordered_set;
   logic              [       DATA_WIDTH-1:0] m_dllp_axis_tdata;
   logic              [       KEEP_WIDTH-1:0] m_dllp_axis_tkeep;
   logic                                      m_dllp_axis_tvalid;
@@ -132,6 +133,7 @@ module pcie_phy_top
   logic                                      s_dllp_axis_tlast;
   logic              [       USER_WIDTH-1:0] s_dllp_axis_tuser;
   logic                                      s_dllp_axis_tready;
+  gen_os_struct_t                            gen_os_ctrl;
 
 
   assign phy_rate = curr_data_rate;
@@ -158,11 +160,7 @@ module pcie_phy_top
       .ts1_valid_o(ts1_valid),
       .ts2_valid_o(ts2_valid),
       .idle_valid_o(idle_valid),
-      .rate_id_o(rate_id),
-      .link_num_o(link_number),
-      .lane_num_o(lane_number),
-      .symbol6_o(symbol6),
-      .training_ctrl_o(training_ctrl),
+      .ordered_set_o(rx_ordered_set),
       .curr_data_rate_i(curr_data_rate),
       .m_dllp_axis_tdata(m_dllp_axis_tdata),
       .m_dllp_axis_tkeep(m_dllp_axis_tkeep),
@@ -190,6 +188,7 @@ module pcie_phy_top
       .pipe_data_k_o(phy_txdatak),
       .pipe_sync_header_o(phy_txsync_header),
       .pipe_width_o(pipe_width),
+      .gen_os_ctrl_i(gen_os_ctrl),
       //   .num_active_lanes_o(num_active_lanes_o),
       .num_active_lanes_i(num_active_lanes_i),
       .send_ordered_set_i(send_ordered_set),
@@ -226,11 +225,6 @@ module pcie_phy_top
       .ts1_valid_i(ts1_valid),
       .ts2_valid_i(ts2_valid),
       .idle_valid_i(idle_valid),
-      .cfg_link_num_i(),
-      .cfg_lane_num_i(),
-      .link_num_i(link_number),
-      .lane_num_i(lane_number),
-      .lane_num_transmitted_i(),
       .phy_rxstatus_i(phy_rxstatus),
       .phy_phystatus_i(phy_phystatus),
       .phy_phystatus_rst_i(phy_phystatus_rst),
@@ -244,15 +238,17 @@ module pcie_phy_top
       .tx_enter_elec_idle_o(),
       .goto_cfg_o(),
       .goto_detect_o(),
-      .symbol6_i(symbol6),
-      .training_ctrl_i(training_ctrl),
-      .rate_id_i(rate_id),
+      .gen_os_ctrl_o(gen_os_ctrl),
+      .preset_coeff_o(),
+      //   .rate_id_i(rate_id),
       .extended_synch_i(),
       .directed_speed_change_i('1),
       .lane_status_i(lane_status_i),
       .curr_data_rate_o(curr_data_rate),
       .data_rate_o(),
+      .ltssm_state_o(),
       //   .gen_os_o(ordered_set),
+      .ordered_set_i(rx_ordered_set),
       .ordered_set_tranmitted_i(ordered_set_tranmitted),
       .ordered_set_o(ordered_set),
       .send_ordered_set_o(send_ordered_set),

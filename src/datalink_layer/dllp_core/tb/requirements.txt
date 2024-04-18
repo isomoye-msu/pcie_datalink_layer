@@ -1,0 +1,6 @@
+bitstring==4.1.4
+cocotb==1.8.1
+cocotb_test==0.2.5
+crc==6.1.1
+pytest==8.1.1
+pyuvm==2.9.1

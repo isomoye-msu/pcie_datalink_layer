@@ -22,12 +22,12 @@ module lane_management
     output logic                  s_dllp_axis_tready,
 
     //physical layer ordered sets AXIS inputs
-    input  logic [DATA_WIDTH-1:0] s_phy_axis_tdata,
-    input  logic [KEEP_WIDTH-1:0] s_phy_axis_tkeep,
-    input  logic                  s_phy_axis_tvalid,
-    input  logic                  s_phy_axis_tlast,
-    input  logic [USER_WIDTH-1:0] s_phy_axis_tuser,
-    output logic                  s_phy_axis_tready,
+    input  logic [(DATA_WIDTH*MAX_NUM_LANES)-1:0] s_phy_axis_tdata,
+    input  logic [(KEEP_WIDTH*MAX_NUM_LANES)-1:0] s_phy_axis_tkeep,
+    input  logic                                  s_phy_axis_tvalid,
+    input  logic                                  s_phy_axis_tlast,
+    input  logic [(USER_WIDTH*MAX_NUM_LANES)-1:0] s_phy_axis_tuser,
+    output logic                                  s_phy_axis_tready,
 
     input  logic                                           lane_reverse_i,
     input  rate_speed_e                                    curr_data_rate_i,
@@ -123,6 +123,7 @@ module lane_management
   logic                                                replace_lane_r;
   logic                                                complete_c;
   logic                                                complete_r;
+  logic             [                            31:0] lane_data;
   logic             [                            31:0] data_out;
   logic             [                            31:0] bytes_per_packet;
   logic             [                             3:0] data_k_out;
@@ -255,6 +256,7 @@ module lane_management
     lane_idx                 = '0;
     data_k_out               = '0;
     temp_d_k                 = '0;
+    lane_data                = '0;
     pipewidth_shift_idx      = (pipe_width_r >> 3) - 1;
     lane_shift_idx           = (num_active_lanes_i >> 1);
     byte_count_c             = byte_count_r;
@@ -268,7 +270,7 @@ module lane_management
           lane_replacement_byte_c = pipe_width_r;
           is_dllp_c               = '0;
           is_phy_c                = '1;
-          next_state              = ST_LANE_MNGT_PHY;
+          next_state              = ST_LANE_MNGT_TX_PHY;
           byte_count_c            = '0;
           lanes_count_c           = '0;
           replace_lane_c          = '0;
@@ -349,7 +351,17 @@ module lane_management
         lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
         bytes_sent_c = bytes_sent_r + num_active_lanes_i;
         byte_count_c = byte_count_r + 1'b1;
-        // if (word_count_r * (pipe_width_r >> 3) >= pkt_count_r * 4) begin
+        for (int i = 0; i < MAX_NUM_LANES; i++) begin
+          data_out  = data_out_r[i*32+:32];
+          temp_d_k  = d_k_out_r[i];
+          lane_data = s_phy_axis_tdata[i*32+:32];
+          if (i < num_active_lanes_i) begin
+            temp_d_k[lane_idx]      = s_phy_axis_tuser[bytes_sent_r];
+            data_out[8*lane_idx+:8] = lane_data[bytes_sent_r*8+:8];
+          end
+          d_k_out_c[i]         = temp_d_k;
+          data_out_c[i*32+:32] = data_out;
+        end
         if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
           word_count_c = word_count_r + 1'b1;
           byte_count_c = '0;
@@ -378,99 +390,42 @@ module lane_management
         end
       end
       ST_LANE_MNGT_TX_PHY: begin
-        // lanes_count_c = lanes_count_r + 1'b1;
-        lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
-        bytes_sent_c = bytes_sent_r + 1'b1;
-        byte_count_c = byte_count_r + 1'b1;
-        // if (word_count_r * (pipe_width_r >> 3) >= pkt_count_r * 4) begin
-        if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
-          word_count_c = word_count_r + 1'b1;
-          byte_count_c = '0;
-          for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-            if (lane < num_active_lanes_i) begin
-              data_valid_c[lane] = '1;
+        if (s_phy_axis_tvalid) begin
+          // lanes_count_c = lanes_count_r + 1'b1;
+          lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
+          bytes_sent_c = bytes_sent_r + 1'b1;
+          byte_count_c = byte_count_r + 1'b1;
+          // if (word_count_r * (pipe_width_r >> 3) >= pkt_count_r * 4) begin
+          if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
+            word_count_c = word_count_r + 1'b1;
+            byte_count_c = '0;
+            for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+              if (lane < num_active_lanes_i) begin
+                data_valid_c[lane] = '1;
+              end
+            end
+            if (bytes_sent_r >= (DATA_WIDTH / 8) - 1) begin
+              ready_out = '1;
+              bytes_sent_c = '0;
+              if (s_phy_axis_tlast) begin
+                next_state   = ST_IDLE;
+                pkt_count_c  = '0;
+                word_count_c = '0;
+              end
             end
           end
-          if (bytes_sent_r >= (pkt_count_r * 4) - 1) begin
-            next_state   = complete_r ? ST_IDLE : ST_LANE_MNGT_PHY;
-            pkt_count_c  = '0;
-            word_count_c = '0;
-          end
-        end
-        data_in_c   = data_in_r >> 8;
-        data_k_in_c = data_k_in_r >> 1;
-        for (int i = 0; i < MAX_NUM_LANES; i++) begin
-          data_out = data_out_r[i*32+:32];
-          temp_d_k = d_k_out_r[i];
-          if (i < num_active_lanes_i) begin
-            temp_d_k[byte_count_r] = data_k_in_r[0];
-            if ((bytes_sent_r == 8'h2) && replace_lane_r) begin
-              data_out[8*lane_idx+:8] = i;
-            end else begin
-              data_out[8*lane_idx+:8] = data_in_r[7:0];
+          for (int i = 0; i < MAX_NUM_LANES; i++) begin
+            data_out  = data_out_r[i*32+:32];
+            temp_d_k  = d_k_out_r[i];
+            lane_data = s_phy_axis_tdata[i*32+:32];
+            if (i < num_active_lanes_i) begin
+              temp_d_k[lane_idx]      = s_phy_axis_tuser[bytes_sent_r];
+              data_out[8*lane_idx+:8] = lane_data[bytes_sent_r*8+:8];
             end
+            d_k_out_c[i]         = temp_d_k;
+            data_out_c[i*32+:32] = data_out;
           end
-          d_k_out_c[i]         = temp_d_k;
-          data_out_c[i*32+:32] = data_out;
         end
-
-        // if (lanes_count_r >= num_active_lanes_i) begin
-        //   lanes_count_c = '0;
-        //   bytes_sent_c  = bytes_sent_r + 1'b1;
-        //   data_in_c     = data_in_r >> 8;
-        //   data_k_in_c   = data_k_in_r >> 1;
-        //   if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
-        //     byte_count_c = '0;
-        //     word_count_c = word_count_r + 1'b1;
-        //     for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-        //       if (lane < num_active_lanes_i) begin
-        //         data_valid_c[lane] = '1;
-        //       end
-        //     end
-        //   end else begin
-        //     byte_count_c = byte_count_r + 1'b1;
-        //   end
-        // end
-        // data_out = data_out_r[lanes_count_r*32+:32];
-        // if ((bytes_sent_r == 8'h2) && replace_lane_r) begin
-        //   data_out[8*lane_idx+:8] = lanes_count_r;
-        // end else begin
-        //   data_out[8*lane_idx+:8] = data_in_r[7:0];
-        // end
-        // d_k_out_c[lanes_count_r]         = data_k_in_r[0];
-        // data_out_c[lanes_count_r*32+:32] = data_out;
-
-
-        // word_count_c = word_count_r + 1'b1;
-        // data_in_c    = data_in_r >> pipe_width_r;
-        // data_k_in_c  = data_k_in_r >> (pipe_width_r>>3);
-        // if (((pipe_width_r >> 3) * (word_count_r + 1)) >= (pkt_count_r << 2)) begin
-        //   next_state   = complete_r ? ST_IDLE : ST_LANE_MNGT_PHY;
-        //   pkt_count_c  = '0;
-        //   word_count_c = '0;
-        //   is_dllp_c    = '0;
-        // end
-        // for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-        //   data_out   = curr_data_rate_i >= gen3 ? 32'hf7f7f7f7 : '0;
-        //   data_k_out = '0;
-        //   if (lane < num_active_lanes_i) begin
-        //     data_valid_c[lane] = '1;
-        //     for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
-        //       if (byte_idx < (pipewidth_shift_idx + 1)) begin
-        //         lane_idx = (pipewidth_shift_idx - byte_idx);
-        //         data_k_out[byte_idx] = data_k_in_r[byte_idx];
-        //         if((replace_lane_r && word_replacement_index_r == word_count_r) &&
-        //         (lane_replacement_byte_r == lane_idx)) begin
-        //           data_out[byte_idx<<3+:8] = lane_reverse_i ? num_active_lanes_i - lane : lane;
-        //         end else begin
-        //           data_out[byte_idx<<3+:8] = data_in_r[(lane_idx)<<3+:8];
-        //         end
-        //       end
-        //     end
-        //   end
-        //   d_k_out_c[lane]         = data_k_out;
-        //   data_out_c[lane*32+:32] = data_out;
-        // end
       end
       default: begin
       end
