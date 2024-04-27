@@ -37,6 +37,7 @@ module ordered_set_handler
 
 );
 
+  localparam int MaxWordsPerOrderedSet = 16;
   localparam int MaxBytesPerPacket = DATA_WIDTH / 8;
 
   typedef enum logic [7:0] {
@@ -50,47 +51,44 @@ module ordered_set_handler
   } os_decode_state_e;
 
 
-  os_decode_state_e        curr_state;
-  os_decode_state_e        next_state;
+  os_decode_state_e                   curr_state;
+  os_decode_state_e                   next_state;
 
-  logic              [7:0] axis_pkt_cnt_c;
-  logic              [7:0] axis_pkt_cnt_r;
+  logic              [           7:0] axis_pkt_cnt_c;
+  logic              [           7:0] axis_pkt_cnt_r;
 
-  pcie_ordered_set_t       ordered_set_c;
-  pcie_ordered_set_t       ordered_set_r;
+  pcie_ordered_set_t                  ordered_set_c;
+  pcie_ordered_set_t                  ordered_set_r;
 
-  logic                    check_ordered_set_c;
-  logic                    check_ordered_set_r;
-  logic                    idle_valid_c;
-  logic                    ts1_valid;
-  logic                    ts2_valid;
-  logic                    eieos_valid;
+  logic                               check_ordered_set_c;
+  logic                               check_ordered_set_r;
+  logic                               idle_valid_c;
+  logic                               ts1_valid;
+  logic                               ts2_valid;
+  logic                               eieos_valid;
 
 
-  logic              [7:0] skp0_c;
-  logic              [7:0] skp0_r;
-  logic              [7:0] skp1_c;
-  logic              [7:0] skp1_r;
-  logic              [7:0] skp2_c;
-  logic              [7:0] skp2_r;
-  logic              [7:0] skp3_c;
-  logic              [7:0] skp3_r;
+  logic              [           7:0] skp0_c;
+  logic              [           7:0] skp0_r;
+  logic              [           7:0] skp1_c;
+  logic              [           7:0] skp1_r;
+  logic              [           7:0] skp2_c;
+  logic              [           7:0] skp2_r;
+  logic              [           7:0] skp3_c;
+  logic              [           7:0] skp3_r;
 
-  pcie_tsos_t              training_set;
+  pcie_tsos_t                         training_set;
 
-  logic              [7:0] bytes_per_packet;
-  logic              [7:0] packets_per_words;
-  logic              [7:0] byte_shift;
-  logic              [7:0] byte_index;
+  logic              [           7:0] bytes_per_packet;
+  logic              [           7:0] packets_per_words;
+  logic              [           7:0] byte_shift;
+  logic              [           7:0] byte_index;
+  logic              [DATA_WIDTH-1:0] data_swapped;
+  logic                               pkt_full;
+  logic              [           7:0] word_index;
 
-  assign ordered_set_o    = ordered_set_r;
-  // assign link_num_o      = training_set.link_num;
-  // assign lane_num_o      = training_set.lane_num;
-  // assign nfts_o          = training_set.n_fts;
-  // assign training_ctrl_o = training_set.train_ctrl;
-  // assign rate_id_o       = training_set.rate_id;
-  // assign symbol6_o       = training_set.ts_s6;
-
+  assign ordered_set_o = ordered_set_r;
+  assign pkt_full = axis_pkt_cnt_r >= packets_per_words;
 
 
   //! main sequential block
@@ -133,30 +131,38 @@ module ordered_set_handler
     skp1_c              = skp1_r;
     skp2_c              = skp2_r;
     skp3_c              = skp3_r;
+    data_swapped        = '0;
     byte_shift          = pipe_width_i >> 3;
-    for (int i = 0; i < MaxBytesPerPacket; i++) begin
-      if ((pipe_width_i >> 3) == (1 << i)) begin
-        packets_per_words = MaxBytesPerPacket >> i;
+    byte_index          = (byte_shift - 1'b1);
+    word_index          = axis_pkt_cnt_r * byte_shift;
+    packets_per_words   =   MaxWordsPerOrderedSet - ((byte_shift - 1) << 2);
+    // for (int i = 0; i < MaxBytesPerPacket; i++) begin
+    //   if ((pipe_width_i >> 3) == (1 << i)) begin
+    //     packets_per_words = MaxBytesPerPacket >> i;
+    //   end
+    // end
+    if (data_valid_i) begin
+      data_swapped = ordered_set_r[32*word_index[7:2]+:32];
+      // int offset = word_index[1:0] ;
+      for (int i = 0; i < 4; i++) begin
+        int offset = word_index[1:0] + i;
+        if (i < byte_shift) begin
+          data_swapped[8*offset+:8] = data_in_i[8*(byte_index-i)+:8];
+        end
       end
+      ordered_set_c[32*word_index[7:2]+:32] = data_swapped;
     end
-    // bytes_per_packet = (byte_shift - 1'b1);
-    byte_index = (byte_shift - 1'b1);
     case (curr_state)
       ST_IDLE: begin
         if (data_valid_i) begin
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_shift) begin
-              ordered_set_c[8*i+:8] = data_in_i[8*(byte_index-i)+:8];
-            end
-          end
           if (curr_data_rate_i < gen3) begin
-            if ((data_k_in_i[byte_index]) && data_in_i[(8*byte_index)+:8] inside {COM}) begin
+            if ((data_k_in_i[byte_index]) && data_swapped[7:0] == COM) begin
               next_state = ST_RX_GEN1;
               axis_pkt_cnt_c = 1'b1;
             end
           end else begin
             if ((sync_header_i == 2'b10)) begin
-              if (data_in_i[(8*byte_index)+:8] == GEN3_SKP) begin
+              if (ordered_set_c[7:0] == GEN3_SKP) begin
                 next_state = ST_RX_GEN3_SKP;
                 axis_pkt_cnt_c = 1'b1;
               end else begin
@@ -170,38 +176,26 @@ module ordered_set_handler
       ST_RX_GEN1: begin
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_shift) begin
-              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8]
-              = data_in_i[8*(byte_index-i)+:8];
-              if (data_k_in_i[byte_index] && (data_in_i[8*(byte_index-i)+:8] == IDL) &&
+          if (data_k_in_i[byte_index] && (data_swapped[15:8] == IDL) &&
               (axis_pkt_cnt_r >= packets_per_words)) begin
-                check_ordered_set_c = '1;
-                axis_pkt_cnt_c      = '0;
-                next_state          = ST_IDLE;
-              end
-              if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
-                check_ordered_set_c = '1;
-                axis_pkt_cnt_c      = '0;
-                next_state          = ST_IDLE;
-              end
-            end
+            check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
+            next_state          = ST_IDLE;
+          end
+          if (pkt_full) begin
+            check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
+            next_state          = ST_IDLE;
           end
         end
       end
       ST_RX_GEN3: begin
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_shift) begin
-              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
-                 data_in_i[8*(byte_index-i)+:8];
-            end
-            if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
-              check_ordered_set_c = '1;
-              axis_pkt_cnt_c      = '0;
-              next_state          = ST_IDLE;
-            end
+          if (pkt_full) begin
+            check_ordered_set_c = '1;
+            axis_pkt_cnt_c      = '0;
+            next_state          = ST_IDLE;
           end
         end
       end
@@ -210,24 +204,22 @@ module ordered_set_handler
         //once the SKP_END symbols is seen capture the three other bytes
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_shift) begin
-              ordered_set_c[(8*i) + (axis_pkt_cnt_r*pipe_width_i)+:8] =
-                 data_in_i[8*(byte_index-i)+:8];
-              if ((data_in_i[8*(byte_index-i)+:8] == SKP_END) && (i == 8'd0)) begin
-                // skp0_c         = data_in_i[8*(byte_index-2)+:8];
-                // skp1_c         = data_in_i[8*(byte_index-1)+:8];
-                // skp2_c         = data_in_i[8*(byte_index-0)+:8];
-                axis_pkt_cnt_c = '0;
-                next_state     = ST_IDLE;
-              end
-              if (axis_pkt_cnt_r >= (packets_per_words << 2) - 1) begin
-                // check_ordered_set_c = '1;
-                axis_pkt_cnt_c = '0;
-                next_state     = ST_IDLE;
-              end
-            end
+          if (pkt_full) begin
+            axis_pkt_cnt_c = '0;
+            next_state     = ST_IDLE;
           end
+          if ((data_swapped[7:0] == SKP_END)) begin
+            axis_pkt_cnt_c = '0;
+            next_state     = ST_IDLE;
+          end
+          // for (int i = 0; i < 4; i++) begin
+          //   if (i < byte_shift) begin
+          //     if ((data_swapped[7:0] == SKP_END) && (i == 8'd0)) begin
+          //       axis_pkt_cnt_c = '0;
+          //       next_state     = ST_IDLE;
+          //     end
+          //   end
+          // end
         end
       end
       default: begin
@@ -251,34 +243,46 @@ module ordered_set_handler
       idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
-        //check for TS1 or TS2
-        for (int i = 7; i < 9; i++) begin
-          if (ordered_set_r[8*i+:8] != TS1) begin
-            ts1_valid = '0;
-          end
-          if (ordered_set_r[8*i+:8] != TS2) begin
-            ts2_valid = '0;
-          end
+        if (ordered_set_r[8*7+:8] != TS1) begin
+          ts1_valid = '0;
         end
+        if (ordered_set_r[8*7+:8] != TS2) begin
+          ts2_valid = '0;
+        end
+        // //check for TS1 or TS2
+        // for (int i = 7; i < 9; i++) begin
+        //   if (ordered_set_r[8*i+:8] != TS1) begin
+        //     ts1_valid = '0;
+        //   end
+        //   if (ordered_set_r[8*i+:8] != TS2) begin
+        //     ts2_valid = '0;
+        //   end
+        // end
         if (curr_data_rate_i == gen1) begin
           //check for IDL
-          for (int i = 1; i < 4; i++) begin
-            if (ordered_set_r[8*i+:8] != IDL) begin
-              idle_valid_c = '0;
-            end
+          if (ordered_set_r[23:8] != {IDL, IDL}) begin
+            idle_valid_c = '0;
           end
+          // for (int i = 1; i < 4; i++) begin
+          //   if (ordered_set_r[8*i+:8] != IDL) begin
+          //     idle_valid_c = '0;
+          //   end
+          // end
         end
         if (curr_data_rate_i == gen2) begin
           //check for gen 2 eios
-          for (int i = 0; i < 4; i++) begin
-            if (ordered_set_r[8*i+:8] != EIOS) begin
-              idle_valid_c = '0;
-            end
+          if (ordered_set_r[15:0] != {EIOS, EIOS}) begin
+            idle_valid_c = '0;
           end
+          // for (int i = 0; i < 4; i++) begin
+          //   if (ordered_set_r[8*i+:8] != EIOS) begin
+          //     idle_valid_c = '0;
+          //   end
+          // end
         end
         //check for eieos gen 1
         for (int i = 1; i < 4; i++) begin
-          if (ordered_set_r[8*i+:8] != EIE || ordered_set_r[8*15+:8] != TS1) begin
+          if (ordered_set_r[8*i+:8] != EIE) begin
             eieos_valid = '0;
           end
         end
@@ -299,17 +303,20 @@ module ordered_set_handler
         //   end
         // end
         //check for gen3 eieos
-        for (logic [7:0] i = 1; i < 4; i++) begin
-          if (i[0]) begin
-            if (ordered_set_r[8*i+:8] != 8'hFF) begin
-              eieos_valid = '0;
-            end
-          end else begin
-            if (ordered_set_r[8*i+:8] != 8'h00) begin
-              eieos_valid = '0;
-            end
-          end
+        if (ordered_set_r[31:0] != 32'h00FF00FF) begin
+          eieos_valid = '0;
         end
+        // for (logic [7:0] i = 1; i < 4; i++) begin
+        //   if (i[0]) begin
+        //     if (ordered_set_r[8*i+:8] != 8'hFF) begin
+        //       eieos_valid = '0;
+        //     end
+        //   end else begin
+        //     if (ordered_set_r[8*i+:8] != 8'h00) begin
+        //       eieos_valid = '0;
+        //     end
+        //   end
+        // end
       end
     end
   end

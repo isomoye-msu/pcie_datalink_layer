@@ -122,6 +122,10 @@ module os_generator
             if (gen_os_ctrl_i.set_lane) begin
               ordered_set_c[i].lane_num = i;
             end
+            if (ordered_set_r[i].ts_s6.ts1.ec != '0) begin
+              ordered_set_c[i].ts_s6.ts1.trans_preset =
+              preset_i[i].lane_equal_reg.downstream_tx_preset;
+            end
           end
         end
 

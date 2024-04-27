@@ -73,11 +73,21 @@ package pcie_phy_pkg;
     logic [7:0]   whole;
   } ts_symbol6_union_t;
 
+
   typedef struct packed {
-    logic [7:0] rx_preset;
-    logic [7:0] tx_preset;
+    logic [15:15] RsvdP2;
+    logic [14:12] upstream_rx_preset_hint;
+    logic [11:8]  upstream_tx_preset;
+    logic [7:7]   RsvdP;
+    logic [6:4]   downstream_rx_preset_hint;
+    logic [3:0]   downstream_tx_preset;
+  } lane_equal_ctrl_reg_t;
+
+
+  typedef struct packed {
     logic [7:0] pre_cursor;
     logic [7:0] cursor_coef;
+    lane_equal_ctrl_reg_t lane_equal_reg;
   } presets_coeff_t;
 
 
@@ -308,6 +318,20 @@ package pcie_phy_pkg;
   endfunction
 
 
+  function automatic void reset_lane_equal_ctrl_reg(output lane_equal_ctrl_reg_t reg_t);
+  begin
+        logic [14:12] upstream_rx_preset_hint;
+    logic [11:8]  upstream_tx_preset;
+    logic [7:7]   RsvdP;
+    logic [6:4]   downstream_rx_preset_hint;
+    logic [3:0]   downstream_tx_preset;
+    reg_t = '0;
+    reg_t.downstream_tx_preset = 8'h4;
+    reg_t.downstream_rx_preset_hint = 8'h4;
+  end
+  endfunction
+
+
 
   function static void gen_fcrc_parity(output logic [3:0] fcrc_out, output logic parity_out,
                                        input logic [10:0] tlp_length);
@@ -398,7 +422,8 @@ package pcie_phy_pkg;
     begin
 
       pcie_tsos_t temp_os;
-      gen_tsos(temp_os,rate_speed,TSOS,link_num,lane_num,rate_id,train_ctrl,ts_s6,ts_s7,ts_s8,ts_s9);
+      gen_tsos(temp_os, rate_speed, TSOS, link_num, lane_num, rate_id, train_ctrl, ts_s6, ts_s7,
+               ts_s8, ts_s9);
       // temp_os            = '0;
       // temp_os.link_num   = link_num;
       // temp_os.lane_num   = lane_num;

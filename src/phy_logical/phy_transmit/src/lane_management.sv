@@ -94,8 +94,6 @@ module lane_management
   logic             [                             5:0] word_count_r;
   logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_c;
   logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_r;
-  logic             [                            31:0] lane_replacement_byte_c;
-  logic             [                            31:0] lane_replacement_byte_r;
   logic             [               MAX_NUM_LANES-1:0] data_valid_c;
   logic             [               MAX_NUM_LANES-1:0] data_valid_r;
   logic             [                             3:0] d_k_out_c                [MAX_NUM_LANES];
@@ -113,8 +111,12 @@ module lane_management
   logic             [                           511:0] data_in_r;
   logic             [                    (512/8) -1:0] data_k_in_c;
   logic             [                    (512/8) -1:0] data_k_in_r;
-  logic             [                             1:0] word_replacement_index_c;
-  logic             [                             1:0] word_replacement_index_r;
+  logic             [                             7:0] byte_start_index_c;
+  logic             [                             7:0] byte_start_index_r;
+  logic             [                             7:0] lane_start_index_c;
+  logic             [                             7:0] lane_start_index_r;
+  logic             [                             7:0] input_byte_start_index_c;
+  logic             [                             7:0] input_byte_start_index_r;
   logic                                                is_phy_c;
   logic                                                is_phy_r;
   logic                                                is_dllp_c;
@@ -131,6 +133,8 @@ module lane_management
   logic             [                             7:0] lane_shift_idx;
   logic             [                             7:0] pipewidth_shift_idx;
   logic             [                         (4)-1:0] temp_d_k;
+  logic             [                             7:0] current_byte;
+
 
 
   assign is_ordered_set = s_phy_axis_tvalid & s_phy_axis_tready;
@@ -160,8 +164,8 @@ module lane_management
     is_dllp_r                <= is_dllp_c;
     pkt_count_r              <= pkt_count_c;
     word_count_r             <= word_count_c;
-    lane_replacement_byte_r  <= lane_replacement_byte_c;
-    word_replacement_index_r <= word_replacement_index_c;
+    lane_start_index_r       <= lane_start_index_c;
+    byte_start_index_r       <= byte_start_index_c;
     replace_lane_r           <= replace_lane_c;
     complete_r               <= complete_c;
     sync_header_r            <= sync_header_c;
@@ -170,6 +174,7 @@ module lane_management
     byte_count_r             <= byte_count_c;
     lanes_count_r            <= lanes_count_c;
     bytes_sent_r             <= bytes_sent_c;
+    input_byte_start_index_r <= input_byte_start_index_c;
     // for (int i = 0; i < MAX_NUM_LANES; i++) begin
     //   sync_header_r[i] <= sync_header_c[i];
     //   data_out_r[i]    <= data_out_c[i];
@@ -244,12 +249,13 @@ module lane_management
     data_in_c                = data_in_r;
     is_dllp_c                = is_dllp_r;
     is_phy_c                 = is_phy_r;
-    lane_replacement_byte_c  = lane_replacement_byte_r;
+    lane_start_index_c       = lane_start_index_r;
     pkt_count_c              = pkt_count_r;
     word_count_c             = word_count_r;
     next_state               = curr_state;
-    word_replacement_index_c = word_replacement_index_r;
+    byte_start_index_c       = byte_start_index_r;
     replace_lane_c           = replace_lane_r;
+    input_byte_start_index_c = input_byte_start_index_r;
     ready_out                = '0;
     complete_c               = complete_r;
     data_out                 = '0;
@@ -259,143 +265,153 @@ module lane_management
     lane_data                = '0;
     pipewidth_shift_idx      = (pipe_width_r >> 3) - 1;
     lane_shift_idx           = (num_active_lanes_i >> 1);
+    current_byte             = pipewidth_shift_idx - byte_start_index_r;
     byte_count_c             = byte_count_r;
     lanes_count_c            = lanes_count_r;
     bytes_sent_c             = bytes_sent_r;
     case (curr_state)
       ST_IDLE: begin
         if (s_phy_axis_tvalid) begin
-          pkt_count_c             = '0;
-          word_count_c            = '0;
-          lane_replacement_byte_c = pipe_width_r;
-          is_dllp_c               = '0;
-          is_phy_c                = '1;
-          next_state              = ST_LANE_MNGT_TX_PHY;
-          byte_count_c            = '0;
-          lanes_count_c           = '0;
-          replace_lane_c          = '0;
-          bytes_sent_c            = '0;
-          data_out_c              = '0;
+          pkt_count_c        = '0;
+          word_count_c       = '0;
+          lane_start_index_c = '0;
+          byte_start_index_c = '0;
+          is_dllp_c          = '0;
+          is_phy_c           = '1;
+          next_state         = ST_LANE_MNGT_TX_PHY;
+          byte_count_c       = '0;
+          lanes_count_c      = '0;
+          replace_lane_c     = '0;
+          bytes_sent_c       = '0;
+          data_out_c         = '0;
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            data_in_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
+            data_in_c[8*i+:8]  = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
+            data_out_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
           end
         end else if (s_dllp_axis_tvalid) begin
-          pkt_count_c             = '0;
-          word_count_c            = '0;
-          lane_replacement_byte_c = pipe_width_r;
-          next_state              = ST_LANE_MNGT_DATA;
-          is_dllp_c               = '1;
-          is_phy_c                = '0;
-          replace_lane_c          = '0;
-          byte_count_c            = '0;
-          data_out_c              = '0;
-          lanes_count_c           = '0;
-          bytes_sent_c            = '0;
-          for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            data_in_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
-          end
-        end
-      end
-      ST_LANE_MNGT_PHY: begin
-        ready_out = '1;
-        replace_lane_c = '0;
-        complete_c = '0;
-        if (s_phy_axis_tvalid && s_phy_axis_tready) begin
-          pkt_count_c = pkt_count_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            data_in_c[(i*8)+(pkt_count_r*32)+:8] = s_phy_axis_tkeep[i] ?
-            s_phy_axis_tdata[i*8+:8] : (curr_data_rate_i >= gen3) ?  8'hf7 : '0;
-            if (s_phy_axis_tuser[i+1]) begin
-              data_k_in_c[(pkt_count_r*4)+i] = '1;
-            end
-          end
-          if ((pkt_count_r >= MaxWordsPerTransaction) || s_phy_axis_tlast) begin
-            complete_c = s_phy_axis_tlast;
-            next_state = ST_LANE_MNGT_TX_PHY;
-            if (s_phy_axis_tuser[0] != '0) begin
-              replace_lane_c = '1;
-            end
-            // word_replacement_index_c = (pipe_width_r) > 32'd16 ? '0 : 5'd1;
-            // if (pipe_width_r == 8'd32) begin
-            //   lane_replacement_byte_c  = 4'd2;
-            //   word_replacement_index_c = '0;
-            // end else if (pipe_width_r == 8'd16) begin
-            //   lane_replacement_byte_c  = 4'd0;
-            //   word_replacement_index_c = 4'd1;
-            // end else if (pipe_width_r == 8'd8) begin
-            //   lane_replacement_byte_c  = 4'd0;
-            //   word_replacement_index_c = 4'd2;
-            // end
-          end
-        end
-
-      end
-      ST_LANE_MNGT_DATA: begin
-        ready_out = '1;
-        if (s_dllp_axis_tvalid && s_dllp_axis_tready) begin
-          pkt_count_c = pkt_count_r + 1'b1;
-          for (int i = 0; i < 4; i++) begin
-            data_in_c[(i<<3)+(pkt_count_r<<5)+:8] = s_dllp_axis_tkeep[i] ?
-                s_dllp_axis_tdata[i<<3+:8] : (curr_data_rate_i >= gen3) ? 8'hf7 : '0;
-            if (s_dllp_axis_tuser[i]) begin
-              data_k_in_c[(pkt_count_r*4)+i] = '1;
-            end
-          end
-          if ((pkt_count_r >= MaxWordsPerTransaction) || s_dllp_axis_tlast) begin
-            complete_c = s_dllp_axis_tlast;
-            next_state = ST_LANE_MNGT_TX_DATA;
+          pkt_count_c              = '0;
+          word_count_c             = '0;
+          lane_start_index_c       = '0;
+          byte_start_index_c       = '0;
+          next_state               = ST_LANE_MNGT_TX_DATA;
+          is_dllp_c                = '1;
+          is_phy_c                 = '0;
+          replace_lane_c           = '0;
+          byte_count_c             = '0;
+          data_out_c               = '0;
+          lanes_count_c            = '0;
+          bytes_sent_c             = '0;
+          input_byte_start_index_c = '0;
+          for (int i = 0; i < MAX_NUM_LANES * BytesPerTransfer; i++) begin
+            data_in_c[8*i+:8]  = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
+            data_out_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
           end
         end
       end
       ST_LANE_MNGT_TX_DATA: begin
-        lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
-        bytes_sent_c = bytes_sent_r + num_active_lanes_i;
-        byte_count_c = byte_count_r + 1'b1;
-        for (int i = 0; i < MAX_NUM_LANES; i++) begin
-          data_out  = data_out_r[i*32+:32];
-          temp_d_k  = d_k_out_r[i];
-          lane_data = s_phy_axis_tdata[i*32+:32];
-          if (i < num_active_lanes_i) begin
-            temp_d_k[lane_idx]      = s_phy_axis_tuser[bytes_sent_r];
-            data_out[8*lane_idx+:8] = lane_data[bytes_sent_r*8+:8];
-          end
-          d_k_out_c[i]         = temp_d_k;
-          data_out_c[i*32+:32] = data_out;
-        end
-        if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
-          word_count_c = word_count_r + 1'b1;
-          byte_count_c = '0;
-          for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-            if (lane < num_active_lanes_i) begin
-              data_valid_c[lane] = '1;
+        if (s_dllp_axis_tvalid) begin
+          // int max_bytes_per_cycle;
+          // automatic logic [7:0] mask;
+          // max_bytes_per_cycle = bytes_per_packet > BytesPerTransfer ? bytes_per_packet :
+          // BytesPerTransfer;
+          // byte_count_c = byte_count_r[BytesPerTransfer-2:0] +
+          // ((pipe_width_r>>8) * num_active_lanes_i);
+          // mask = '0;
+          // for (int i = 0; i < MAX_NUM_LANES; i++) begin
+          //   if ((1 << i) < num_active_lanes_i) begin
+          //     mask[i-1] = '1;
+          //   end
+          // end
+          // lane_start_index_c = (lane_start_index_r & mask) + BytesPerTransfer;
+          // if ((lane_start_index_r + max_bytes_per_cycle) > num_active_lanes_i) begin
+          //   byte_start_index_c = (byte_start_index_r >= pipe_width_r >> 3) ? '0:
+          //   byte_start_index_r + 1'b1;
+          // end
+          // bytes_sent_c = bytes_sent_r + BytesPerTransfer;
+          // if (bytes_sent_c > bytes_per_packet) begin
+          //   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+          //     if (lane < num_active_lanes_i) begin
+          //       data_valid_c[lane] = '1;
+          //     end
+          //   end
+          // end
+
+          // if (max_bytes_per_cycle >= BytesPerTransfer || (bytes_sent_r > BytesPerTransfer)) begin
+          //   ready_out          = '1;
+          //   byte_start_index_c = '0;
+          //   if (s_dllp_axis_tlast) begin
+          //     for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+          //       if (lane < num_active_lanes_i) begin
+          //         data_valid_c[lane] = '1;
+          //       end
+          //     end
+          //     lane_start_index_c = '0;
+          //     next_state         = ST_IDLE;
+          //     pkt_count_c        = '0;
+          //     word_count_c       = '0;
+          //   end
+          // end
+          // bytes_sent_c = bytes_sent_r + BytesPerTransfer;
+          // if()
+          for (int i = 0; i < DATA_WIDTH / 8; i++) begin
+            int current_lane = lane_start_index_r + i;
+            if (current_lane < num_active_lanes_i) begin
+              byte_count_c                = byte_count_r + i;
+              lane_start_index_c          = current_lane + 1;
+              input_byte_start_index_c    = input_byte_start_index_r[BytesPerTransfer-2:0] + i;
+              data_out                    = data_out_r[current_lane*32+:32];
+              temp_d_k                    = d_k_out_r[current_lane];
+              temp_d_k[current_byte]      = s_dllp_axis_tuser[i+input_byte_start_index_r];
+              data_out[8*current_byte+:8] = s_dllp_axis_tdata[(i+input_byte_start_index_r)*8+:8];
+              if (input_byte_start_index_r + i == BytesPerTransfer - 1) begin
+                ready_out = '1;
+                input_byte_start_index_c = '0;
+                if (s_dllp_axis_tlast ||
+                ((byte_start_index_r == ((pipe_width_r >> 3) - 1'b1))
+                && current_lane == num_active_lanes_i-1)
+                ) begin
+                  lane_start_index_c = '0;
+                  next_state         = ST_IDLE;
+                  pkt_count_c        = '0;
+                  word_count_c       = '0;
+                  for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+                    if (lane < num_active_lanes_i) begin
+                      data_valid_c[lane] = '1;
+                    end
+                  end
+                end
+              end
+            end else begin
+              lane_start_index_c = '0;
+              // lane_start_index_c = lane_start_index_r >= num_active_lanes_i - 1'b1 ?
+              // '0 :  lane_start_index_r + 1'b1;
+              byte_start_index_c = byte_start_index_r + 1'b1;
+              // if (byte_start_index_r >= ((pipe_width_r >> 3) - 1'b1)) begin
+              //   // ready_out          = '1;
+              //   byte_start_index_c = '0;
+              //   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+              //     if (lane < num_active_lanes_i) begin
+              //       data_valid_c[lane] = '1;
+              //     end
+              //   end
+              //   if (s_dllp_axis_tlast) begin
+              //     lane_start_index_c = '0;
+              //     next_state         = ST_IDLE;
+              //     pkt_count_c        = '0;
+              //     word_count_c       = '0;
+              //   end
+              // end
             end
+            d_k_out_c[current_lane]         = temp_d_k;
+            data_out_c[current_lane*32+:32] = data_out;
           end
-          if (bytes_sent_r >= (pkt_count_r * 4) - 1) begin
-            next_state   = complete_r ? ST_IDLE : ST_LANE_MNGT_DATA;
-            pkt_count_c  = '0;
-            word_count_c = '0;
-          end
-        end
-        data_in_c   = data_in_r >> 8 * num_active_lanes_i;
-        data_k_in_c = data_k_in_r >> num_active_lanes_i;
-        for (int i = 0; i < MAX_NUM_LANES; i++) begin
-          data_out = data_out_r[i*32+:32];
-          temp_d_k = d_k_out_r[i];
-          if (i < num_active_lanes_i) begin
-            temp_d_k[lane_idx] = data_k_in_r[i];
-            data_out[8*lane_idx+:8] = data_in_r[i*8+:8];
-          end
-          d_k_out_c[i]         = temp_d_k;
-          data_out_c[i*32+:32] = data_out;
         end
       end
       ST_LANE_MNGT_TX_PHY: begin
         if (s_phy_axis_tvalid) begin
-          // lanes_count_c = lanes_count_r + 1'b1;
           lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
           bytes_sent_c = bytes_sent_r + 1'b1;
           byte_count_c = byte_count_r + 1'b1;
-          // if (word_count_r * (pipe_width_r >> 3) >= pkt_count_r * 4) begin
           if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
             word_count_c = word_count_r + 1'b1;
             byte_count_c = '0;
