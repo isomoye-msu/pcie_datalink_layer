@@ -3,7 +3,7 @@ module pcie_phy_top
   import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100
-    parameter int MAX_NUM_LANES = 16,              //! Maximum number of lanes module can support
+    parameter int MAX_NUM_LANES = 8,               //! Maximum number of lanes module can support
     // TLP data width
     parameter int DATA_WIDTH    = 32,              //! AXIS data width
     // TLP strobe width
@@ -20,9 +20,9 @@ module pcie_phy_top
     input  logic                                    clk_i,                 //! 100MHz clock signal
     input  logic                                    rst_i,                 //! Reset signal
     input  logic                                    en_i,
-    input  logic [                             5:0] num_active_lanes_i,
+    // input  logic [                             5:0] num_active_lanes_i,
     input  logic [               MAX_NUM_LANES-1:0] lane_active_i,
-    input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
+    // input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
     output logic                                    fc_initialized_o,
     //pipe interface output
     output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata,
@@ -68,6 +68,7 @@ module pcie_phy_top
     input  wire  [          (MAX_NUM_LANES*18)-1:0] phy_rxeq_new_txcoeff,
     input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_adapt_done,
     input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_done,
+    output wire  [                           8-1:0] pipe_width_o,
     //detect phy signals
     output reg                                      as_mac_in_detect,
     output reg                                      as_cdr_hold_req,
@@ -100,7 +101,7 @@ module pcie_phy_top
 
   parameter int RX_FIFO_SIZE = 3;
   parameter int RETRY_TLP_SIZE = 3;
-  parameter int MAX_PAYLOAD_SIZE = 1024;
+  parameter int MAX_PAYLOAD_SIZE = 256;
 
   logic                                      link_up;
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
@@ -116,28 +117,50 @@ module pcie_phy_top
   logic                                      send_ordered_set;
   rate_id_t          [    MAX_NUM_LANES-1:0] rate_id;
   logic              [                  5:0] pipe_width;
+  logic              [                  5:0] num_active_lanes_i;
+
+  assign pipe_width_o = pipe_width;
 
 
-  pcie_ordered_set_t [    MAX_NUM_LANES-1:0] rx_ordered_set;
-  logic              [       DATA_WIDTH-1:0] m_dllp_axis_tdata;
-  logic              [       KEEP_WIDTH-1:0] m_dllp_axis_tkeep;
-  logic                                      m_dllp_axis_tvalid;
-  logic                                      m_dllp_axis_tlast;
-  logic              [       USER_WIDTH-1:0] m_dllp_axis_tuser;
-  logic                                      m_dllp_axis_tready;
+  pcie_ordered_set_t [MAX_NUM_LANES-1:0] rx_ordered_set;
+  logic              [   DATA_WIDTH-1:0] m_dllp_axis_tdata;
+  logic              [   KEEP_WIDTH-1:0] m_dllp_axis_tkeep;
+  logic                                  m_dllp_axis_tvalid;
+  logic                                  m_dllp_axis_tlast;
+  logic              [   USER_WIDTH-1:0] m_dllp_axis_tuser;
+  logic                                  m_dllp_axis_tready;
 
 
-  logic              [       DATA_WIDTH-1:0] s_dllp_axis_tdata;
-  logic              [       KEEP_WIDTH-1:0] s_dllp_axis_tkeep;
-  logic                                      s_dllp_axis_tvalid;
-  logic                                      s_dllp_axis_tlast;
-  logic              [       USER_WIDTH-1:0] s_dllp_axis_tuser;
-  logic                                      s_dllp_axis_tready;
-  gen_os_struct_t                            gen_os_ctrl;
-
+  logic              [   DATA_WIDTH-1:0] s_dllp_axis_tdata;
+  logic              [   KEEP_WIDTH-1:0] s_dllp_axis_tkeep;
+  logic                                  s_dllp_axis_tvalid;
+  logic                                  s_dllp_axis_tlast;
+  logic              [   USER_WIDTH-1:0] s_dllp_axis_tuser;
+  logic                                  s_dllp_axis_tready;
+  gen_os_struct_t                        gen_os_ctrl;
+  logic              [MAX_NUM_LANES-1:0] active_lanes;
+  logic              [MAX_NUM_LANES-1:0] lane_status;
 
   assign phy_rate = curr_data_rate;
+  assign phy_powerdown = '0;
 
+  always_ff @(posedge clk_i) begin
+    if (rst_i) begin
+      lane_status <= '0;
+    end else begin
+      for (int i = 0; i < MAX_NUM_LANES; i++) begin
+        if (phy_phystatus[i] && phy_rxstatus[i*3+:3] == 3'b011) begin
+          lane_status[i] <= '1;
+        end
+      end
+      for (int i = 0; i < MAX_NUM_LANES; i++) begin
+        if (lane_status[i]) begin
+          num_active_lanes_i <= i+1;
+        end
+      end
+      // num_active_lanes_i
+    end
+  end
 
   phy_receive #(
       .CLK_RATE(CLK_RATE),
@@ -229,6 +252,7 @@ module pcie_phy_top
       .phy_phystatus_i(phy_phystatus),
       .phy_phystatus_rst_i(phy_phystatus_rst),
       .phy_txdetectrx_o(phy_txdetectrx),
+      .active_lanes_o(active_lanes),
       //   .lane_active_i(lane_active_i),
       .lanes_ts2_satisfied_i(),
       .config_copmlete_ts2_i(),
@@ -243,7 +267,7 @@ module pcie_phy_top
       //   .rate_id_i(rate_id),
       .extended_synch_i(),
       .directed_speed_change_i('1),
-      .lane_status_i(lane_status_i),
+      .lane_status_i(lane_status),
       .curr_data_rate_o(curr_data_rate),
       .data_rate_o(),
       .ltssm_state_o(),

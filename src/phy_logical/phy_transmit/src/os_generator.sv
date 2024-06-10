@@ -119,9 +119,17 @@ module os_generator
         axis_pkt_cnt_c = '0;
         if ((gen_os_ctrl_i.gen_ts1 || gen_os_ctrl_i.gen_ts2)) begin
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
+            if(ordered_set_r[i].link_num == PAD_) begin
+              special_k_c[1] = '1;
+            end
+            
             if (gen_os_ctrl_i.set_lane) begin
               ordered_set_c[i].lane_num = i;
             end
+            else begin
+              special_k_c[2] = '1;
+            end
+
             if (ordered_set_r[i].ts_s6.ts1.ec != '0) begin
               ordered_set_c[i].ts_s6.ts1.trans_preset =
               preset_i[i].lane_equal_reg.downstream_tx_preset;
@@ -130,8 +138,8 @@ module os_generator
         end
 
         if (gen_os_ctrl_i.gen_idle) begin
-          special_k_c  = '1;
-          os_pkt_cnt_c = 32'd1;
+          special_k_c  = '0;
+          // os_pkt_cnt_c = 32'd1;
         end
         next_state = ST_SEND;
       end

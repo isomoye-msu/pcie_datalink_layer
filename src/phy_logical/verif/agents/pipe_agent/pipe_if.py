@@ -1,16 +1,23 @@
 import cocotb
 from cocotb.triggers import *
-from interface import *
+from cocotb_bus.bus import Bus
+
+class sv_if(Bus):
+
+    def __init__(self, entity, name, signals,
+            optional_signals=[], bus_separator="_", array_idx=None):
+        Bus.__init__(self, entity, name, signals, optional_signals,
+                bus_separator, array_idx)
 
 
-class pipe_if(interface):
+class pipe_if(sv_if):
     """
-    Class: SPI Interface
+    Class: PIPE Interface
 
     Definition: Contains functions tasks and methods of this agent's virtual interface.
     """
 
-    def __init__(self dut bus_map=None):
+    def __init__(self, dut, bus_map=None, name="pipe"):
         """
         Function: new
 
@@ -67,7 +74,9 @@ class pipe_if(interface):
                 "tx_elec_idle"          :  "tx_elec_idle"        ,
                 "phy_ready_en"          :  "phy_ready_en"              
             }
-        super().__init__(dut "" bus_map)
+        super().__init__(dut, name, bus_map)
+        self.rst = dut.rst
+        # super().__init__(dut "" bus_map)
 
     async def start(self):
-        await Timer(0 "NS")
+        await Timer(0)

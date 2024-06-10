@@ -1,0 +1,918 @@
+import pyuvm
+from cocotb.triggers import *
+from base_uvm import *
+from pipe_types import *
+from descrambler_scrambler import *
+from pyuvm import *
+from cocotb.types import Bit,Logic, LogicArray
+from pipe_agent import pipe_monitor
+from cocotb.types.range import Range
+
+class pipe_monitor_bfm():
+    def __init__(self, name = "pipe_agent_h", parent=None):
+        # super().__init__(name, parent)
+        self.current_gen = gen_t.GEN1
+        self.driver_scrambler = [scrambler_s()] * NUM_OF_LANES
+        self.name = name
+        # self.vif              = pipe_interface
+        self.dut = cocotb.top
+        self.lf_usp                         = None
+        self.fs_usp                         = None
+        self.lf_dsp                         = None
+        self.fs_dsp                         = None
+        self.cursor                         = None
+        self.pre_cursor                     = None
+        self.post_cursor                    = None
+        self.my_rx_preset_hint              = None
+        self.my_tx_preset                   = None
+        self.my_local_txPreset_coefficients = None
+        self.eval_feedback_was_asserted     = 0
+        self.data = 0
+        self.build_connect_finished_e  = Event()
+        self.detected_exit_electricle_idle_e = Event()
+        self.detected_power_down_change_e = Event()
+        self.monitor_rx_scrambler = [scrambler_s()] * NUM_OF_LANES
+        self.monitor_tx_scrambler = [scrambler_s()] * NUM_OF_LANES
+        self.proxy = pipe_monitor
+        self.pipe_max_width = 32
+        self.bus_data_kontrol_param = int(self.pipe_max_width / 8) * int(self.dut.MAX_NUM_LANES) - 1
+        self.bus_data_width_param = int(self.dut.MAX_NUM_LANES) * int(self.pipe_max_width)
+        pipe_width = self.get_width()
+        self.bus_data_width = int(self.dut.MAX_NUM_LANES) * pipe_width
+        self.tlp_done = 2
+        self.dllp_done = 2
+        self.start_tlp = 0
+        self.start_dllp = 0
+        self.tlp_q = []
+        self.dllp_q = []
+        self.data_descrambled = LogicArray(0,Range(self.bus_data_width_param,'downto', 0))
+
+
+
+    def get_width(self):
+            lane_width = 0
+            # print("pipewitdth: " + str(LogicArray(self.dut.pipe_width_o.value)[1:0].to_BinaryValue()))
+            match LogicArray(self.dut.pipe_width_o.value)[1:0].to_BinaryValue():
+                case 0b00: lane_width = 8
+                case 0b01: lane_width = 16
+                case 0b11: lane_width = 32
+            return lane_width
+    
+    async def start(self):
+        # super().body()
+        
+        cocotb.start_soon(self.test())
+        # cocotb.start_soon(self.receive_tses_gen3())
+        # cocotb.start_soon(self.receive_eios())
+
+
+
+
+        cocotb.start_soon(self.detect())
+        # cocotb.start_soon(self.clock_wait())
+        # cocotb.start_soon(self.width_changed())
+        # cocotb.start_soon(self.clk_i_rate_changed())
+
+        
+        
+        # cocotb.start_soon(self.rate_changed())
+        cocotb.start_soon(self.phy_txelecidle_and_RxStandby_asserted())
+        # cocotb.start_soon(self.receive_eios())
+        # cocotb.start_soon(self.receive_eios_gen3())
+
+        cocotb.start_soon(self.rx_detection_scenario())
+        # cocotb.start_soon(self.clock_wait())
+        cocotb.start_soon(self.polling_state_start())
+        cocotb.start_soon(self.recieve_data())
+        # cocotb.start_soon(self.receive_ts())
+
+        # for i in range(int(self.dut.MAX_NUM_LANES)):
+        #     self.driver_scrambler.append(scrambler_s())
+            
+        self.driver_scrambler = reset_lfsr(self.driver_scrambler, self.current_gen)
+
+
+
+        
+    async def test(self):
+        while True:
+            await self.receive_tses()
+
+    async def detect(self):
+        while not self.build_connect_finished_e.is_set():
+            ...
+        while True:
+            await RisingEdge(self.dut.clk_i)
+            await self.proxy.detect_link_up()
+
+    async def clock_wait(self):
+        while True:
+            await RisingEdge(self.dut.clk_i)
+            self.proxy.detect_posedge_clk_i.set()
+
+
+    async def width_changed(self):
+        while not self.build_connect_finished_e.is_set():
+            ...
+        self.build_connect_finished_e.clear()
+        while True:
+            await Edge(self.dut.pipe_width_o)
+            new_width=self.dut.pipe_width_o
+            self.proxy.notify_width_changed(new_width)
+
+    # async def clk_i_rate_changed(self):
+    #     while not self.build_connect_finished_e.is_set():
+    #         ...
+    #     self.build_connect_finished_e.clear
+    #     while True:
+    #         await Edge(self.dut.clk_i_rate_o)
+    #         new_PCLKRate = self.dut.clk_i_rate_o
+    #         self.proxy.notify_PCLKRate_changed(new_PCLKRate)
+
+    async def rate_changed(self):
+        await Edge(self.build_connect_finished_e.is_set)
+        self.build_connect_finished_e.clear
+        while True:
+            await Edge(self.dut.phy_rate)
+            new_Rate = self.dut.phy_rate
+            self.proxy.notify_Rate_changed(new_Rate)
+
+# # -----------------------------------------------------------
+# # TxDeemph changed
+# # -----------------------------------------------------------
+#initial begin
+#  logic [17:0] new_TxDeemph 
+#  await Edge(build_connect_finished_e)
+#  while True:
+#    await Edge(TxDeemph)
+#    new_TxDeemph=TxDeemph[17:0]
+#    proxy.notify_TxDeemph_changed(new_TxDeemph)
+#  end
+#end
+# # -----------------------------------------------------------
+# # phy_txelecidle and RxStandby asserted
+# # -----------------------------------------------------------
+    async def phy_txelecidle_and_RxStandby_asserted(self):
+        await self.build_connect_finished_e.wait()
+        while True:
+            while not all( LogicArray(self.dut.phy_txelecidle.value)[i] ==0b1 for i in range(int(self.dut.MAX_NUM_LANES))):
+                await RisingEdge(self.dut.clk_i)
+            self.proxy.notify_phy_txelecidle_and_RxStandby_asserted.set()
+            while not all( LogicArray(self.dut.phy_txelecidle.value)[i]==0b0 for i in range(int(self.dut.MAX_NUM_LANES))):
+                ...
+            #     for i in range(self.dut.pipe_num_of_lanes):
+            #         flag = self.dut.phy_txelecidle[i]==0b1
+            #         self.proxy.notify_phy_txelecidle_and_RxStandby_asserted.set()
+            # flag = 0
+            # while(flag == 0):
+            #     for i in range(self.dut.pipe_num_of_lanes):
+            #         flag = self.dut.phy_txelecidle[i]==0b0 and RxStandby[i]==0b0
+
+
+
+    async def reset_scrambler(self):
+        while True:
+            for i in range (NUM_OF_LANES):
+                await LogicArray(self.dut.phy_txdata.value)[(i*8): (i*8)+8]==0b1011_1100
+            reset_lfsr(self.monitor_rx_scrambler,self.current_gen)
+
+
+    async def receive_ts(self, ts, start_lane = 0 , end_lane = 0):
+        if self.dut.pipe_width == 0b01:
+            await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
+            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+
+            ts.link_number = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]
+            for symbol_count in range(2,16,2):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 2:
+                    ts.lane_number = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0) : (start_lane*32+0)+8]
+                    ts.n_fts       = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]
+
+                if symbol_count == 4:
+                    if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                        ts.max_gen_supported= gen_t.GEN5
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                        ts.max_gen_supported= gen_t.GEN4
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                        ts.max_gen_supported= gen_t.GEN3
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                        ts.max_gen_supported= gen_t.GEN2
+                    else:
+                        ts.max_gen_supported= gen_t.GEN1	
+
+                if symbol_count == 10:
+                    if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0):(start_lane*32+0)+8]==0b010_01010):
+                        ts.ts_type = ts_type_t.TS1
+                    elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0):(start_lane*32+0)+8]==0b010_00101):
+                        ts.ts_type = ts_type_t.TS2
+
+        elif self.dut.pipe_width == 0b10:
+            await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
+            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            ts.link_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]  #link number
+            ts.lane_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0):(start_lane*32+0)+8]  # lane number
+            ts.n_fts=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+24):(start_lane*32+24)+8]  # number of fast training sequnces
+
+            for symbol_count in range(4,16,4):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 4:
+                    if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                         ts.max_gen_supported= gen_t.GEN5
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                         ts.max_gen_supported= gen_t.GEN4
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                         ts.max_gen_supported= gen_t.GEN3
+                    elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                         ts.max_gen_supported= gen_t.GEN2
+                    else:
+                        ts.max_gen_supported=GEN1
+
+                if symbol_count == 8:
+                    if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16):(start_lane*32+16)+8]==0b010_01010):
+                        ts.ts_type = ts_type_t.TS1
+                    elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16): (start_lane*32+16)+8]==0b010_00101):
+                        ts.ts_type = ts_type_t.TS2
+        else:
+            # 8 bit pipe paralel interface
+            await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
+            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for symbol_count in range(1,16):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 1:
+                    ts.link_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]   #link number
+                if symbol_count == 2:
+                    ts.lane_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]   # lane number
+                if symbol_count == 3:
+                    ts.n_fts=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]   # number of fast training sequnces
+                if symbol_count == 4:
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                             ts.max_gen_supported= gen_t.GEN5 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                             ts.max_gen_supported= gen_t.GEN4 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                             ts.max_gen_supported= gen_t.GEN3 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                             ts.max_gen_supported= gen_t.GEN2 
+                        else:
+                             ts.max_gen_supported= gen_t.GEN1	
+                if symbol_count == 10:# ts1 or ts2 determine
+                        if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]==0b010_01010):
+                             ts.ts_type = ts_type_t.TS1 
+                        elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]==0b010_00101):
+                             ts.ts_type = ts_type_t.TS2 
+        return ts
+
+
+    async def reset_scenario(self):
+        while True:
+            await FallingEdge(self.dut.rst_i)
+            await RisingEdge(self.dut.clk_i)
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            
+            await RisingEdge(self.dut.rst_i)
+            await RisingEdge(self.dut.clk_i)
+
+            flag = 0
+            while all(self.dut.pipe_phy_status_i[i] == 1 for i in range(len(self.dut.pipe_phy_status_i))):
+                await RisingEdge(self.dut.rst_i)
+
+            self.proxy.notify_reset_detected()
+
+    async def rx_detection_scenario(self):
+        while True:
+            # while not all(self.dut.phy_txdetectrx[i] == 0 for i in range(len(self.dut.phy_txdetectrx))):
+                # await RisingEdge(self.dut.rst_i)
+            # flag = 0
+            # while flag == 0:
+
+            # for i in range(len(self.dut.phy_txdetectrx)):
+            #     flag = self.dut.phy_txdetectrx[i] == 1
+            
+            await RisingEdge(self.dut.clk_i)
+
+            # for i in range(NUM_OF_LANES):
+            #     assert self.dut.phy_txdetectrx[i] == 1
+            while not all( LogicArray(self.dut.phy_phystatus.value)[i] == Logic(1) for i in range(int(self.dut.MAX_NUM_LANES))):
+                await RisingEdge(self.dut.clk_i)
+                # print(LogicArray(self.dut.phy_phystatus.value))
+                # print(LogicArray(self.dut.phy_phystatus.value)[0])
+                # if(LogicArray(self.dut.phy_phystatus.value)[0] == Logic(0)):
+                #     assert 1 == 0
+            # assert 1 == 0
+
+            phy_rxstatus = 0x0
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                phy_rxstatus |=  (0b011 << (i*3))
+
+            assert self.dut.phy_rxstatus.value == phy_rxstatus
+            # for i in range(int(self.dut.MAX_NUM_LANES)):
+            #     assert self.dut.phy_rxstatus.value[(i*3):(i*3)+3]==0b011
+
+            await RisingEdge(self.dut.clk_i)
+
+            while all( not self.dut.phy_phystatus.value[i] == 0b0 for i in range(int(self.dut.MAX_NUM_LANES))):
+                await RisingEdge(self.dut.clk_i)
+
+            assert  self.dut.phy_rxstatus == 0
+            # for i in range(NUM_OF_LANES):
+            #         assert self.dut.phy_rxstatus[(i*3) : (i*3)+3]==0b000
+
+            while not self.dut.phy_txdetectrx == 0b0:
+                await RisingEdge(self.dut.clk_i)
+
+            await RisingEdge(self.dut.clk_i)
+            self.proxy.notify_receiver_detected()
+
+
+
+    async def receive_tses(self, start_lane = 0 , end_lane = int(cocotb.top.MAX_NUM_LANES)):
+        ts = []
+        # assert 1 == 0
+        if end_lane is None:
+            end_lane = self.dut.active_lanes
+        for i in range(start_lane,end_lane):
+            ts.append(ts_s())
+        # print(self.dut.pipe_width)
+        # assert 1 == 0
+        while self.dut.pipe_width == 0:
+            await RisingEdge(self.dut.clk_i)
+
+        if self.dut.pipe_width == 16:
+            # assert 1 == 0
+            data = self.dut.phy_txdata.value
+            datak = self.dut.phy_txdatak.value
+            dataValid = self.dut.phy_txdata_valid.value
+            # print(bytes(data))
+            # print(data)
+            # print(data)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all((LogicArray(data)[(32*i)+7: (32*i)].to_BinaryValue() == 0b101_11100 and LogicArray(datak)[4*i]._valid and LogicArray(dataValid)[i]._valid) for i in range(start_lane,end_lane)):
+                data = self.dut.phy_txdata.value
+                datak = self.dut.phy_txdatak.value
+                dataValid = self.dut.phy_txdata_valid.value
+                await RisingEdge(self.dut.clk_i)
+                # print(LogicArray(data)[(32*1)+7: (32*1)]._value)
+                # print(LogicArray(0b101_11100)._value)
+
+                # if LogicArray(data)[(32*1)+7: (32*1)]._value == LogicArray(0b101_11100)._value:
+                #     ...
+                #     # assert 1 == 0
+                # print(LogicArray(datak)[0])
+                # print(LogicArray(dataValid)[0])
+                # print(dataValid)
+            # assert 1 == 0 
+            for i in range(start_lane,end_lane):
+                assert LogicArray(self.dut.phy_rxstatus.value)[(i*3)+2 : (i*3)]._value== LogicArray(0b000,range = (2,'downto',0))._value
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+
+            for i in range(start_lane,end_lane):
+                print(hex(LogicArray(self.dut.phy_txdata.value).to_BinaryValue()))
+                ts[i].link_number = LogicArray(self.dut.phy_txdata.value)[((i*32)+8)+7:((i*32)+8)].to_BinaryValue()
+                print(ts[i].link_number)
+                if ((ts[i].link_number==0b11110111 ) and (LogicArray(self.dut.phy_txdatak.value)[4*i+1].to_BinaryValue() == 1)):
+                    ts[i].use_link_number = 0
+                else:
+                    ts[i].use_link_number = 1
+
+            await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(2,16,2):
+                await RisingEdge(self.dut.clk_i)
+                temp_byte =LogicArray(self.dut.phy_txdata.value)[(0*32+0)+7:(0*32+0)].to_BinaryValue()
+                # print(hex(temp_byte))
+                # print(bin(0x4A))
+                # print(symbol_count)
+                # if(temp_byte == 0b01001010):
+                #     assert 1 == 0
+                if symbol_count == 2:
+                    for i in range(start_lane,end_lane):
+                        ts[i].lane_name = LogicArray(self.dut.phy_txdata.value)[(i*32+0)+8:(i*32+0)].to_BinaryValue()
+                        if ts[i].lane_number == 0b11110111 and LogicArray(self.dut.phy_txdata.value)[4*i+0].to_BinaryValue() == 0b1:
+                            ts[i].use_lane_number = 0
+                        else:
+                            ts[i].use_lane_number = 1
+                    for i in range(start_lane,end_lane):
+                        ts[i].n_fts = LogicArray(self.dut.phy_txdata.value)[(i*32+8)+7:(i*32+8)].to_BinaryValue()
+
+                if symbol_count == 4:
+                    for i in range(start_lane,end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]._valid):
+                            ts[i].max_gen_supported= gen_t.GEN5
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]._valid):
+                            ts[i].max_gen_supported= gen_t.GEN4
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]._valid):
+                            ts[i].max_gen_supported= gen_t.GEN3
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]._valid):
+                            ts[i].max_gen_supported= gen_t.GEN2
+                        else:
+                            ts[i].max_gen_supported= gen_t.GEN1	
+
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+6] == 0b1:
+                            ts[i].auto_speed_change = 1
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+7] == 0b1:
+                            ts[i].speed_change = 1
+                if symbol_count == 6:
+                    for i in range(start_lane,end_lane):
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+7] == 0b1:
+                            ts[i].rx_preset_hint=LogicArray(self.dut.phy_txdata.value)[(i*32+0)+2:(i*32+0)].to_BinaryValue()   
+                            ts[i].tx_preset=LogicArray(self.dut.phy_txdata.value)[(i*32+3)+3:(i*32+3)].to_BinaryValue() 
+                            ts[i].equalization_command=1  
+                # print(hex(LogicArray(self.dut.phy_txdata.value).to_BinaryValue()))
+                if symbol_count == 10:
+                    for i in range(start_lane,end_lane):
+                        # print(hex(LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue()))
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() == 0b010_01010:
+                            ts[i].ts_type = ts_type_t.TS1
+                        elif(LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() ==0b010_00101):
+                            ts[i].ts_type = ts_type_t.TS2
+                        else:
+                            ...
+                            # assert 1 == 0
+                            return
+
+        elif self.dut.pipe_width == 32:
+            data = bytearray(self.dut.phy_txdata)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all(data[4*i] == 0b101_11100 for i in range(start_lane, end_lane)):
+                await RisingEdge(self.dut.clk_i)
+                data = bytearray(self.dut.phy_txdata)
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
+
+            for i in range(start_lane, end_lane):
+                ts[i].link_number = data[i*4]
+                if ts[i].link_number == 0b11110111 and LogicArray(self.dut.phy_txdatak.value)[(4*i) +1] == 0b1 :
+                    ts[i].use_link_number = 0
+                else: 
+                    ts[i].use_link_number = 1
+
+            for i in range(start_lane, end_lane):
+                ts[i].nfts = data[(i*4) + 3]
+
+            await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(4,16,4):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 4:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN5
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN4
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN3
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN2
+                        else:
+                            ts[i].max_gen_supported=GEN1
+
+                        if(LogicArray(self.dut.phy_txdata.value)[i*32+16+7]== 0b1):
+                            ts[i].rx_preset_hint       = LogicArray(self.dut.phy_txdata.value)[(i*32+16+0) : (i*32+16+0)+3]   
+                            ts[i].tx_preset            = LogicArray(self.dut.phy_txdata.value)[(i*32+16+3) : (i*32+16+3)+4]
+                            ts[i].equalization_command = 1
+
+                if symbol_count == 8:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16): (start_lane*32+16)+8]==0b010_01010):
+                            ts[i].ts_type = ts_type_t.TS1
+                        elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16): (start_lane*32+16)+8]==0b010_00101):
+                            ts[i].ts_type = ts_type_t.TS2
+        else:
+            # if self.dut.pipe_width != 8:
+            #     return
+            # print(hex(self.dut.pipe_width.value))
+            # data = self.dut.phy_txdata.value
+            # uvm_root().logger.info(self.name + " " + "pipe width 8")
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 for i in range(int(self.dut.MAX_NUM_LANES)-1)):
+                await RisingEdge(self.dut.clk_i)
+                # print(LogicArray(self.dut.phy_txdata.value)[(32*0)+7:(32*0)].to_BinaryValue())
+            
+            # uvm_root().logger.info(self.name + " " + "pipe width still 8")
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
+            # await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(1,15):
+                await RisingEdge(self.dut.clk_i)
+                # data = bytearray(self.dut.phy_txdata.value)
+                # print(hex(self.dut.phy_txdata.value))
+                if symbol_count == 1:
+                    for i in range(start_lane, end_lane):
+                        ts[i].link_number = LogicArray(self.dut.phy_txdata.value)[(32*i)+8:(32*i)].to_BinaryValue()  #link number
+                        # print("link_number: " + hex(ts[i].link_number))
+                        # print("special k :" + str(LogicArray(self.dut.phy_txdatak.value)[0]))
+                        # if hex(ts[i].link_number) == hex(0xf7):
+                        #     assert 1 == 0
+                        if hex(ts[i].link_number) == hex(0xf7) and LogicArray(self.dut.phy_txdatak.value)[0]._valid:
+                            # print("special k set t0 0 :")
+                            ts[i].use_link_number = 0
+                        else: 
+                            ts[i].use_link_number = 1
+                    
+                if symbol_count == 2:
+                    for i in range(start_lane, end_lane):
+                        ts[i].lane_number =  LogicArray(self.dut.phy_txdata.value)[(32*i)+8:(32*i)].to_BinaryValue()
+                        # print("lane number: " + hex(ts[i].lane_number))
+                        # print("special k :" + str(LogicArray(self.dut.phy_txdatak.value)[0]))
+                        if hex(ts[i].lane_number) == hex(0xf7) and LogicArray(self.dut.phy_txdatak.value)[0]._valid :
+                            # print("use lane et t0 0 :")
+                            ts[i].use_lane_number = 0
+                        else: 
+                            ts[i].use_lane_number = 1
+                if symbol_count == 3:
+                    for i in range(start_lane, end_lane):
+                        ts[i].n_fts =  LogicArray(self.dut.phy_txdata.value)[(32*i)+8:(32*i)].to_BinaryValue()   # number of fast training sequnces
+                        # print("nfts: " + hex(ts[i].link_number))
+                if symbol_count == 4:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN5 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN4 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN3 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN2 
+                        else:
+                            ts[i].max_gen_supported= gen_t.GEN1
+                    # print("max gen: " + str(ts[i].max_gen_supported))
+                if symbol_count == 10:# ts1 or ts2 determine
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0+8): (start_lane*32+0)].to_BinaryValue() ==0b010_01010):
+                            ts[i].ts_type = ts_type_t.TS1 
+                        elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0+8): (start_lane*32+0)].to_BinaryValue() ==0b010_00101):
+                            ts[i].ts_type = ts_type_t.TS2 
+                        else:
+                            # print(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0+8): (start_lane*32+0)].to_BinaryValue())
+                            # print("FAIL!!")
+                            return
+        # print(ts[0].ts_type)
+        # assert 1 == 0
+        for i in range(start_lane, end_lane):
+            ts[i].TS_gen = 0
+        self.proxy.notify_tses_received(ts)
+
+    async def receive_tses_gen3(self, start_lane = 0 , end_lane = None):
+        ts = []
+        if end_lane is None:
+            end_lane = int(self.dut.active_lanes.value)
+        for i in range(start_lane,end_lane):
+            ts.append(ts_s())
+        
+        if self.dut.pipe_width == 0x08:
+            assert 1 == 0
+            data = bytearray(self.dut.phy_txdata)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all(((data[4*i] == 0x4A or data[4*i] == 0x45) and  LogicArray(self.dut.phy_txsync_header.value)[4*i+0]==0b1 and  LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)):
+                await RisingEdge(self.dut.clk_i)
+                data = bytearray(self.dut.phy_txdata)
+
+            for i in range(start_lane,end_lane):
+                assert self.dut.phy_rxstatus[(i*3) : (i*3)+3]==0b000
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+
+            for i in range(start_lane,end_lane):
+                print(LogicArray(self.dut.phy_txdata.value))
+                ts[i].link_number = LogicArray(self.dut.phy_txdata.value)[(i*32+8):(i*32+8)+8]
+                if ((ts[i].link_number==0b11110111 ) and (LogicArray(self.dut.phy_txdatak.value)[4*i+1]==1)):
+                      ts[i].use_link_number = 0
+                else:
+                    ts[i].use_link_number = 1
+
+            await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(2,16,2):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 2:
+                    for i in range(start_lane,end_lane):
+                        ts[i].lane_number = LogicArray(self.dut.phy_txdata)[(i*32+0):(i*32+0)+8]
+                        if ts[i].lane_number == 0b11110111 and LogicArray(self.dut.phy_txdata.value)[4*i+0] == 0b1:
+                            ts[i].use_lane_number = 0
+                        else:
+                            ts[i].use_lane_number = 1
+                    for i in range(start_lane,end_lane):
+                        ts[i].n_fts = LogicArray(self.dut.phy_txdata)[(i*32+8):(i*32+8)+8]
+
+                if symbol_count == 4:
+                    for i in range(start_lane,end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN5
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN4
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN3
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN2
+                        else:
+                            ts[i].max_gen_supported= gen_t.GEN1	
+
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+6] == 0b1:
+                            ts[i].auto_speed_change = 1
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+7] == 0b1:
+                            ts[i].speed_change = 1
+                if symbol_count == 6:
+                    for i in range(start_lane,end_lane):
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+7] == 0b1:
+                            ts[i].rx_preset_hint=LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+3]   
+                            ts[i].tx_preset=LogicArray(self.dut.phy_txdata.value)[(i*32+3):(i*32+3)+4] 
+                            ts[i].equalization_command=1  
+
+                if symbol_count == 10:
+                    for i in range(start_lane,end_lane):
+                        if LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8]== 0b010_01010:
+                             ts[i].ts_type = ts_type_t.TS1
+                        elif(LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8]==0b010_00101):
+                             ts[i].ts_type = ts_type_t.TS2
+                        else:
+                            return
+
+        elif self.dut.pipe_width == 0b10:
+            data = bytearray(self.dut.phy_txdata)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all(data[4*i] == 0b101_11100 for i in range(start_lane, end_lane)):
+                await RisingEdge(self.dut.clk_i)
+                data = bytearray(self.dut.phy_txdata)
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
+
+            for i in range(start_lane, end_lane):
+                ts[i].link_number = data[i*4]
+                if ts[i].link_number == 0b11110111 and LogicArray(self.dut.phy_txdatak.value)[(4*i) +1] == 0b1 :
+                    ts[i].use_link_number = 0
+                else: 
+                    ts[i].use_link_number = 1
+
+            for i in range(start_lane, end_lane):
+                ts[i].nfts = data[(i*4) + 3]
+
+            await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(4,16,4):
+                await RisingEdge(self.dut.clk_i)
+                if symbol_count == 4:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN5
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN4
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN3
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                            ts[i].max_gen_supported= gen_t.GEN2
+                        else:
+                             ts[i].max_gen_supported=GEN1
+
+                        if(LogicArray(self.dut.phy_txdata.value)[i*32+16+7]== 0b1):
+                            ts[i].rx_preset_hint       = LogicArray(self.dut.phy_txdata.value)[(i*32+16+0) : (i*32+16+0)+3]   
+                            ts[i].tx_preset            = LogicArray(self.dut.phy_txdata.value)[(i*32+16+3) : (i*32+16+3)+4]
+                            ts[i].equalization_command = 1
+
+                if symbol_count == 8:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16): (start_lane*32+16)+8]==0b010_01010):
+                            ts[i].ts_type = ts_type_t.TS1
+                        elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+16): (start_lane*32+16)+8]==0b010_00101):
+                            ts[i].ts_type = ts_type_t.TS2
+        else:
+            data = bytearray(self.dut.phy_txdata)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            while not all(data[4*i] == 0b101_11100 for i in range(len(data))):
+               await RisingEdge(self.dut.clk_i)
+
+            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
+            await RisingEdge(self.dut.clk_i)
+
+            for symbol_count in range(1,16):
+                await RisingEdge(self.dut.clk_i)
+                data = bytearray(self.dut.phy_txdata)
+                if symbol_count == 1:
+                    for i in range(start_lane, end_lane):
+                        ts[i].link_number= data[symbol_count*4]  #link number
+                        if ts[i].link_number == 0b11110111 and LogicArray(self.dut.phy_txdatak.value)[(4*i) +0] == 0b1 :
+                            ts[i].use_link_number = 0
+                        else: 
+                            ts[i].use_link_number = 1
+                    
+                if symbol_count == 2:
+                    for i in range(start_lane, end_lane):
+                        ts[i].lane_number = data[symbol_count*4]   # lane number
+                        if ts[i].lane_number == 0b11110111 and LogicArray(self.dut.phy_txdatak.value)[(4*i) +0] == 0b1 :
+                            ts[i].use_lane_number = 0
+                        else: 
+                            ts[i].use_lane_number = 1
+                if symbol_count == 3:
+                    for i in range(start_lane, end_lane):
+                        ts[i].n_fts =  data[symbol_count*4]   # number of fast training sequnces
+                if symbol_count == 4:
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
+                             ts[i].max_gen_supported= gen_t.GEN5 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+4]==0b1):
+                             ts[i].max_gen_supported= gen_t.GEN4 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+3]==0b1):
+                             ts[i].max_gen_supported= gen_t.GEN3 
+                        elif(LogicArray(self.dut.phy_txdata.value)[start_lane*32+2]==0b1):
+                             ts[i].max_gen_supported= gen_t.GEN2 
+                        else:
+                             ts[i].max_gen_supported= gen_t.GEN1	
+                if symbol_count == 10:# ts1 or ts2 determine
+                    for i in range(start_lane, end_lane):
+                        if(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]==0b010_01010):
+                             ts[i].ts_type = ts_type_t.TS1 
+                        elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]==0b010_00101):
+                             ts[i].ts_type = ts_type_t.TS2 
+                        else:
+                            return
+        for i in range(start_lane, end_lane):
+            ts[i].TS_gen = 0
+        self.proxy.notify_tses_received(ts)
+
+
+    async def polling_state_start(self):
+        uvm_root().logger.info(self.name + " " + "waiting")
+        while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==1 for i in range(self.dut.phy_phystatus.value)):
+            await RisingEdge(self.dut.clk_i)
+            uvm_root().logger.info(self.name + " " + "waiting1")
+            print(LogicArray(self.dut.phy_phystatus.value))
+            print(LogicArray(self.dut.phy_phystatus.value)[0])
+
+        await RisingEdge(self.dut.clk_i)
+        while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==0b0 for i in range(self.dut.phy_phystatus.value)):
+            await RisingEdge(self.dut.clk_i)
+            uvm_root().logger.info(self.name + " " + "waiting2")
+
+        while not all( LogicArray(self.dut.phy_txelecidle.value)[i] ==0b0 for i in range(self.dut.phy_txelecidle.value)):
+            await RisingEdge(self.dut.clk_i)
+            uvm_root().logger.info(self.name + " " + "waiting3")
+
+        self.proxy.DUT_polling_state_start()
+
+    async def recieve_data(self):
+        uvm_root().logger.info(self.name + " " + "Starting Data Recieve")
+        width = 8
+        while True:
+            if LogicArray(self.dut.phy_txdata_valid.value)[0] == 0b1:
+                await RisingEdge(self.dut.clk_i)
+            else:
+                while not all( LogicArray(self.dut.phy_txdata_valid.value)[i] for i in range(int(self.dut.MAX_NUM_LANES))):
+                    await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.clk_i)
+                    # for i in range(int(self.dut.MAX_NUM_LANES)):
+                    #     print(LogicArray(self.dut.phy_txdata_valid.value)[i])
+                    # print(LogicArray(self.dut.phy_txdata_valid.value))
+                    # print(LogicArray(self.dut.phy_txdata.value)[7:0])
+            # assert 1 == 0
+            # print(LogicArray(self.dut.phy_txdata_valid.value))
+            # print(LogicArray(self.dut.phy_txdatak.value)[0])
+            # print(LogicArray(self.dut.phy_txdata.value)[7:0])
+            # print("\n")
+
+            if LogicArray(self.dut.phy_txdatak.value)[0] and  LogicArray(self.dut.phy_txdata.value)[7:0].to_BinaryValue() == COM:
+                # print(LogicArray(self.dut.phy_txdata_valid.value))
+                # print(LogicArray(self.dut.phy_txdatak.value)[0])
+                # print(LogicArray(self.dut.phy_txdata.value)[7:0])
+                # print("")
+                for i in range(int(128/8)-1):
+                    await RisingEdge(self.dut.clk_i)
+            else:
+                # print("\n")
+                # print("process tx data")
+                # print(LogicArray(self.dut.phy_txdata_valid.value))
+                # print(LogicArray(self.dut.phy_txdatak.value)[0])
+                # print(LogicArray(self.dut.phy_txdata.value)[7:0])
+                # print("\n")
+                await self.process_tx_data_gen_1_2()
+
+    async def process_tx_data_gen_1_2(self):
+        # uvm_root().logger.info(self.name + " " + "Recieving tx data")
+        # print("Data Valid: " + str(LogicArray(self.dut.phy_txdata_valid.value)))
+        # print("Data K: " +  str(LogicArray(self.dut.phy_txdatak.value)[0]))
+        # print("Data : " +  str(LogicArray(self.dut.phy_txdata.value)[7:0]))
+        # assert 1 == 0 
+        if  LogicArray(self.dut.phy_txdata_valid.value)[0]:
+            num_idle_data = 0
+            idle_descrambled = [0] * int(self.bus_data_kontrol_param + 1)
+            for i in range(int(self.bus_data_kontrol_param) + 1):
+                # print(i)
+                if (( LogicArray(self.dut.phy_txdatak.value[i]) and LogicArray(self.dut.phy_txdata.value)[(8 * i) + 7:(8 * i)].to_BinaryValue() == STP_gen_1_2) or self.tlp_done == 0):
+                    self.start_tlp = i
+                    print("is TLP")
+                    await self.receive_tlp_gen_1_2()
+                elif (( LogicArray(self.dut.phy_txdatak.value) and LogicArray(self.dut.phy_txdata.value)[(8 * i)+7:(8 * i)].to_BinaryValue() == SDP_gen_1_2) or self.dllp_done == 0):
+                    self.start_dllp = i
+                    print("is DLLP")
+                    await self.receive_dllp_gen_1_2()
+                elif  not LogicArray(self.dut.phy_txdatak.value)[i]:
+                    # uvm_root().logger.info(self.name + " " + "Recieving non tlp - non dllp data")
+                    lanenum = int(i / (self.pipe_max_width / 8.0))
+                    temp_value = LogicArray(self.dut.phy_txdata.value)[(8 * i) + 7:(8 * i)].to_BinaryValue()
+                    if ((i - (int(self.get_width()) / 8) - 1) % 4) == 0:
+                        # print(temp_value)
+                        # print(lanenum)
+                        # print(int(self.get_width()))
+                        self.driver_scrambler[lanenum],idle_descrambled[i] = scramble(self.driver_scrambler[lanenum], temp_value, lanenum, self.current_gen)
+                        # print(hex(idle_descrambled[i]))
+                        # assert 1 == 0
+                        # idle_descrambled[i] = self.descramble(self.monitor_tx_scrambler, temp_value, lanenum, self.current_gen)
+                    else:
+                        idle_descrambled[i] = 0b11111111
+                    # print("temp_value " + str(temp_value))
+                    # print("idle descrambled " + str(idle_descrambled[i]))
+                    if idle_descrambled[i] == 0x00:
+                        num_idle_data += 1
+                        # assert 1 == 0
+                    if num_idle_data == (int(self.pipe_num_of_lanes()) * self.get_width()) / 8:
+                        self.proxy.notify_idle_data_received()
+                        # assert 1 == 0
+                        num_idle_data = 0
+
+    def pipe_num_of_lanes(self):
+        return self.dut.num_active_lanes_i.value
+    
+    async def process_rx_data_gen_1_2(self):
+        if  LogicArray(self.dut.phy_rxdata_valid.value)[0]:
+            num_idle_data = 0
+            idle_descrambled = [0] * (self.bus_data_kontrol_param + 1)
+            for i in range(self.bus_data_kontrol_param + 1):
+                if (( LogicArray(self.dut.phy_rxdatak.value)[i] and  LogicArray(self.dut.phy_rxdata.value)[(8 * i):(8 * i) + 8] == STP_gen_1_2) or self.tlp_done == 0):
+                    self.start_tlp = i
+                    self.send_tlp_gen_1_2()
+                elif (( LogicArray(self.dut.phy_rxdatak.value)[i] and  LogicArray(self.dut.phy_rxdata.value)[(8 * i):(8 * i) + 8] == SDP_gen_1_2) or self.dllp_done == 0):
+                    self.start_dllp = i
+                    self.send_dllp_gen_1_2()
+                elif  LogicArray(self.dut.phy_rxdatak.value)[i] is False:
+                    lanenum = int(i / (self.pipe_max_width / 8.0))
+                    temp_value =  LogicArray(self.dut.phy_rxdata.value)[(8 * i):(8 * i) + 8].to_BinaryValue()
+                    if ((i - (self.get_width / 8) - 1) % 4) == 0:
+                        idle_descrambled[i] = self.descramble(self.monitor_rx_scrambler, temp_value, lanenum, self.current_gen)
+                    else:
+                        idle_descrambled[i] = 0b11111111
+                    if idle_descrambled[i] == 0b00000000:
+                        num_idle_data += 1
+                    if num_idle_data == (self.pipe_num_of_lanes * self.get_width()) // 8:
+                        self.proxy.notify_idle_data_sent()
+                        num_idle_data = 0
+
+
+    async def receive_tlp_gen_1_2(self):
+        end_tlp = (self.bus_data_width_param + 1) // 8
+        for i in range(self.start_tlp, self.bus_data_kontrol_param + 1):
+            j = i - self.start_tlp
+            if not ( LogicArray(self.dut.phy_txdatak.value)[i] == 1 and  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8] == 'END_gen_1_2'):
+                lanenum = int(i // (self.pipe_max_width / 8.0))
+                if  LogicArray(self.dut.phy_txdatak.value)[i] == 0 and ((i - (self.get_width / 8) - 1) % 4) == 0:
+                    temp_value =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                    self.data_descrambled[(8 * j):(8 * j) + 8] = self.descramble(self.monitor_tx_scrambler, temp_value, lanenum, self.current_gen)
+                elif  LogicArray(self.dut.phy_txdatak.value)[i] == 1:
+                    self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                self.tlp_done = 0
+            else:
+                self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                self.tlp_done = 1
+                end_tlp = j
+                break
+
+        for j in range(0, int(int(self.bus_data_width) / (int(self.dut.MAX_NUM_LANES) * 8))):
+            for i in range(j, int(int((self.bus_data_width_param + 1) / 8)), int((self.bus_data_width_param + 1) / int(NUM_OF_LANES * 8))):
+                if i > end_tlp:
+                    break
+                self.tlp_q.append(self.data_descrambled[(8 * i)+8:(8 * i)])
+
+        if self.tlp_done:
+            self.tlp_received = self.tlp_q[:]
+            self.tlp_q.clear()
+            self.proxy.notify_tlp_received(self.tlp_received)
+
+    async def receive_dllp_gen_1_2(self):
+        end_dllp = (self.bus_data_width_param + 1) / 8
+        for i in range(self.start_tlp, self.bus_data_kontrol_param + 1):
+            j = i - self.start_tlp
+            if not ( LogicArray(self.dut.phy_txdatak.value)[i] == 1 and  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8] == 'END_gen_1_2'):
+                lanenum = int(i // (self.pipe_max_width / 8.0))
+                if  LogicArray(self.dut.phy_txdatak.value)[i] == 0:
+                    temp_value =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                    self.data_descrambled[(8 * j):(8 * j) + 8] = self.descramble(self.monitor_tx_scrambler, temp_value, lanenum, self.current_gen)
+                elif  LogicArray(self.dut.phy_txdatak.value)[i] == 1 and ((i - (self.get_width / 8) - 1) % 4) == 0:
+                    self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                self.dllp_done = 0
+            else:
+                self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
+                self.dllp_done = 1
+                end_dllp = j
+                break
+
+        for j in range(0, self.bus_data_width // (self.pipe_num_of_lanes * 8)):
+            for i in range(j, (self.bus_data_width_param + 1) // 8, (self.bus_data_width_param + 1) // (self.pipe_num_of_lanes * 8)):
+                if i > end_dllp:
+                    break
+                self.dllp_q.append(self.data_descrambled[(8 * i):(8 * i) + 8])
+
+        if self.dllp_done:
+            self.dllp_received = self.dllp_q[:]
+            self.dllp_q.clear()
+            self.proxy.notify_dllp_received(self.dllp_received)

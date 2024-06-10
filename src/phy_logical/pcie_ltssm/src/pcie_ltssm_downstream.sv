@@ -54,6 +54,7 @@ module pcie_ltssm_downstream
     output logic                         goto_detect_o,
     input  logic                         ordered_set_tranmitted_i,
     output logic                         send_ordered_set_o,
+    output logic [    MAX_NUM_LANES-1:0] active_lanes_o,
 
     output gen_os_struct_t                        gen_os_ctrl_o,
     //training set configuration signals
@@ -91,8 +92,7 @@ module pcie_ltssm_downstream
   localparam int SixUsTimeOut = (6 * (10 ** 3)) / ClockPeriodNs;
   localparam int EigthHundredNanoSecondTimeOut = (800) / ClockPeriodNs;
   localparam int TwentyNanoSeconds = 20* (10 **0)/ ClockPeriodNs;  //(20 * (10** -9)); //)) / int'((1 / (CLK_RATE * $pow(10, 6))));
-
-
+  localparam int MinTS1sPolling = 24; //1024
 
   typedef enum logic [19:0] {
     ST_IDLE                           = 20'b00000000000000000000,
@@ -242,6 +242,8 @@ module pcie_ltssm_downstream
   equal_t                                equal_status_c;
   equal_t                                equal_status_r;
 
+  assign active_lanes_o         = lane_active_r;
+
 
   assign ltssm_state_o          = curr_state[3:0];
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
@@ -308,6 +310,21 @@ module pcie_ltssm_downstream
     max_supported_rate_r           <= max_supported_rate_c;
     gen_os_ctrl_r                  <= gen_os_ctrl_c;
   end
+
+
+  // always_comb begin : timer_and_ordered_set_counter
+  //   timer_c                = timer_r;
+  //   ordered_set_sent_cnt_c = ordered_set_sent_cnt_r;
+  //   if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
+  //     timer_c                = '0;
+  //     ordered_set_sent_cnt_c = '0;
+  //   end else begin
+  //     if (ordered_set_tranmitted_i) begin
+  //       ordered_set_sent_cnt_c = ordered_set_sent_cnt_r;
+  //     end
+  //     timer_c = (timer_r >= FourtyEightMsTimeOut) ? FourtyEightMsTimeOut : timer_r + 1;
+  //   end
+  // end
 
 
   always_comb begin : lane_status
@@ -480,7 +497,7 @@ module pcie_ltssm_downstream
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
 
-          if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= 1024)) begin
+          if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
             //reset counts
             timer_c                = '0;
             ordered_set_sent_cnt_c = '0;
@@ -517,7 +534,8 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.valid = '1;
         // gen_os_ctrl_c.gen_ts2 = '1;
         if (ordered_set_tranmitted_i) begin
-          if (&lanes_ts2_satisfied) begin
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
+          if (&lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h8) begin
             //assert success
             success_c  = '1;
             //reset counts
@@ -567,7 +585,7 @@ module pcie_ltssm_downstream
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if pcie state continue scenario satisfied
-          if (|link_width_satisfied) begin
+          if ((|link_width_satisfied) && (ordered_set_sent_cnt_r >= 8'h8)) begin
             //reset ordered set sent counter
             ordered_set_sent_cnt_c = '0;
             //build next ordered set
@@ -594,9 +612,11 @@ module pcie_ltssm_downstream
         timer_c             = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
         gen_os_ctrl_c.valid = '1;
         if ((ordered_set_tranmitted_i)) begin
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if pcie state continue scenario satisfied
-          if ((|link_lanes_formed) && (!(^link_lanes_formed))) begin
+          if ((|link_lanes_formed) && (!(^link_lanes_formed)) && ordered_set_sent_cnt_r >= 8'h8) begin
             timer_c = '0;
+            ordered_set_sent_cnt_c = '0;
             gen_os_ctrl_c.gen_ts1 = '0;
             gen_os_ctrl_c.gen_ts2 = '1;
             gen_os_ctrl_c.set_lane = '1;
@@ -619,15 +639,17 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.gen_ts1  = '1;
         // gen_os_ctrl_c.set_lane = '1;
         if (ordered_set_tranmitted_i) begin
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if lanes can be formed
-          if (|link_lanes_nums_match) begin
+          if (|link_lanes_nums_match && ordered_set_sent_cnt_r >= 8'h8) begin
             //build ts2 ordered set
             gen_tsos(ordered_set_c, gen1, TS2, train_seq_e'(link_number_selected), train_seq_e'(0));
             timer_c    = '0;
+            ordered_set_sent_cnt_c = '0;
             //goto config complete
             next_state = ST_CONFIGURATION_COMPLETE;
           end  //check reconfiguration scenario
-          else if (|link_lane_reconfig) begin
+          else if (|link_lane_reconfig && ordered_set_sent_cnt_r >= 8'h8) begin
             timer_c    = '0;
             next_state = ST_CONFIGURATION_LANENUM_WAIT;
           end  //check timeout counter
@@ -651,8 +673,10 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.set_lane = '1;
         if (ordered_set_tranmitted_i) begin
           //check if lane wait exit scenario satisfied
-          if (|ts1_lanenum_wait_satisfied) begin
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
+          if ((|ts1_lanenum_wait_satisfied) && (ordered_set_sent_cnt_r >= 8'h8)) begin
             timer_c = '0;
+            ordered_set_sent_cnt_c = 0;
             gen_os_ctrl_c.gen_ts1 = '0;
             gen_os_ctrl_c.gen_ts2 = '1;
             gen_tsos(ordered_set_c, gen1, TS1, train_seq_e'(link_number_selected), train_seq_e'(0));
@@ -677,8 +701,9 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.gen_ts1  = '1;
         // gen_os_ctrl_c.set_lane = '1;
         if (ordered_set_tranmitted_i) begin
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check exit scenario
-          if (&lane_num_formed) begin
+          if (&lane_num_formed && (ordered_set_sent_cnt_r >= 8'h8) ) begin
             //decrement counts
             ordered_set_sent_cnt_c = '0;
 
@@ -1471,7 +1496,7 @@ module pcie_ltssm_downstream
             if (ts2_valid_i[lane]) begin
               if ((ordered_set_i[lane].link_num == link_number_selected) 
               && (ordered_set_i[lane].lane_num == lane)) begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h3 : ts2_cnt + 1;
+                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
                 ts1_cnt <= '0;
               end else begin
                 ts1_cnt <= '0;

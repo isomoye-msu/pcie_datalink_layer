@@ -20,6 +20,7 @@ module gen1_scramble
   logic [15:0] lfsr_out           [5];
   logic [ 3:0] scramble_reset;
   logic [ 3:0] disable_scrambling;
+  logic [ 3:0] disable_scrambling_r;
   logic [31:0] data_out_c;
   logic [31:0] data_out_r;
   logic [ 7:0] scrambled_data     [5];
@@ -48,9 +49,11 @@ module gen1_scramble
     if (rst_i) begin
       lfsr_r       <= '1;
       data_valid_o <= '0;
+      disable_scrambling_r <= '0;
     end else begin
       lfsr_r       <= lfsr_c;
       data_valid_o <= data_valid_i;
+      disable_scrambling_r <= disable_scrambling;
     end
     data_k_r   <= data_k_c;
     data_out_r <= data_out_c;
@@ -58,7 +61,7 @@ module gen1_scramble
 
   always_comb begin : scramble_comb_block
     scramble_reset     = '0;
-    disable_scrambling = '0;
+    disable_scrambling = disable_scrambling_r;
     data_out_c         = data_out_r;
     lfsr_c             = lfsr_r;
     data_in_swapped    = '0;
@@ -79,17 +82,27 @@ module gen1_scramble
         if (i < (pipe_width_i >> 3)) begin
           //check if special symbol
           if (data_k_in_i[byte_idx]) begin
+            if(data_in_i[i*8+:8] != PAD_) begin
+              disable_scrambling = '0;
+            end
             disable_scrambling[i] = '1;
+
             //don't scramble
-            data_out_c[byte_idx<<3+:8] = data_in_i[byte_idx<<3+:8];
+            data_out_c[byte_idx*8+:8] = data_in_i[byte_idx*8+:8];
             //check if comma
-            if (data_in_i[i*8+:8] == COM && i == '0) begin
+            if (data_in_i[i*8+:8] == COM) begin
               //reset lfsr
               scramble_reset[i] = '1;
+              disable_scrambling = '1;
             end
-          end else begin
+          end 
+          else if(disable_scrambling[byte_idx]) begin
+            data_out_c[byte_idx*8+:8] = data_in_i[byte_idx*8+:8];
+          end
+          else begin
             //scramble data
-            data_out_c[byte_idx<<3+:8] = (data_in_i[byte_idx<<3+:8] ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+            data_out_c[byte_idx<<3+:8] = (data_in_i[byte_idx<<3+:8]
+            ^ (data_t'({<<{lfsr_out[byte_idx]}})));
           end
           //update out
           // data_out_c[i*8+:8] = scrambled_data[i];

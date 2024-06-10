@@ -49,19 +49,19 @@ module axis_retry_fifo
   } axis_tlp_pkt_t;
 
   //incoming surbodanate axis helper struct
-  axis_tlp_pkt_t                  s_axis;
+  // axis_tlp_pkt_t        s_axis;
   //outgoing surbodanate axis helper struct
-  axis_tlp_pkt_t                  m_axis;
+  // axis_tlp_pkt_t        m_axis;
   //write pointer signals
-  logic          [          15:0] wr_ptr_c;
-  logic          [          15:0] wr_ptr_r;
+  logic          [15:0] wr_ptr_c;
+  logic          [15:0] wr_ptr_r;
   //read pointer signals
-  logic          [          15:0] rd_ptr_c;
-  logic          [          15:0] rd_ptr_r;
-  axis_tlp_pkt_t                  axis_mem_c        [MaxPktSize];
-  axis_tlp_pkt_t                  axis_mem_r        [MaxPktSize];
-  logic                           frame_available_c;
-  logic                           frame_available_r;
+  logic          [15:0] rd_ptr_c;
+  logic          [15:0] rd_ptr_r;
+  axis_tlp_pkt_t        axis_mem_c        [MaxPktSize];
+  axis_tlp_pkt_t        axis_mem_r        [MaxPktSize];
+  logic                 frame_available_c;
+  logic                 frame_available_r;
   //axis signals
   // logic          [DATA_WIDTH-1:0] retry_axis_tdata;
   // logic          [KEEP_WIDTH-1:0] retry_axis_tkeep;
@@ -89,17 +89,20 @@ module axis_retry_fifo
   //simple write logic overflow is handled by retry management module
   always_comb begin : write_logic
     axis_mem_c        = axis_mem_r;
-    s_axis.tdata      = s_axis_tdata;
-    s_axis.tkeep      = s_axis_tkeep;
-    s_axis.tlast      = s_axis_tlast;
-    s_axis.tuser      = s_axis_tuser;
-    s_axis.tvalid     = s_axis_tvalid;
+    // s_axis.tdata      = s_axis_tdata;
+    // s_axis.tkeep      = s_axis_tkeep;
+    // s_axis.tlast      = s_axis_tlast;
+    // s_axis.tuser      = s_axis_tuser;
+    // s_axis.tvalid     = s_axis_tvalid;
     wr_ptr_c          = wr_ptr_r;
     s_axis_tready     = '1;
     frame_available_c = frame_available_r;
     if (s_axis_tvalid && s_axis_tready) begin
-      axis_mem_c[wr_ptr_r] = s_axis;
-      wr_ptr_c             = wr_ptr_r + 1'b1;
+      axis_mem_c[wr_ptr_r] = {
+        s_axis_tvalid, s_axis_tuser, s_axis_tlast, s_axis_tkeep, s_axis_tdata
+      };
+      // {s_axis;
+      wr_ptr_c = wr_ptr_r + 1'b1;
       if (s_axis_tlast) begin
         wr_ptr_c          = '0;
         frame_available_c = '1;
@@ -114,16 +117,16 @@ module axis_retry_fifo
     m_axis_tvalid = '0;
     m_axis_tlast  = '0;
     m_axis_tuser  = '0;
-    rd_ptr_c          = rd_ptr_r;
-    m_axis            = axis_mem_r[rd_ptr_r];
+    rd_ptr_c      = rd_ptr_r;
+    // m_axis            = axis_mem_r[rd_ptr_r];
     if (m_axis_tready && frame_available_r) begin
-      m_axis_tvalid = m_axis.tvalid;
-      m_axis_tdata  = m_axis.tdata;
-      m_axis_tkeep  = m_axis.tkeep;
-      m_axis_tlast  = m_axis.tlast;
-      m_axis_tuser  = m_axis.tuser;
-      rd_ptr_c          = rd_ptr_r + 1'b1;
-      if (m_axis.tlast) begin
+      m_axis_tvalid = axis_mem_r[rd_ptr_r].tvalid;
+      m_axis_tdata  = axis_mem_r[rd_ptr_r].tdata;
+      m_axis_tkeep  = axis_mem_r[rd_ptr_r].tkeep;
+      m_axis_tlast  = axis_mem_r[rd_ptr_r].tlast;
+      m_axis_tuser  = axis_mem_r[rd_ptr_r].tuser;
+      rd_ptr_c      = rd_ptr_r + 1'b1;
+      if (m_axis_tlast) begin
         rd_ptr_c = '0;
       end
     end

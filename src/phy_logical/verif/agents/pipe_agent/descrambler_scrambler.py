@@ -1,4 +1,6 @@
 from typing import Dict, Union, Set
+from pipe_types import *
+from cocotb.types import Bit,Logic, LogicArray
 
 def SB(var,bit_no,val):
     return var | (val & 1) << bit_no
@@ -8,8 +10,8 @@ def GB(var,bit_no):
     return ((var >> bit_no) & 1)
 
 class scrambler_s():
-    lfsr_1_2 = None
-    lfsr_gen_3 = None
+    lfsr_1_2 = 0x0
+    lfsr_gen_3 = 0x0
 # typedef struct
 # {
 #  bit [15:0] lfsr_1_2 [`NUM_OF_LANES]
@@ -18,11 +20,19 @@ class scrambler_s():
 
 
 def reset_lfsr (scrambler, current_gen):
-    if (current_gen == GEN1  or  current_gen == GEN2):
-        for i in range(len(scrambler.lfsr_1_2)):
-            scrambler.lfsr_1_2[i] = 0xFFFF
+    if (current_gen == gen_t.GEN1  or  current_gen == gen_t.GEN2):
+        # print(len(scrambler))
+        temp_scrambler = scrambler
+        for i in range(len(scrambler)):
+            temp_scrambler[i].lfsr_1_2 = 0xFFFF
+        # for scramble in scrambler:
+        #     scramble.lfsr_1_2 = 0xFFFF
+            # print(scramble)
+            # scramble.lfsr_1_2 = 0xFFFF
+        # for  in range(len(scrambler)):
+        #     scrambler[i].lfsr_1_2 = 0xFFFF
 
-    elif (current_gen == GEN3  or  current_gen == GEN4  or  current_gen == GEN5):
+    elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
         for i in range(len(scrambler.lfsr_gen_3)):
             j=i
             if (i>7):
@@ -44,53 +54,69 @@ def reset_lfsr (scrambler, current_gen):
                     scrambler.lfsr_gen_3[i] =  0x0277CE
                 case 7 : 
                     scrambler.lfsr_gen_3[i] =  0x1BB807
-    return scrambler
+    return temp_scrambler
     
        
 def scramble(scrambler,in_data, lane_num, current_gen):
-	if (current_gen == GEN1  or  current_gen == GEN2):
+	if (current_gen == gen_t.GEN1  or  current_gen == gen_t.GEN2):
 		return scramble_gen_1_2 (scrambler, in_data,  lane_num)
-	elif (current_gen == GEN3  or  current_gen == GEN4  or  current_gen == GEN5):
+	elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
 		return scramble_gen_3_4_5 (scrambler, in_data, lane_num)
 
 def descramble(scrambler, in_data, lane_num, current_gen):
-    if (current_gen == GEN1  or  current_gen == GEN2):
+    if (current_gen == gen_t.GEN1  or  current_gen == gen_t.GEN2):
         return scramble_gen_1_2 (scrambler, in_data,  lane_num)
-    elif (current_gen == GEN3  or  current_gen == GEN4  or  current_gen == GEN5):
+    elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
         return scramble_gen_3_4_5 (scrambler, in_data, lane_num)
 
 def scramble_gen_1_2 (scrambler, in_data, lane_num):
- lfsr_new = 0x00
- scrambled_data = 0x00
+    lfsr_new = 0x00
+    scrambled_data = 0x00
+    # print("input data " + str(in_data))
+    # scrambled_byte = 0
+    # print(scrambler)
+    # for bit in range(8):
+    #     lfsr_bit = (scrambler.lfsr_1_2 >> 14) ^ (scrambler.lfsr_1_2 >> 15) & 1
+    #     scrambled_bit = ((in_data >> bit) & 1) ^ lfsr_bit
+    #     scrambled_byte |= (scrambled_bit << bit)
+        
+    #     # Update the LFSR
+    #     scrambler.lfsr_1_2 = ((scrambler.lfsr_1_2 << 1) | lfsr_bit) & 0xFFFF
+    # print("output data " + str(scrambled_byte))
 
- # LFSR value after 8 serial clocks
- for i in range(8):
-   lfsr_new[ 0] = scrambler.lfsr_1_2 [lane_num] [15]
-   lfsr_new[ 1] = scrambler.lfsr_1_2 [lane_num] [ 0]
-   lfsr_new[ 2] = scrambler.lfsr_1_2 [lane_num] [ 1]
-   lfsr_new[ 3] = scrambler.lfsr_1_2 [lane_num] [ 2] ^ scrambler.lfsr_1_2 [lane_num] [15]
-   lfsr_new[ 4] = scrambler.lfsr_1_2 [lane_num] [ 3] ^ scrambler.lfsr_1_2 [lane_num] [15]
-   lfsr_new[ 5] = scrambler.lfsr_1_2 [lane_num] [ 4] ^ scrambler.lfsr_1_2 [lane_num] [15]
-   lfsr_new[ 6] = scrambler.lfsr_1_2 [lane_num] [ 5]
-   lfsr_new[ 7] = scrambler.lfsr_1_2 [lane_num] [ 6]
-   lfsr_new[ 8] = scrambler.lfsr_1_2 [lane_num] [ 7]
-   lfsr_new[ 9] = scrambler.lfsr_1_2 [lane_num] [ 8]
-   lfsr_new[10] = scrambler.lfsr_1_2 [lane_num] [ 9]
-   lfsr_new[11] = scrambler.lfsr_1_2 [lane_num] [10]
-   lfsr_new[12] = scrambler.lfsr_1_2 [lane_num] [11]
-   lfsr_new[13] = scrambler.lfsr_1_2 [lane_num] [12]
-   lfsr_new[14] = scrambler.lfsr_1_2 [lane_num] [13]
-   lfsr_new[15] = scrambler.lfsr_1_2 [lane_num] [14];       
+    # return scrambler, scrambled_byte
 
-   # Generation of Scrambled Data
-   scrambled_data [i] = scrambler.lfsr_1_2 [lane_num] [15] ^ in_data [i]
-   
-   scrambler.lfsr_1_2 [lane_num] = lfsr_new
- return scrambler,scrambled_data
+    # LFSR value after 8 serial clocks
+    for i in range(8):
+        lfsr_new |= (scrambler.lfsr_1_2 << 15) & 0b1
+        lfsr_new |= ((lfsr_new <<  1) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
+        lfsr_new |= ((lfsr_new <<  2) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
+        lfsr_new |= ((lfsr_new <<  3) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+        lfsr_new |= ((lfsr_new <<  4) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+        lfsr_new |= ((lfsr_new <<  5) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+        lfsr_new |= ((lfsr_new <<  6) & 0b1) | ((scrambler.lfsr_1_2 << 5) & 0b1)
+        lfsr_new |= ((lfsr_new <<  7) & 0b1) | ((scrambler.lfsr_1_2 << 6) & 0b1)
+        lfsr_new |= ((lfsr_new <<  8) & 0b1) | ((scrambler.lfsr_1_2 << 7) & 0b1)
+        lfsr_new |= ((lfsr_new <<  9) & 0b1) | ((scrambler.lfsr_1_2 << 8) & 0b1)
+        lfsr_new |= ((lfsr_new << 10) & 0b1) | ((scrambler.lfsr_1_2 << 9) & 0b1)
+        lfsr_new |= ((lfsr_new << 11) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
+        lfsr_new |= ((lfsr_new << 12) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
+        lfsr_new |= ((lfsr_new << 13) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1)
+        lfsr_new |= ((lfsr_new << 14) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1)
+        lfsr_new |= ((lfsr_new << 15) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1)     
+
+        # Generation of Scrambled Data
+        scrambled_data = (scrambled_data << i) | (((scrambler.lfsr_1_2 << 15) & 0b1) ^ ((in_data >> i) & 0b1) )<< i
+        # print("scrambler")
+        # print(hex(in_data))
+        # print(hex(scrambled_data))
+        # assert 1 == 0
+    scrambler.lfsr_1_2  = lfsr_new
+    return scrambler,scrambled_data
 
 def scramble_gen_3_4_5 (scrambler, unscrambled_data, lane_num):
-    scrambled_data = scramble_data_gen_3(scrambler.lfsr_gen_3[lane_num],unscrambled_data)
-    scrambler.lfsr_gen_3[lane_num] = advance_lfsr_gen_3(scrambler.lfsr_gen_3[lane_num])
+    scrambled_data = scramble_data_gen_3(scrambler.lfsr_gen_3,unscrambled_data)
+    scrambler.lfsr_gen_3 = advance_lfsr_gen_3(scrambler.lfsr_gen_3)
     return scrambler,scrambled_data
 
 # Function to advance the LFSR value by 8 bits, given the current LFSR value

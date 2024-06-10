@@ -489,16 +489,32 @@ package pcie_phy_pkg;
   endfunction
 
 
+  // function static void gen_eios(output pcie_ordered_set_t idle_out);
+  //   begin
+  //     pcie_ordered_set_t temp_os;
+  //     temp_os = '0;
+  //     for (int i = 0; i < 16; i++) begin
+  //       if (i[1:0] == '0) begin
+  //         temp_os[8*i+:8] = COM;
+  //       end else begin
+  //         temp_os[8*i+:8] = IDL;
+  //       end
+  //     end
+  //     idle_out = temp_os;
+  //   end
+  // endfunction
+
   function static void gen_idle(output pcie_ordered_set_t idle_out);
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
       for (int i = 0; i < 16; i++) begin
-        if (i[1:0] == '0) begin
-          temp_os[8*i+:8] = COM;
-        end else begin
-          temp_os[8*i+:8] = IDL;
-        end
+        temp_os[8*i+:8] = '0;
+        // if (i[1:0] == '0) begin
+        //   temp_os[8*i+:8] = COM;
+        // end else begin
+        //   temp_os[8*i+:8] = IDL;
+        // end
       end
       idle_out = temp_os;
     end

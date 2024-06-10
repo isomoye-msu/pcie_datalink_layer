@@ -43,6 +43,7 @@ module ordered_set_handler
   typedef enum logic [7:0] {
     ST_IDLE,
     ST_RX_GEN1,
+    ST_RX_IDLE_GEN1,
     ST_RX_GEN3,
     ST_RX_GEN3_SKP,
     ST_RX_GEN3_SKP_LAST,
@@ -88,7 +89,7 @@ module ordered_set_handler
   logic              [           7:0] word_index;
 
   assign ordered_set_o = ordered_set_r;
-  assign pkt_full = axis_pkt_cnt_r >= packets_per_words;
+  assign pkt_full = axis_pkt_cnt_r >= packets_per_words - 1;
 
 
   //! main sequential block
@@ -125,7 +126,7 @@ module ordered_set_handler
     //ordered set
     ordered_set_c       = ordered_set_r;
     check_ordered_set_c = '0;
-    // idle_valid_c        = '0;
+    idle_valid_c        = '0;
     temp_os             = ordered_set_r;
     skp0_c              = skp0_r;
     skp1_c              = skp1_r;
@@ -135,7 +136,7 @@ module ordered_set_handler
     byte_shift          = pipe_width_i >> 3;
     byte_index          = (byte_shift - 1'b1);
     word_index          = axis_pkt_cnt_r * byte_shift;
-    packets_per_words   =   MaxWordsPerOrderedSet - ((byte_shift - 1) << 2);
+    packets_per_words   = MaxWordsPerOrderedSet - ((byte_shift - 1) << 2);
     // for (int i = 0; i < MaxBytesPerPacket; i++) begin
     //   if ((pipe_width_i >> 3) == (1 << i)) begin
     //     packets_per_words = MaxBytesPerPacket >> i;
@@ -159,6 +160,9 @@ module ordered_set_handler
             if ((data_k_in_i[byte_index]) && data_swapped[7:0] == COM) begin
               next_state = ST_RX_GEN1;
               axis_pkt_cnt_c = 1'b1;
+            end else if ((!data_k_in_i[byte_index]) && data_swapped[7:0] == '0) begin
+              idle_valid_c = '1;
+              // next_state = ST_RX_IDLE_GEN1;
             end
           end else begin
             if ((sync_header_i == 2'b10)) begin
@@ -170,6 +174,24 @@ module ordered_set_handler
                 next_state = ST_RX_GEN3;
               end
             end
+          end
+        end
+      end
+      ST_RX_IDLE_GEN1: begin
+        if (data_valid_i) begin
+          axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
+          if (data_swapped[7:0] != '0) begin
+            next_state = ST_IDLE;
+          end
+          if (pkt_full) begin
+            next_state = ST_IDLE;
+            if (data_swapped[7:0] == '0) begin
+              next_state   = ST_IDLE;
+              idle_valid_c = '1;
+            end
+            // check_ordered_set_c = '1;
+            // axis_pkt_cnt_c      = '0;
+            // next_state          = ST_IDLE;
           end
         end
       end
@@ -230,17 +252,17 @@ module ordered_set_handler
   //this block exists to allow the state machine to return to idle and recieve
   //new packets
   always_comb begin : check_ordered_set
-    ts1_valid    = '0;
-    ts2_valid    = '0;
-    eieos_valid  = '0;
-    idle_valid_c = '0;
+    ts1_valid   = '0;
+    ts2_valid   = '0;
+    eieos_valid = '0;
+    // idle_valid_c = '0;
     // buffered_ordered_set_c = buffered_ordered_set_r;
     if (check_ordered_set_r) begin
       // buffered_ordered_set_c = ordered_set_r;
-      ts1_valid    = '1;
-      ts2_valid    = '1;
-      eieos_valid  = '1;
-      idle_valid_c = '1;
+      ts1_valid   = '1;
+      ts2_valid   = '1;
+      eieos_valid = '1;
+      // idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
         if (ordered_set_r[8*7+:8] != TS1) begin
@@ -261,7 +283,7 @@ module ordered_set_handler
         if (curr_data_rate_i == gen1) begin
           //check for IDL
           if (ordered_set_r[23:8] != {IDL, IDL}) begin
-            idle_valid_c = '0;
+            // idle_valid_c = '0;
           end
           // for (int i = 1; i < 4; i++) begin
           //   if (ordered_set_r[8*i+:8] != IDL) begin
@@ -272,7 +294,7 @@ module ordered_set_handler
         if (curr_data_rate_i == gen2) begin
           //check for gen 2 eios
           if (ordered_set_r[15:0] != {EIOS, EIOS}) begin
-            idle_valid_c = '0;
+            // idle_valid_c = '0;
           end
           // for (int i = 0; i < 4; i++) begin
           //   if (ordered_set_r[8*i+:8] != EIOS) begin
