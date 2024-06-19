@@ -21,25 +21,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         self.random_start_polling = 0  # type: int  
         self.delay_clocks = 0  # type: int  
         self.dut = cocotb.top
-
-        # self.pipe_agent_config = None
-        # self.detect_state = None  # type: task  
-        # self.polling_state = None  # type: task  
-        # self.polling_active_state = None  # type: task  
-        # self.polling_configuration_state = None  # type: task  
-        # self.receiving_8_ts1 = None  # type: task  
-        # self.send_1024_ts1 = None  # type: task  
-        # self.config_state = None  # type: task  
-        # self.config_linkwidth_start_state_upstream = None  # type: task  
-        # self.config_linkwidth_accept_state_upstream = None  # type: task  
-        # self.config_lanenum_wait_state_upstream = None  # type: task  
-        # self.config_complete_state_upstream = None  # type: task  
-        # self.config_linkwidth_start_state_downstream = None  # type: task  
-        # self.config_linkwidth_accept_state_downstream = None  # type: task  
-        # self.config_lanenum_wait_state_downstream = None  # type: task  
-        # self.config_complete_state_downstream = None  # type: task  
-        # self.config_idle_state = None  # type: task  
-
         self.add_rand("max_gen_supported", list(gen_t))
         self.add_rand("link_number", list(range(0, 255)))
         self.add_rand("n_fts", list(range(0, 255)))
@@ -64,12 +45,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         await super().body()
         uvm_root().logger.info("pipe_link_up_seq "+ "Started pipe_link_up_seq")
         self.randomize()
-        # print(self.randomize())
-        # if not self.randomize():
-        # uvm_root().logger.fatal(self.name + " Can't randomize the pipe_link_up_seq")
-
-        # self.random_start_polling = 0
-        # await Timer(100,'ns')
 
         self.ts_sent.n_fts            = self.n_fts
         self.ts_sent.lane_number      = 0
@@ -77,7 +52,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         self.ts_sent.use_n_fts        = 0
         self.ts_sent.use_link_number  = 0
         self.ts_sent.use_lane_number  = 0
-        # self.sv.cast(ts_sent.max_gen_supported , `MAX_GEN_FAR_PARTENER)
+
         self.ts_sent.ts_type          = ts_type_t.TS1
 
         self.tses_sent = []
@@ -91,11 +66,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             self.tses_sent[i].use_lane_number    = 0
             self.tses_sent[i].max_gen_supported  = MAX_GEN_FAR_PARTENER
             self.tses_sent[i].ts_type            = ts_type_t.TS1
-        # assert 1 == 0
-        # print(self.random_start_polling)
-        # print(self.random_start_polling)
-        # print(self.random_start_polling)
-        # print(self.random_start_polling)
+
         async def poll():
             for i in range(self.delay_clocks):
                 await self.pipe_agent_config.detected_posedge_clk_e.wait()
@@ -105,17 +76,11 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         if self.random_start_polling == 2:
             await self.detect_state()
             await self.polling_state()
-            # fork1 = cocotb.start_soon(self.detect_state())
-            # fork2 = cocotb.start_soon(poll())
-            # ...
-            # await Combine(fork1,fork2)
+
         else:
             await self.detect_state()
             await self.polling_state()
-            # await Combine(fork1,fork2)
-            # await self.detect_state()
-            # await self.polling_state()
-        # print("after ")
+
         await self.config_state()
         self.pipe_agent_config.link_up_finished_e.set
         uvm_root().logger.info("pipe_link_up_seq " + "Finished pipe_link_up_seq")
@@ -124,14 +89,11 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         assert self.pipe_agent_config is not None 
         uvm_root().logger.info(self.name + " waiting for receiver detection")
         await self.pipe_agent_config.receiver_detected_e.wait()
-        # self.pipe_agent_config.receiver_detected_e.clear()
-            # await RisingEdge(self.dut.clk_i)
         uvm_root().logger.info(self.name + " Receiver detected")
         self.pipe_agent_config.receiver_detected_e.clear()
         
 
     async def polling_state(self):
-        # await NullTrigger()
         uvm_root().logger.info(self.name + " Started polling_state")
         await self.polling_active_state()
         await self.polling_configuration_state()
@@ -142,44 +104,22 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         rec_8_ts1 = 0
         await self.pipe_agent_config.DUT_start_polling_e.wait()
         
-    #uvm_root().logger.info(self.name + "checked DUT powerdown changed to P0")
         while (rec_8_ts1 < 8):
             await self.pipe_agent_config.detected_tses_e.wait()
-                # print("waiting for tses")
-                # await RisingEdge(self.dut.clk_i)
-            # print("done waiting for tses")
-            # print("done waiting for tses")
-            # print("done waiting for tses")
-            # print("done waiting for tses")
-            # print(self.pipe_agent_config.tses_received[0].ts_type)
-            # # print(self.pipe_agent_config.tses_received[0].use_lane_number)
-            # print(self.pipe_agent_config.tses_received[0].link_number)
-            # print(self.pipe_agent_config.tses_received[0].lane_number)
             if( self.pipe_agent_config.tses_received[0].ts_type == ts_type_t.TS1  and  
                 not (self.pipe_agent_config.tses_received[0].use_lane_number)  
                 and   not (self.pipe_agent_config.tses_received[0].use_link_number)):
                 rec_8_ts1 += 1
                 uvm_root().logger.info("pipe_link_up_seq " + "Received TS1s")
-                # assert 1 == 0
             else:
-                # print(self.pipe_agent_config.tses_received[0].ts_type)
-                # print(self.pipe_agent_config.tses_received[0].use_lane_number)
-                # print(self.pipe_agent_config.tses_received[0].use_link_number)
-                uvm_root().logger.error(self.name + " training sequences of polling active state received is not correct")
-                # assert 1 == 0
+               uvm_root().logger.error(self.name + " training sequences of polling active state received is not correct")
             self.pipe_agent_config.detected_tses_e.clear()
         self.pipe_agent_config.DUT_start_polling_e.clear()
     
 
     #check variable option compliance or loopback in ts1?
     async def send_1024_ts1(self):
-        # s_1024_ts1 = 0 
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-        # if (self.random_start_polling == 1):
-        #     for i in range(self.delay_clocks):
-        #         await self.pipe_agent_config.detected_posedge_clk_e.wait()
-        #         self.pipe_agent_config.detected_posedge_clk_e.clear()
-                #uvm_root().logger.info(self.name + "posedge clk came" + UVM_LOW)
         for i in range(24):
             await self.start_item (pipe_seq_item_h)
             pipe_seq_item_h.add_constraint(lambda pipe_operation: pipe_operation == pipe_operation_t.SEND_TS)
@@ -189,13 +129,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             pipe_seq_item_h.ts_sent.add_constraint(lambda use_lane_number: use_lane_number == 0)
             pipe_seq_item_h.ts_sent.randomize()
             pipe_seq_item_h.ts_sent.max_gen_supported = gen_t.GEN3
-            # pipe_seq_item_h.randomize_with(pipe_operation == pipe_operation_t.SEND_TS)
-            # if not pipe_seq_item_h.randomize:
-            #     uvm_root().logger.error(self.name + " Can't randomize sequence item and s TS1s")
-            # pipe_seq_item_h.pipe_operation == pipe_operation_t.SEND_TS
-            # pipe_seq_item_h.ts_sent.ts_type == ts_type_t.TS1
             await self.finish_item (pipe_seq_item_h)
-            #uvm_root().logger.info(self.name + "sent TS1s" + UVM_LOW)
         
 
     async  def polling_active_state(self):
@@ -210,32 +144,18 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         await self.pipe_agent_config.detected_tses_e.wait()
             
         self.pipe_agent_config.detected_tses_e.clear()
-        # print(self.pipe_agent_config.tses_received[0].ts_type)
-        # print(self.pipe_agent_config.tses_received[0].ts_type)
-        # print(self.pipe_agent_config.tses_received[0].ts_type)
-        # print(self.pipe_agent_config.tses_received[0].ts_type)
         if self.pipe_agent_config.tses_received[0].ts_type == ts_type_t.TS1:
             await self.start_item(pipe_seq_item_h)
-            # pipe_seq_item_h.randomize_with(pipe_operation == pipe_operation_t.SEND_TS)
             pipe_seq_item_h.add_constraint(lambda pipe_operation: pipe_operation == pipe_operation_t.SEND_TS)
-            # pipe_seq_item_h.add_constraint(lambda ts_sent: ts_sent.ts_type == ts_type_t.TS1)
             pipe_seq_item_h.randomize()
-            # assert 1 == 0
-            # if not pipe_seq_item_h.randomize():
-            #     uvm_root().logger.error(self.name + " Can't randomize sequence item and s TS2s")
             await self.finish_item (pipe_seq_item_h)
             await self.pipe_agent_config.detected_tses_e.wait()
-                # await RisingEdge(self.dut.clk_i)
             self.pipe_agent_config.detected_tses_e.clear()
 
         async def ts2_recieved():
                 rec_8_ts2 = 0
                 while(rec_8_ts2 < 8):
                     await self.pipe_agent_config.detected_tses_e.wait()
-                    print(self.pipe_agent_config.tses_received[0].ts_type)
-                    # print(self.pipe_agent_config.tses_received[0].use_lane_number)
-                    print(self.pipe_agent_config.tses_received[0].link_number)
-                    print(self.pipe_agent_config.tses_received[0].lane_number)
                     if(self.pipe_agent_config.tses_received[0].ts_type == ts_type_t.TS2 
                         and  not(self.pipe_agent_config.tses_received[0].use_lane_number)  
                         and   not(self.pipe_agent_config.tses_received[0].use_link_number)):
@@ -244,20 +164,14 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                     else:       
                         uvm_root().logger.error(self.name + " training sequences of polling config state received is not correct")
                     self.pipe_agent_config.detected_tses_e.clear()
-                    #uvm_root().logger.info(self.name + sv.sformatf("8 TS2 received"))
 
         async def send_ts2():
                 for i in range(16):
                     await self.start_item (pipe_seq_item_h)
                     pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_TS
                     pipe_seq_item_h.ts_sent.ts_type = ts_type_t.TS2
-                    # if (not pipe_seq_item_h.randomize() with {pipe_operation == SEND_TS; ts_sent.ts_type == ts_type_t.TS2;})
-                    # 
-                    #   uvm_root().logger.error(self.name + "Can't randomize sequence item and s TS2s")
-                    # 
                     await self.finish_item (pipe_seq_item_h)
                 
-                #uvm_root().logger.info(self.name + sv.sformatf("16 TS2 sent"))
         coro1 = cocotb.start_soon(ts2_recieved())
         coro2 = cocotb.start_soon(send_ts2())
         await Combine(coro1 ,coro2)
@@ -265,7 +179,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
     
 
     async  def config_state(self):
-        #uvm_root().logger.info(self.name + sv.sformatf("env type: %b" +IS_ENV_UPSTREAM))
         uvm_root().logger.info(self.name + " Started config_state")
         if (IS_ENV_UPSTREAM):
             await self.config_linkwidth_start_state_upstream()
@@ -290,13 +203,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_TSES
         name = self.name
         uvm_root().logger.info(self.name + " Started config_linkwidth_start_state_upstream")
-        # assert 1 == 0
-
-
-        # for i in range(len(self.tses_sent)):
-        #     self.tses_sent[i].link_number = self.link_number
-        #     # i.link_number = self.link_number
-        #     self.tses_sent[i].use_link_number = 1
 
         pipe_seq_item_h.tses_sent = self.tses_sent
 
@@ -311,10 +217,8 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             nonlocal two_consecutive_ts1s_with_non_pad_link_number_detected
             nonlocal pipe_seq_item_h
             while two_consecutive_ts1s_with_non_pad_link_number_detected == 0:
-                # print(self.name)
                 await self.start_item(pipe_seq_item_h)
                 await self.finish_item(pipe_seq_item_h)
-                # await RisingEdge(self.dut.clk_i)
                 uvm_root().logger.info(name + " TS1 with PAD Link and Lane numbers sent")
 
         async def update_link_num(self):
@@ -750,5 +654,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         fork3 = cocotb.start_soon(idle_send())
         fork4 = cocotb.start_soon(idle_count())
         await Combine(fork1,fork2,fork3,fork4)
+        await Timer(2000,'ns')
         uvm_root().logger.info(self.name + " Finished config_idle_state")
         

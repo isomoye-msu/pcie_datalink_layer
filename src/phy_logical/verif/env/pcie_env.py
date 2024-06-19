@@ -27,21 +27,13 @@ class pcie_env(uvm_env):
         self.logger.info(name + "env initiated") 
  
     def build_phase(self) :
-        # super().build_phase()
         self.dut = cocotb.top
-        self.logger.info("indsie build phase")
+        # self.logger.info("indsie build phase")
         self.pcie_env_config_h = ConfigDB().get(self,"","pcie_env_config_h")
         if self.pcie_env_config_h is None:
             self.logger.fatal("CONFIG_LOAD", "Cannot get() configuration pcie_env_config from uvm_config_db. Have you set() it?")
-        # ConfigDB().set(None, "*", "lpif_agent_config_h", self.pcie_env_config_h.lpif_agent_config_h)
-        print(self.pcie_env_config_h)
-        print(self.pcie_env_config_h)
-        print(self.pcie_env_config_h)
-        print(self.pcie_env_config_h)
-        # assert 1 == 0
         ConfigDB().set(None, "*", "pipe_agent_config_h", self.pcie_env_config_h.pipe_agent_config_h)
         self.pipe_agent_h = pipe_agent.create("pipe_agent_h", self)
-        # cocotb.start_soon(Clock(self.dut.clk_i, 5, units="ns").start())
 
         if(self.pcie_env_config_h.has_scoreboard):
             self.pcie_scoreboard_h = pcie_scoreboard("pcie_scoreboard_h",self)

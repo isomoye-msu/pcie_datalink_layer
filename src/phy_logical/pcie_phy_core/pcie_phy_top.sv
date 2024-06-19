@@ -266,7 +266,7 @@ module pcie_phy_top
       .preset_coeff_o(),
       //   .rate_id_i(rate_id),
       .extended_synch_i(),
-      .directed_speed_change_i('1),
+      .directed_speed_change_i('0),
       .lane_status_i(lane_status),
       .curr_data_rate_o(curr_data_rate),
       .data_rate_o(),

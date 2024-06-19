@@ -118,10 +118,10 @@ class pipe_driver_bfm():
             phy_status = 0x0
             phy_rxstatus = 0x0
             # self.dut.phy_phystatus.value[i] = 0b1 for i in range(len(self.dut.phy_phystatus))
-            # print("number of lanes: " + str(self.dut.MAX_NUM_LANES))
+            # # print("number of lanes: " + str(self.dut.MAX_NUM_LANES))
             for i in range(len(self.dut.phy_phystatus)):
-                # print("cuurent value of status: " + str(self.dut.phy_phystatus.value[i]))
-                # print("setting phy status " + str(i) + " to one")
+                # # print("cuurent value of status: " + str(self.dut.phy_phystatus.value[i]))
+                # # print("setting phy status " + str(i) + " to one")
                 # phy_status[0] = 1
                 phy_status |= 0x1 << i
             self.dut.phy_phystatus.value = phy_status
@@ -129,10 +129,10 @@ class pipe_driver_bfm():
                 # phy_status[i] = 0b1
             
             # self.dut.phy_phystatus.value = phy_status
-                # print("post cuurent value of status: " + str(self.dut.phy_phystatus.value[i]))
+                # # print("post cuurent value of status: " + str(self.dut.phy_phystatus.value[i]))
             for i in range(int(self.dut.MAX_NUM_LANES)):
                 phy_rxstatus |= (0b011 << (i*3))
-            # print(bin(phy_rxstatus))
+            # # print(bin(phy_rxstatus))
             self.dut.phy_rxstatus.value = phy_rxstatus
             # self.dut.phy_rxstatus.value = phy_rxstatus
             
@@ -393,8 +393,8 @@ class pipe_driver_bfm():
                     Character = (Character << 1) | (RxDataK_Q.get() & 0x1)
                     #RxData_Q = RxData_Q[1:$]
                     #RxDataK_Q = RxDataK_Q[1:$];  
-                # print(hex(Data))
-                # print(Character)
+                # # print(hex(Data))
+                # # print(Character)
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
@@ -402,13 +402,13 @@ class pipe_driver_bfm():
                     # i*pipe_max_width : ((i*pipe_max_width)+pipe_max_width)
                     temp_data |= (Data << (pipe_max_width*i))
                     temp_char |=  Character << (int(pipe_max_width/8) *i)
-                    # print(hex(temp_data))
+                    # # print(hex(temp_data))
                     # temp_data = (self.dut.phy_rxdata.value)
-                    # print("current_value " + hex(temp_data))
+                    # # print("current_value " + hex(temp_data))
                     # temp_data = temp_data | (Data << (pipe_max_width*i))
-                    # print(hex(temp_data))
-                    # print("\n")
-                    # print(i*pipe_max_width)
+                    # # print(hex(temp_data))
+                    # # print("\n")
+                    # # print(i*pipe_max_width)
                     # self.dut.phy_rxdata.value = self.dut.phy_rxdata.value | ( 0xfffff << int(pipe_max_width*i))
                     # self.dut.phy_rxdatak.value = (self.dut.phy_rxdatak.value << int(pipe_max_width/8)) | Character
                     # data_handle[8:0] = 0xFF
@@ -417,7 +417,7 @@ class pipe_driver_bfm():
                     # RxData_Q = RxData_Q >> (8*i)
                     # RxDataK_Q = RxDataK_Q >> i
 
-                # print(hex(temp_data))
+                # # print(hex(temp_data))
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
@@ -478,11 +478,11 @@ class pipe_driver_bfm():
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
-                    # print(Data[i])
+                    # # print(Data[i])
                     temp_data |= (Data[i] << (pipe_max_width*i))
                     temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
 
-                # print(hex(temp_data))
+                # # print(hex(temp_data))
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
@@ -661,32 +661,20 @@ class pipe_driver_bfm():
                 for i in range(5):
                     data.put( dllp[i])
    
-   #uvm_info("pipe_driver_bfm",sv.sformatf("queue_data = %p",data),UVM_MEDIUM)
-   #uvm_info("pipe_driver_bfm",sv.sformatf("k_queue_data = %p",k_data),UVM_MEDIUM)
-
     def send_idle_data(self):
         for i in range(int(self.dut.MAX_NUM_LANES.value)):
             self.data.append( 0b00000000)
             self.k_data.append(D_K_character.D)
 
-        # assert 1 == 0
-    
-    #uvm_info("pipe_driver_bfm",sv.sformatf("queue_data = %p",data),UVM_MEDIUM)
-
 
     async def send_data(self):
-        # assert 1 == 0
-    #uvm_info("pipe_driver_bfm","entered s data",UVM_MEDIUM)
-    #uvm_info("pipe_driver_bfm",sv.sformatf("current_gen = %s",current_gen.name()),UVM_MEDIUM)
         while(LogicArray(self.dut.phy_powerdown.value).to_BinaryValue() != 0b00):
             await RisingEdge(self.dut.clk_i)
 
-        # assert 1 == 0
-                
     #else uvm_error("pipe_driver_bfm", "Unexpected PowerDown value at Normal Data Operation")
         self.dut.phy_rxelecidle = 0
         phy_rxdata_valid = 0x0
-        for i in range(int(self.dut.MAX_NUM_LANES)):
+        for i in range(int(self.dut.MAX_NUM_LANES.value)):
             phy_rxdata_valid |= 0x1 << i
             # RxValid[i] = 1
         self.dut.phy_rxdata_valid.value = phy_rxdata_valid
@@ -727,7 +715,7 @@ class pipe_driver_bfm():
             temp_char = 0x0
 
             for i in range(int(num_lanes)):
-                # print(Data[i])
+                # # print(Data[i])
                 temp_k = self.k_data[i] == D_K_character.K
                 temp_data |= (temp_data << 8) | (data_scrambled.get() << (pipe_max_width*i))
                 temp_char |=  (temp_char << 1) | (int(temp_k) & 0x1)

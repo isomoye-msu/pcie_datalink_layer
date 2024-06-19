@@ -460,7 +460,7 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
             pipe_seq_item_h = await self.seq_item_port.get_next_item()
             # print(pipe_seq_item_h)
             # print(pipe_seq_item_h)
-            print(pipe_seq_item_h.pipe_operation.name)
+            # print(pipe_seq_item_h.pipe_operation.name)
             # print(repr(pipe_seq_item_h.))
             # assert 1 == 0
             # if isinstance(pipe_seq_item_h,pipe_seq_item):
