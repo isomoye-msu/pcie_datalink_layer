@@ -21,7 +21,7 @@ module pcie_phy_top
     input  logic                                    rst_i,                 //! Reset signal
     input  logic                                    en_i,
     // input  logic [                             5:0] num_active_lanes_i,
-    input  logic [               MAX_NUM_LANES-1:0] lane_active_i,
+    // input  logic [               MAX_NUM_LANES-1:0] lane_active_i,
     // input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
     output logic                                    fc_initialized_o,
     //pipe interface output
@@ -155,7 +155,7 @@ module pcie_phy_top
       end
       for (int i = 0; i < MAX_NUM_LANES; i++) begin
         if (lane_status[i]) begin
-          num_active_lanes_i <= i+1;
+          num_active_lanes_i <= i + 1;
         end
       end
       // num_active_lanes_i
