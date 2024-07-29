@@ -672,7 +672,7 @@ class pipe_driver_bfm():
             await RisingEdge(self.dut.clk_i)
 
     #else uvm_error("pipe_driver_bfm", "Unexpected PowerDown value at Normal Data Operation")
-        self.dut.phy_rxelecidle = 0
+        self.dut.phy_rxelecidle.value = 0
         phy_rxdata_valid = 0x0
         for i in range(int(self.dut.MAX_NUM_LANES.value)):
             phy_rxdata_valid |= 0x1 << i

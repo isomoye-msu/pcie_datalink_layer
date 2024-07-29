@@ -7,6 +7,7 @@ filesets:
     files:
       - src/pcie_ltssm/src/pcie_ltssm_downstream.sv
       - src/pcie_phy_core/pcie_phy_top.sv
+      - src/example/pcie_top.v
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
@@ -18,10 +19,15 @@ filesets:
       - fusesoc:pcie:lint
       - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
+  synth:
+    files:
+      - src/example/pcie_phy_0.xci:
+          file_type: xci
 
   cocotb:
     files:
       - verif/sequences/pipe_link_up_seq.py: {file_type : user, copyto : .}
+      - verif/sequences/pipe_speed_change_with_equalization_seq.py : {file_type : user, copyto : .}
       - verif/sequences/pipe_base_seq.py: {file_type : user, copyto : .}
       - verif/sequences/base_vseq.py: {file_type : user, copyto : .}
       - verif/agents/pipe_agent/descrambler_scrambler.py : {file_type : user, copyto : .}
@@ -76,12 +82,12 @@ targets:
 
   synth:
     default_tool : vivado
-    filesets : [rtl]
+    filesets : [rtl,synth]
     tools:
       vivado:
         part : xczu5ev-sfvc784-1-e
-    toplevel : pcie_phy_top
+    toplevel : pcie_top
 
 scripts:
   iceprog:
-    cmd : [MODULE=pcie_phy_top]
+    cmd : [MODULE=pcie_top]

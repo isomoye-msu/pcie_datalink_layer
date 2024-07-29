@@ -491,9 +491,9 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                 # WIDTH_CHANGE: pipe_driver_bfm.change_width(pipe_seq_item.pipe_width)
                 # SPEED_CHANGE: pipe_driver_bfm.change_speed()
                 case pipe_operation_t.CHECK_EQ_PRESET_APPLIED: 
-                    await self.pipe_driver_bfm.eqialization_preset_applied()
+                    self.pipe_driver_bfm.eqialization_preset_applied()
                 case pipe_operation_t.SET_EQ_PARAM:
-                    await self.pipe_driver_bfm.set_eq_param(  pipe_seq_item_h.lf_usp,
+                    self.pipe_driver_bfm.set_eq_param(  pipe_seq_item_h.lf_usp,
                                                             pipe_seq_item_h.fs_usp,
                                                             pipe_seq_item_h.lf_dsp,
                                                             pipe_seq_item_h.fs_dsp,

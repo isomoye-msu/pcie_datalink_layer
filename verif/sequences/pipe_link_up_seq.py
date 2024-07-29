@@ -186,6 +186,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             await self.config_lanenum_wait_state_upstream()
             await self.config_complete_state_upstream()
             await self.config_idle_state()
+            await Timer(2000,'ns')
         
         else:
             await self.config_linkwidth_start_state_downstream()
@@ -193,6 +194,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             await self.config_lanenum_wait_state_downstream()
             await self.config_complete_state_downstream()
             await self.config_idle_state()
+            await Timer(2000,'ns')
         
         uvm_root().logger.info(self.name + " Finished config_state")
     
