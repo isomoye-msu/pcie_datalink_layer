@@ -162,7 +162,6 @@ module ordered_set_handler
               axis_pkt_cnt_c = 1'b1;
             end else if ((!data_k_in_i[byte_index]) && data_swapped[7:0] == '0) begin
               idle_valid_c = '1;
-              // next_state = ST_RX_IDLE_GEN1;
             end
           end else begin
             if ((sync_header_i == 2'b10)) begin
@@ -189,9 +188,6 @@ module ordered_set_handler
               next_state   = ST_IDLE;
               idle_valid_c = '1;
             end
-            // check_ordered_set_c = '1;
-            // axis_pkt_cnt_c      = '0;
-            // next_state          = ST_IDLE;
           end
         end
       end

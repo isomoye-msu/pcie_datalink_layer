@@ -119,14 +119,13 @@ module os_generator
         axis_pkt_cnt_c = '0;
         if ((gen_os_ctrl_i.gen_ts1 || gen_os_ctrl_i.gen_ts2)) begin
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            if(ordered_set_r[i].link_num == PAD_) begin
+            if (ordered_set_r[i].link_num == PAD_) begin
               special_k_c[1] = '1;
             end
-            
+
             if (gen_os_ctrl_i.set_lane) begin
               ordered_set_c[i].lane_num = i;
-            end
-            else begin
+            end else begin
               special_k_c[2] = '1;
             end
 
@@ -138,7 +137,7 @@ module os_generator
         end
 
         if (gen_os_ctrl_i.gen_idle) begin
-          special_k_c  = '0;
+          special_k_c = '0;
           // os_pkt_cnt_c = 32'd1;
         end
         next_state = ST_SEND;
@@ -187,24 +186,24 @@ module os_generator
       .USER_WIDTH(USER_WIDTH * MAX_NUM_LANES),
       .REG_TYPE(SkidBuffer)
   ) axis_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(ltssm_axis_tdata),
-      .s_axis_tkeep(ltssm_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (ltssm_axis_tdata),
+      .s_axis_tkeep (ltssm_axis_tkeep),
       .s_axis_tvalid(ltssm_axis_tvalid),
       .s_axis_tready(ltssm_axis_tready),
-      .s_axis_tlast(ltssm_axis_tlast),
-      .s_axis_tuser(ltssm_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
+      .s_axis_tlast (ltssm_axis_tlast),
+      .s_axis_tuser (ltssm_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (m_axis_tdata),
+      .m_axis_tkeep (m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tuser(m_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest()
+      .m_axis_tlast (m_axis_tlast),
+      .m_axis_tuser (m_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
   );
 
   // assign os_sent_o = os_sent_r;

@@ -31,18 +31,18 @@ module synchronous_fifo #(
       w_ptr <= 0;
     end else if (w_en_i & !full_o) begin
       fifo[w_ptr] <= data_in;
-      w_ptr <= w_ptr == DEPTH - 1 ? '0 : w_ptr + 1;
+      w_ptr       <= w_ptr == DEPTH - 1 ? '0 : w_ptr + 1;
     end
   end
 
   // To read data from FIFO
   always @(posedge clk_i) begin
     if (rst_i) begin
-      r_ptr <= 0;
+      r_ptr    <= 0;
       data_out <= 0;
     end else if (r_en_i & !empty_o) begin
       data_out <= fifo[r_ptr];
-      r_ptr <= r_ptr == DEPTH - 1 ? '0 : r_ptr + 1;
+      r_ptr    <= r_ptr == DEPTH - 1 ? '0 : r_ptr + 1;
     end
   end
 

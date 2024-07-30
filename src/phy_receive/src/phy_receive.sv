@@ -108,19 +108,19 @@ module phy_receive
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_lane_descramble
 
     scrambler descrambler_inst (
-        .clk_i(clk_i),
-        .rst_i(rst_i),
-        .lane_number(lane),
+        .clk_i           (clk_i),
+        .rst_i           (rst_i),
+        .lane_number     (lane),
         .curr_data_rate_i(curr_data_rate_i),
-        .pipe_width_i(pipe_width_i),
-        .data_valid_i(pipe_data_valid_i[lane]),
-        .data_in_i(pipe_data_i[DATA_WIDTH*lane+:DATA_WIDTH]),
-        .data_k_in_i(pipe_data_k_i[4*lane+:4]),
-        .sync_header_i(pipe_sync_header_i[2*lane+:2]),
-        .data_valid_o(descrambler_data_valid[lane]),
-        .data_out_o(descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
-        .data_k_out_o(descrambler_data_k[4*lane+:4]),
-        .sync_header_o(descrambler_sync_header[2*lane+:2])
+        .pipe_width_i    (pipe_width_i),
+        .data_valid_i    (pipe_data_valid_i[lane]),
+        .data_in_i       (pipe_data_i[DATA_WIDTH*lane+:DATA_WIDTH]),
+        .data_k_in_i     (pipe_data_k_i[4*lane+:4]),
+        .sync_header_i   (pipe_sync_header_i[2*lane+:2]),
+        .data_valid_o    (descrambler_data_valid[lane]),
+        .data_out_o      (descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
+        .data_k_out_o    (descrambler_data_k[4*lane+:4]),
+        .sync_header_o   (descrambler_sync_header[2*lane+:2])
     );
 
     ordered_set_handler #(
@@ -129,19 +129,19 @@ module phy_receive
         .KEEP_WIDTH(KEEP_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) ordered_set_handler_inst (
-        .clk_i(clk_i),
-        .rst_i(rst_i),
+        .clk_i           (clk_i),
+        .rst_i           (rst_i),
         .curr_data_rate_i(curr_data_rate_i),
-        .pipe_width_i(pipe_width_i),
-        .data_valid_i(descrambler_data_valid[lane]),
-        .data_in_i(descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
-        .data_k_in_i(descrambler_data_k[4*lane+:4]),
-        .sync_header_i(descrambler_sync_header[2*lane+:2]),
-        .ordered_set_o(ordered_set_o[lane]),
-        .idle_valid_o(idle_valid_o[lane]),
-        .ts1_valid_o(ts1_valid_o[lane]),
-        .ts2_valid_o(ts2_valid_o[lane]),
-        .eieos_valid_o()
+        .pipe_width_i    (pipe_width_i),
+        .data_valid_i    (descrambler_data_valid[lane]),
+        .data_in_i       (descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
+        .data_k_in_i     (descrambler_data_k[4*lane+:4]),
+        .sync_header_i   (descrambler_sync_header[2*lane+:2]),
+        .ordered_set_o   (ordered_set_o[lane]),
+        .idle_valid_o    (idle_valid_o[lane]),
+        .ts1_valid_o     (ts1_valid_o[lane]),
+        .ts2_valid_o     (ts2_valid_o[lane]),
+        .eieos_valid_o   ()
     );
   end
 
@@ -149,20 +149,20 @@ module phy_receive
       .DATA_WIDTH(DATA_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) block_alignment_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .phy_link_up_i(link_up_i),
-      .lane_reverse_i('0),
-      .curr_data_rate_i(curr_data_rate_i),
-      .data_valid_i(descrambler_data_valid),
-      .data_i(descrambler_data),
-      .data_k_i(descrambler_data_k),
-      .sync_header_i(descrambler_sync_header),
-      .data_o(block_alignment_data),
-      .data_valid_o(block_alignment_data_valid),
-      .data_k_o(block_alignment_data_k),
-      .sync_header_o(block_alignment_sync_header),
-      .pipe_width_i(pipe_width_i),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .phy_link_up_i     (link_up_i),
+      .lane_reverse_i    ('0),
+      .curr_data_rate_i  (curr_data_rate_i),
+      .data_valid_i      (descrambler_data_valid),
+      .data_i            (descrambler_data),
+      .data_k_i          (descrambler_data_k),
+      .sync_header_i     (descrambler_sync_header),
+      .data_o            (block_alignment_data),
+      .data_valid_o      (block_alignment_data_valid),
+      .data_k_o          (block_alignment_data_k),
+      .sync_header_o     (block_alignment_sync_header),
+      .pipe_width_i      (pipe_width_i),
       .num_active_lanes_i(num_active_lanes_i)
   );
 
@@ -170,21 +170,21 @@ module phy_receive
       .DATA_WIDTH(DATA_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) pack_data_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .phy_link_up_i(link_up_i),
-      .lane_reverse_i('0),
-      .curr_data_rate_i(curr_data_rate_i),
-      .data_i(block_alignment_data),
-      .data_valid_i(block_alignment_data_valid),
-      .data_k_i(block_alignment_data_k),
-      .sync_header_i(block_alignment_sync_header),
-      .data_o(packer_data),
-      .data_valid_o(packer_data_valid),
-      .data_k_o(packer_data_k),
-      .sync_header_o(packer_sync_header),
-      .pipe_width_i(pipe_width_i),
-      .fifo_wr_o(wr_en),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .phy_link_up_i     (link_up_i),
+      .lane_reverse_i    ('0),
+      .curr_data_rate_i  (curr_data_rate_i),
+      .data_i            (block_alignment_data),
+      .data_valid_i      (block_alignment_data_valid),
+      .data_k_i          (block_alignment_data_k),
+      .sync_header_i     (block_alignment_sync_header),
+      .data_o            (packer_data),
+      .data_valid_o      (packer_data_valid),
+      .data_k_o          (packer_data_k),
+      .sync_header_o     (packer_sync_header),
+      .pipe_width_i      (pipe_width_i),
+      .fifo_wr_o         (wr_en),
       .num_active_lanes_i(num_active_lanes_i)
   );
 
@@ -194,14 +194,14 @@ module phy_receive
       .DEPTH(20),
       .DATA_WIDTH(PcieDataSize)
   ) synchronous_fifo_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i || !link_up_i),
-      .w_en_i(wr_en),
-      .r_en_i(rd_en),
-      .data_in({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
+      .clk_i   (clk_i),
+      .rst_i   (rst_i || !link_up_i),
+      .w_en_i  (wr_en),
+      .r_en_i  (rd_en),
+      .data_in ({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
       .data_out({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
-      .full_o(fifo_full),
-      .empty_o(fifo_empty)
+      .full_o  (fifo_full),
+      .empty_o (fifo_empty)
   );
 
   data_handler #(
@@ -211,24 +211,24 @@ module phy_receive
       .USER_WIDTH(USER_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) data_handler_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .phy_link_up_i(link_up_i),
-      .phy_fifo_empty_i(fifo_empty),
-      .phy_fifo_rd_en_o(rd_en),
-      .lane_reverse_i('0),
-      .curr_data_rate_i(curr_data_rate_i),
-      .data_i(fifo_data),
-      .data_valid_i(fifo_data_valid),
-      .data_k_i(fifo_data_k),
-      .sync_header_i(fifo_sync_header),
-      .m_dllp_axis_tdata(m_dllp_axis_tdata),
-      .m_dllp_axis_tkeep(m_dllp_axis_tkeep),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .phy_link_up_i     (link_up_i),
+      .phy_fifo_empty_i  (fifo_empty),
+      .phy_fifo_rd_en_o  (rd_en),
+      .lane_reverse_i    ('0),
+      .curr_data_rate_i  (curr_data_rate_i),
+      .data_i            (fifo_data),
+      .data_valid_i      (fifo_data_valid),
+      .data_k_i          (fifo_data_k),
+      .sync_header_i     (fifo_sync_header),
+      .m_dllp_axis_tdata (m_dllp_axis_tdata),
+      .m_dllp_axis_tkeep (m_dllp_axis_tkeep),
       .m_dllp_axis_tvalid(m_dllp_axis_tvalid),
-      .m_dllp_axis_tlast(m_dllp_axis_tlast),
-      .m_dllp_axis_tuser(m_dllp_axis_tuser),
+      .m_dllp_axis_tlast (m_dllp_axis_tlast),
+      .m_dllp_axis_tuser (m_dllp_axis_tuser),
       .m_dllp_axis_tready(m_dllp_axis_tready),
-      .pipe_width_i(pipe_width_i),
+      .pipe_width_i      (pipe_width_i),
       .num_active_lanes_i(num_active_lanes_i)
   );
 
