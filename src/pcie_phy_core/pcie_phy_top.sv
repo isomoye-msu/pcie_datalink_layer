@@ -3,7 +3,7 @@ module pcie_phy_top
   import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100
-    parameter int MAX_NUM_LANES = 8,               //! Maximum number of lanes module can support
+    parameter int MAX_NUM_LANES = 4,               //! Maximum number of lanes module can support
     // TLP data width
     parameter int DATA_WIDTH    = 32,              //! AXIS data width
     // TLP strobe width
@@ -178,6 +178,7 @@ module pcie_phy_top
       .pipe_data_valid_i(phy_rxdata_valid),
       .pipe_data_k_i(phy_rxdatak),
       .pipe_sync_header_i(phy_rxsync_header),
+      .pipe_block_start_i(phy_rxstart_block),
       .pipe_width_i(pipe_width),
       .num_active_lanes_i(num_active_lanes_i),
       .ts1_valid_o(ts1_valid),
@@ -210,6 +211,7 @@ module pcie_phy_top
       .pipe_data_valid_o(phy_txdata_valid),
       .pipe_data_k_o(phy_txdatak),
       .pipe_sync_header_o(phy_txsync_header),
+      .pipe_txstart_block_o(phy_txstart_block),
       .pipe_width_o(pipe_width),
       .gen_os_ctrl_i(gen_os_ctrl),
       //   .num_active_lanes_o(num_active_lanes_o),

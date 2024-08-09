@@ -21,6 +21,7 @@ module phy_transmit
     output logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
     output logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
     output logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
+    output logic              [               MAX_NUM_LANES-1:0] pipe_txstart_block_o,
     output logic              [                             5:0] pipe_width_o,
     input  logic              [                             5:0] num_active_lanes_i,
     input  logic                                                 send_ordered_set_i,
@@ -63,6 +64,7 @@ module phy_transmit
   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] lm_data_out;
   logic [               MAX_NUM_LANES-1:0] lm_data_valid;
   logic [           (4*MAX_NUM_LANES)-1:0] lm_d_k_out;
+  logic [               MAX_NUM_LANES-1:0] lm_start_block;
   logic [           (2*MAX_NUM_LANES)-1:0] lm_sync_header;
   logic [                             5:0] lm_pipe_width;
 
@@ -75,39 +77,41 @@ module phy_transmit
       .DATA_WIDTH(DATA_WIDTH),
       .KEEP_WIDTH(KEEP_WIDTH)
   ) frame_symbols_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
+      .clk_i           (clk_i),
+      .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
-      .s_axis_tdata(s_dllp_axis_tdata),
-      .s_axis_tkeep(s_dllp_axis_tkeep),
-      .s_axis_tvalid(s_dllp_axis_tvalid),
-      .s_axis_tlast(s_dllp_axis_tlast),
-      .s_axis_tuser(s_dllp_axis_tuser),
-      .s_axis_tready(s_dllp_axis_tready),
-      .m_axis_tdata(framed_axis_tdata),
-      .m_axis_tkeep(framed_axis_tkeep),
-      .m_axis_tvalid(framed_axis_tvalid),
-      .m_axis_tlast(framed_axis_tlast),
-      .m_axis_tuser(framed_axis_tuser),
-      .m_axis_tready(framed_axis_tready)
+      .s_axis_tdata    (s_dllp_axis_tdata),
+      .s_axis_tkeep    (s_dllp_axis_tkeep),
+      .s_axis_tvalid   (s_dllp_axis_tvalid),
+      .s_axis_tlast    (s_dllp_axis_tlast),
+      .s_axis_tuser    (s_dllp_axis_tuser),
+      .s_axis_tready   (s_dllp_axis_tready),
+      .m_axis_tdata    (framed_axis_tdata),
+      .m_axis_tkeep    (framed_axis_tkeep),
+      .m_axis_tvalid   (framed_axis_tvalid),
+      .m_axis_tlast    (framed_axis_tlast),
+      .m_axis_tuser    (framed_axis_tuser),
+      .m_axis_tready   (framed_axis_tready)
   );
 
 
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_lane_scramble
     scrambler scrambler_inst (
-        .clk_i(clk_i),
-        .rst_i(rst_i),
-        .lane_number(lane),
+        .clk_i           (clk_i),
+        .rst_i           (rst_i),
+        .lane_number     (lane),
         .curr_data_rate_i(curr_data_rate_i),
-        .pipe_width_i(lm_pipe_width),
-        .data_in_i(lm_data_out[lane*32+:32]),
-        .data_k_in_i(lm_d_k_out[lane*4+:4]),
-        .data_valid_i(lm_data_valid[lane]),
-        .sync_header_i(lm_sync_header[lane*2+:2]),
-        .data_valid_o(pipe_data_valid_o[lane]),
-        .data_out_o(pipe_data_o[lane*32+:32]),
-        .data_k_out_o(pipe_data_k_o[lane*4+:4]),
-        .sync_header_o(pipe_sync_header_o[lane*2+:2])
+        .pipe_width_i    (lm_pipe_width),
+        .data_in_i       (lm_data_out[lane*32+:32]),
+        .data_k_in_i     (lm_d_k_out[lane*4+:4]),
+        .data_valid_i    (lm_data_valid[lane]),
+        .sync_header_i   (lm_sync_header[lane*2+:2]),
+        .block_start_i   (lm_start_block[lane]),
+        .data_valid_o    (pipe_data_valid_o[lane]),
+        .data_out_o      (pipe_data_o[lane*32+:32]),
+        .data_k_out_o    (pipe_data_k_o[lane*4+:4]),
+        .block_start_o   (pipe_txstart_block_o[lane]),
+        .sync_header_o   (pipe_sync_header_o[lane*2+:2])
     );
   end
 
@@ -121,28 +125,29 @@ module phy_transmit
       .USER_WIDTH(USER_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) lane_management_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .phy_link_up_i(),
-      .s_dllp_axis_tdata(framed_axis_tdata),
-      .s_dllp_axis_tkeep(framed_axis_tkeep),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .phy_link_up_i     (),
+      .s_dllp_axis_tdata (framed_axis_tdata),
+      .s_dllp_axis_tkeep (framed_axis_tkeep),
       .s_dllp_axis_tvalid(framed_axis_tvalid),
-      .s_dllp_axis_tlast(framed_axis_tlast),
-      .s_dllp_axis_tuser(framed_axis_tuser),
+      .s_dllp_axis_tlast (framed_axis_tlast),
+      .s_dllp_axis_tuser (framed_axis_tuser),
       .s_dllp_axis_tready(framed_axis_tready),
-      .s_phy_axis_tdata(phy_axis_tdata),
-      .s_phy_axis_tkeep(phy_axis_tkeep),
-      .s_phy_axis_tvalid(phy_axis_tvalid),
-      .s_phy_axis_tlast(phy_axis_tlast),
-      .s_phy_axis_tuser(phy_axis_tuser),
-      .s_phy_axis_tready(phy_axis_tready),
-      .curr_data_rate_i(curr_data_rate_i),
-      .lane_reverse_i('0),
-      .data_out_o(lm_data_out),
-      .data_valid_o(lm_data_valid),
-      .d_k_out_o(lm_d_k_out),
-      .sync_header_o(lm_sync_header),
-      .pipe_width_o(lm_pipe_width),
+      .s_phy_axis_tdata  (phy_axis_tdata),
+      .s_phy_axis_tkeep  (phy_axis_tkeep),
+      .s_phy_axis_tvalid (phy_axis_tvalid),
+      .s_phy_axis_tlast  (phy_axis_tlast),
+      .s_phy_axis_tuser  (phy_axis_tuser),
+      .s_phy_axis_tready (phy_axis_tready),
+      .curr_data_rate_i  (curr_data_rate_i),
+      .lane_reverse_i    ('0),
+      .data_out_o        (lm_data_out),
+      .data_valid_o      (lm_data_valid),
+      .d_k_out_o         (lm_d_k_out),
+      .sync_header_o     (lm_sync_header),
+      .start_block_o     (lm_start_block),
+      .pipe_width_o      (lm_pipe_width),
       .num_active_lanes_i(num_active_lanes_i)
   );
 
@@ -154,20 +159,20 @@ module phy_transmit
       .USER_WIDTH(USER_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) os_generator_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
+      .clk_i           (clk_i),
+      .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
-      .send_ltssm_os_i(send_ordered_set_i),
-      .preset_i('0),
-      .gen_os_ctrl_i(gen_os_ctrl_i),
-      .os_sent_o(ordered_set_tranmitted_o),
-      .ordered_set_i(ordered_set_i),
-      .m_axis_tdata(phy_axis_tdata),
-      .m_axis_tkeep(phy_axis_tkeep),
-      .m_axis_tvalid(phy_axis_tvalid),
-      .m_axis_tlast(phy_axis_tlast),
-      .m_axis_tuser(phy_axis_tuser),
-      .m_axis_tready(phy_axis_tready)
+      .send_ltssm_os_i (send_ordered_set_i),
+      .preset_i        ('0),
+      .gen_os_ctrl_i   (gen_os_ctrl_i),
+      .os_sent_o       (ordered_set_tranmitted_o),
+      .ordered_set_i   (ordered_set_i),
+      .m_axis_tdata    (phy_axis_tdata),
+      .m_axis_tkeep    (phy_axis_tkeep),
+      .m_axis_tvalid   (phy_axis_tvalid),
+      .m_axis_tlast    (phy_axis_tlast),
+      .m_axis_tuser    (phy_axis_tuser),
+      .m_axis_tready   (phy_axis_tready)
   );
 
   //always #5  clk = ! clk ;

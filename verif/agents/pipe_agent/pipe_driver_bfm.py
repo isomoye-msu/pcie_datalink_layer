@@ -176,6 +176,12 @@ class pipe_driver_bfm():
     def ts_symbols_maker(self, ts):
         RxData_Q = queue.Queue()
         RxDataK_Q = queue.Queue()
+        def set_bit(value, bit):
+            return value | (1<<bit)
+
+        def clear_bit(value, bit):
+            return value & ~(1<<bit)
+        
         if (self.current_gen.value <= gen_t.GEN2.value):
             # Symbol 0
             RxData_Q.put(0b10111100)
@@ -209,18 +215,29 @@ class pipe_driver_bfm():
             RxDataK_Q.put(0b0  ) 
 
             # temp =  0xFF
-            temp = 0b11111110
+            temp = 0b0000000
             if (ts.max_gen_supported == gen_t.GEN1):
-                temp &=  0b0000 << 2
+                temp = 0b11000010
             elif (ts.max_gen_supported == gen_t.GEN2):
-                temp &=  0b000 << 3
+                temp = 0b11000110
             elif (ts.max_gen_supported == gen_t.GEN3):
-                temp &=  0b00 << 4
+                temp = 0b11001110
+                # assert 1 == 0
             elif (ts.max_gen_supported == gen_t.GEN4):
-                temp &= 0b0 << 5
+                temp = 0b11011110
 
-            temp   = (ts.auto_speed_change & 0x1) << 6
-            temp   = (ts.speed_change &  0x1) << 7
+            if ts.auto_speed_change:
+                temp = set_bit(temp,6)
+            else:
+                temp = clear_bit(temp,6)
+
+            if ts.speed_change:
+                temp = set_bit(temp,7)
+            else:
+                temp = clear_bit(temp,7)
+
+            # temp   = (ts.auto_speed_change & 0x1) << 6
+            # temp   = (ts.speed_change &  0x1) << 7
 
             RxData_Q.put( temp  ) 
 
@@ -234,8 +251,8 @@ class pipe_driver_bfm():
                 # temp = 0xFF
                 temp |= ts.rx_preset_hint & 0b11
                 temp |= (ts.tx_preset & 0b111) << 3
-            if (ts.ts_type == ts_type_t.TS2):
-                temp |= ts.equalization_command << 7
+            if (ts.ts_type == ts_type_t.TS2 and  ts.equalization_command):
+                temp |= set_bit(temp, 7)
             else :
                 if (ts.ts_type == ts_type_t.TS1):
                     temp = 0x4A
@@ -364,7 +381,7 @@ class pipe_driver_bfm():
         
 
 
-    async def send_ts(self,ts, start_lane = 0, _lane = 8, replace_lane = 0):  # task
+    async def send_ts(self,ts, start_lane = 0,_lane=int(cocotb.top.MAX_NUM_LANES), replace_lane = 0):  # task
         width = 8
         # RxData_Q = deque()  #the actual symbols will be here (each symbol is a byte)
         # bit RxDataValid_Q[$]
@@ -447,7 +464,7 @@ class pipe_driver_bfm():
         #     RxValid[i] = 0
 
 
-    async def send_tses(self, ts, start_lane = 0,  _lane = 8):  # task
+    async def send_tses(self, ts, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
         width = 8
         RxData_Q = [0] * len(ts)
         RxDataK_Q = [0] * len(ts)
@@ -492,15 +509,26 @@ class pipe_driver_bfm():
             self.dut.phy_rxdatak.value = 0
             self.dut.phy_rxdata_valid.value = 0
 
-    async def send_eios(self):  # task
-        width = get_width()
+    async def send_eios(self, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
+        width = self.get_width()
         com = 0b10111100
         idl = 0b01111100
         eios_gen3_ident = 0x66
-        RxData_Q = []
-        RxDataK_Q = []
+        RxData_Q = queue.Queue()
+        RxDataK_Q = queue.Queue()
+        pipe_max_width = 32
 
-        if (self.current_gen.value == gen_t.GEN2.value):
+        uvm_root().logger.info(self.name + " " + "sending eios")
+
+        phy_rxdata_valid = 0x0
+        for i in range(start_lane,_lane):
+            phy_rxdata_valid |= 0x1 << i
+            # RxValid[i] = 1
+        self.dut.phy_rxdata_valid.value = phy_rxdata_valid
+        Data = [0x0] * int(_lane - start_lane)
+        Character = [0x0] * int(_lane - start_lane)
+
+        if (self.current_gen.value <= gen_t.GEN2.value):
             RxData_Q.put(com)
             RxData_Q.put(idl)
             RxData_Q.put(idl)
@@ -509,27 +537,44 @@ class pipe_driver_bfm():
             RxDataK_Q.put(0b1)
             RxDataK_Q.put(0b1)
             RxDataK_Q.put(0b1)
+
+            # assert 1 == 0
             
-            while not RxData_Q.empty():
-                await RisingEdge(self.dut.clk_i)
+            # while not RxData_Q[0].empty():
+            self.dut.phy_rxdata.value = 0
+            self.dut.phy_rxdatak.value = 0
+            Data = [0x0] * int(_lane - start_lane)
+            Character = [0x0] * int(_lane - start_lane)
 
-                # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
-                for i in range(int(width/8)):
-                    Data[j*8 :(j*8)+8] = RxData_Q.get()
-                    Character[j] = RxDataK_Q.get()
-                
+            # assert 1 == 0
+            # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
+            for i in range(int(pipe_max_width/width)):
+                Data[i] = (Data[i] << 8) | (RxData_Q.get())
+                Character[i] = (Character[i] << 1) | (RxDataK_Q.get() & 0x1)
+                # print(i)
+            temp_data = 0x0
+            temp_char = 0x0
 
-                #duplicating the Data and Characters to each lane in the driver
-                for i in range(pipe_num_of_lanes):
-                    self.dut.phy_rxdata[i*pipe_max_width : (i*pipe_max_width)+pipe_max_width] = Data
-                    self.dut.phy_rxdatak[i*pipe_max_width/8 : (i*pipe_max_width/8)+pipe_max_width/8] = Character
-                
+            # assert 1 == 0
+            for i in range(start_lane,_lane):
+                # # print(Data[i])
+                temp_data |= (Data[i] << (pipe_max_width*i))
+                temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
+        # # print(hex(temp_data))
+            self.dut.phy_rxdata.value = temp_data
+            self.dut.phy_rxdatak.value = temp_char
+
             await RisingEdge(self.dut.clk_i)
-            for i in range(pipe_num_of_lanes):
-                self.dut.phy_rxdata_valid[i] = 1
-                self.dut.phy_rxvalid[i] = 1
-                
-            self.dut.phy_rxelecidle = 1
+
+            self.dut.phy_rxdata.value = 0
+            self.dut.phy_rxdatak.value = 0
+            self.dut.phy_rxdata_valid.value = 0
+            elec_idle = 0x00
+            for i in range(start_lane,_lane):
+                elec_idle |= 1 << i
+            self.dut.phy_rxelecidle.value = elec_idle
+
+            # assert 1 == 0
         else:  #gen3 and higher:
             for z in range(int((16*8)/width)):
                 await RisingEdge(self.dut.clk_i)
@@ -540,33 +585,76 @@ class pipe_driver_bfm():
             
 
             #driving signals of each lane
-            for i in range(pipe_num_of_lanes):
+            for i in range(start_lane,_lane):
                 if (z == 0):
                     self.dut.phy_rxstart_block[i] = 0b1
                     self.dut.phy_rxsync_header[i*2: (i*2)+2] = 0b01
                 else :
                     self.dut.phy_rxstart_block[i] = 0b0
-                
+            temp_data = 0x0
+            temp_char = 0x0
+            for i in range(start_lane,_lane):
+                # # print(Data[i])
+                temp_data |= (Data[i] << (pipe_max_width*i))
+                temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
+            
                 #driving data on lanes
-                self.dut.phy_rxdata[i*pipe_max_width : (i*pipe_max_width)+pipe_max_width] = Data
+            self.dut.phy_rxdata.value = temp_data
+            self.dut.phy_rxdatak.value = temp_char
+
             await RisingEdge(self.dut.clk_i)
 
-        async def send_eieos(self):  # task
-            width = get_width()
+            self.dut.phy_rxdata.value = 0
+            self.dut.phy_rxdatak.value = 0
+            self.dut.phy_rxdata_valid.value = 0
+
+    async def send_eieos(self, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
+            width = self.get_width()
 
 
+            uvm_root().logger.info(self.name + " " + "sending eieos")
             RxData_Q = Queue()
             RxDataK_Q = Queue()
 
+
+            pipe_max_width = 32
             com = 0b10111100
             eie = 0b11111100
             ts1_ident = 0b01001010
             RxData_Q.put( [com, eie, eie, eie, eie, eie, eie, eie, eie, eie, eie, eie, eie, eie, eie, ts1_ident])
             RxDataK_Q.put( 0b1111111111111110)
 
-            if (current_gen == gen_t.GEN2):
-                while (len(RxData_Q)):
-                    await RisingEdge(self.dut.clk_i)
+            if (self.current_gen.value <= gen_t.GEN2.value):
+                self.dut.phy_rxdata.value = 0
+                self.dut.phy_rxdatak.value = 0
+                Data = [0x0] * int(_lane - start_lane)
+                Character = [0x0] * int(_lane - start_lane)
+
+                # assert 1 == 0
+                # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
+                for i in range(int(pipe_max_width/width)):
+                    Data[i] = (Data[i] << 8) | (RxData_Q.get())
+                    Character[i] = (Character[i] << 1) | (RxDataK_Q.get() & 0x1)
+                    # print(i)
+                temp_data = 0x0
+                temp_char = 0x0
+
+                # assert 1 == 0
+                for i in range(start_lane,_lane):
+                    # # print(Data[i])
+                    temp_data |= (Data[i] << (pipe_max_width*i))
+                    temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
+                print(hex(temp_data))
+                self.dut.phy_rxdata.value = temp_data
+                self.dut.phy_rxdatak.value = temp_char
+
+                await RisingEdge(self.dut.clk_i)
+
+                self.dut.phy_rxdata.value = 0
+                self.dut.phy_rxdatak.value = 0
+                self.dut.phy_rxdata_valid.value = 0
+                elec_idle = 0x00
+                self.dut.phy_rxelecidle.value = 0
 
                     # for(int i = start_lane; i < _lane; i.put( 1):
                     #   RxDataValid[i] = 1
@@ -581,15 +669,8 @@ class pipe_driver_bfm():
                     
 
                     #duplicating the Data and Characters to each lane in the driver
-                    for i in range(pipe_num_of_lanes):
-                        RxData[i*pipe_max_width : (i*pipe_max_width)+pipe_max_width] = RxData_Q
-                        RxDataK[i*pipe_max_width/8 : (i*pipe_max_width/8)+pipe_max_width/8] = RxDataK_Q
-                    
-                    
-                    await RisingEdge(self.dut.clk_i)
-                    self.dut.phy_rxelecidle = 0
             else :
-                ...
+                await RisingEdge(self.dut.clk_i)
                     
 
                 
@@ -608,7 +689,7 @@ class pipe_driver_bfm():
     #  bit k_data[$]
 
     def get_width(self):
-        lane_width = 0
+        lane_width = 8
         match self.dut.pipe_width_o.value:
             case 0b00: lane_width = 8
             case 0b01: lane_width = 16

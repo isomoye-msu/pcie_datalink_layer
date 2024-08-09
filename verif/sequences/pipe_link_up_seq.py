@@ -656,6 +656,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         fork3 = cocotb.start_soon(idle_send())
         fork4 = cocotb.start_soon(idle_count())
         await Combine(fork1,fork2,fork3,fork4)
-        await Timer(2000,'ns')
+        await Timer(200,'ns')
         uvm_root().logger.info(self.name + " Finished config_idle_state")
         

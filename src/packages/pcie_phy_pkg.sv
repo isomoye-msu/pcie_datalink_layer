@@ -270,6 +270,7 @@ package pcie_phy_pkg;
     logic         set_link;
     logic         gen_idle;
     logic         gen_skp;
+    logic         gen_eios;
     logic         gen3_eieos;
     logic         gen2_eieos;
     logic         gen_ts2;
@@ -601,7 +602,7 @@ package pcie_phy_pkg;
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
-      if (rate_speed == gen2) begin
+      if (rate_speed <= gen2) begin
         temp_os.symbols[7:0] = COM;
         for (int i = 1; i < 15; i++) begin
           temp_os[8*i+:8] = EIE;

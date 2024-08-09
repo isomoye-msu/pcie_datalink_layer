@@ -8,13 +8,15 @@ module scrambler
     input  logic        [ 1:0] sync_header_i,
     input  rate_speed_e        curr_data_rate_i,
     input  logic        [31:0] data_in_i,
+    input  logic               block_start_i,
     input  logic               data_valid_i,
     output logic               data_valid_o,
     output logic        [31:0] data_out_o,
     input  logic        [ 3:0] data_k_in_i,
     input  logic        [ 5:0] pipe_width_i,
     output logic        [ 3:0] data_k_out_o,
-    output logic        [ 1:0] sync_header_o
+    output logic        [ 1:0] sync_header_o,
+    output logic               block_start_o
     // !Control
 );
 
@@ -59,10 +61,12 @@ module scrambler
       sync_header_o <= '0;
       data_valid_o  <= '0;
       data_k_out_o  <= '0;
+      block_start_o <= '0;
     end else begin
       sync_header_o <= sync_header_i;
       data_valid_o  <= data_valid_i;
       data_k_out_o  <= data_k_in_i;
+      block_start_o <= block_start_i;
     end
   end
 

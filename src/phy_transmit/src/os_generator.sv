@@ -140,6 +140,10 @@ module os_generator
           special_k_c = '0;
           // os_pkt_cnt_c = 32'd1;
         end
+
+        if(gen_os_ctrl_i.gen_eios) begin
+          special_k_c = '1;
+        end
         next_state = ST_SEND;
       end
       ST_SEND: begin

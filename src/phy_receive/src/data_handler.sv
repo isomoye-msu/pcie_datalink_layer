@@ -282,19 +282,6 @@ module data_handler
             data_k_c                 = data_k_r;
             data_handler_axis_tvalid = '1;
           end
-          // for (int i = 0; i < 4; i++) begin
-          //   if (data_k_r[i] && data_r[8*i+:8] == ENDP) begin
-          //     next_state              = ST_IDLE;
-          //     data_handler_axis_tlast = '1;
-          //     for (int k = '0; k < 4; k++) begin
-          //       if (k >= i) begin
-          //         data_handler_axis_tkeep[k] = '0;
-          //         is_dllp_c                  = '0;
-          //         is_tlp_c                   = '0;
-          //       end
-          //     end
-          //   end
-          // end
         end
       end
       default: begin
@@ -337,24 +324,5 @@ module data_handler
       .m_axis_tid(),
       .m_axis_tdest()
   );
-
-
-  // assign m_dllp_axis_tdata  = m_axis_tdata;
-  // assign m_dllp_axis_tkeep  = m_axis_tkeep;
-  // assign m_dllp_axis_tvalid = m_axis_tvalid;
-  // assign m_dllp_axis_tlast  = m_axis_tlast;
-  // assign m_dllp_axis_tuser  = is_tlp_r ? 4'b0001 : 4'b0010;
-  // assign m_axis_tready      = m_dllp_axis_tready;
-
-
-
-
-  //   assign sync_header_o      = sync_header_r;
-  //   assign s_dllp_axis_tready = ready_out & is_tlp_r;
-  //   assign s_phy_axis_tready  = ready_out & is_dllp_r;
-  //   assign data_valid_o       = data_valid_r;
-  //   assign d_k_out_o          = d_k_out_r;
-  //   assign data_out_o         = data_out_r;
-  //   assign pipe_width_o       = pipe_width_r;
 
 endmodule

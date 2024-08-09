@@ -20,6 +20,7 @@ module phy_receive
     input  logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
     input  logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
     input  logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
+    input  logic              [             (MAX_NUM_LANES)-1:0] pipe_block_start_i,
     input  logic              [                             5:0] pipe_width_i,
     input  logic              [                             5:0] num_active_lanes_i,
     //training set configuration signals
@@ -117,10 +118,12 @@ module phy_receive
         .data_in_i       (pipe_data_i[DATA_WIDTH*lane+:DATA_WIDTH]),
         .data_k_in_i     (pipe_data_k_i[4*lane+:4]),
         .sync_header_i   (pipe_sync_header_i[2*lane+:2]),
+        .block_start_i   (pipe_block_start_i[lane]),
         .data_valid_o    (descrambler_data_valid[lane]),
         .data_out_o      (descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
         .data_k_out_o    (descrambler_data_k[4*lane+:4]),
-        .sync_header_o   (descrambler_sync_header[2*lane+:2])
+        .sync_header_o   (descrambler_sync_header[2*lane+:2]),
+        .block_start_o   ()
     );
 
     ordered_set_handler #(
