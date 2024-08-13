@@ -15,7 +15,7 @@ class pipe_agent_config(uvm_component):
         self.tses_received = [] 
         self.name = name
         self.new_width = None  # type: logic [1:0] 
-        self.new_PCLKRate = None  # type: logic [4:0] 
+        self.new_PCLKRate = 0.25  # type: logic [4:0] 
         self.new_Rate = None  # type: logic [3:0] 
         self.new_TxDeemph = None  # type: logic [17:0] 
         self.detected_tses_e = Event('detected_tses_e')  # type: event  

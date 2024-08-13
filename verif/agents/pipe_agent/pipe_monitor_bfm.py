@@ -83,7 +83,7 @@ class pipe_monitor_bfm():
         
 
         cocotb.start_soon(self.rx_detection_scenario())
-        # cocotb.start_soon(self.clock_wait())
+        cocotb.start_soon(self.clk_i_rate_changed())
         cocotb.start_soon(self.polling_state_start())
         cocotb.start_soon(self.recieve_data())
         cocotb.start_soon(self.tx_elec_idle_and_rx_standby())
@@ -139,20 +139,27 @@ class pipe_monitor_bfm():
         self.build_connect_finished_e.clear()
         while True:
             await Edge(self.dut.pipe_width_o)
-            new_width=self.dut.pipe_width_o
+            new_width=self.dut.pipe_width_o.value
             # print(int((int(new_width)/8)-1))
             # assert 1 == 0
             self.proxy.notify_width_changed(int((int(new_width)/8)-1))
             await RisingEdge(self.dut.clk_i)
-
-    # async def clk_i_rate_changed(self):
-    #     while not self.build_connect_finished_e.is_set():
-    #         ...
-    #     self.build_connect_finished_e.clear
-    #     while True:
-    #         await Edge(self.dut.clk_i_rate_o)
-    #         new_PCLKRate = self.dut.clk_i_rate_o
-    #         self.proxy.notify_PCLKRate_changed(new_PCLKRate)
+# 
+    async def clk_i_rate_changed(self):
+        await self.build_connect_finished_e.wait()
+        self.build_connect_finished_e.clear()
+        # while True:
+            # await Edge(self.dut.CLK_RATE)
+            # new_PCLKRate = self.dut.CLK_RATE.value
+            # new_PCLKRate = 0.25
+            # match (new_PCLKRate):
+                # case 0b000:new_PCLKRate=0.0625
+                # case 0b001:new_PCLKRate=0.125
+                # case 0b010:new_PCLKRate=0.25
+                # case 0b011:new_PCLKRate=0.5
+                # case 0b100:new_PCLKRate=1
+                # case 100: new_PCLKRate = 0.25
+            # self.proxy.notify_PCLKRate_changed(new_PCLKRate)
 
     async def rate_changed(self):
         await self.build_connect_finished_e.wait()

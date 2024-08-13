@@ -441,18 +441,21 @@ class pipe_driver_bfm():
                 await RisingEdge(self.dut.clk_i)
             
         if (self.current_gen.value > gen_t.GEN2.value):
+        # if current_gen > GEN2:
+            while not RxData_Q.empty():
+                for i in range(start_lane, _lane):
+                    # Stuffing the Data and characters depending on the number of Bytes sent per clock on each lane
+                    for j in range(width // 8):
+                        Data = (Data << 8) | (RxData_Q.get())
 
-            while (len(RxData_Q)):
-                for i in range(start_lane,_lane):
-                    # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
-                    for i in range(int(width/8)):
-                        Data[j*8: (j*8)+ 8] = RxData_Q[0]
-                        RxData_Q = RxData_Q[1:]
-                    
+                    # Duplicating the Data and Characters to each lane in the driver
+                    for j in range(start_lane,_lane):
+                        #duplicating the Data and Characters to each lane in the driver
+                        temp_data |= (Data << (pipe_max_width*j))
+                        # temp_char |=  Character << (int(pipe_max_width/8) *j)
+                    self.dut.phy_rxdata.value = temp_data
+                    # RxData[i*pipe_max_width:i*pipe_max_width+pipe_max_width] = Data
 
-                    #duplicating the Data and Characters to each lane in the driver
-                    RxData[i*pipe_max_width : (i*pipe_max_width) + pipe_max_width] = Data
-                
                 await RisingEdge(self.dut.clk_i)
             
         
@@ -464,8 +467,8 @@ class pipe_driver_bfm():
         #     RxValid[i] = 0
 
 
-    async def send_tses(self, ts, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
-        width = 8
+    async def send_tses(self, ts, start_lane = 0,  _lane = int(cocotb.top.MAX_NUM_LANES)):  # task
+        width = self.get_width()
         RxData_Q = [0] * len(ts)
         RxDataK_Q = [0] * len(ts)
         pipe_max_width = 32
@@ -509,14 +512,14 @@ class pipe_driver_bfm():
             self.dut.phy_rxdatak.value = 0
             self.dut.phy_rxdata_valid.value = 0
 
-    async def send_eios(self, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
+    async def send_eios(self, start_lane = 0,  _lane = int(cocotb.top.MAX_NUM_LANES)):  # task
         width = self.get_width()
         com = 0b10111100
         idl = 0b01111100
         eios_gen3_ident = 0x66
         RxData_Q = queue.Queue()
         RxDataK_Q = queue.Queue()
-        pipe_max_width = 32
+        pipe_max_width = self.get_width()
 
         uvm_root().logger.info(self.name + " " + "sending eios")
 
@@ -608,7 +611,7 @@ class pipe_driver_bfm():
             self.dut.phy_rxdatak.value = 0
             self.dut.phy_rxdata_valid.value = 0
 
-    async def send_eieos(self, start_lane = 0,  _lane=int(cocotb.top.MAX_NUM_LANES)):  # task
+    async def send_eieos(self, start_lane = 0,  _lane = int(cocotb.top.MAX_NUM_LANES)):  # task
             width = self.get_width()
 
 
@@ -701,46 +704,46 @@ class pipe_driver_bfm():
 
     def send_tlp(self,tlp):
     #uvm_info("pipe_driver_bfm",sv.sformatf("sing tlp, size= %d",len(tlp)),UVM_MEDIUM)
-        if (current_gen == gen_t.GEN1  or  current_gen == gen_t.GEN2):
-            data.put( STP_gen_1_2)
-            k_data.put( K)
+        if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
+            self.data.put( STP_gen_1_2)
+            self.k_data.put( K)
             for i in range(len(tlp)):
-                data.put( tlp[i])
-                k_data.put( D)
-            data.put( END_gen_1_2)
-            k_data.put( K)
-        elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
+                self.data.put( tlp[i])
+                self.k_data.put(D_K_character.D)
+            self.data.put( END_gen_1_2)
+            self.k_data.put( K)
+        elif (self.current_gen == gen_t.GEN3  or  self.current_gen == gen_t.GEN4  or  self.current_gen == gen_t.GEN5):
             tlp_length_field  = len(tlp) + 2
             tlp_gen3_symbol_0 = STP_gen_3 + tlp_length_field[0:3]
             tlp_gen3_symbol_1 = tlp_length_field[4:10] + 0b0
 
-            data  .put( tlp_gen3_symbol_0)
-            k_data.put( K  )
-            data  .put( tlp_gen3_symbol_1)
-            k_data.put( D)
+            self.data.put( tlp_gen3_symbol_0)
+            self.k_data.put( K  )
+            self.data.put( tlp_gen3_symbol_1)
+            self.k_data.put(D_K_character.D)
             #check if i need k_data queue in gen3 or not??
             #check on lenth constraint of TLP , is it different than earlier gens??? 
             for i in range(len(tlp)):
-                data  .put( tlp[i])
-                k_data.put( D)
+                self.data.put( tlp[i])
+                self.k_data.put(D_K_character.D)
 
     def send_dllp(self, dllp):
     #uvm_info("pipe_driver_bfm","sing dllp",UVM_MEDIUM)
-        if (current_gen == gen_t.GEN1  or  current_gen == gen_t.GEN2):
-                data  .put(SDP_gen_1_2)
-                k_data.put(K)
+        if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
+                self.data.put(SDP_gen_1_2)
+                self.k_data.put(D_K_character.K)
                 for i in range(5):
-                    data.put( dllp[i])
-                    k_data.put( D)
-                k_data.put(D)
-                data  .put(END_gen_1_2)
-                k_data.put(K)
-        elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
+                    self.data.put( dllp[i])
+                    self.k_data.put(D_K_character.D)
+                self.k_data.put(D)
+                self.data.put(END_gen_1_2)
+                self.k_data.put(D_K_character.K)
+        elif (self.current_gen == gen_t.GEN3  or  self.current_gen == gen_t.GEN4  or  self.current_gen == gen_t.GEN5):
             #check if i need k_data queue in gen3 or not??
-                data.put(SDP_gen_3_symbol_0)
-                data.put(SDP_gen_3_symbol_1)
+                self.data.put(SDP_gen_3_symbol_0)
+                self.data.put(SDP_gen_3_symbol_1)
                 for i in range(5):
-                    data.put( dllp[i])
+                    self.data.put( dllp[i])
    
     def send_idle_data(self):
         for i in range(int(self.dut.MAX_NUM_LANES.value)):
@@ -822,10 +825,10 @@ class pipe_driver_bfm():
         lane_width = get_width()
         num_of_clk_is = 128 / lane_width
         num_of_bytes_in_lane = lane_width / 8
-        if (len(data) % data_block_size != 0):
+        if (len(self.data) % data_block_size != 0):
             for i in range(num_of_idle_data):
-                data.put(0b00000000)
-                k_data.put(0)
+                self.data.put(0b00000000)
+                self.k_data.put(0)
         
         for i in range(num_of_data_blocks):
             for j in range(num_of_clk_is):
@@ -837,7 +840,7 @@ class pipe_driver_bfm():
                         else :
                             self.dut.phy_rxstart_block[i] = 0b0
             temp_data = data.get()
-            self.driver_scrambler,self.dut.phy_rxdata[((l*pipe_max_width)+(k*8)) :  (l*pipe_max_width)+(k*8) +8] =  scramble(self.driver_scrambler, temp_data, l, current_gen)
+            self.driver_scrambler,self.dut.phy_rxdata[((l*pipe_max_width)+(k*8)) :  (l*pipe_max_width)+(k*8) +8] =  scramble(self.driver_scrambler, temp_data, l, self.current_gen)
         await RisingEdge(self.dut.clk_i)
 
 
@@ -866,9 +869,9 @@ class pipe_driver_bfm():
 
     async def equalization_preset_applied(self):
     #uvm_info("pipe_monitor_bfm", "waiting for flag_tx_preset_applied ", UVM_NONE)
-        while(1):
+        while True:
             await RisingEdge(self.dut.clk_i)
-            if(flag_tx_preset_applied == 1):
+            if(self.flag_tx_preset_applied == 1):
                 break
 
 

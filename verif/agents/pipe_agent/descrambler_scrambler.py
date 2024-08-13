@@ -33,7 +33,7 @@ def reset_lfsr (scrambler, current_gen):
         #     scrambler[i].lfsr_1_2 = 0xFFFF
 
     elif (current_gen == gen_t.GEN3  or  current_gen == gen_t.GEN4  or  current_gen == gen_t.GEN5):
-        for i in range(len(scrambler.lfsr_gen_3)):
+        for i in range(len(scrambler)):
             j=i
             if (i>7):
                 j=j-8

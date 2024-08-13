@@ -91,7 +91,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal flag
             nonlocal ts_recived_count
             while True:
-                tses_recv = await self.get_tses_recived()
+                tses_recv = await self.get_tses_recieved()
                 # print(repr(tses_recv[0].ts_type))
                 # print(repr(tses_recv[0].speed_change))
                 assert tses_recv[0].ts_type == ts_type_t.TS1
@@ -134,7 +134,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal flag
             nonlocal ts_received_count
             while True:
-                tses_recv = await self.get_tses_recived()
+                tses_recv = await self.get_tses_recieved()
                 if tses_recv[0].ts_type == ts_type_t.TS2 and tses_recv[0].speed_change:
 
                     # assert(tses_recv[0].ts_type ==  ts_type_t.TS2 and  tses_recv[0].speed_change)
@@ -216,8 +216,9 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
         await with_timeout(Combine(fork1, fork2), 4000, "ns")
         # assert 1 == 0
 
+        print(self.pipe_agent_config.new_width)
         # assert width
-        match self.negotiated_rate:
+        match self.negotiated_rate.value[0]:
             case 1:
                 assert (
                     self.pipe_agent_config.new_width == gen_t.GEN1.value[0]
@@ -246,13 +247,13 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             self.pipe_agent_config.new_Rate == self.negotiated_rate.value[0]
         ), "Rate signal not right"
         # assert PCLKRate
-        assert self.negotiated_rate == self.calc_gen(
+        assert self.negotiated_rate.value[0] == self.calc_gen(
             self.pipe_agent_config.new_width, self.pipe_agent_config.new_PCLKRate
         ), uvm_root().logger.info(self.name, "PCLKRate signal not right")
         # ************************************************************************************************************************************************************************/
 
         # check that they applied the requested Tx preset
-        pipe_seq_item_h = pipe_seq_item.type_id.create("pipe_seq_item")
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         await self.start_item(pipe_seq_item_h)
         pipe_seq_item_h.randomize()
         # if (not pipe_seq_item_h.randomize() with {pipe_operation == CHECK_EQ_PRESET_APPLIED;}):
@@ -260,12 +261,13 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
         await self.finish_item(pipe_seq_item_h)
         # ****************************************step 4 a&b (gen 2,3,4,5):phase 0,1:usp sends with EC = 00b and Tx_preset  it received in EQ TS2 ,  DSP will be in Phase oneing TS1 with EC = 01b  and its FS and LF values  and his post cursor coefficient and his Tx presets until usp sends TS1 with ec=1************************************/
         flag = 0
+        tses_send = [ts_s()] * NUM_OF_LANES
 
         async def send_ts1(self):
             # send TS1s with ec = 1 , dsp_LF, dsp_FS and my own Tx preset hint and post cursor
             while True:
                 nonlocal flag
-                tses_send = super().tses
+                nonlocal tses_send
                 for i in range(len(tses_send)):
                     tses_send[i].ts_type = ts_type_t.TS1
                     tses_send[i].ec = 1
@@ -275,7 +277,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
                     #  dummy numbers NOTE: bt3ty ana al mara dy(mlhomsh lazma fe el flow)
                     tses_send[i].tx_preset = 0
                     #  dummy numbers NOTE: bt3ty ana al mara dy(mlhomsh lazma fe el flow)
-                self.send_seq_item(tses_send)
+                await self.send_seq_item(tses_send)
                 if flag:
                     break
 
@@ -283,12 +285,12 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal flag
             # recv TS1s until a TS1 with ec = 1, then the previous TSs should be with ec = 0
             while True:
-                self.get_tses_recived(tses_recv)
+                tses_recv = await self.get_tses_recieved()
                 if tses_recv[0].ts_type == ts_type_t.TS1 and tses_recv[0].ec == 1:
                     assert (
                         (tses_recv[0].ts_type == ts_type_t.TS1)
-                        and (tses_recv[0].lf_value == lf_usp)
-                        and (tses_recv[0].fs_value == fs_usp)
+                        and (tses_recv[0].lf_value == self.lf_usp)
+                        and (tses_recv[0].fs_value == self.fs_usp)
                     ), uvm_root().logger.info(
                         self.name + " " + "received tses not as expecting step 4.1"
                     )
@@ -296,14 +298,14 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
                     break
                 assert (
                     (tses_recv[0].ts_type == ts_type_t.TS1)
-                    and (tses_recv[0].tx_preset == my_tx_preset)
+                    and (tses_recv[0].tx_preset == self.my_tx_preset)
                     and (tses_recv[0].ec == 0)
                 ), uvm_root().logger.info(
                     self.name + "received tses not as expecting step 4.2"
                 )
 
-        fork1 = cocotb.start_soon(send_ts1())
-        fork2 = cocotb.start_soon(recv_ts1())
+        fork1 = cocotb.start_soon(send_ts1(self))
+        fork2 = cocotb.start_soon(recv_ts1(self))
         await Combine(fork1, fork2)
         # ************************************************************************************************************************************************************************/
         # ****************************************step 4.c.(1&2) (gen 2,3,4,5):phase 2:dsp sends with EC = 2 to indicate that phase 2 and 3 are needed till it receives TS1 with ec=2************************************/
@@ -326,7 +328,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             async def recv_ts1s_ec_2(self):
                 # recv TS1s with ec = 2
                 while True:
-                    self.get_tses_recived(tses_recv)
+                    self.get_tses_recieved(tses_recv)
                     assert (
                         tses_recv[0].ts_type == ts_type_t.TS1
                     ), uvm_root().logger.info(
@@ -367,7 +369,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal flag
             ts_recived_count = 0
             while True:
-                self.get_tses_recived(tses_recv)
+                self.get_tses_recieved(tses_recv)
                 assert tses_recv[0].ts_type == ts_type_t.TS1, uvm_root().logger.info(
                     "pipe_speed_change_with_equalization_seq",
                     "received tses not as expecting step 4.4",
@@ -384,9 +386,9 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
         fork2 = cocotb.start_soon(recv_ts1s_echo())
         await Combine(fork1, fork2)
         # asserts that the DUT actually asked the phy for evaluation
-        pipe_seq_item_h = pipe_seq_item.type_id.create("pipe_seq_item")
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         await self.start_item(pipe_seq_item_h)
-        pipe_seq_item_h.randomize()
+        pipe_seq_item_h.randomize_with(pipe_operation == pipe_operation_t.ASSERT_EVAL_FEEDBACK_CHANGED)
         # if (not pipe_seq_item_h.randomize() with {pipe_operation == ASSERT_EVAL_FEEDBACK_CHANGED;}):
         # uvm_error(get_name(), "DUT didnot ask for evalution")
 
@@ -423,7 +425,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal flag
             while True:
                 ts_recived_count = 0
-                self.get_tses_recived(tses_recv)
+                self.get_tses_recieved(tses_recv)
                 assert (
                     (tses_recv[0].ts_type == ts_type_t.TS1)
                     and (tses_recv[0].rcv == 0)
@@ -473,7 +475,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             ts_recived_count = 0
             # recv two TS1s with ec = 0
             while True:
-                self.get_tses_recived(tses_recv)
+                self.get_tses_recieved(tses_recv)
                 assert tses_recv[0].ts_type == ts_type_t.TS1, uvm_root().logger.info(
                     "pipe_speed_change_with_equalization_seq",
                     "received tses not as expecting step 4.3",
@@ -510,7 +512,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
         async def recv_ts2s_0(self):
             nonlocal flag
             while True:
-                self.get_tses_recived(tses_recv)
+                self.get_tses_recieved(tses_recv)
                 if tses_recv[0].ts_type == ts_type_t.TS2:
                     for i in range(len(tses_recv)):
                         assert (
@@ -550,7 +552,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
             nonlocal ts_recived_count
             ts_recived_count = 0
             while (ts_sent_count < 8) and (ts_recived_count < 8):
-                self.get_tses_recived(tses_recv)
+                self.get_tses_recieved(tses_recv)
                 for i in range(len(tses_recv)):
                     assert (
                         not tses_recv[i].speed_change
@@ -603,7 +605,7 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
         await self.start_item(pipe_seq_item_h)
         await self.finish_item(pipe_seq_item_h)
 
-    async def get_tses_recived(self):  # task
+    async def get_tses_recieved(self):  # task
         await self.pipe_agent_config.detected_tses_e.wait()
         self.pipe_agent_config.detected_tses_e.clear()
         return self.pipe_agent_config.tses_received
@@ -611,41 +613,39 @@ class pipe_speed_change_with_equalization_seq(pipe_base_seq, crv.Randomized):
 
 # task
 #
-# def calc_gen(self,input logic[1:0] width, input logic[4:0] PCLKRate ) -> automatic int:
-#
-#
-# 	real PCLKRate_value
-#  real width_value
-#  real freq
-#  int gen
-# 	case(PCLKRate)
-# 		3'b000:PCLKRate_value=0.0625
-# 		3'b001:PCLKRate_value=0.125
-# 		3'b010:PCLKRate_value=0.25
-# 		3'b011:PCLKRate_value=0.5
-# 		3'b100:PCLKRate_value=1
-# 	endcase
-#
-#
-# 	case(width)
-# 		2'b00:width_value=8
-# 		2'b01:width_value=16
-# 		2'b10:width_value=32
-# 	endcase
-#
-# 	freq=PCLKRate_value*width_value
-#
-# 	case(freq)
-# 		2:gen=1
-# 		4:gen=2
-# 		8:gen=3
-# 		16:gen=4
-# 		32:gen=5
-# 		default:gen=0
-# 	endcase
-# 	return gen
-# function
-#  # speed_change_bit
-#
-#
-#
+    def calc_gen(self,width, PCLKRate ) -> int:
+        PCLKRate_value = 0.0
+        width_value = 0.0
+        freq = 0.0
+        gen  = int()
+        PCLKRate_value = PCLKRate
+        width_value = width
+        print(PCLKRate)
+        print(width)
+        # match (PCLKRate):
+            # case 0b000:PCLKRate_value=0.0625
+            # case 0b001:PCLKRate_value=0.125
+            # case 0b010:PCLKRate_value=0.25
+            # case 0b011:PCLKRate_value=0.5
+            # case 0b100:PCLKRate_value=1
+
+
+        match (width):
+            case 1:width_value=8
+            case 2:width_value=16
+            case 3:width_value=32
+
+        freq=PCLKRate_value*width_value
+
+        match (freq):
+            case 2:gen=1
+            case 4:gen=2
+            case 8:gen=3
+            case 16:gen=4
+            case 32:gen=5
+            case _ :gen=0
+        return gen
+        # speed_change_bit
+    #
+    #
+    #
