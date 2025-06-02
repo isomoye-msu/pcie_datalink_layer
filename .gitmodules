@@ -1,3 +1,6 @@
 [submodule "verilog-axis"]
 	path = verilog-axis
 	url = https://github.com/alexforencich/verilog-axis
+[submodule "gtxe2_gpl"]
+	path = gtxe2_gpl
+	url = git@github.com:Elphel/gtxe2_gpl.git

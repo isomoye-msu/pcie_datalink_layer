@@ -1,0 +1,30 @@
+--Mdir .
+--cc
+--trace-fst
+waiver.vlt
+--vpi
+--public-flat-rw --prefix Vtop
+-LDFLAGS "-Wl,-rpath,`cocotb-config --lib-dir` -L`cocotb-config --lib-dir` -lcocotbvpi_verilator"
+src/fusesoc_pcie_axis_1.0.0/rtl/axis_register.v
+src/fusesoc_pcie_axis_1.0.0/rtl/axis_arb_mux.v
+src/fusesoc_pcie_axis_1.0.0/rtl/arbiter.v
+src/fusesoc_pcie_axis_1.0.0/rtl/axis_fifo.v
+src/fusesoc_pcie_axis_1.0.0/rtl/priority_encoder.v
+src/fusesoc_pcie_bram_1.0.0/bram_dp.sv
+src/fusesoc_pcie_bram_1.0.0/bram_sp.sv
+src/fusesoc_pcie_crc_1.0.0/Crc16Gen.sv
+src/fusesoc_pcie_crc_1.0.0/pcie_crc8.v
+src/fusesoc_pcie_crc_1.0.0/pcie_datalink_crc.sv
+src/fusesoc_pcie_crc_1.0.0/pcie_dllp_crc8.v
+src/fusesoc_pcie_crc_1.0.0/pcie_lcrc16.sv
+src/fusesoc_pcie_crc_1.0.0/pcie_lcrc32.sv
+src/fusesoc_pcie_packages_1.0.0/pcie_datalink_pkg.sv
+src/fusesoc_pcie_packages_1.0.0/pcie_phy_pkg.sv
+src/fusesoc_pcie_dllp_receive_1.0.0/src/dllp_handler.sv
+src/fusesoc_pcie_dllp_receive_1.0.0/src/dllp_receive.sv
+src/fusesoc_pcie_dllp_receive_1.0.0/src/dllp_fc_update.sv
+src/fusesoc_pcie_dllp_receive_1.0.0/src/dllp2tlp.sv
+src/fusesoc_pcie_dllp_receive_1.0.0/src/axis_user_demux.sv
+--top-module dllp_receive
+
+--exe
