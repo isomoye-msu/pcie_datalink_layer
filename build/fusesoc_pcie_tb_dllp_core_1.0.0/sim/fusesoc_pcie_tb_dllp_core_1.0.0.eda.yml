@@ -1,0 +1,203 @@
+version: 0.2.1
+name: fusesoc_pcie_tb_dllp_core_1.0.0
+toplevel: pcie_datalink_layer
+dependencies:
+  fusesoc:pcie:axis:1.0.0: []
+  fusesoc:pcie:base_uvm:1.0.0: []
+  fusesoc:pcie:bram:1.0.0: []
+  fusesoc:pcie:crc:1.0.0: []
+  fusesoc:pcie:lint:1.0.0: []
+  fusesoc:pcie:packages:1.0.0: []
+  fusesoc:pcie:dllp_receive:1.0.0:
+  - fusesoc:pcie:axis:1.0.0
+  - fusesoc:pcie:base_uvm:1.0.0
+  - fusesoc:pcie:bram:1.0.0
+  - fusesoc:pcie:crc:1.0.0
+  - fusesoc:pcie:lint:1.0.0
+  - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:dllp_transmit:1.0.0:
+  - fusesoc:pcie:axis:1.0.0
+  - fusesoc:pcie:bram:1.0.0
+  - fusesoc:pcie:crc:1.0.0
+  - fusesoc:pcie:lint:1.0.0
+  - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:dllp_core:1.0.0:
+  - fusesoc:pcie:axis:1.0.0
+  - fusesoc:pcie:bram:1.0.0
+  - fusesoc:pcie:crc:1.0.0
+  - fusesoc:pcie:dllp_receive:1.0.0
+  - fusesoc:pcie:dllp_transmit:1.0.0
+  - fusesoc:pcie:lint:1.0.0
+  - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:tb_dllp_core:1.0.0:
+  - fusesoc:pcie:base_uvm:1.0.0
+  - fusesoc:pcie:dllp_core:1.0.0
+cores:
+  fusesoc:pcie:axis:1.0.0:
+    core_file: ../../../verilog-axis/axis.core
+    dependencies: []
+  fusesoc:pcie:base_uvm:1.0.0:
+    core_file: ../../../tb/base_uvm.core
+    dependencies: []
+  fusesoc:pcie:bram:1.0.0:
+    core_file: ../../../src/bram/bram.core
+    dependencies: []
+  fusesoc:pcie:crc:1.0.0:
+    core_file: ../../../src/crc/crc.core
+    dependencies: []
+  fusesoc:pcie:lint:1.0.0:
+    core_file: ../../../lint/lint.core
+    dependencies: []
+  fusesoc:pcie:packages:1.0.0:
+    core_file: ../../../src/packages/packages.core
+    dependencies: []
+  fusesoc:pcie:dllp_receive:1.0.0:
+    core_file: ../../../src/dllp/dllp_receive.core
+    dependencies:
+    - fusesoc:pcie:axis:1.0.0
+    - fusesoc:pcie:base_uvm:1.0.0
+    - fusesoc:pcie:bram:1.0.0
+    - fusesoc:pcie:crc:1.0.0
+    - fusesoc:pcie:lint:1.0.0
+    - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:dllp_transmit:1.0.0:
+    core_file: ../../../src/dllp/dllp_transmit.core
+    dependencies:
+    - fusesoc:pcie:axis:1.0.0
+    - fusesoc:pcie:bram:1.0.0
+    - fusesoc:pcie:crc:1.0.0
+    - fusesoc:pcie:lint:1.0.0
+    - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:dllp_core:1.0.0:
+    core_file: ../../../src/dllp/dllp_core.core
+    dependencies:
+    - fusesoc:pcie:axis:1.0.0
+    - fusesoc:pcie:bram:1.0.0
+    - fusesoc:pcie:crc:1.0.0
+    - fusesoc:pcie:dllp_receive:1.0.0
+    - fusesoc:pcie:dllp_transmit:1.0.0
+    - fusesoc:pcie:lint:1.0.0
+    - fusesoc:pcie:packages:1.0.0
+  fusesoc:pcie:tb_dllp_core:1.0.0:
+    core_file: ../../../tb/dllp/tb_dllp.core
+    dependencies:
+    - fusesoc:pcie:base_uvm:1.0.0
+    - fusesoc:pcie:dllp_core:1.0.0
+parameters: {}
+filters: []
+flow_options:
+  tool: verilator
+  iverilog_options:
+  - -g2012 -DCOCOTB_SIM
+  - -g2012 -DCOCOTB_SIM
+  - -g2012 -DCOCOTB_SIM
+  cocotb_module: test_pcie_dllp_core
+  timescale: 1ns/1ns
+  verilator_options:
+  - --trace-fst
+  - waiver.vlt
+hooks: {}
+files:
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_axis_1.0.0/rtl/axis_register.v
+  core: fusesoc:pcie:axis:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_axis_1.0.0/rtl/axis_arb_mux.v
+  core: fusesoc:pcie:axis:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_axis_1.0.0/rtl/arbiter.v
+  core: fusesoc:pcie:axis:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_axis_1.0.0/rtl/axis_fifo.v
+  core: fusesoc:pcie:axis:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_axis_1.0.0/rtl/priority_encoder.v
+  core: fusesoc:pcie:axis:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:base_uvm:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_bram_1.0.0/bram_dp.sv
+  core: fusesoc:pcie:bram:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_bram_1.0.0/bram_sp.sv
+  core: fusesoc:pcie:bram:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/Crc16Gen.sv
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/pcie_crc8.v
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/pcie_datalink_crc.sv
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/pcie_dllp_crc8.v
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/pcie_lcrc16.sv
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_crc_1.0.0/pcie_lcrc32.sv
+  core: fusesoc:pcie:crc:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:lint:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_packages_1.0.0/pcie_datalink_pkg.sv
+  core: fusesoc:pcie:packages:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_packages_1.0.0/pcie_phy_pkg.sv
+  core: fusesoc:pcie:packages:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_receive_1.0.0/dllp_handler.sv
+  core: fusesoc:pcie:dllp_receive:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_receive_1.0.0/dllp_receive.sv
+  core: fusesoc:pcie:dllp_receive:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_receive_1.0.0/dllp_fc_update.sv
+  core: fusesoc:pcie:dllp_receive:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_receive_1.0.0/dllp2tlp.sv
+  core: fusesoc:pcie:dllp_receive:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_receive_1.0.0/axis_user_demux.sv
+  core: fusesoc:pcie:dllp_receive:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_transmit_1.0.0/retry_transmit.sv
+  core: fusesoc:pcie:dllp_transmit:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_transmit_1.0.0/retry_management.sv
+  core: fusesoc:pcie:dllp_transmit:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_transmit_1.0.0/dllp_transmit.sv
+  core: fusesoc:pcie:dllp_transmit:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_transmit_1.0.0/tlp2dllp.sv
+  core: fusesoc:pcie:dllp_transmit:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_transmit_1.0.0/axis_retry_fifo.sv
+  core: fusesoc:pcie:dllp_transmit:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_core_1.0.0/pcie_datalink_init.sv
+  core: fusesoc:pcie:dllp_core:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_core_1.0.0/pcie_datalink_layer.sv
+  core: fusesoc:pcie:dllp_core:1.0.0
+- file_type: systemVerilogSource
+  name: src/fusesoc_pcie_dllp_core_1.0.0/pcie_flow_ctrl_init.sv
+  core: fusesoc:pcie:dllp_core:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:tb_dllp_core:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:tb_dllp_core:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:tb_dllp_core:1.0.0
+- file_type: user
+  name: .
+  core: fusesoc:pcie:tb_dllp_core:1.0.0
+vpi: []

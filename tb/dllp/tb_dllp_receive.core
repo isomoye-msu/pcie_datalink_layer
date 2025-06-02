@@ -1,0 +1,54 @@
+CAPI=2:
+name: fusesoc:pcie:tb_dllp_receive:1.0.0
+description: pcie datalink datalink layer receive
+
+filesets:
+  rtl:
+    depend:
+      - fusesoc:pcie:dllp_receive
+
+  cocotb:
+    files:
+      - test_dllp_handler.py : {file_type : user, copyto : .}
+      - test_dllp_recieve.py : {file_type : user, copyto : .}
+      - test_dllp2tlp.py : {file_type : user, copyto : .}
+      - dllp_agent.py : {file_type : user, copyto : .}
+      - phy_agent.py : {file_type : user, copyto : .}
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_dllp_recieve
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_receive]
+
+  sim:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : dllp_agent
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_receive]
+
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : dllp_receive
+
+scripts:
+  iceprog:
+    cmd : [MODULE=dllp_agent]

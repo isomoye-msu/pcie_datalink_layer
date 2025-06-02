@@ -1,0 +1,45 @@
+CAPI=2:
+name: fusesoc:pcie:dllp_receive:1.0.0
+description: pcie datalink datalink layer receive
+
+filesets:
+  rtl:
+    files:
+      - dllp_handler.sv
+      - dllp_receive.sv
+      - dllp_fc_update.sv
+      - dllp2tlp.sv
+      - axis_user_demux.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:base_uvm
+      - fusesoc:pcie:lint
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_dllp_recieve
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [dllp_receive]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : dllp_receive
+
+scripts:
+  iceprog:
+    cmd : [MODULE=dllp_agent]

@@ -232,19 +232,19 @@ module ltssm_l0
             axis_tsos_cnt_c = '0;
             timer_c = '0;
           end else if (link_lane_reconfig_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            axis_tsos_cnt_c  = axis_tsos_cnt_r + 1;
             dllp_axis_tdata  = tsos_r[32*axis_tsos_cnt_r+:32];
             dllp_axis_tkeep  = '1;
             dllp_axis_tvalid = '1;
             dllp_axis_tlast  = '0;
             dllp_axis_tuser  = 8'h03;
-            next_state      = ST_CONFIG_LANENUM_WAIT_SEND_TS1;
+            next_state       = ST_CONFIG_LANENUM_WAIT_SEND_TS1;
           end
         end
         ST_CONFIG_LANENUM_WAIT_SEND_TS1: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
           if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            axis_tsos_cnt_c  = axis_tsos_cnt_r + 1;
             dllp_axis_tdata  = tsos_r[32*axis_tsos_cnt_r+:32];
             dllp_axis_tkeep  = '1;
             dllp_axis_tvalid = '1;
@@ -276,17 +276,17 @@ module ltssm_l0
         ST_CONFIG_COMPLETE: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
           axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
-          dllp_axis_tdata  = tsos_r[32*axis_tsos_cnt_r+:32];
-          dllp_axis_tkeep  = '1;
-          dllp_axis_tvalid  = '1;
-          dllp_axis_tlast  = '0;
-          dllp_axis_tuser  = 8'h03;
+          dllp_axis_tdata = tsos_r[32*axis_tsos_cnt_r+:32];
+          dllp_axis_tkeep = '1;
+          dllp_axis_tvalid = '1;
+          dllp_axis_tlast = '0;
+          dllp_axis_tuser = 8'h03;
           next_state = ST_CONFIG_COMPLETE_SEND_TS2;
         end
         ST_CONFIG_COMPLETE_SEND_TS2: begin
           timer_c = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
           if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            axis_tsos_cnt_c  = axis_tsos_cnt_r + 1;
             dllp_axis_tdata  = tsos_r[32*axis_tsos_cnt_r+:32];
             dllp_axis_tkeep  = '1;
             dllp_axis_tvalid = '1;
@@ -316,7 +316,7 @@ module ltssm_l0
         end
         ST_CONFIG_IDLE: begin
           if (m_axis_tready_i) begin
-            axis_tsos_cnt_c = axis_tsos_cnt_r + 1;
+            axis_tsos_cnt_c  = axis_tsos_cnt_r + 1;
             dllp_axis_tdata  = tsos_r[32*axis_tsos_cnt_r+:32];
             dllp_axis_tkeep  = '1;
             dllp_axis_tvalid = '1;

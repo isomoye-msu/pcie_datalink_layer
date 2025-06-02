@@ -1,0 +1,54 @@
+CAPI=2:
+name: fusesoc:pcie:dllp_core:1.0.0
+description: pcie datalink layer
+
+filesets:
+  rtl:
+    files:
+      - pcie_datalink_init.sv 
+      - pcie_datalink_layer.sv 
+      - pcie_flow_ctrl_init.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:dllp_receive
+      - fusesoc:pcie:dllp_transmit
+      - fusesoc:pcie:lint
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+          - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_dllp_core
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [pcie_datalink_layer]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : pcie_datalink_layer
+
+  lint:
+    default_tool : verilator
+    filesets : [rtl]
+    tools:
+      verilator:
+        mode : lint-only
+        verilator_options:
+          - "-Wall"
+          - --waiver-output waivers.txt
+          - waiver.vlt
+        verilator_config: lint
+    toplevel : pcie_datalink_layer
+

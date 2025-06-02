@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1748834661" />
+    <testcase name="Fc1Test" classname="dllp_agent" file="/home/MSUCAP/idris.somoye/.local/lib/python3.10/site-packages/pyuvm/extension_classes.py" lineno="330" time="0.05259442329406738" sim_time_ns="118.001" ratio_time="2243.6028880900467" />
+  </testsuite>
+</testsuites>

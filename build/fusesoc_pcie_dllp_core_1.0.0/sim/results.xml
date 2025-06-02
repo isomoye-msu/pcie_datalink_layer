@@ -1,8 +1,0 @@
-<testsuites name="results">
-  <testsuite name="all" package="all">
-    <property name="random_seed" value="1748830725" />
-    <testcase name="Fc1Test" classname="test_pcie_dllp_core" file="/home/MSUCAP/idris.somoye/.local/lib/python3.10/site-packages/pyuvm/extension_classes.py" lineno="330" time="0.013439416885375977" sim_time_ns="12.501" ratio_time="930.1742855825009">
-      <failure message="Test failed with RANDOM_SEED=1748830725" />
-    </testcase>
-  </testsuite>
-</testsuites>

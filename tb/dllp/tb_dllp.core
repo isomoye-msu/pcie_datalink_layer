@@ -1,0 +1,64 @@
+CAPI=2:
+name: fusesoc:pcie:tb_dllp_core:1.0.0
+description: pcie datalink layer
+
+filesets:
+  rtl:
+    depend:
+      - fusesoc:pcie:dllp_core
+
+  cocotb:
+    files:
+      - pcie_base.py : {file_type : user, copyto : .}
+      - pcie_sequences.py : {file_type : user, copyto : .}
+      - test_pcie_datalink_layer.py : {file_type : user, copyto : .}
+      - test_pcie_dllp_core.py : {file_type : user, copyto : .}
+    depend:
+        - fusesoc:pcie:base_uvm
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+          - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_dllp_core
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_datalink_layer]
+
+  sim:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_pcie_dllp_core
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_datalink_layer]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : pcie_datalink_layer
+
+  lint:
+    default_tool : verilator
+    filesets : [rtl]
+    tools:
+      verilator:
+        mode : lint-only
+        verilator_options:
+          - "-Wall"
+          - --waiver-output waivers.txt
+          - waiver.vlt
+        verilator_config: lint
+    toplevel : pcie_datalink_layer
+

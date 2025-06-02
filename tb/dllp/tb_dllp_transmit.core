@@ -1,0 +1,42 @@
+CAPI=2:
+name: fusesoc:pcie:tb_dllp_transmit:1.0.0
+description: pcie datalink datalink layer transmit
+
+filesets:
+  rtl:
+    depend:
+      - fusesoc:pcie:dllp_transmit
+
+  cocotb:
+    files:
+      - test_retry_management.py : {file_type : user, copyto : .}
+      - test_dllp_transmit.py : {file_type : user, copyto : .}
+      - test_tlp2dllp.py : {file_type : user, copyto : .}
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+          - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_dllp_transmit
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_transmit]
+
+  sim:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_dllp_transmit
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -Iincludes/
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [dllp_transmit]
+
+
