@@ -5,12 +5,12 @@ description: pcie physical layer receive block
 filesets:
   rtl:
     files:
-      - src/ordered_set_handler.sv
-      - src/block_alignment.sv
-      - src/data_handler.sv
-      - src/pack_data.sv
-      - src/synchronous_fifo.sv
-      - src/phy_receive.sv
+      - ordered_set_handler.sv
+      - block_alignment.sv
+      - data_handler.sv
+      - pack_data.sv
+      - synchronous_fifo.sv
+      - phy_receive.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages

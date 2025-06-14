@@ -361,7 +361,8 @@ module lane_management
           // bytes_sent_c = bytes_sent_r + BytesPerTransfer;
           // if()
           for (int i = 0; i < DATA_WIDTH / 8; i++) begin
-            int current_lane = lane_start_index_r + i;
+            int current_lane;
+            current_lane = lane_start_index_r + i;
             if (current_lane < num_active_lanes_i) begin
               byte_count_c                = byte_count_r + i;
               lane_start_index_c          = current_lane + 1;

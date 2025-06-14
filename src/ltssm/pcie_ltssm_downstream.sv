@@ -146,42 +146,42 @@ module pcie_ltssm_downstream
     logic phase0_successful;
   } equal_t;
 
-  ltssm_state_e                          curr_state;
-  ltssm_state_e                          next_state;
-  pcie_ordered_set_t                     ordered_set_c;
-  pcie_ordered_set_t                     ordered_set_r;
-  logic              [             63:0] timer_c;
-  logic              [             63:0] timer_r;
-  logic                                  error_c;
-  logic                                  error_r;
-  logic                                  success_c;
-  logic                                  success_r;
-  logic                                  goto_detect_c;
-  logic                                  goto_cfg_c;
+  ltssm_state_e                               curr_state;
+  ltssm_state_e                               next_state;
+  pcie_ordered_set_t                          ordered_set_c;
+  pcie_ordered_set_t                          ordered_set_r;
+  logic              [                  63:0] timer_c;
+  logic              [                  63:0] timer_r;
+  logic                                       error_c;
+  logic                                       error_r;
+  logic                                       success_c;
+  logic                                       success_r;
+  logic                                       goto_detect_c;
+  logic                                       goto_cfg_c;
 
-  logic              [MAX_NUM_LANES-1:0] lane_active_c;
-  logic              [MAX_NUM_LANES-1:0] lane_active_r;
+  logic              [     MAX_NUM_LANES-1:0] lane_active_c;
+  logic              [     MAX_NUM_LANES-1:0] lane_active_r;
 
 
 
-  logic              [MAX_NUM_LANES-1:0] at_least_one_ts1_ts2;
-  logic              [MAX_NUM_LANES-1:0] equal_req;
-  logic              [              7:0] axis_pkt_cnt_c;
-  logic              [              7:0] axis_pkt_cnt_r;
-  logic              [              7:0] try_cnt_c;
-  logic              [              7:0] try_cnt_r;
-  rate_id_t                              curr_data_rate_c;
-  rate_id_t                              curr_data_rate_r;
-  rate_id_t                              last_data_rate_c;
-  rate_id_t                              last_data_rate_r;
-  logic                                  successful_speed_negotiation_c;
-  logic                                  successful_speed_negotiation_r;
-  logic                                  changed_speed_recovery_c;
-  logic                                  changed_speed_recovery_r;
-  logic                                  equalization_done_8gb_c;
-  logic                                  equalization_done_8gb_r;
-  logic                                  start_equalization_w_preset_c;
-  logic                                  start_equalization_w_preset_r;
+  logic              [     MAX_NUM_LANES-1:0] at_least_one_ts1_ts2;
+  logic              [     MAX_NUM_LANES-1:0] equal_req;
+  logic              [                   7:0] axis_pkt_cnt_c;
+  logic              [                   7:0] axis_pkt_cnt_r;
+  logic              [                   7:0] try_cnt_c;
+  logic              [                   7:0] try_cnt_r;
+  rate_id_t                                   curr_data_rate_c;
+  rate_id_t                                   curr_data_rate_r;
+  rate_id_t                                   last_data_rate_c;
+  rate_id_t                                   last_data_rate_r;
+  logic                                       successful_speed_negotiation_c;
+  logic                                       successful_speed_negotiation_r;
+  logic                                       changed_speed_recovery_c;
+  logic                                       changed_speed_recovery_r;
+  logic                                       equalization_done_8gb_c;
+  logic                                       equalization_done_8gb_r;
+  logic                                       start_equalization_w_preset_c;
+  logic                                       start_equalization_w_preset_r;
   //! internal_axis_signals
   // logic              [   DATA_WIDTH-1:0] ltssm_axis_tdata;
   // logic              [   KEEP_WIDTH-1:0] ltssm_axis_tkeep;
@@ -191,56 +191,60 @@ module pcie_ltssm_downstream
   // logic                                  ltssm_axis_tready;
 
   //!link training helper signals
-  logic              [MAX_NUM_LANES-1:0] link_width_satisfied;
-  logic              [MAX_NUM_LANES-1:0] speed_change_bit_set;
-  logic              [              7:0] link_number_selected;
-  logic              [MAX_NUM_LANES-1:0] link_lanes_formed;
-  logic              [MAX_NUM_LANES-1:0] lane_num_formed;
-  logic              [MAX_NUM_LANES-1:0] lane_num_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] link_width_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] speed_change_bit_set;
+  logic              [                   7:0] link_number_selected;
+  logic              [(MAX_NUM_LANES *8)-1:0] link_number_selected_per_lane;
+  logic              [   MAX_NUM_LANES-1 : 0] lane_link_number_selected;
+  logic              [     MAX_NUM_LANES-1:0] link_lanes_formed;
+  logic              [     MAX_NUM_LANES-1:0] lane_num_formed;
+  logic              [     MAX_NUM_LANES-1:0] lane_num_satisfied;
 
-  logic              [             15:0] ordered_set_sent_cnt_c;
-  logic              [             15:0] ordered_set_sent_cnt_r;
+  logic              [                  15:0] ordered_set_sent_cnt_c;
+  logic              [                  15:0] ordered_set_sent_cnt_r;
 
-  logic              [MAX_NUM_LANES-1:0] link_lanes_nums_match;
-  logic              [MAX_NUM_LANES-1:0] link_lane_reconfig;
+  logic              [     MAX_NUM_LANES-1:0] link_lanes_nums_match;
+  logic              [     MAX_NUM_LANES-1:0] link_lane_reconfig;
 
-  logic              [MAX_NUM_LANES-1:0] ts1_lanenum_wait_satisfied;
-  logic              [              7:0] idle_to_rlock_transitioned_c;
-  logic              [              7:0] idle_to_rlock_transitioned_r;
+  logic              [     MAX_NUM_LANES-1:0] ts1_lanenum_wait_satisfied;
+  logic              [                   7:0] idle_to_rlock_transitioned_c;
+  logic              [                   7:0] idle_to_rlock_transitioned_r;
 
-  logic              [MAX_NUM_LANES-1:0] lane_status_c;
-  logic              [MAX_NUM_LANES-1:0] lane_status_r;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_c;
-  logic              [MAX_NUM_LANES-1:0] lanes_detected_r;
+  logic              [     MAX_NUM_LANES-1:0] lane_status_c;
+  logic              [     MAX_NUM_LANES-1:0] lane_status_r;
+  logic              [     MAX_NUM_LANES-1:0] lanes_detected_c;
+  logic              [     MAX_NUM_LANES-1:0] lanes_detected_r;
 
 
-  logic              [MAX_NUM_LANES-1:0] single_idle_received;
-  logic              [MAX_NUM_LANES-1:0] link_idle_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] single_idle_received;
+  logic              [     MAX_NUM_LANES-1:0] link_idle_satisfied;
 
   //training sequence satisfy signals
-  logic              [MAX_NUM_LANES-1:0] lanes_ts1_satisfied;
-  logic              [MAX_NUM_LANES-1:0] lanes_ts2_satisfied;
-  logic              [MAX_NUM_LANES-1:0] lanes_idle_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] lanes_ts1_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] lanes_ts2_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] lanes_idle_satisfied;
 
-  logic              [MAX_NUM_LANES-1:0] ts1_cnt_satisfied;
-  logic              [MAX_NUM_LANES-1:0] ts2_cnt_satisfied;
-  logic                                  transmit_ordered_set;
-  logic                                  ordered_set_tx_in_process_c;
-  logic                                  ordered_set_tx_in_process_r;
-  ts2_symbol6_t                          ts2_symbol6;
-  rate_id_t                              rate_id;
+  logic              [     MAX_NUM_LANES-1:0] ts1_cnt_satisfied;
+  logic              [     MAX_NUM_LANES-1:0] ts2_cnt_satisfied;
+  logic                                       transmit_ordered_set;
+  logic                                       ordered_set_tx_in_process_c;
+  logic                                       ordered_set_tx_in_process_r;
+  ts2_symbol6_t                               ts2_symbol6;
+  rate_id_t                                   rate_id;
   // rate_id = last_data_rate_r;
-  rate_speed_e                           max_rate;
-  rate_speed_e                           max_supported_rate_c;
-  rate_speed_e                           max_supported_rate_r;
-  logic                                  equalization_requested;
+  rate_speed_e                                max_rate;
+  rate_speed_e       [     MAX_NUM_LANES-1:0] max_rate_per_lane;
+  logic              [     MAX_NUM_LANES-1:0] lane_max_rate_asserted;
+  rate_speed_e                                max_supported_rate_c;
+  rate_speed_e                                max_supported_rate_r;
+  logic                                       equalization_requested;
 
-  gen_os_struct_t                        gen_os_ctrl_c;
-  gen_os_struct_t                        gen_os_ctrl_r;
-  presets_coeff_t    [MAX_NUM_LANES-1:0] preset_coeff_c;
-  presets_coeff_t    [MAX_NUM_LANES-1:0] preset_coeff_r;
-  equal_t                                equal_status_c;
-  equal_t                                equal_status_r;
+  gen_os_struct_t                             gen_os_ctrl_c;
+  gen_os_struct_t                             gen_os_ctrl_r;
+  presets_coeff_t    [     MAX_NUM_LANES-1:0] preset_coeff_c;
+  presets_coeff_t    [     MAX_NUM_LANES-1:0] preset_coeff_r;
+  equal_t                                     equal_status_c;
+  equal_t                                     equal_status_r;
 
   assign active_lanes_o         = lane_active_r;
 
@@ -248,6 +252,24 @@ module pcie_ltssm_downstream
   assign ltssm_state_o          = curr_state[3:0];
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
 
+
+  always_ff @(posedge clk_i) begin : gen_link_number
+    if (rst_i) begin
+      link_number_selected <= '0;
+      max_rate <= '0;
+    end else begin
+      for (int i = 0; i < MAX_NUM_LANES; i++) begin
+        if (lane_link_number_selected[i]) begin
+          link_number_selected <= link_number_selected_per_lane[8*i+:8];
+        end
+
+        if (lane_max_rate_asserted[i]) begin
+          max_rate <= max_rate_per_lane[i];
+        end
+      end
+
+    end
+  end
 
   //! main sequential block
   always_ff @(posedge clk_i) begin : main_seq
@@ -1232,17 +1254,20 @@ module pcie_ltssm_downstream
     //sequential block
     always_ff @(posedge clk_i) begin : cnt_ts1
       if (rst_i) begin
-        ts1_cnt                    <= '0;
-        ts2_cnt                    <= '0;
-        idle_cnt                   <= '0;
-        first_ts1                  <= '0;
-        link_number_selected       <= '0;
-        lane_in_save               <= '0;
-        single_idle_received[lane] <= '0;
-        temp_ts6                   <= '0;
-        lane_speed_change_bit      <= '0;
-        max_rate                   <= gen1;
+        ts1_cnt                                  <= '0;
+        ts2_cnt                                  <= '0;
+        idle_cnt                                 <= '0;
+        first_ts1                                <= '0;
+        link_number_selected_per_lane[lane*8+:8] <= '0;
+        lane_in_save                             <= '0;
+        single_idle_received[lane]               <= '0;
+        temp_ts6                                 <= '0;
+        lane_speed_change_bit                    <= '0;
+        max_rate_per_lane[lane]                                 <= gen1;
+        lane_max_rate_asserted[lane] <= '0;
       end else begin
+        lane_link_number_selected[lane] <= '0;
+         lane_max_rate_asserted[lane] <= '0;
         if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
           ts1_cnt                    <= '0;
           ts2_cnt                    <= '0;
@@ -1288,8 +1313,9 @@ module pcie_ltssm_downstream
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
               if (lane == '0) begin
-                max_rate <= ordered_set_i[lane].rate_id.rate > max_rate 
+                max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate 
                 ? ordered_set_i[lane].rate_id.rate : max_rate;
+                lane_max_rate_asserted[lane] <= '1;
               end
               // $display("speed change: %s ", ordered_set_i[lane].rate_id.speed_change);
               if (1
@@ -1325,7 +1351,7 @@ module pcie_ltssm_downstream
             end
           end
           ST_RECOVERY_RCVR_CFG: begin
-            pcie_tsos_t temp_os_holder = ordered_set_r;
+            // pcie_tsos_t temp_os_holder = pcie_tsos_t'(ordered_set_r);
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts2_valid_i[lane]) begin
               if((temp_ts6 == ordered_set_i[lane].ts_s6)
@@ -1401,7 +1427,8 @@ module pcie_ltssm_downstream
               //select link number by choosing lowest significant lane satisfied
               //ignore all other lanes
               if ((lane == 0) || (link_width_satisfied[lane:0] == '0)) begin
-                link_number_selected <= ordered_set_i[lane].link_num;
+                link_number_selected_per_lane[lane*8+:8] <= ordered_set_i[lane].link_num;
+                lane_link_number_selected[lane] <= '1;
               end
             end
           end
@@ -1436,8 +1463,9 @@ module pcie_ltssm_downstream
               && (ordered_set_i[lane].lane_num != PAD)) begin
                 ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
                 if (lane == '0) begin
-                  max_rate <= ordered_set_i[lane].rate_id.rate > max_rate 
+                  max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate 
                 ? ordered_set_i[lane].rate_id.rate : max_rate;
+                 lane_max_rate_asserted[lane] <= '1;
                 end
               end else begin
                 ts1_cnt <= '0;

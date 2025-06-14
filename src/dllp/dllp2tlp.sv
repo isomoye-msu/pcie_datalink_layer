@@ -136,12 +136,12 @@ module dllp2tlp
   logic                 [USER_WIDTH-1:0] pipeline_stg2_axis_tuser;
   logic                                  pipeline_stg2_axis_tready;
   //phy response signals
-  logic                 [DATA_WIDTH-1:0] phy_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] phy_axis_tkeep;
-  logic                                  phy_axis_tvalid;
-  logic                                  phy_axis_tlast;
-  logic                 [USER_WIDTH-1:0] phy_axis_tuser;
-  logic                                  phy_axis_tready;
+  // logic                 [DATA_WIDTH-1:0] phy_axis_tdata;
+  // logic                 [KEEP_WIDTH-1:0] phy_axis_tkeep;
+  // logic                                  phy_axis_tvalid;
+  // logic                                  phy_axis_tlast;
+  // logic                 [USER_WIDTH-1:0] phy_axis_tuser;
+  // logic                                  phy_axis_tready;
   //tlp output axis signals
   logic                 [DATA_WIDTH-1:0] tlp_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] tlp_axis_tkeep;
@@ -178,6 +178,7 @@ module dllp2tlp
       npd_credits_consumed_r  <= PdMinCredits;
       cplh_credits_consumed_r <= HdrMinCredits;
       cpld_credits_consumed_r <= PdMinCredits;
+      tlp_nullified_r         <= '0;
       fc_start_r              <= '0;
     end else begin
       curr_state              <= next_state;
@@ -191,6 +192,7 @@ module dllp2tlp
       npd_credits_consumed_r  <= npd_credits_consumed_c;
       cplh_credits_consumed_r <= cplh_credits_consumed_c;
       cpld_credits_consumed_r <= cpld_credits_consumed_c;
+      tlp_nullified_r <= tlp_nullified_c;
       fc_start_r              <= fc_start_c;
     end
     //non resetable
@@ -201,7 +203,6 @@ module dllp2tlp
     tlp_is_cpld_r   <= tlp_is_cpld_c;
     tlp_is_npd_r    <= tlp_is_npd_c;
     tlp_is_pd_r     <= tlp_is_pd_c;
-    tlp_nullified_r <= tlp_nullified_c;
     crc_from_tlp_r  <= crc_from_tlp_c;
   end
 

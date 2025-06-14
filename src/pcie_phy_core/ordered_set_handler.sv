@@ -146,7 +146,8 @@ module ordered_set_handler
       data_swapped = ordered_set_r[32*word_index[7:2]+:32];
       // int offset = word_index[1:0] ;
       for (int i = 0; i < 4; i++) begin
-        int offset = word_index[1:0] + i;
+        int offset;
+        offset = word_index[1:0] + i;
         if (i < byte_shift) begin
           data_swapped[8*offset+:8] = data_in_i[8*(byte_index-i)+:8];
         end

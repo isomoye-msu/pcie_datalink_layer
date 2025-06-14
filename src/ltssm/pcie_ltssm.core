@@ -5,8 +5,7 @@ description: pcie link training state machine
 filesets:
   rtl:
     files:
-      - pcie_ltssm/src/pcie_ltssm_downstream.sv
-      - pcie_phy_core/pcie_phy_top.sv
+      - pcie_ltssm_downstream.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
@@ -19,10 +18,6 @@ filesets:
       - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
 
-  cocotb:
-    files:
-      - pcie_ltssm/tb/test_ltssm_configuration.py : {file_type : user, copyto : .}
-
 targets:
   default:
     flow: sim
@@ -32,33 +27,7 @@ targets:
         - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
       cocotb_module : test_ltssm_configuration
       timescale: 1ns/1ns
-    filesets : [rtl,cocotb]
-    toplevel : [dllp_receive]
-  
-  sim:
-    flow: sim
-    flow_options:
-      tool : verilator
-      cocotb_module : test_ltssm_configuration
-      timescale: 1ns/1ns
-      verilator_options:
-        - --trace-fst
-        - -j 4
-        - waiver.vlt
-    filesets : [rtl,cocotb]
-    toplevel : [pcie_phy_top]
-
-  verilate:
-    flow: sim
-    flow_options:
-      tool : verilator
-      cocotb_module : test_ltssm_configuration
-      timescale: 1ns/1ns
-      verilator_options:
-        - --trace-fst
-        - -Iincludes/
-        - waiver.vlt
-    filesets : [rtl,cocotb]
+    filesets : [rtl]
     toplevel : [pcie_ltssm_downstream]
 
   synth:

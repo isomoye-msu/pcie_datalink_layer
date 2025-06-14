@@ -9,7 +9,7 @@ from cocotbext.pcie.core.port import *
 import bitstring
 import mmap
 
-class pcie_seq_item(base_seq_item):
+class pcie_seq_item(uvm_sequence_item):
     def __init__(self, name="pcie_seq_item"):
         super().__init__(name)
         self.frame = AxiStreamFrame()
@@ -39,7 +39,7 @@ class pcie_seq(base_sequence):
 
 
     async def body(self):
-        await super().body()
+        # await super().body()
         # PCIe
         self.rc = RootComplex()
         # print(self.rc)
@@ -56,7 +56,7 @@ class pcie_seq(base_sequence):
         
         self.dev.upstream_port.fc_initialized = True
         self.dev.upstream_port.fc_state[0].reset()
-        # self.dev.upstream_port.log.setLevel(logging.DEBUG)
+        self.dev.upstream_port.log.setLevel(logging.DEBUG)
         
         self.rc.send = self.send_rc_cpl
         self.dev.upstream_port.ext_recv = self.handle_tx
@@ -140,7 +140,7 @@ class pcie_seq(base_sequence):
         self.dev.functions[0].configure_bar(1, len(self.regions[1]), True, True)
         self.dev.functions[0].configure_bar(3, len(self.regions[3]), False, False, True)
         self.dev.functions[0].configure_bar(4, len(self.regions[4]))
-        self.dev.make_function()
+        # self.dev.make_function()
         
         # self.dev.functions[0].log.setLevel(logging.DEBUG)
         # self.dev.functions[0].upstream_tx_handler = self.send_tlp

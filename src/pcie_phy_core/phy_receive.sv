@@ -43,15 +43,6 @@ module phy_receive
     input  logic                                                 m_dllp_axis_tready
 );
 
-  localparam int PcieDataSize = $size(
-      descrambler_data
-  ) + $size(
-      descrambler_data_valid
-  ) + $size(
-      descrambler_data_k
-  ) + $size(
-      descrambler_sync_header
-  );
 
 
   //link values
@@ -90,6 +81,16 @@ module phy_receive
   logic                                    fifo_full;
   logic                                    wr_en;
   logic                                    rd_en;
+
+  localparam int PcieDataSize = $size(
+      descrambler_data
+  ) + $size(
+      descrambler_data_valid
+  ) + $size(
+      descrambler_data_k
+  ) + $size(
+      descrambler_sync_header
+  );
 
 
   //   logic              [                  DATA_WIDTH-1:0] m_dllp_axis_tdata;

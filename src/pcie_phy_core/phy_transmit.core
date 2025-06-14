@@ -5,10 +5,10 @@ description: pcie physical layer transmit block
 filesets:
   rtl:
     files:
-      - src/lane_management.sv
-      - src/frame_symbols.sv
-      - src/os_generator.sv
-      - src/phy_transmit.sv
+      - lane_management.sv
+      - frame_symbols.sv
+      - os_generator.sv
+      - phy_transmit.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages

@@ -34,10 +34,17 @@ targets:
     flow_options:
       tool : verilator
       cocotb_module : test_pcie_dllp_core
-      timescale: 1ns/1ns
+      run_options:
+        - -licqueue
       verilator_options:
-        - --trace-fst
         - waiver.vlt
+        - '--trace'
+        - '--trace-fst'
+        - '--trace-structs'
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
     filesets : [rtl,cocotb]
     toplevel : [pcie_datalink_layer]
 

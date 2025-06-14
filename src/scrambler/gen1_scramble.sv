@@ -102,7 +102,7 @@ module gen1_scramble
           else begin
             //scramble data
             data_out_c[byte_idx<<3+:8] = (data_in_i[byte_idx<<3+:8]
-            ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+            ^ (24'({<<{lfsr_out[byte_idx]}})));
           end
           //update out
           // data_out_c[i*8+:8] = scrambled_data[i];

@@ -178,12 +178,12 @@ module gen3_scramble
             end else begin
               //scramble data
               data_out_o_c[byte_idx <<3 +: 8] = (data_in_i[byte_idx<<3+:8]
-             ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+             ^ (24'({<<{lfsr_out[byte_idx]}})));
             end
           end else begin
             //scramble data
             data_out_o_c[byte_idx <<3 +: 8] = (data_in_i[byte_idx<<3+:8]
-           ^ (data_t'({<<{lfsr_out[byte_idx]}})));
+           ^ (24'({<<{lfsr_out[byte_idx]}})));
           end
         end
         //update out

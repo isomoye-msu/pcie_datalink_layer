@@ -200,6 +200,7 @@ module tlp2dllp
     tlp_axis_tkeep          = '0;
     tlp_axis_tvalid         = '0;
     tlp_axis_tlast          = '0;
+    skid_axis_tready        = '0;
     tlp_axis_tuser          = 4'h2;
     crc_select              = '1;
     crc_in_c                = crc_in_r;

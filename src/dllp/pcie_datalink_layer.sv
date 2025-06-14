@@ -298,5 +298,8 @@ module pcie_datalink_layer
   assign msix_enable_o           = '0;
   assign msix_mask_o             = '0;
 
-
+//   initial begin
+//     $dumpfile("dllp_core.fst");
+//     $dumpvars(0, pcie_datalink_layer);
+//   end
 endmodule

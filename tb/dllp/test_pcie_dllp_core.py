@@ -85,6 +85,7 @@ class flow_control_seq(pcie_seq):
         self.seqr = ConfigDB().get(None, "", "phy_sequencer")
         self.sequencer = self.seqr
         await super().body()
+        # assert 1 == 0
         
         mem = self.rc.mem_pool.alloc_region(16*1024*1024)
         mem_base = mem.get_absolute_address(0)
@@ -93,11 +94,13 @@ class flow_control_seq(pcie_seq):
     
         while self.dut.fc_initialized_o == 0:
             await RisingEdge(self.dut.clk_i)
-            
+        # assert 1 == 0
         await self.rc.enumerate()
+        # assert 1 == 0
         
-
+        print(self.dev.functions[0].pcie_id)
         dev = self.rc.find_device(self.dev.functions[0].pcie_id)
+        print(dev)
         await dev.enable_device()
         await dev.set_master()
         
@@ -112,10 +115,10 @@ class flow_control_seq(pcie_seq):
                 self.log.info("IO operation length: %d offset: %d", length, offset)
                 test_data = bytearray([x % 256 for x in range(length)])
 
-                await dev_bar3.write(offset, test_data, timeout=5000)
+                await dev_bar0.write(offset, test_data, timeout=5000)
                 assert self.regions[3][offset:offset+length] == test_data
 
-                assert await dev_bar3.read(offset, length, timeout=5000) == test_data
+                assert await dev_bar0.read(offset, length, timeout=5000) == test_data
 
         for length in list(range(0, 32))+[1024]:
             for offset in list(range(8))+list(range(4096-8, 4096)):
@@ -338,11 +341,11 @@ class Fc1Test(uvm_test):
         self.env = phy_env.create("phy_env", self)
 
     def end_of_elaboration_phase(self):
-        self.test_all = flow_control_seq("test fc1",1)
+        self.test_all = config_read_seq("test fc1",1)
         
     async def run_phase(self):
         self.raise_objection()
-        await with_timeout(self.test_all.start(),50000000,'ns')
+        await with_timeout(self.test_all.start(),50000,'ns')
         self.drop_objection()
 
 

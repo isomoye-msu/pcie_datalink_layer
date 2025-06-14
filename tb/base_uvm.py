@@ -18,8 +18,8 @@ class base_sequence (uvm_sequence):
      async def body(self):
         # Create and send a sequence item
         seq_item = self.seq_item_t("my_sequence_item")
-        self.start_item(seq_item)
-        self.finish_item(seq_item)
+        await self.start_item(seq_item)
+        await self.finish_item(seq_item)
         self.log.info("base_sequence Running the sequence")
         
         
@@ -49,7 +49,7 @@ class base_driver(uvm_driver):
             # Drive the sequence item to the DUT
             await self.drive_item(seq_item)
             # Notify the sequencer that the item has been processed
-            self.ap.write(seq_item)
+            await self.ap.write(seq_item)
             self.seq_item_port.item_done()
 
 # Create a monitor class

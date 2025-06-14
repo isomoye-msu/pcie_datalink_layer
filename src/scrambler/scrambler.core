@@ -5,11 +5,11 @@ description: pcie physical layer scrambler block
 filesets:
   rtl:
     files:
-      - src/byte_scramble.sv
-      - src/gen3_byte_scramble.sv
-      - src/scrambler.sv
-      - src/gen1_scramble.sv
-      - src/gen3_scramble.sv
+      - byte_scramble.sv
+      - gen3_byte_scramble.sv
+      - scrambler.sv
+      - gen1_scramble.sv
+      - gen3_scramble.sv
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages

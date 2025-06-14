@@ -5,20 +5,21 @@ description: pcie link training state machine
 filesets:
   rtl:
     files:
-      - src/pcie_ltssm/src/pcie_ltssm_downstream.sv
       - src/pcie_phy_core/pcie_phy_top.sv
-      - src/example/pcie_top.v
+      - example/pcie_top.v
     file_type: systemVerilogSource
     depend:
       - fusesoc:pcie:packages
       - fusesoc:pcie:crc
       - fusesoc:pcie:bram
       - fusesoc:pcie:axis
+      - fusesoc:pcie:ltssm
       - fusesoc:pcie:base_uvm
       - fusesoc:pcie:dllp_core
       - fusesoc:pcie:lint
       - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
+
   synth:
     files:
       - src/example/pcie_phy_0.xci:
@@ -64,6 +65,10 @@ targets:
         - --trace-fst
         - -j 4
         - waiver.vlt
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
     filesets : [rtl,cocotb]
     toplevel : [pcie_phy_top]
 
@@ -77,6 +82,10 @@ targets:
         - --trace-fst
         - -Iincludes/
         - waiver.vlt
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
     filesets : [rtl,cocotb]
     toplevel : [pcie_phy_top]
 
