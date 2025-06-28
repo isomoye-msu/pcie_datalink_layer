@@ -34,6 +34,7 @@ module gen1_scramble
 
 
   assign lfsr_out[0] = lfsr_r;
+  assign data_k_out_o = '0;
   //   assign scrambled_data[0] = data_in_swapped[7:0];
 
   for (genvar i = 0; i < 4; i++) begin : gen_byte_scramble

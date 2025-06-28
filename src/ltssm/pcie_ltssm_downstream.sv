@@ -256,7 +256,7 @@ module pcie_ltssm_downstream
   always_ff @(posedge clk_i) begin : gen_link_number
     if (rst_i) begin
       link_number_selected <= '0;
-      max_rate <= '0;
+      max_rate             <= gen1;
     end else begin
       for (int i = 0; i < MAX_NUM_LANES; i++) begin
         if (lane_link_number_selected[i]) begin
@@ -1263,11 +1263,11 @@ module pcie_ltssm_downstream
         single_idle_received[lane]               <= '0;
         temp_ts6                                 <= '0;
         lane_speed_change_bit                    <= '0;
-        max_rate_per_lane[lane]                                 <= gen1;
-        lane_max_rate_asserted[lane] <= '0;
+        max_rate_per_lane[lane]                  <= gen1;
+        lane_max_rate_asserted[lane]             <= '0;
       end else begin
         lane_link_number_selected[lane] <= '0;
-         lane_max_rate_asserted[lane] <= '0;
+        lane_max_rate_asserted[lane] <= '0;
         if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
           ts1_cnt                    <= '0;
           ts2_cnt                    <= '0;
@@ -1465,7 +1465,7 @@ module pcie_ltssm_downstream
                 if (lane == '0) begin
                   max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate 
                 ? ordered_set_i[lane].rate_id.rate : max_rate;
-                 lane_max_rate_asserted[lane] <= '1;
+                  lane_max_rate_asserted[lane] <= '1;
                 end
               end else begin
                 ts1_cnt <= '0;

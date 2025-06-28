@@ -119,7 +119,8 @@ module pcie_phy_top
   logic              [                  5:0] pipe_width;
   logic              [                  5:0] num_active_lanes_i;
 
-  assign pipe_width_o = pipe_width;
+  assign pipe_width_o   = pipe_width;
+  assign phy_txelecidle = '0;
 
 
   pcie_ordered_set_t [MAX_NUM_LANES-1:0] rx_ordered_set;
@@ -196,36 +197,36 @@ module pcie_phy_top
 
 
   phy_transmit #(
-      .CLK_RATE(CLK_RATE),
+      .CLK_RATE     (CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH)
+      .DATA_WIDTH   (DATA_WIDTH),
+      .STRB_WIDTH   (STRB_WIDTH),
+      .KEEP_WIDTH   (KEEP_WIDTH),
+      .USER_WIDTH   (USER_WIDTH)
   ) phy_transmit_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .en_i(en_i),
-      .link_up_i(link_up),
-      .pipe_data_o(phy_txdata),
-      .pipe_data_valid_o(phy_txdata_valid),
-      .pipe_data_k_o(phy_txdatak),
-      .pipe_sync_header_o(phy_txsync_header),
-      .pipe_txstart_block_o(phy_txstart_block),
-      .pipe_width_o(pipe_width),
-      .gen_os_ctrl_i(gen_os_ctrl),
+      .clk_i                   (clk_i),
+      .rst_i                   (rst_i),
+      .en_i                    (en_i),
+      .link_up_i               (link_up),
+      .pipe_data_o             (phy_txdata),
+      .pipe_data_valid_o       (phy_txdata_valid),
+      .pipe_data_k_o           (phy_txdatak),
+      .pipe_sync_header_o      (phy_txsync_header),
+      .pipe_txstart_block_o    (phy_txstart_block),
+      .pipe_width_o            (pipe_width),
+      .gen_os_ctrl_i           (gen_os_ctrl),
       //   .num_active_lanes_o(num_active_lanes_o),
-      .num_active_lanes_i(num_active_lanes_i),
-      .send_ordered_set_i(send_ordered_set),
-      .ordered_set_i(ordered_set),
-      .curr_data_rate_i(curr_data_rate),
+      .num_active_lanes_i      (num_active_lanes_i),
+      .send_ordered_set_i      (send_ordered_set),
+      .ordered_set_i           (ordered_set),
+      .curr_data_rate_i        (curr_data_rate),
       .ordered_set_tranmitted_o(ordered_set_tranmitted),
-      .s_dllp_axis_tdata(s_dllp_axis_tdata),
-      .s_dllp_axis_tkeep(s_dllp_axis_tkeep),
-      .s_dllp_axis_tvalid(s_dllp_axis_tvalid),
-      .s_dllp_axis_tlast(s_dllp_axis_tlast),
-      .s_dllp_axis_tuser(s_dllp_axis_tuser),
-      .s_dllp_axis_tready(s_dllp_axis_tready)
+      .s_dllp_axis_tdata       (s_dllp_axis_tdata),
+      .s_dllp_axis_tkeep       (s_dllp_axis_tkeep),
+      .s_dllp_axis_tvalid      (s_dllp_axis_tvalid),
+      .s_dllp_axis_tlast       (s_dllp_axis_tlast),
+      .s_dllp_axis_tuser       (s_dllp_axis_tuser),
+      .s_dllp_axis_tready      (s_dllp_axis_tready)
   );
 
 

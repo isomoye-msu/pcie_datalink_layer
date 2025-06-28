@@ -146,24 +146,26 @@ module lane_management
 
   always_ff @(posedge clk_i) begin : main_seq_block
     if (rst_i || (pipe_width_c != pipe_width_r)) begin
-      pipe_width_r <= PipeWidthGen1;
-      sync_count_r <= '0;
-      sync_width_r <= '0;
+      pipe_width_r  <= PipeWidthGen1;
+      sync_count_r  <= '0;
+      sync_width_r  <= '0;
       // sync_header_r <= '0;
-      axis_sync_r <= '0;
-      data_valid_r <= '0;
+      d_k_out_r     <= '{default :'d0 };
+      axis_sync_r   <= '0;
+      data_valid_r  <= '0;
       block_start_r <= '0;
-      curr_state <= ST_IDLE;
+      curr_state    <= ST_IDLE;
     end else begin
       block_start_r <= block_start_c;
-      sync_count_r <= sync_count_c;
-      sync_width_r <= sync_width_c;
-      axis_sync_r <= axis_sync_c;
-      data_valid_r <= data_valid_c;
-      curr_state <= next_state;
+      sync_count_r  <= sync_count_c;
+      sync_width_r  <= sync_width_c;
+      d_k_out_r     <= d_k_out_c;
+      axis_sync_r   <= axis_sync_c;
+      data_valid_r  <= data_valid_c;
+      curr_state    <= next_state;
     end
     pipe_width_r             <= pipe_width_c;
-    d_k_out_r                <= d_k_out_c;
+    // d_k_out_r                <= d_k_out_c;
     data_in_r                <= data_in_c;
     is_phy_r                 <= is_phy_c;
     is_dllp_r                <= is_dllp_c;
@@ -224,7 +226,7 @@ module lane_management
       block_start_c = data_valid_c;
       //increment count only if valid transaction
       if (is_phy_r || is_dllp_r) begin
-        sync_count_c  = sync_count_r >= sync_width_r ? '0 : sync_count_r + 1'b1;
+        sync_count_c = sync_count_r >= sync_width_r ? '0 : sync_count_r + 1'b1;
       end
     end else begin
       sync_count_c = '0;

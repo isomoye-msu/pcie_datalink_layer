@@ -60,6 +60,9 @@ class pipe_monitor_bfm():
     
     async def start(self):
         # super().body()
+
+        for _ in range(10):
+            await RisingEdge(self.dut.clk_i)
         
         cocotb.start_soon(self.test())
         # cocotb.start_soon(self.receive_tses_gen3())

@@ -6,7 +6,7 @@ import itertools
 import random
 import cocotb
 import pyuvm
-import cocotb_test.simulator
+#import cocotb_test.simulator
 # All testbenches use tinyalu_utils, so store it in a central
 # place and add its path to the sys path so we can import it
 import sys

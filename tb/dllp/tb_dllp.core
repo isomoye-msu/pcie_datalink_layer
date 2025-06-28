@@ -41,6 +41,8 @@ targets:
         - '--trace'
         - '--trace-fst'
         - '--trace-structs'
+        - '-CFLAGS -fcoroutines'
+        - '--coverage'
       vlogan_options:
         - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
       vcs_options:

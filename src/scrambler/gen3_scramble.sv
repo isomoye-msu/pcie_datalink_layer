@@ -47,6 +47,7 @@ module gen3_scramble
   logic [     15:0] eieos_compare;
 
   assign lfsr_out[0] = lfsr_r;
+  assign data_k_out_o = '0;
 
   //   assign scrambled_data[0] = data_in_swapped[7:0];
 
