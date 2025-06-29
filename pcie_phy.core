@@ -19,6 +19,10 @@ filesets:
       - fusesoc:pcie:lint
       - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
+  gtx:
+    depend:
+      - fusesoc:pcie:gtex2
+
 
   synth:
     files:

@@ -66,62 +66,62 @@ module dllp_receive
   localparam int UserIsDllp = 0;
 
   //internal signals
-  logic        dllp_ready;
-  logic        tlp_ready;
-  logic        start_flow_control;
-  logic        start_flow_control_ack;
-  logic [15:0] next_transmit_seq;
-  logic        tlp_nullified;
-  logic [ 7:0] ph_credits_consumed;
-  logic [11:0] pd_credits_consumed;
-  logic [ 7:0] nph_credits_consumed;
-  logic [11:0] npd_credits_consumed;
+  logic                    dllp_ready;
+  logic                    tlp_ready;
+  logic                    start_flow_control;
+  logic                    start_flow_control_ack;
+  logic [            15:0] next_transmit_seq;
+  logic                    tlp_nullified;
+  logic [             7:0] ph_credits_consumed;
+  logic [            11:0] pd_credits_consumed;
+  logic [             7:0] nph_credits_consumed;
+  logic [            11:0] npd_credits_consumed;
 
 
-  logic            [(DATA_WIDTH)-1:0] tlp_axis_tdata  ;
-  logic            [(KEEP_WIDTH)-1:0] tlp_axis_tkeep  ;
-  logic                               tlp_axis_tvalid  ;
-  logic                               tlp_axis_tlast  ;
-  logic            [(USER_WIDTH)-1:0] tlp_axis_tuser  ;
-  logic                               tlp_axis_tready  ;
+  logic [(DATA_WIDTH)-1:0] tlp_axis_tdata;
+  logic [(KEEP_WIDTH)-1:0] tlp_axis_tkeep;
+  logic                    tlp_axis_tvalid;
+  logic                    tlp_axis_tlast;
+  logic [(USER_WIDTH)-1:0] tlp_axis_tuser;
+  logic                    tlp_axis_tready;
 
 
-  logic            [(DATA_WIDTH)-1:0] dllp_axis_tdata  ;
-  logic            [(KEEP_WIDTH)-1:0] dllp_axis_tkeep  ;
-  logic                               dllp_axis_tvalid  ;
-  logic                               dllp_axis_tlast  ;
-  logic            [(USER_WIDTH)-1:0] dllp_axis_tuser  ;
-  logic                               dllp_axis_tready  ;
+  logic [(DATA_WIDTH)-1:0] dllp_axis_tdata;
+  logic [(KEEP_WIDTH)-1:0] dllp_axis_tkeep;
+  logic                    dllp_axis_tvalid;
+  logic                    dllp_axis_tlast;
+  logic [(USER_WIDTH)-1:0] dllp_axis_tuser;
+  logic                    dllp_axis_tready;
 
 
   axis_user_demux #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH),
+      .DATA_WIDTH      (DATA_WIDTH),
+      .STRB_WIDTH      (STRB_WIDTH),
+      .KEEP_WIDTH      (KEEP_WIDTH),
+      .USER_WIDTH      (USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
-      .RX_FIFO_SIZE(RX_FIFO_SIZE)
+      .RX_FIFO_SIZE    (RX_FIFO_SIZE)
   ) axis_user_demux_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .link_status_i(link_status_i),
-      .s_axis_tdata(s_axis_tdata),
-      .s_axis_tkeep(s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid),
-      .s_axis_tlast(s_axis_tlast),
-      .s_axis_tuser(s_axis_tuser),
-      .s_axis_tready(s_axis_tready),
-      .m_tlp_axis_tdata( tlp_axis_tdata),
-      .m_tlp_axis_tkeep( tlp_axis_tkeep),
-      .m_tlp_axis_tvalid(tlp_axis_tvalid),
-      .m_tlp_axis_tlast( tlp_axis_tlast),
-      .m_tlp_axis_tuser( tlp_axis_tuser),
-      .m_tlp_axis_tready(tlp_axis_tready),
-      .m_dllp_axis_tdata( dllp_axis_tdata),
-      .m_dllp_axis_tkeep( dllp_axis_tkeep),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .link_status_i     (link_status_i),
+      .s_axis_tdata      (s_axis_tdata),
+      .s_axis_tkeep      (s_axis_tkeep),
+      .s_axis_tvalid     (s_axis_tvalid),
+      .s_axis_tlast      (s_axis_tlast),
+      .s_axis_tuser      (s_axis_tuser),
+      .s_axis_tready     (s_axis_tready),
+      .m_tlp_axis_tdata  (tlp_axis_tdata),
+      .m_tlp_axis_tkeep  (tlp_axis_tkeep),
+      .m_tlp_axis_tvalid (tlp_axis_tvalid),
+      .m_tlp_axis_tlast  (tlp_axis_tlast),
+      .m_tlp_axis_tuser  (tlp_axis_tuser),
+      .m_tlp_axis_tready (tlp_axis_tready),
+      .m_dllp_axis_tdata (dllp_axis_tdata),
+      .m_dllp_axis_tkeep (dllp_axis_tkeep),
       .m_dllp_axis_tvalid(dllp_axis_tvalid),
-      .m_dllp_axis_tlast( dllp_axis_tlast),
-      .m_dllp_axis_tuser( dllp_axis_tuser),
+      .m_dllp_axis_tlast (dllp_axis_tlast),
+      .m_dllp_axis_tuser (dllp_axis_tuser),
       .m_dllp_axis_tready(dllp_axis_tready)
   );
 
@@ -158,10 +158,10 @@ module dllp_receive
 
   //dllp flow control update module instance
   dllp_fc_update #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH),
+      .DATA_WIDTH      (DATA_WIDTH),
+      .STRB_WIDTH      (STRB_WIDTH),
+      .KEEP_WIDTH      (KEEP_WIDTH),
+      .USER_WIDTH      (USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE)
   ) dllp_fc_update_inst (
       .clk_i                   (clk_i),
@@ -185,12 +185,12 @@ module dllp_receive
 
   //dllp2tlp converter
   dllp2tlp #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH),
+      .DATA_WIDTH      (DATA_WIDTH),
+      .STRB_WIDTH      (STRB_WIDTH),
+      .KEEP_WIDTH      (KEEP_WIDTH),
+      .USER_WIDTH      (USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
-      .RX_FIFO_SIZE(RX_FIFO_SIZE)
+      .RX_FIFO_SIZE    (RX_FIFO_SIZE)
   ) dllp2tlp_inst (
       .clk_i                   (clk_i),
       .rst_i                   (rst_i),
@@ -220,7 +220,7 @@ module dllp_receive
 
   //mux the tready input...
   // assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
-    // s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
+  // s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
 
 
   // the "macro" to dump signals

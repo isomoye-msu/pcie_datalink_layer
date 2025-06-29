@@ -132,27 +132,27 @@ module dllp_transmit
       .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH)
   ) retry_transmit_inst (
-      .clk_i           (clk_i),
-      .rst_i           (rst_i),
-      .retry_valid_i   (retry_valid),
-      .retry_ack_o     (retry_ack),
-      .retry_complete_o(retry_complete),
+      .clk_i            (clk_i),
+      .rst_i            (rst_i),
+      .retry_valid_i    (retry_valid),
+      .retry_ack_o      (retry_ack),
+      .retry_complete_o (retry_complete),
       .retry_available_i(retry_available),
       .retry_index_i    (retry_index),
       //axis tlp in
-      .s_axis_tdata    (m_axis_tlp2dllp_tdata),
-      .s_axis_tkeep    (m_axis_tlp2dllp_tkeep),
-      .s_axis_tvalid   (m_axis_tlp2dllp_tvalid),
-      .s_axis_tlast    (m_axis_tlp2dllp_tlast),
-      .s_axis_tuser    (m_axis_tlp2dllp_tuser),
-      .s_axis_tready   (),
+      .s_axis_tdata     (m_axis_tlp2dllp_tdata),
+      .s_axis_tkeep     (m_axis_tlp2dllp_tkeep),
+      .s_axis_tvalid    (m_axis_tlp2dllp_tvalid),
+      .s_axis_tlast     (m_axis_tlp2dllp_tlast),
+      .s_axis_tuser     (m_axis_tlp2dllp_tuser),
+      .s_axis_tready    (),
       //axis out to phy
-      .m_axis_tdata    (m_axis_retry_tdata),
-      .m_axis_tkeep    (m_axis_retry_tkeep),
-      .m_axis_tvalid   (m_axis_retry_tvalid),
-      .m_axis_tlast    (m_axis_retry_tlast),
-      .m_axis_tuser    (m_axis_retry_tuser),
-      .m_axis_tready   (m_axis_retry_tready)
+      .m_axis_tdata     (m_axis_retry_tdata),
+      .m_axis_tkeep     (m_axis_retry_tkeep),
+      .m_axis_tvalid    (m_axis_retry_tvalid),
+      .m_axis_tlast     (m_axis_retry_tlast),
+      .m_axis_tuser     (m_axis_retry_tuser),
+      .m_axis_tready    (m_axis_retry_tready)
   );
 
 
@@ -198,40 +198,40 @@ module dllp_transmit
 
 
   axis_arb_mux #(
-      .S_COUNT(2),
-      .DATA_WIDTH(DATA_WIDTH),
-      .KEEP_ENABLE(KEEP_ENABLE),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .ID_ENABLE(ID_ENABLE),
-      .S_ID_WIDTH(ID_WIDTH),
-      .DEST_ENABLE(DEST_ENABLE),
-      .DEST_WIDTH(DEST_WIDTH),
-      .USER_ENABLE(USER_ENABLE),
-      .USER_WIDTH(USER_WIDTH),
-      .LAST_ENABLE(LAST_ENABLE),
-      .ARB_TYPE_ROUND_ROBIN(ARB_TYPE_ROUND_ROBIN),
+      .S_COUNT              (2),
+      .DATA_WIDTH           (DATA_WIDTH),
+      .KEEP_ENABLE          (KEEP_ENABLE),
+      .KEEP_WIDTH           (KEEP_WIDTH),
+      .ID_ENABLE            (ID_ENABLE),
+      .S_ID_WIDTH           (ID_WIDTH),
+      .DEST_ENABLE          (DEST_ENABLE),
+      .DEST_WIDTH           (DEST_WIDTH),
+      .USER_ENABLE          (USER_ENABLE),
+      .USER_WIDTH           (USER_WIDTH),
+      .LAST_ENABLE          (LAST_ENABLE),
+      .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
   ) arbiter_mux_inst (
-      .clk(clk_i),
-      .rst(rst_i),
+      .clk          (clk_i),
+      .rst          (rst_i),
       // AXI inputs
-      .s_axis_tdata({m_axis_tlp2dllp_tdata, m_axis_retry_tdata}),
-      .s_axis_tkeep({m_axis_tlp2dllp_tkeep, m_axis_retry_tkeep}),
+      .s_axis_tdata ({m_axis_tlp2dllp_tdata, m_axis_retry_tdata}),
+      .s_axis_tkeep ({m_axis_tlp2dllp_tkeep, m_axis_retry_tkeep}),
       .s_axis_tvalid({m_axis_tlp2dllp_tvalid, m_axis_retry_tvalid}),
       .s_axis_tready({m_axis_tlp2dllp_tready, m_axis_retry_tready}),
-      .s_axis_tlast({m_axis_tlp2dllp_tlast, m_axis_retry_tlast}),
-      .s_axis_tid(),
-      .s_axis_tdest(),
-      .s_axis_tuser({m_axis_tlp2dllp_tuser, m_axis_retry_tuser}),
+      .s_axis_tlast ({m_axis_tlp2dllp_tlast, m_axis_retry_tlast}),
+      .s_axis_tid   (),
+      .s_axis_tdest (),
+      .s_axis_tuser ({m_axis_tlp2dllp_tuser, m_axis_retry_tuser}),
       // AXI output
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
+      .m_axis_tdata (m_axis_tdata),
+      .m_axis_tkeep (m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(m_axis_tuser)
+      .m_axis_tlast (m_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (m_axis_tuser)
   );
 
 

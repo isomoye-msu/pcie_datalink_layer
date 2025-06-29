@@ -192,18 +192,18 @@ module dllp2tlp
       npd_credits_consumed_r  <= npd_credits_consumed_c;
       cplh_credits_consumed_r <= cplh_credits_consumed_c;
       cpld_credits_consumed_r <= cpld_credits_consumed_c;
-      tlp_nullified_r <= tlp_nullified_c;
+      tlp_nullified_r         <= tlp_nullified_c;
       fc_start_r              <= fc_start_c;
     end
     //non resetable
-    word_count_r    <= word_count_c;
-    tlp_is_cplh_r   <= tlp_is_cplh_c;
-    tlp_is_nph_r    <= tlp_is_nph_c;
-    tlp_is_ph_r     <= tlp_is_ph_c;
-    tlp_is_cpld_r   <= tlp_is_cpld_c;
-    tlp_is_npd_r    <= tlp_is_npd_c;
-    tlp_is_pd_r     <= tlp_is_pd_c;
-    crc_from_tlp_r  <= crc_from_tlp_c;
+    word_count_r   <= word_count_c;
+    tlp_is_cplh_r  <= tlp_is_cplh_c;
+    tlp_is_nph_r   <= tlp_is_nph_c;
+    tlp_is_ph_r    <= tlp_is_ph_c;
+    tlp_is_cpld_r  <= tlp_is_cpld_c;
+    tlp_is_npd_r   <= tlp_is_npd_c;
+    tlp_is_pd_r    <= tlp_is_pd_c;
+    crc_from_tlp_r <= crc_from_tlp_c;
   end
 
 
@@ -444,154 +444,154 @@ module dllp2tlp
   //and storing to confirm proper tlp seq num and crc..
   //before sending to the transaction layer
   axis_fifo #(
-      .DEPTH(RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
-      .DATA_WIDTH(DATA_WIDTH),
-      .KEEP_ENABLE(KEEP_WIDTH > 0),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .LAST_ENABLE(1),
-      .ID_ENABLE(0),
-      .DEST_ENABLE(0),
-      .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
+      .DEPTH               (RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
+      .DATA_WIDTH          (DATA_WIDTH),
+      .KEEP_ENABLE         (KEEP_WIDTH > 0),
+      .KEEP_WIDTH          (KEEP_WIDTH),
+      .LAST_ENABLE         (1),
+      .ID_ENABLE           (0),
+      .DEST_ENABLE         (0),
+      .USER_ENABLE         ('1),
+      .USER_WIDTH          (USER_WIDTH),
       // .PIPELINE_OUTPUT(2),
-      .FRAME_FIFO(1),
+      .FRAME_FIFO          (1),
       .USER_BAD_FRAME_VALUE('1),
-      .USER_BAD_FRAME_MASK('1),
+      .USER_BAD_FRAME_MASK ('1),
       // .PIPELINE_OUTPUT(),
-      .DROP_BAD_FRAME(1),
-      .DROP_WHEN_FULL(0)
+      .DROP_BAD_FRAME      (1),
+      .DROP_WHEN_FULL      (0)
   ) dllp2tlp_fifo_inst (
-      .clk(clk_i),
-      .rst(rst_i),
+      .clk                (clk_i),
+      .rst                (rst_i),
       // AXI input
-      .s_axis_tdata(tlp_axis_tdata),
-      .s_axis_tkeep(tlp_axis_tkeep),
-      .s_axis_tvalid(tlp_axis_tvalid),
-      .s_axis_tready(tlp_axis_tready),
-      .s_axis_tlast(tlp_axis_tlast),
-      .s_axis_tuser(tlp_axis_tuser),
-      .s_axis_tid(),
-      .s_axis_tdest(),
+      .s_axis_tdata       (tlp_axis_tdata),
+      .s_axis_tkeep       (tlp_axis_tkeep),
+      .s_axis_tvalid      (tlp_axis_tvalid),
+      .s_axis_tready      (tlp_axis_tready),
+      .s_axis_tlast       (tlp_axis_tlast),
+      .s_axis_tuser       (tlp_axis_tuser),
+      .s_axis_tid         (),
+      .s_axis_tdest       (),
       // AXI output
-      .m_axis_tdata(m_tlp_axis_tdata),
-      .m_axis_tkeep(m_tlp_axis_tkeep),
-      .m_axis_tvalid(m_tlp_axis_tvalid),
-      .m_axis_tready(m_tlp_axis_tready),
-      .m_axis_tlast(m_tlp_axis_tlast),
-      .m_axis_tuser(m_tlp_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .pause_ack(),
-      .pause_req(),
-      .status_depth(),
+      .m_axis_tdata       (m_tlp_axis_tdata),
+      .m_axis_tkeep       (m_tlp_axis_tkeep),
+      .m_axis_tvalid      (m_tlp_axis_tvalid),
+      .m_axis_tready      (m_tlp_axis_tready),
+      .m_axis_tlast       (m_tlp_axis_tlast),
+      .m_axis_tuser       (m_tlp_axis_tuser),
+      .m_axis_tid         (),
+      .m_axis_tdest       (),
+      .pause_ack          (),
+      .pause_req          (),
+      .status_depth       (),
       .status_depth_commit(),
       // Status
-      .status_overflow(),
-      .status_bad_frame(),
-      .status_good_frame()
+      .status_overflow    (),
+      .status_bad_frame   (),
+      .status_good_frame  ()
   );
 
   //axis input skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_register_pipeline_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(s_axis_tdata),
-      .s_axis_tkeep(s_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (s_axis_tdata),
+      .s_axis_tkeep (s_axis_tkeep),
       .s_axis_tvalid(s_axis_tvalid),
       .s_axis_tready(s_axis_tready),
-      .s_axis_tlast(s_axis_tlast),
-      .s_axis_tuser(s_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(skid_axis_tdata),
-      .m_axis_tkeep(skid_axis_tkeep),
+      .s_axis_tlast (s_axis_tlast),
+      .s_axis_tuser (s_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (skid_axis_tdata),
+      .m_axis_tkeep (skid_axis_tkeep),
       .m_axis_tvalid(skid_axis_tvalid),
       .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast(skid_axis_tlast),
-      .m_axis_tuser(skid_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest()
+      .m_axis_tlast (skid_axis_tlast),
+      .m_axis_tuser (skid_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
   );
 
   //axis pipeline skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(skid_axis_tdata),
-      .s_axis_tkeep(skid_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (skid_axis_tdata),
+      .s_axis_tkeep (skid_axis_tkeep),
       .s_axis_tvalid(skid_axis_tvalid),
       .s_axis_tready(),
-      .s_axis_tlast(skid_axis_tlast),
-      .s_axis_tuser(skid_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(pipeline_axis_tdata),
-      .m_axis_tkeep(pipeline_axis_tkeep),
+      .s_axis_tlast (skid_axis_tlast),
+      .s_axis_tuser (skid_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (pipeline_axis_tdata),
+      .m_axis_tkeep (pipeline_axis_tkeep),
       .m_axis_tvalid(pipeline_axis_tvalid),
       .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast(pipeline_axis_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(pipeline_axis_tuser)
+      .m_axis_tlast (pipeline_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (pipeline_axis_tuser)
   );
 
 
   //axis pipeline skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_register_pipeline_stage_2_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(pipeline_axis_tdata),
-      .s_axis_tkeep(pipeline_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (pipeline_axis_tdata),
+      .s_axis_tkeep (pipeline_axis_tkeep),
       .s_axis_tvalid(pipeline_axis_tvalid),
       .s_axis_tready(),
-      .s_axis_tlast(pipeline_axis_tlast),
-      .s_axis_tuser(pipeline_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(pipeline_stg2_axis_tdata),
-      .m_axis_tkeep(pipeline_stg2_axis_tkeep),
+      .s_axis_tlast (pipeline_axis_tlast),
+      .s_axis_tuser (pipeline_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (pipeline_stg2_axis_tdata),
+      .m_axis_tkeep (pipeline_stg2_axis_tkeep),
       .m_axis_tvalid(pipeline_stg2_axis_tvalid),
       .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast(pipeline_stg2_axis_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(pipeline_stg2_axis_tuser)
+      .m_axis_tlast (pipeline_stg2_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (pipeline_stg2_axis_tuser)
   );
 
   //tlp crc instance

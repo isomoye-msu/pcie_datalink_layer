@@ -102,26 +102,26 @@ module pcie_flow_ctrl_init
 
 
   always_comb begin : combo_block
-    next_state     = curr_state;
-    dll_packet_c   = dll_packet_r;
-    seq_count_c    = seq_count_r;
+    next_state        = curr_state;
+    dll_packet_c      = dll_packet_r;
+    seq_count_c       = seq_count_r;
     //axis flow control defaults
-    fc_axis_tdata  = '0;
-    fc_axis_tkeep  = '0;
-    fc_axis_tvalid = '0;
-    fc_axis_tlast  = '0;
-    fc_axis_tuser  = 4'h01;
+    fc_axis_tdata     = '0;
+    fc_axis_tkeep     = '0;
+    fc_axis_tvalid    = '0;
+    fc_axis_tlast     = '0;
+    fc_axis_tuser     = 4'h01;
     //crc signals
-    dllp_lcrc_c    = dllp_lcrc_r;
+    dllp_lcrc_c       = dllp_lcrc_r;
     //init handshake
-    init_ack_o     = '0;
+    init_ack_o        = '0;
     fc2_values_sent_o = '0;
     case (curr_state)
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
-          seq_count_c = '0;
+          seq_count_c    = '0;
           //build dllp packet
-          fc_axis_tdata = send_fc_init( InitFC1_P, '0, HdrMinCredits, PdMinCredits);
+          fc_axis_tdata  = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -155,8 +155,8 @@ module pcie_flow_ctrl_init
           fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            seq_count_c = '0;
-            fc_axis_tdata = send_fc_init( InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
+            seq_count_c    = '0;
+            fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -183,7 +183,7 @@ module pcie_flow_ctrl_init
           fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata = send_fc_init( InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
+            fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -228,7 +228,7 @@ module pcie_flow_ctrl_init
           fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata = send_fc_init( InitFC2_P, '0, HdrMinCredits, PdMinCredits);
+            fc_axis_tdata  = send_fc_init(InitFC2_P, '0, HdrMinCredits, PdMinCredits);
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
             fc_axis_tlast  = '0;
@@ -255,7 +255,7 @@ module pcie_flow_ctrl_init
           fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata = send_fc_init( InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
+            fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
             // fc_axis_tdata = dll_packet_c;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -283,7 +283,7 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready) begin
           fc_axis_tvalid = '0;
           if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata = send_fc_init( InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
+            fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
             dllp_lcrc_c    = crc_out;
             fc_axis_tkeep  = '1;
             fc_axis_tvalid = '1;
@@ -331,36 +331,36 @@ module pcie_flow_ctrl_init
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_register_pipeline_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(fc_axis_tdata),
-      .s_axis_tkeep(fc_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (fc_axis_tdata),
+      .s_axis_tkeep (fc_axis_tkeep),
       .s_axis_tvalid(fc_axis_tvalid),
       .s_axis_tready(fc_axis_tready),
-      .s_axis_tlast(fc_axis_tlast),
-      .s_axis_tuser(fc_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
+      .s_axis_tlast (fc_axis_tlast),
+      .s_axis_tuser (fc_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (m_axis_tdata),
+      .m_axis_tkeep (m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tuser(m_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest()
+      .m_axis_tlast (m_axis_tlast),
+      .m_axis_tuser (m_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
   );
 
   pcie_datalink_crc dllp_crc_inst (
