@@ -126,9 +126,9 @@ package pcie_phy_pkg;
   } gen3_special_symbols_e;
 
   typedef enum logic [63:0] {
-    ReceiverpresetHintDSP    = 48'hAABBCCDD1122,
+    ReceiverpresetHintDSP    = 64'hAABBCCDD1122,
     // TransmitterPresetHintDSP = 64'h11AA22BB33CC44DD,
-    ReceiverpresetHintUSP    = 48'h2211DDCCBBAA,
+    ReceiverpresetHintUSP    = 64'h2211DDCCBBAA,
     TransmitterPresetHintUSP = 64'h11AA22BB33CC44DD
 
   } rx_tx_presets_e;
@@ -165,14 +165,14 @@ package pcie_phy_pkg;
 
 
   typedef enum logic [31:0] {
-    lane0_seed = 24'h1DBFBC,
-    lane1_seed = 24'h0607BB,
-    lane2_seed = 24'h1EC760,
-    lane3_seed = 24'h18C0DB,
-    lane4_seed = 24'h010F12,
-    lane5_seed = 24'h19CFC9,
-    lane6_seed = 24'h0277CE,
-    lane7_seed = 24'h1BB807
+    lane0_seed = 32'h1DBFBC,
+    lane1_seed = 32'h0607BB,
+    lane2_seed = 32'h1EC760,
+    lane3_seed = 32'h18C0DB,
+    lane4_seed = 32'h010F12,
+    lane5_seed = 32'h19CFC9,
+    lane6_seed = 32'h0277CE,
+    lane7_seed = 32'h1BB807
 
   } gen3_seed_values_e;
 
@@ -226,9 +226,9 @@ package pcie_phy_pkg;
   // all other LTSSM states, it is Reserved.
 
   typedef enum logic [8:0] {
-    gen1_basic = 5'b000_00010,
-    gen2_basic = 5'b000_00110,
-    gen3_basic = 5'b000_01110
+    gen1_basic = 9'b000_00010,
+    gen2_basic = 9'b000_00110,
+    gen3_basic = 9'b000_01110
   } rate_id_e;
 
   typedef enum logic [4:0] {
@@ -320,16 +320,16 @@ package pcie_phy_pkg;
 
 
   function automatic void reset_lane_equal_ctrl_reg(output lane_equal_ctrl_reg_t reg_t);
-  begin
-        logic [14:12] upstream_rx_preset_hint;
-    logic [11:8]  upstream_tx_preset;
-    logic [7:7]   RsvdP;
-    logic [6:4]   downstream_rx_preset_hint;
-    logic [3:0]   downstream_tx_preset;
-    reg_t = '0;
-    reg_t.downstream_tx_preset = 8'h4;
-    reg_t.downstream_rx_preset_hint = 8'h4;
-  end
+    begin
+      logic [14:12] upstream_rx_preset_hint;
+      logic [ 11:8] upstream_tx_preset;
+      logic [  7:7] RsvdP;
+      logic [  6:4] downstream_rx_preset_hint;
+      logic [  3:0] downstream_tx_preset;
+      reg_t = '0;
+      reg_t.downstream_tx_preset = 8'h4;
+      reg_t.downstream_rx_preset_hint = 8'h4;
+    end
   endfunction
 
 

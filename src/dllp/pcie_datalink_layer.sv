@@ -106,6 +106,23 @@ module pcie_datalink_layer
   logic                               phy_tlp_axis_tlast;
   logic            [  USER_WIDTH-1:0] phy_tlp_axis_tuser;
   logic                               phy_tlp_axis_tready;
+
+
+  logic            [  DATA_WIDTH-1:0] cpl_from_cfg_tdata;
+  logic            [  KEEP_WIDTH-1:0] cpl_from_cfg_tkeep;
+  logic                               cpl_from_cfg_tvalid;
+  logic                               cpl_from_cfg_tlast;
+  logic            [  USER_WIDTH-1:0] cpl_from_cfg_tuser;
+  logic                               cpl_from_cfg_tready;
+
+
+  logic            [  DATA_WIDTH-1:0] tx_tlp_tdata;
+  logic            [  KEEP_WIDTH-1:0] tx_tlp_tkeep;
+  logic                               tx_tlp_tvalid;
+  logic                               tx_tlp_tlast;
+  logic            [  USER_WIDTH-1:0] tx_tlp_tuser;
+  logic                               tx_tlp_tready;
+
   //tlp ack/nak
   logic            [            11:0] seq_num;
   logic                               seq_num_vld;
@@ -130,44 +147,46 @@ module pcie_datalink_layer
   logic                               fc2_values_sent;
 
 
+
+
   pcie_dl_status_e                    link_status;
 
 
   assign fc_initialized_o = fc2_values_sent;
 
   pcie_datalink_init #() pcie_datalink_init_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .phy_link_up_i(phy_link_up_i),
+      .clk_i              (clk_i),
+      .rst_i              (rst_i),
+      .phy_link_up_i      (phy_link_up_i),
       .init_flow_control_o(init_flow_control),
-      .soft_reset_o(soft_reset),
-      .link_status_o(link_status),
+      .soft_reset_o       (soft_reset),
+      .link_status_o      (link_status),
       .fc1_values_stored_i(fc1_values_stored),
       .fc2_values_stored_i(fc2_values_stored),
-      .init_ack_i(init_ack)
+      .init_ack_i         (init_ack)
   );
 
 
   pcie_flow_ctrl_init #(
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH),
+      .DATA_WIDTH      (DATA_WIDTH),
+      .STRB_WIDTH      (STRB_WIDTH),
+      .KEEP_WIDTH      (KEEP_WIDTH),
+      .USER_WIDTH      (USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE)
   ) pcie_flow_ctrl_init_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i || soft_reset),
+      .clk_i               (clk_i),
+      .rst_i               (rst_i || soft_reset),
       .start_flow_control_i(init_flow_control),
-      .fc1_values_stored_i(fc1_values_stored),
-      .fc2_values_stored_i(fc2_values_stored),
-      .m_axis_tdata(phy_fc_axis_tdata),
-      .m_axis_tkeep(phy_fc_axis_tkeep),
-      .m_axis_tvalid(phy_fc_axis_tvalid),
-      .m_axis_tlast(phy_fc_axis_tlast),
-      .m_axis_tuser(phy_fc_axis_tuser),
-      .m_axis_tready(phy_fc_axis_tready),
-      .fc2_values_sent_o(fc2_values_sent),
-      .init_ack_o(init_ack)
+      .fc1_values_stored_i (fc1_values_stored),
+      .fc2_values_stored_i (fc2_values_stored),
+      .m_axis_tdata        (phy_fc_axis_tdata),
+      .m_axis_tkeep        (phy_fc_axis_tkeep),
+      .m_axis_tvalid       (phy_fc_axis_tvalid),
+      .m_axis_tlast        (phy_fc_axis_tlast),
+      .m_axis_tuser        (phy_fc_axis_tuser),
+      .m_axis_tready       (phy_fc_axis_tready),
+      .fc2_values_sent_o   (fc2_values_sent),
+      .init_ack_o          (init_ack)
   );
 
   //dllp transmit
@@ -182,12 +201,12 @@ module pcie_datalink_layer
   ) dllp_transmit_inst (
       .clk_i         (clk_i),
       .rst_i         (rst_i || soft_reset),
-      .s_axis_tdata  (s_tlp_axis_tdata),
-      .s_axis_tkeep  (s_tlp_axis_tkeep),
-      .s_axis_tvalid (s_tlp_axis_tvalid),
-      .s_axis_tlast  (s_tlp_axis_tlast),
-      .s_axis_tuser  (s_tlp_axis_tuser),
-      .s_axis_tready (s_tlp_axis_tready),
+      .s_axis_tdata  (tx_tlp_tdata),
+      .s_axis_tkeep  (tx_tlp_tkeep),
+      .s_axis_tvalid (tx_tlp_tvalid),
+      .s_axis_tlast  (tx_tlp_tlast),
+      .s_axis_tuser  (tx_tlp_tuser),
+      .s_axis_tready (tx_tlp_tready),
       .m_axis_tdata  (phy_tlp_axis_tdata),
       .m_axis_tkeep  (phy_tlp_axis_tkeep),
       .m_axis_tvalid (phy_tlp_axis_tvalid),
@@ -238,6 +257,12 @@ module pcie_datalink_layer
       .m_axis_dllp2phy_tlast (phy_rx_axis_tlast),
       .m_axis_dllp2phy_tuser (phy_rx_axis_tuser),
       .m_axis_dllp2phy_tready(phy_rx_axis_tready),
+      .m_cpl_from_cfg_tdata  (cpl_from_cfg_tdata),
+      .m_cpl_from_cfg_tkeep  (cpl_from_cfg_tkeep),
+      .m_cpl_from_cfg_tvalid (cpl_from_cfg_tvalid),
+      .m_cpl_from_cfg_tlast  (cpl_from_cfg_tlast),
+      .m_cpl_from_cfg_tuser  (cpl_from_cfg_tuser),
+      .m_cpl_from_cfg_tready (cpl_from_cfg_tready),
       .seq_num_o             (seq_num),
       .seq_num_vld_o         (seq_num_vld),
       .seq_num_acknack_o     (seq_num_acknack),
@@ -288,6 +313,44 @@ module pcie_datalink_layer
       .m_axis_tid   (),
       .m_axis_tdest (),
       .m_axis_tuser (m_phy_axis_tuser)
+  );
+
+
+  axis_arb_mux #(
+      .S_COUNT              (2),
+      .DATA_WIDTH           (DATA_WIDTH),
+      .KEEP_ENABLE          (KEEP_ENABLE),
+      .KEEP_WIDTH           (KEEP_WIDTH),
+      .ID_ENABLE            (ID_ENABLE),
+      .S_ID_WIDTH           (ID_WIDTH),
+      .DEST_ENABLE          (DEST_ENABLE),
+      .DEST_WIDTH           (DEST_WIDTH),
+      .USER_ENABLE          (USER_ENABLE),
+      .USER_WIDTH           (USER_WIDTH),
+      .LAST_ENABLE          (LAST_ENABLE),
+      .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
+      .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
+  ) tlp_arbiter_mux_inst (
+      .clk          (clk_i),
+      .rst          (rst_i),
+      // AXI inputs
+      .s_axis_tdata ({cpl_from_cfg_tdata, s_tlp_axis_tdata}),
+      .s_axis_tkeep ({cpl_from_cfg_tkeep, s_tlp_axis_tkeep}),
+      .s_axis_tvalid({cpl_from_cfg_tvalid, s_tlp_axis_tvalid}),
+      .s_axis_tready({cpl_from_cfg_tready, s_tlp_axis_tready}),
+      .s_axis_tlast ({cpl_from_cfg_tlast, s_tlp_axis_tlast}),
+      .s_axis_tid   (),
+      .s_axis_tdest (),
+      .s_axis_tuser ({cpl_from_cfg_tuser, s_tlp_axis_tuser}),
+      // AXI output
+      .m_axis_tdata (tx_tlp_tdata),
+      .m_axis_tkeep (tx_tlp_tkeep),
+      .m_axis_tvalid(tx_tlp_tvalid),
+      .m_axis_tready(tx_tlp_tready),
+      .m_axis_tlast (tx_tlp_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (tx_tlp_tuser)
   );
 
   assign bus_num_o               = '0;

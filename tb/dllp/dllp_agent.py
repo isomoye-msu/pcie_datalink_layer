@@ -104,6 +104,7 @@ async def test_fc1(seqr, fc1_type, seq_num, hdr_fc, data_fc):
 
 async def send_tlp(seqr, tlp_type, seq_num):
     seq = TlpSeq("seq", seq_num, tlp_type)
+    print(f"tlp: {seq}")
     await seq.start(seqr)
     return seq.result
 

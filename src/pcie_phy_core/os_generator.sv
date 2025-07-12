@@ -72,15 +72,20 @@ module os_generator
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       curr_state <= ST_IDLE;
+          ordered_set_r  <= '0;
+    os_sent_o      <= '0;
+    axis_pkt_cnt_r <= '0;
+    os_pkt_cnt_r   <= '0;
+    special_k_r    <= '0;
     end else begin
       curr_state <= next_state;
-    end
-    //non-resetable
-    ordered_set_r  <= ordered_set_c;
+          ordered_set_r  <= ordered_set_c;
     os_sent_o      <= os_sent_c;
     axis_pkt_cnt_r <= axis_pkt_cnt_c;
     os_pkt_cnt_r   <= os_pkt_cnt_c;
     special_k_r    <= special_k_c;
+    end
+    //non-resetable
   end
 
 

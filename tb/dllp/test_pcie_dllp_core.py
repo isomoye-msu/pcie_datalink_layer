@@ -233,6 +233,7 @@ class phy_driver(base_driver):
         while True:
             tlp = await self.tlp_sink.recv()
             seq_item =  pcie_seq_item("tlp read from axis item")
+            # assert 1 == 0
             tlp = Tlp.unpack(tlp.tdata)
             seq_item.pkt = tlp
             # print(tlp)
@@ -261,6 +262,7 @@ class phy_driver(base_driver):
                 pkt = Tlp()
                 # self.log.info(repr(pkt))
                 data = rx_tlp.tdata[2:len(rx_tlp.tdata)-4]
+                # print(data)
                 pkt = pkt.unpack(data)
                 seq = int.from_bytes(rx_tlp.tdata[:2],'big')
                 # self.log.info("rx_tlp: %s",repr(pkt))
@@ -273,6 +275,7 @@ class phy_driver(base_driver):
                 # await self.dev.upstream_port._transmit(Tlp(pkt))
             else:
                 print(None)
+                assert 1 == 0
                 pkt = None
             seq_item.pkt = pkt
             # self.log.info("dllp packet: %s",seq_item.pkt)

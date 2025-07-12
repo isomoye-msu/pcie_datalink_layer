@@ -222,7 +222,7 @@ class pipe_monitor_bfm():
 
 
     async def receive_ts(self, ts, start_lane = 0 , end_lane = 0):
-        if self.dut.pipe_width == 16:
+        if self.dut.pipe_width_o== 16:
             await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
             reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
 
@@ -251,7 +251,7 @@ class pipe_monitor_bfm():
                     elif(LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0):(start_lane*32+0)+8]==0b010_00101):
                         ts.ts_type = ts_type_t.TS2
 
-        elif self.dut.pipe_width == 32:
+        elif self.dut.pipe_width_o== 32:
             await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
             reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
             ts.link_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]  #link number
@@ -380,10 +380,10 @@ class pipe_monitor_bfm():
             ts.append(ts_s())
         # # print(self.dut.pipe_width)
         # assert 1 == 0
-        while self.dut.pipe_width == 0:
+        while self.dut.pipe_width_o== 0:
             await RisingEdge(self.dut.clk_i)
 
-        if self.dut.pipe_width == 16:
+        if self.dut.pipe_width_o== 16:
             # assert 1 == 0
             data = self.dut.phy_txdata.value
             datak = self.dut.phy_txdatak.value
@@ -479,7 +479,7 @@ class pipe_monitor_bfm():
                             # assert 1 == 0
                             return
 
-        elif self.dut.pipe_width == 32:
+        elif self.dut.pipe_width_o== 32:
             # data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             # while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 for i in range(int(self.dut.MAX_NUM_LANES)-1)):
@@ -540,7 +540,7 @@ class pipe_monitor_bfm():
                         else:
                             return
         else:
-            # if self.dut.pipe_width != 8:
+            # if self.dut.pipe_width_o!= 8:
             #     return
             # # print(hex(self.dut.pipe_width.value))
             # data = self.dut.phy_txdata.value
@@ -632,7 +632,7 @@ class pipe_monitor_bfm():
 
  #*******************************************EIOS********************************/
     async def receive_eios(self,start_lane = 0, end_lane = int(cocotb.top.MAX_NUM_LANES)):
-        if self.dut.pipe_width == 16: # 16 bit pipe parallel interface
+        if self.dut.pipe_width_o== 16: # 16 bit pipe parallel interface
 
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             ##com 
@@ -654,7 +654,7 @@ class pipe_monitor_bfm():
                 if (LogicArray(self.dut.phy_txdata.value)[(i*32+8):(i*32+8)+8]!= 0b011_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+1]!=1):
                     return
 
-        elif self.dut.pipe_width == 32: # 32 bit pipe parallel interface
+        elif self.dut.pipe_width_o== 32: # 32 bit pipe parallel interface
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             #com   
             while not all ((LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8] == 0b101_11100) and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]==1) and (LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)): #wait to see a COM charecter
@@ -694,7 +694,7 @@ class pipe_monitor_bfm():
 
     
     async def receive_eios_gen3(self, start_lane=0, end_lane=int(cocotb.top.MAX_NUM_LANES)):
-        if self.dut.pipe_width == 16:  # 16 bit pipe parallel interface
+        if self.dut.pipe_width_o== 16:  # 16 bit pipe parallel interface
             for i in range(start_lane, end_lane):
                 while not (
                     LogicArray(self.dut.phy_txstart_block.value)[i] == 1 and
@@ -717,7 +717,7 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0x66:
                         return
 
-        elif self.dut.pipe_width == 32:  # 32 bit pipe parallel interface
+        elif self.dut.pipe_width_o== 32:  # 32 bit pipe parallel interface
             for i in range(start_lane, end_lane ):
                 while not (
                     LogicArray(self.dut.phy_txstart_block.value)[i] == 1 and
@@ -768,7 +768,7 @@ class pipe_monitor_bfm():
 
     #*******************************************EIOS********************************/
     async def receive_eieos(self,start_lane = 0, end_lane = int(cocotb.top.MAX_NUM_LANES)):
-        if self.dut.pipe_width == 16: # 16 bit pipe parallel interface
+        if self.dut.pipe_width_o== 16: # 16 bit pipe parallel interface
 
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             ##com 
@@ -798,7 +798,7 @@ class pipe_monitor_bfm():
                         if (LogicArray(self.dut.phy_txdata.value)[(i*32+8):(i*32+8)+8]!= 0b111_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+1]!=1):
                             return
 
-        elif self.dut.pipe_width == 32: # 32 bit pipe parallel interface
+        elif self.dut.pipe_width_o== 32: # 32 bit pipe parallel interface
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             #com   
             while not all ((LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8] == 0b101_11100) and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]==1) and (LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)): #wait to see a COM charecter
@@ -866,7 +866,7 @@ class pipe_monitor_bfm():
 
 
     async def receive_eieos_gen3(self,start_lane=0, end_lane=int(cocotb.top.MAX_NUM_LANES)):
-        if self.dut.pipe_width == 16:  # 16-bit pipe parallel interface
+        if self.dut.pipe_width_o== 16:  # 16-bit pipe parallel interface
             for i in range(start_lane, end_lane ):
                 while not (
                     LogicArray(self.dut.phy_txstart_block.value)[i] == 1 and
@@ -889,7 +889,7 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0xFF:
                         return
 
-        elif self.dut.pipe_width == 32:  # 32-bit pipe parallel interface
+        elif self.dut.pipe_width_o== 32:  # 32-bit pipe parallel interface
             while not all ((
                     LogicArray(self.dut.phy_txstart_block.value)[i] and
                     LogicArray(self.dut.phy_txsync_header.value)[(i * 2)+1:(i * 2)].to_BinaryValue() == 0b10 and
@@ -933,7 +933,7 @@ class pipe_monitor_bfm():
         for i in range(start_lane,end_lane):
             ts.append(ts_s())
         
-        if self.dut.pipe_width == 16:
+        if self.dut.pipe_width_o== 16:
             assert 1 == 0
             data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
@@ -1001,7 +1001,7 @@ class pipe_monitor_bfm():
                         else:
                             return
 
-        elif self.dut.pipe_width == 32:
+        elif self.dut.pipe_width_o== 32:
             data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             while not all(data[4*i] == 0b101_11100 for i in range(start_lane, end_lane)):

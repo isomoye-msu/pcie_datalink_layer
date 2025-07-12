@@ -82,6 +82,9 @@ module pcie_phy_top
     (* mark_debug *) input wire phy_ready_en,
 
 
+    output logic link_up_o,
+
+
     //TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_tlp_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_tlp_axis_tkeep,
@@ -142,8 +145,9 @@ module pcie_phy_top
   logic              [MAX_NUM_LANES-1:0] active_lanes;
   logic              [MAX_NUM_LANES-1:0] lane_status;
 
-  assign phy_rate = curr_data_rate;
+  assign phy_rate      = curr_data_rate;
   assign phy_powerdown = '0;
+  assign link_up_o     = link_up;
 
   always_ff @(posedge clk_i) begin
     if (rst_i) begin
@@ -164,34 +168,34 @@ module pcie_phy_top
   end
 
   phy_receive #(
-      .CLK_RATE(CLK_RATE),
+      .CLK_RATE     (CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
-      .DATA_WIDTH(DATA_WIDTH),
-      .STRB_WIDTH(STRB_WIDTH),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .USER_WIDTH(USER_WIDTH)
+      .DATA_WIDTH   (DATA_WIDTH),
+      .STRB_WIDTH   (STRB_WIDTH),
+      .KEEP_WIDTH   (KEEP_WIDTH),
+      .USER_WIDTH   (USER_WIDTH)
   ) phy_receive_inst (
-      .clk_i(clk_i),
-      .rst_i(rst_i),
-      .en_i(en_i),
-      .link_up_i(link_up),
-      .pipe_data_i(phy_rxdata),
-      .pipe_data_valid_i(phy_rxdata_valid),
-      .pipe_data_k_i(phy_rxdatak),
+      .clk_i             (clk_i),
+      .rst_i             (rst_i),
+      .en_i              (en_i),
+      .link_up_i         (link_up),
+      .pipe_data_i       (phy_rxdata),
+      .pipe_data_valid_i (phy_rxdata_valid),
+      .pipe_data_k_i     (phy_rxdatak),
       .pipe_sync_header_i(phy_rxsync_header),
       .pipe_block_start_i(phy_rxstart_block),
-      .pipe_width_i(pipe_width),
+      .pipe_width_i      (pipe_width),
       .num_active_lanes_i(num_active_lanes_i),
-      .ts1_valid_o(ts1_valid),
-      .ts2_valid_o(ts2_valid),
-      .idle_valid_o(idle_valid),
-      .ordered_set_o(rx_ordered_set),
-      .curr_data_rate_i(curr_data_rate),
-      .m_dllp_axis_tdata(m_dllp_axis_tdata),
-      .m_dllp_axis_tkeep(m_dllp_axis_tkeep),
+      .ts1_valid_o       (ts1_valid),
+      .ts2_valid_o       (ts2_valid),
+      .idle_valid_o      (idle_valid),
+      .ordered_set_o     (rx_ordered_set),
+      .curr_data_rate_i  (curr_data_rate),
+      .m_dllp_axis_tdata (m_dllp_axis_tdata),
+      .m_dllp_axis_tkeep (m_dllp_axis_tkeep),
       .m_dllp_axis_tvalid(m_dllp_axis_tvalid),
-      .m_dllp_axis_tlast(m_dllp_axis_tlast),
-      .m_dllp_axis_tuser(m_dllp_axis_tuser),
+      .m_dllp_axis_tlast (m_dllp_axis_tlast),
+      .m_dllp_axis_tuser (m_dllp_axis_tuser),
       .m_dllp_axis_tready(m_dllp_axis_tready)
   );
 

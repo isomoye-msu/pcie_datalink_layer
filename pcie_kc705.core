@@ -1,0 +1,202 @@
+CAPI=2:
+name: fusesoc:pcie:pcie_kc705:1.0.0
+description: pcie kc705 example
+
+filesets:
+  rtl:
+    files:
+      - src/pcie_phy_core/pcie_phy_top.sv
+      - example/pcie_cfg_top.sv
+      - example/pcie_top_kc705.v
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:ltssm
+      - fusesoc:pcie:base_uvm
+      - fusesoc:pcie:dllp_core
+      - fusesoc:pcie:lint
+      - fusesoc:pcie:phy_receive
+      - fusesoc:pcie:phy_transmit
+      - fusesoc:pcie:converters
+      - fusesoc:pcie:import_components
+      - fusesoc:pcie:pcie_config
+      - fusesoc:verilog-pcie:1.0.0
+  gtx:
+    depend:
+      - fusesoc:pcie:gtex2
+      - fusesoc:pcie:verilator_xilinx
+      
+  xsim_tb:
+    files:
+      - /tools/C/research/tools/Xilinx/Vivado/2022.1/data/verilog/src/glbl.v
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_expect_tasks.vh:
+          is_include_file: true
+      - tb/vivado_sim/imports/simulation/tests/tests.vh:
+          is_include_file: true
+      - tb/vivado_sim/imports/simulation/tests/sample_tests1.vh:
+          is_include_file: true
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_cfg.v
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_com.v
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_pl.v
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_rx.v
+      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_tx.v
+      - tb/vivado_sim/imports/simulation/dsport/pcie_2_1_rport_7x.v
+      - tb/vivado_sim/imports/simulation/dsport/pcie_axi_trn_bridge.v
+      - tb/vivado_sim/imports/simulation/dsport/xilinx_pcie_2_1_rport_7x.v
+      - tb/vivado_sim/imports/simulation/functional/board_common.vh:
+          is_include_file: true
+      - tb/vivado_sim/imports/simulation/functional/sys_clk_gen.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/sim/kc705_pcie_x8_gen2.v
+      - tb/vivado_sim/imports/simulation/functional/sys_clk_gen_ds.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx_null_gen.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx_pipeline.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_top.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx_pipeline.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx_thrtl_ctl.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_core_top.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_common.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_rx_valid_filter_7x.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_top.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_wrapper.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_cpllpd_ovrd.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_drp.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_rate.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_reset.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtx_cpllpd_ovrd.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/synth/kc705_pcie_x8_gen2.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_funcsim.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_stub.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_pipe_clock.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_7x.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_bram_7x.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_bram_top_7x.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_brams_7x.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_lane.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_misc.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_pipeline.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_top.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie2_top.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_drp.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_eq.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_rate.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_reset.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_sync.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_user.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_wrapper.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_drp.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_reset.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_wrapper.v
+      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_rxeq_scan.v
+      - tb/vivado_sim/imports/simulation/functional/board.v
+    file_type: systemVerilogSource
+
+
+  synth:
+    files:
+      - example/pcie_phy_0.xci: {file_type: xci}
+      - example/gtx_channel.xdc : {file_type : xdc}
+
+  cocotb:
+    files:
+      - verif/sequences/pipe_link_up_seq.py: {file_type : user, copyto : .}
+      - verif/sequences/pipe_speed_change_with_equalization_seq.py : {file_type : user, copyto : .}
+      - verif/sequences/pipe_base_seq.py: {file_type : user, copyto : .}
+      - verif/sequences/base_vseq.py: {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/descrambler_scrambler.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_agent.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_agent_config.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_driver_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_if.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_monitor_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_types.py: {file_type : user, copyto : .}
+      - verif/env/pcie_coverage_monitor.py : {file_type : user, copyto : .}
+      - verif/env/pcie_env.py: {file_type : user, copyto : .}
+      - verif/env/pcie_scoreboard.py: {file_type : user, copyto : .}
+      - verif/tests/test_pcie_core.py: {file_type : user, copyto : .}
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_top_kc705]
+  
+  sim:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -j 4
+        - waiver.vlt
+        - --timing
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
+      xelab_options: [--timescale, 1ns/1ns]
+    filesets : [rtl,cocotb,gtx]
+    toplevel : [pcie_top_kc705]
+
+  xsim:
+    default_tool: xsim
+    filesets : [rtl, cocotb]
+    tools:
+      modelsim:
+        vlog_options: [-timescale=1ns/1ns]
+      xsim:
+        xelab_options:  [--timescale, 1ns/1ns -dll -L unisims_ver -L unimacro_ver -L secureip -lib work glbl]
+        xsim_options: [xsim.dir/fusesoc_pcie_pcie_kc705_1.0.0/xsimk.so]
+    toplevel: pcie_top_kc705
+
+  xsim_v:
+    default_tool: xsim
+    filesets : [rtl,xsim_tb]
+    tools:
+      modelsim:
+        vlog_options: [-timescale=1ns/1ns]
+      xsim:
+        xelab_options:  [--timescale, 1ns/1ns --incr --debug typical --relax --mt 8 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip -L xpm  work.glbl -log elaborate.log]
+    toplevel: board
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -Iincludes/
+        - waiver.vlt
+        - --no-timing
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_top_kc705]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl,synth]
+    tools:
+      vivado:
+        part : xc7k325tffg900-2
+    toplevel : pcie_top_kc705
+
+scripts:
+  iceprog:
+    cmd : [MODULE=pcie_top]

@@ -49,10 +49,18 @@ class pcie_seq(base_sequence):
         self.dev.upstream_port.max_link_width = 2
         # self.dev.upstream_port.max_payload_size = 128
         self.dev.upstream_port.port_delay = 8e-9
+        self.dev.device_num = 0
+        self.dev.function_num = 0
+
         
         self.rx_queue = Queue()
         
-        self.rc.make_port().connect(self.dev)
+        port = self.rc.make_port()
+        print(repr(port))
+        port.connect(self.dev)
+        # assert 1 == 0
+        # self.rc.add_endpoint(self.dev)
+        # self.rc._run_routing(self.dev)
         
         self.dev.upstream_port.fc_initialized = True
         self.dev.upstream_port.fc_state[0].reset()
@@ -159,12 +167,14 @@ class pcie_seq(base_sequence):
         while True:
             seq_item = await self.seqr.response_fifo.get()
             self.log.debug("response tlp: %s",repr(seq_item.pkt))
-            if seq_item.is_pkt:
+            # print("response tlp: %s",repr(seq_item.pkt))
+            if seq_item.is_pkt and seq_item.pkt:
+                # print(type(seq_item.pkt))
                 # await self.dev.upstream_port.handle_tx(seq_item.pkt)
                 await self.dev.upstream_port._transmit((seq_item.pkt))
                 # await self.dev.upstream_port.send(seq_item.pkt)
                 # await self.dev.upstream_port.other.ext_recv(seq_item.pkt)
-            else:
+            elif seq_item.pkt:
                 # self.dev.upstream_port.rx_queue.put_nowait(Tlp(seq_item.pkt))
                 await self.upstream_recv(seq_item.pkt)
                 
@@ -683,11 +693,14 @@ class pcie_seq(base_sequence):
             # frame = await self.rx_sink.recv()
 
             tlp = await self.rx_queue.get()
+            assert 1 == 0
 
             self.log.debug("RX TLP: %s", repr(tlp))
+            print("RX TLP: %s", repr(tlp))
 
             if tlp.fmt_type in {TlpType.CPL, TlpType.CPL_DATA, TlpType.CPL_LOCKED, TlpType.CPL_LOCKED_DATA}:
                 self.log.debug("Completion")
+    
 
                 self.rx_cpl_queues[tlp.tag].put_nowait(tlp)
                 self.rx_cpl_sync[tlp.tag].set()

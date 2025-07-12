@@ -14,8 +14,8 @@ module tlp2dllp
     parameter int RAM_DATA_WIDTH    = DATA_WIDTH,          // width of the data
 
     parameter int MaxBytesPerTLP = MAX_PAYLOAD_SIZE,
-    parameter int RAM_ADDR_WIDTH = $clog2(MaxNumWordsPerTLP),  // number of address bits
-    parameter int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2
+    parameter int MaxNumWordsPerTLP = (MaxBytesPerTLP / (DATA_WIDTH / 8)) + MaxNumWordsPerHdr + 2,
+    parameter int RAM_ADDR_WIDTH = $clog2(MaxNumWordsPerTLP)  // number of address bits
 ) (
     input  logic                  clk_i,              // Clock signal
     input  logic                  rst_i,              // Reset signal

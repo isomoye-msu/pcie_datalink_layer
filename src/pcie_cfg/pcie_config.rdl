@@ -1,0 +1,308 @@
+addrmap pcie_config_reg {
+    name = "PCIe Configuration";
+
+    default regwidth = 32;
+    default sw = wr;
+    default hw = r;
+
+    reg {
+        name = "Byte Offset 00";
+        field {
+            desc = "Device ID";
+            sw=r; hw=r;
+        } Device_ID[31:16]  = 0x00FF;
+        field {
+            desc = "Vendor ID";
+            sw=r; hw=r;
+        } Vendor_ID[15:0]  = 0x1234;
+    } byte_offset_00 @ 0x00;
+
+
+    reg {
+        name = "Byte Offset 04";
+
+        field { desc = "detected_parity_error            "; sw = wr; hw = r; } detected_parity_error           [16+15 :  16+15] = 0x0;
+        field { desc = "signaled_system_error            "; sw = wr; hw = r; } signaled_system_error           [16+14 :  16+14] = 0x0;
+        field { desc = "received_master_abort            "; sw = wr; hw = r; } received_master_abort           [16+13 :  16+13] = 0x0;
+        field { desc = "received_target_abort            "; sw = wr; hw = r; } received_target_abort           [16+12 :  16+12] = 0x0;
+        field { desc = "signaled_target_abort            "; sw = wr; hw = r; } signaled_target_abort           [16+11 :  16+11] = 0x0;
+        field { desc = "devsel_timing                    "; sw = wr; hw = r; } devsel_timing                   [16+10 :  16+ 9] = 0x0;
+        field { desc = "master_data_parity_error         "; sw = wr; hw = r; } master_data_parity_error        [16+8  :  16+ 8] = 0x0;
+        field { desc = "fast_b2b_transactions_capable    "; sw = wr; hw = r; } fast_b2b_transactions_capable   [16+7  :  16+ 7] = 0x0;
+        field { desc = "sixtysix_mhz_capable             "; sw = wr; hw = r; } sixtysix_mhz_capable            [16+5  :  16+ 5] = 0x0;
+        field { desc = "capabilities_list                "; sw = wr; hw = r; } capabilities_list               [16+4  :  16+ 4] = 0x0;
+        field { desc = "interrupt_status                 "; sw = wr; hw = r; } interrupt_status                [16+3  :  16+ 3] = 0x0;
+
+        field { desc = "unused                           "; sw= wr ; hw=r; } rsvd [18:11];
+        field { desc = "interrupt_disable                "; sw= wr ; hw=r; } interrupt_disable                    [10:10] = 0x0; 
+        field { desc = "fast_b2b_transactions_enable     "; sw= wr ; hw=r; } fast_b2b_transactions_enable         [9 :9]  = 0x0; 
+        field { desc = "SERR_Enable                      "; sw= wr ; hw=r; } SERR_Enable                          [8 :8]  = 0x0; 
+        field { desc = "idsel_step_wait_cycle_control    "; sw= wr ; hw=r; } idsel_step_wait_cycle_control        [7 :7]  = 0x0; 
+        field { desc = "parity_error_response            "; sw= wr ; hw=r; } parity_error_response                [6 :6]  = 0x0; 
+        field { desc = "vga_palette_snoop                "; sw= wr ; hw=r; } vga_palette_snoop                    [5 :5]  = 0x0; 
+        field { desc = "memory_write_invalidate          "; sw= wr ; hw=r; } memory_write_invalidate              [4 :4]  = 0x0; 
+        field { desc = "special_cycle_enable             "; sw= wr ; hw=r; } special_cycle_enable                 [3 :3]  = 0x0;             
+        field { desc = "bus_master_enable                "; sw= wr ; hw=r; } bus_master_enable                    [2 :2]  = 0x0;
+    } byte_offset_04 @ 0x04;
+
+
+    reg {
+        name = "Byte Offset 08";
+        field {
+            desc = "Class Code";
+            sw=r; hw=r;
+        } Class_Code[31:8]  = 0x000000;
+        field {
+            desc = "Revision ID";
+            sw=r; hw=r;
+        } Revision_ID[7:0]  = 0x00;
+    } byte_offset_08 @ 0x08;
+
+
+    reg {
+        field { desc = "Interrupt Pin Register   (Offset 3Dh)           "; sw= wr ; hw=rw; } interrupt_pin_register    [31 : 24]; 
+        field { desc = "Interrupt Line Register  (Offset 3Ch)           "; sw= wr ; hw=rw; } interrupt_line_register   [23 : 16]; 
+        field { desc = "Latency Timer Register   (Offset 0Dh)           "; sw= wr ; hw=rw; } latency_timer_register    [15 :  8];             
+        field { desc = "Cache Line Size Register (Offset 0Ch)           "; sw= wr ; hw=rw; } cache_line_size_register  [7  :  0];
+    } byte_offset_0C @ 0x0C;
+
+    reg {
+        name = "Base Address Register 0";
+        // field {
+        //     desc = "BAR_0";
+        //     sw=rw; hw=r;
+        // } BAR [31:0]  = 0xfff00000;
+
+        field {
+            desc = "base address";
+                sw=r; hw=r;
+        } base_adress [31:4] = 0xfff0000;
+        field {
+            desc = "prefetchable";
+            sw=r; hw=r;
+        } prefetchable [3:3] = 0x0;
+        field {
+            desc = "Locatable";
+            sw=r; hw=r;
+        } locatable [2:1] = 0x0;
+        
+        field {
+            desc = "Region Type";
+            sw=r; hw=r;
+        } region_type [0:0] = 0x0;
+
+
+    } base_address_register_0 @ 0x10;
+
+    reg {
+        name = "Base Address Register 1";
+        field {
+            desc = "base address";
+                sw=r; hw=r;
+        } base_adress [31:4] = 0xfff0000;
+        field {
+            desc = "prefetchable";
+            sw=r; hw=r;
+        } prefetchable [3:3] = 0x0;
+        field {
+            desc = "Locatable";
+            sw=r; hw=r;
+        } locatable [2:1] = 0x0;
+        
+        field {
+            desc = "Region Type";
+            sw=r; hw=r;
+        } region_type [0:0] = 0x0;
+    } base_ddress_register_1 @ 0x14;
+
+    reg {
+        name = "Base Address Register 2";
+        field {
+            desc = "BAR";
+            sw=rw; hw=rw;
+        } BAR [31:0]  = 0x20000000;
+    } base_ddress_register_2 @ 0x18;
+
+    reg {
+        name = "Base Address Register 3";
+        field {
+            desc = "BAR";
+            sw=rw; hw=rw;
+        } BAR [31:0]  = 0x21000000;
+    } base_ddress_register_3 @ 0x1C;
+
+
+    reg {
+        name = "Base Address Register 4";
+        field {
+            desc = "BAR";
+            sw=rw; hw=rw;
+        } BAR [31:0]  = 0x30000000;
+    } base_ddress_register_4 @ 0x20;
+
+
+    reg {
+        name = "Base Address Register 5";
+        field {
+            desc = "BAR";
+            sw=rw; hw=rw;
+        } BAR [31:0]  = 0x30000000;
+    } base_ddress_register_5 @  0x24;
+
+    reg {
+        name = "Cardbus CIS Pointer";
+        field {
+            desc = "word";
+            sw=rw; hw=rw;
+        } word[31:0]  = 0x00000000;
+    } cardbus_cis_pointer @ 0x28;
+
+
+    reg {
+        name = "Byte Offset 2C";
+        field {
+            desc = "Subsystem ID";
+            sw=r; hw=r;
+        } Device_ID[31:16]  = 0x0000;
+        field {
+            desc = "Subsystem Vendor ID";
+            sw=r; hw=r;
+        } Vendor_ID[15:0]  = 0x0000;
+    } byte_offset_2C @ 0x2C;
+
+
+    reg {
+        name = "capabilities_pointer";
+        field {
+            desc = "capabilities_pointer";
+            sw=r; hw=r;
+        } capabilities_ptr[7:0]  = 0x40;
+        
+    } capabilities_pointer @ 0x34;
+
+    reg {
+        name = "Byte Offset 3C";
+        field {
+            desc = "Max Lat";
+            sw=r; hw=r;
+        } max_lat  [31:24]  = 0x00;
+        field {
+            desc = "Min Gnt";
+            sw=r; hw=r;
+        } min_gnt  [23:16]  = 0x00;
+        field {
+            desc = "Interrupt Pin Register";
+            sw=rw; hw=rw;
+        } interrupt_pin[15:8]  = 0x00;
+        field {
+            desc = "Interrupt Line Register";
+            sw=rw; hw=rw;
+        } interrupt_line[7:0]  = 0x00;
+        
+    } byte_offset_3C @ 0x3C;
+
+
+    reg {
+        name = "capabilities pointer";
+        field {} pme_support [31:27];
+        field {} d2_support [26:26];
+        field {} d1_support [25:25];
+        field {} aux_current [24:22];
+        field {} dev_spec_init [21:21];
+        field {} pme_clock [19:19];
+        field {} version[18:16];
+        field {
+            desc = "next capability pointer";
+            sw=r; hw=r;
+        } next_cap_ptr[15:8] = 0x48;
+        field {
+            desc = "Capabilities id";
+            sw=r; hw=r;
+        } capabilities_id[7:0]  = 0x01;
+        
+    } capabilities_power_mngt_pointer @ 0x40;
+
+    reg {
+        name = "power management";
+        field {} data                [31:24];
+        field {} bus_pwr_clk_ctrl_en [23:23];
+        field {} b2_b3_support       [22:22];
+        field {} pme_status          [15:15];
+        field {} data_scale          [14:13];
+        field {} data_select         [12:9];
+        field {} pme_enable          [3:3];
+        field {} power_state         [1:0];
+        
+    } power_management_pointer @ 0x44;
+
+
+    reg {
+        name = "PCI Express Capabilities Register ";
+        field {sw=r; hw=r;} RsvdP                     [16+15: 16+ 15]   = 0x0;
+        field {sw=r; hw=r;} Undefined                 [16+14: 16+ 14]   = 0x0;
+        field {sw=r; hw=r;} interrupt_msg_number      [16+13: 16+ 9]    = 0x0;
+        field {sw=r; hw=r;} slot_implemented          [16+8:  16+ 8]    = 0x0;
+        field {sw=r; hw=r;} device_port_type          [16+7:  16+ 4]    = 0x0;
+        field {sw=r; hw=r;} capability_version        [16+3:  16+ 0]    = 0x2;
+        field {
+            desc = "next capability pointer";
+            sw=r; hw=r;
+        } next_cap_ptr[15:8] = 0x00;
+        field {
+            desc = "Capabilities id";
+            sw=r; hw=r;
+        } capabilities_id[7:0]  = 0x10;
+        
+    } capabilities_power_na_pointer @ 0x48;
+
+
+    reg {
+        name = "Link Control 3 Register (Offset 04h) ";
+        field {} link_eq_req_intr_en[1:1] = 0x0;
+        field {
+            desc = "Perform Equalization";
+            sw=rw; hw=r;
+        } perform_equalization[0:0] = 0x0;
+    } link_control_3_register @ 0x4C;
+
+    reg {
+        name = "Lane Error Status Register (Offset 08h)";
+        field {
+            desc = "Perform Equalization";
+            sw=rw; hw=rw;
+        } lane_error[4:0]  = 0x0;
+        
+    } lane_error_status_register @ 0x50;
+
+
+    reg {
+        name = "Lane Equalization Control Register (Offset 0Ch)";
+        field {
+            desc = "Upstream Port Receiver Preset Hint";
+            sw=rw; hw=rw;
+        } upstream_rx_preset_hint[14:12]  = 0x7;
+        field {
+            desc = "Upstream Port Transmitter Preset";
+            sw=rw; hw=rw;
+        } upstream_tx_preset[11:8]  = 0xF;
+        field {
+            desc = "Downstream Port Receiver Preset Hint";
+            sw=rw; hw=rw;
+        } downstream_rx_preset_hint[6:4]  = 0x7;
+        field {
+            desc = "Downstream Port Transmitter Preset ";
+            sw=rw; hw=rw;
+        } downstream_tx_preset [3:0]  = 0xF;
+        
+    } lane_eq_ctrl_register @ 0x54;
+
+
+    reg {
+        name = "extended capabilities";
+        field {
+            desc = "exended capabilities ";
+            sw=r; hw=r;
+        } ext_cap [31:0] = 0x0;
+        
+    } extended_capabilities @ 0x100;
+};

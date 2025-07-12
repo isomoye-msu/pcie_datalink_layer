@@ -1,0 +1,63 @@
+CAPI=2:
+name: fusesoc:pcie:pcie_config:1.0.0
+description: pcie configuration ip
+
+filesets:
+  rtl:
+    files:
+      - pcie_config_reg_pkg.sv
+      - pcie_config_decode.sv
+      - pcie_config_handler.sv
+      - pcie_config_mux.sv
+      - pcie_config_reg.sv
+      - pcie_cfg_wrapper.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:lint
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_ltssm_configuration
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [scrambler]
+  
+  sim:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_ltssm_configuration
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - waiver.vlt
+    filesets : [rtl]
+    toplevel : [scrambler]
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_ltssm_configuration
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - waiver.vlt
+    filesets : [rtl]
+    toplevel : [scrambler]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7a100tcsg324-1
+    toplevel : scrambler

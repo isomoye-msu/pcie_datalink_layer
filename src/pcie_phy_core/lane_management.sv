@@ -42,7 +42,7 @@ module lane_management
 
 
 
-  localparam int PipeWidthGen1 = 8;
+  localparam int PipeWidthGen1 = 16;
   localparam int PipeWidthGen2 = 16;
   localparam int PipeWidthGen3 = 32;
   localparam int PipeWidthGen4 = 32;

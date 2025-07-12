@@ -18,6 +18,7 @@ filesets:
       - fusesoc:pcie:axis
       - fusesoc:pcie:base_uvm
       - fusesoc:pcie:lint
+      - fusesoc:pcie:pcie_config
 
 
 targets:

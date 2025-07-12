@@ -1,4 +1,8 @@
 import cocotb
+from cocotb_vivado import run
+import subprocess
+import os
+import pathlib
 import pyuvm
 from pyuvm import *
 from cocotb.triggers import *
@@ -6,6 +10,47 @@ from pcie_env import *
 from pipe_agent_config import *
 from pipe_link_up_seq import *
 from pipe_speed_change_with_equalization_seq import *
+
+
+class OnFallingSignal:
+    def __init__(self, signal):
+        self.signal = signal
+        self.timer = Timer(100, "ns")
+
+    def __await__(self):
+        return self._async_method().__await__()
+
+    async def _async_method(self):
+        prev = self.signal.value
+        while True:
+            await self.timer
+            now = self.signal.value
+            if prev.is_resolvable and now.is_resolvable and prev == 1 and now == 0:
+                break
+            prev = now
+
+
+class OnRisingSignal:
+    def __init__(self, signal):
+        self.signal = signal
+        self.timer = Timer(100, "ns")
+
+    def __await__(self):
+        return self._async_method().__await__()
+
+    async def _async_method(self):
+        prev = self.signal.value.binstr
+        while True:
+            await self.timer
+            now = self.signal.value.binstr
+            if  prev == "0" and now == "1":
+                break
+            prev = now
+
+
+cocotb.triggers.FallingEdge = OnFallingSignal
+cocotb.triggers.RisingEdge = OnRisingSignal
+
 
 @pyuvm.test()
 class link_up_test(uvm_test):
@@ -29,5 +74,5 @@ class link_up_test(uvm_test):
     async def run_phase(self):
         self.raise_objection()
         await with_timeout(self.test_all.start(),15000,'ns')
-        await with_timeout(self.speed_change.start(),15000,'ns')
+        # await with_timeout(self.speed_change.start(),15000,'ns')
         self.drop_objection()

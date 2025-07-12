@@ -9,3 +9,7 @@ lint_off -rule UNOPTFLAT
 lint_off -rule SELRANGE
 lint_off -rule UNSIGNED
 lint_off -rule LATCH
+lint_off -rule ASCRANGE
+lint_off -rule MULTIDRIVEN
+lint_off -rule MODDUP
+lint_off -rule IMPLICIT

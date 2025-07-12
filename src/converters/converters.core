@@ -1,0 +1,20 @@
+CAPI=2:
+name: fusesoc:pcie:converters:1.0.0
+description: pcie converters
+
+filesets:
+  rtl:
+    files:
+      - axis_to_pcie_converter.sv
+      - pcie_to_axis_converter.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - rtl
+    toplevel: axis_to_pcie_converter

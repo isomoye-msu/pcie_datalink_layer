@@ -10,6 +10,7 @@ filesets:
       - rtl/arbiter.v
       - rtl/axis_fifo.v
       - rtl/priority_encoder.v
+      - rtl/axis_adapter.v
     file_type: systemVerilogSource
 
 targets:

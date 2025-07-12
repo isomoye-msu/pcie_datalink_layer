@@ -10,6 +10,7 @@
 //! the physical layer through the phy master axis bus.
 module dllp_receive
   import pcie_datalink_pkg::*;
+  import pcie_config_reg_pkg::*;
 #(
     // Parameters
     parameter int DATA_WIDTH = 32,
@@ -45,6 +46,13 @@ module dllp_receive
     output logic                               m_axis_dllp2phy_tlast,
     output logic            [(USER_WIDTH)-1:0] m_axis_dllp2phy_tuser,
     input  logic                               m_axis_dllp2phy_tready,
+    // TLP cfg completion
+    output logic            [(DATA_WIDTH)-1:0] m_cpl_from_cfg_tdata,
+    output logic            [(KEEP_WIDTH)-1:0] m_cpl_from_cfg_tkeep,
+    output logic                               m_cpl_from_cfg_tvalid,
+    output logic                               m_cpl_from_cfg_tlast,
+    output logic            [(USER_WIDTH)-1:0] m_cpl_from_cfg_tuser,
+    input  logic                               m_cpl_from_cfg_tready,
     //tlp ack/nak
     output logic            [            11:0] seq_num_o,
     output logic                               seq_num_vld_o,
@@ -64,35 +72,76 @@ module dllp_receive
 
   localparam int UserIsTlp = 1;
   localparam int UserIsDllp = 0;
+  parameter int TLP_DATA_WIDTH = 256;
+  parameter int TLP_STRB_WIDTH = TLP_DATA_WIDTH / 32;
+  parameter int TLP_HDR_WIDTH = 128;
+
+  parameter int ID_ENABLE = 0;
+  parameter int ID_WIDTH = 8;
+  parameter int DEST_ENABLE = 0;
+  parameter int DEST_WIDTH = 8;
+  parameter int USER_ENABLE = 1;
+  parameter int LAST_ENABLE = 1;
+  parameter int ARB_TYPE_ROUND_ROBIN = 0;
+  parameter int ARB_LSB_HIGH_PRIORITY = 1;
+  parameter int M_COUNT = 2;
+  parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
 
   //internal signals
-  logic                    dllp_ready;
-  logic                    tlp_ready;
-  logic                    start_flow_control;
-  logic                    start_flow_control_ack;
-  logic [            15:0] next_transmit_seq;
-  logic                    tlp_nullified;
-  logic [             7:0] ph_credits_consumed;
-  logic [            11:0] pd_credits_consumed;
-  logic [             7:0] nph_credits_consumed;
-  logic [            11:0] npd_credits_consumed;
+  logic                                     dllp_ready;
+  logic                                     tlp_ready;
+  logic                                     start_flow_control;
+  logic                                     start_flow_control_ack;
+  logic                  [            15:0] next_transmit_seq;
+  logic                                     tlp_nullified;
+  logic                  [             7:0] ph_credits_consumed;
+  logic                  [            11:0] pd_credits_consumed;
+  logic                  [             7:0] nph_credits_consumed;
+  logic                  [            11:0] npd_credits_consumed;
 
 
-  logic [(DATA_WIDTH)-1:0] tlp_axis_tdata;
-  logic [(KEEP_WIDTH)-1:0] tlp_axis_tkeep;
-  logic                    tlp_axis_tvalid;
-  logic                    tlp_axis_tlast;
-  logic [(USER_WIDTH)-1:0] tlp_axis_tuser;
-  logic                    tlp_axis_tready;
+  logic                  [(DATA_WIDTH)-1:0] tlp_axis_tdata;
+  logic                  [(KEEP_WIDTH)-1:0] tlp_axis_tkeep;
+  logic                                     tlp_axis_tvalid;
+  logic                                     tlp_axis_tlast;
+  logic                  [(USER_WIDTH)-1:0] tlp_axis_tuser;
+  logic                                     tlp_axis_tready;
 
 
-  logic [(DATA_WIDTH)-1:0] dllp_axis_tdata;
-  logic [(KEEP_WIDTH)-1:0] dllp_axis_tkeep;
-  logic                    dllp_axis_tvalid;
-  logic                    dllp_axis_tlast;
-  logic [(USER_WIDTH)-1:0] dllp_axis_tuser;
-  logic                    dllp_axis_tready;
+  logic                  [(DATA_WIDTH)-1:0] dllp_axis_tdata;
+  logic                  [(KEEP_WIDTH)-1:0] dllp_axis_tkeep;
+  logic                                     dllp_axis_tvalid;
+  logic                                     dllp_axis_tlast;
+  logic                  [(USER_WIDTH)-1:0] dllp_axis_tuser;
+  logic                                     dllp_axis_tready;
 
+//   logic                  [  DATA_WIDTH-1:0] cpl_from_cfg_tdata;
+//   logic                  [  KEEP_WIDTH-1:0] cpl_from_cfg_tkeep;
+//   logic                                     cpl_from_cfg_tvalid;
+//   logic                                     cpl_from_cfg_tlast;
+//   logic                  [  USER_WIDTH-1:0] cpl_from_cfg_tuser;
+//   logic                                     cpl_from_cfg_tready;
+
+  logic                  [  DATA_WIDTH-1:0] tlp_to_mac_tdata;
+  logic                  [  KEEP_WIDTH-1:0] tlp_to_mac_tkeep;
+  logic                                     tlp_to_mac_tvalid;
+  logic                                     tlp_to_mac_tlast;
+  logic                  [  USER_WIDTH-1:0] tlp_to_mac_tuser;
+  logic                                     tlp_to_mac_tready;
+
+
+  logic                  [  DATA_WIDTH-1:0] dllp_fc_tdata;
+  logic                  [  KEEP_WIDTH-1:0] dllp_fc_tkeep;
+  logic                                     dllp_fc_tvalid;
+  logic                                     dllp_fc_tlast;
+  logic                  [  USER_WIDTH-1:0] dllp_fc_tuser;
+  logic                                     dllp_fc_tready;
+
+  pcie_config_reg__in_t                     hwif_in;
+  pcie_config_reg__out_t                    hwif_out;
+
+
+  assign hwif_in = '{default: 'd0};
 
   axis_user_demux #(
       .DATA_WIDTH      (DATA_WIDTH),
@@ -209,15 +258,87 @@ module dllp_receive
       .pd_credits_consumed_o   (pd_credits_consumed),
       .nph_credits_consumed_o  (nph_credits_consumed),
       .npd_credits_consumed_o  (npd_credits_consumed),
-      .m_tlp_axis_tdata        (m_axis_dllp2tlp_tdata),
-      .m_tlp_axis_tkeep        (m_axis_dllp2tlp_tkeep),
-      .m_tlp_axis_tvalid       (m_axis_dllp2tlp_tvalid),
-      .m_tlp_axis_tlast        (m_axis_dllp2tlp_tlast),
-      .m_tlp_axis_tuser        (m_axis_dllp2tlp_tuser),
-      .m_tlp_axis_tready       (m_axis_dllp2tlp_tready)
+      .m_tlp_axis_tdata        (tlp_to_mac_tdata),
+      .m_tlp_axis_tkeep        (tlp_to_mac_tkeep),
+      .m_tlp_axis_tvalid       (tlp_to_mac_tvalid),
+      .m_tlp_axis_tlast        (tlp_to_mac_tlast),
+      .m_tlp_axis_tuser        (tlp_to_mac_tuser),
+      .m_tlp_axis_tready       (tlp_to_mac_tready)
   );
 
 
+  pcie_cfg_wrapper #(
+      .DATA_WIDTH    (DATA_WIDTH),
+      .STRB_WIDTH    (STRB_WIDTH),
+      .KEEP_WIDTH    (KEEP_WIDTH),
+      .USER_WIDTH    (USER_WIDTH),
+      .TLP_DATA_WIDTH(TLP_DATA_WIDTH),
+      .TLP_STRB_WIDTH(TLP_STRB_WIDTH),
+      .TLP_HDR_WIDTH (TLP_HDR_WIDTH)
+  ) pcie_cfg_wrapper_inst (
+      .clk_i        (clk_i),
+      .rst_i        (rst_i),
+      .s_axis_tdata (tlp_to_mac_tdata),
+      .s_axis_tkeep (tlp_to_mac_tkeep),
+      .s_axis_tvalid(tlp_to_mac_tvalid),
+      .s_axis_tlast (tlp_to_mac_tlast),
+      .s_axis_tuser (tlp_to_mac_tuser),
+      .s_axis_tready(tlp_to_mac_tready),
+
+      .cpl_axis_tdata (m_cpl_from_cfg_tdata),
+      .cpl_axis_tkeep (m_cpl_from_cfg_tkeep),
+      .cpl_axis_tvalid(m_cpl_from_cfg_tvalid),
+      .cpl_axis_tlast (m_cpl_from_cfg_tlast),
+      .cpl_axis_tuser (m_cpl_from_cfg_tuser),
+      .cpl_axis_tready(m_cpl_from_cfg_tready),
+
+      .m_tlp_axis_tdata (m_axis_dllp2tlp_tdata),
+      .m_tlp_axis_tkeep (m_axis_dllp2tlp_tkeep),
+      .m_tlp_axis_tvalid(m_axis_dllp2tlp_tvalid),
+      .m_tlp_axis_tlast (m_axis_dllp2tlp_tlast),
+      .m_tlp_axis_tuser (m_axis_dllp2tlp_tuser),
+      .m_tlp_axis_tready(m_axis_dllp2tlp_tready),
+      .hwif_in          (hwif_in),
+      .hwif_out         (hwif_out)
+  );
+
+
+//   axis_arb_mux #(
+//       .S_COUNT              (2),
+//       .DATA_WIDTH           (DATA_WIDTH),
+//       .KEEP_ENABLE          (KEEP_ENABLE),
+//       .KEEP_WIDTH           (KEEP_WIDTH),
+//       .ID_ENABLE            (ID_ENABLE),
+//       .S_ID_WIDTH           (ID_WIDTH),
+//       .DEST_ENABLE          (DEST_ENABLE),
+//       .DEST_WIDTH           (DEST_WIDTH),
+//       .USER_ENABLE          (USER_ENABLE),
+//       .USER_WIDTH           (USER_WIDTH),
+//       .LAST_ENABLE          (LAST_ENABLE),
+//       .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
+//       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
+//   ) arbiter_mux_inst (
+//       .clk          (clk_i),
+//       .rst          (rst_i),
+//       // AXI inputs
+//       .s_axis_tdata ({cpl_from_cfg_tdata, dllp_fc_tdata}),
+//       .s_axis_tkeep ({cpl_from_cfg_tkeep, dllp_fc_tkeep}),
+//       .s_axis_tvalid({cpl_from_cfg_tvalid, dllp_fc_tvalid}),
+//       .s_axis_tready({cpl_from_cfg_tready, dllp_fc_tready}),
+//       .s_axis_tlast ({cpl_from_cfg_tlast, dllp_fc_tlast}),
+//       .s_axis_tid   (),
+//       .s_axis_tdest (),
+//       .s_axis_tuser ({cpl_from_cfg_tuser, dllp_fc_tuser}),
+//       // AXI output
+//       .m_axis_tdata (m_axis_dllp2phy_tdata),
+//       .m_axis_tkeep (m_axis_dllp2phy_tkeep),
+//       .m_axis_tvalid(m_axis_dllp2phy_tvalid),
+//       .m_axis_tready(m_axis_dllp2phy_tready),
+//       .m_axis_tlast (m_axis_dllp2phy_tlast),
+//       .m_axis_tid   (),
+//       .m_axis_tdest (),
+//       .m_axis_tuser (m_axis_dllp2phy_tuser)
+//   );
   //mux the tready input...
   // assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
   // s_axis_tuser[UserIsTlp] ? tlp_ready : '0;
