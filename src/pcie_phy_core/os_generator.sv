@@ -50,8 +50,8 @@ module os_generator
   logic          [                           7:0] os_pkt_cnt_c;
   logic          [                           7:0] os_pkt_cnt_r;
 
-  logic          [(USER_WIDTH*MAX_NUM_LANES)-1:0] special_k_c;
-  logic          [(USER_WIDTH*MAX_NUM_LANES)-1:0] special_k_r;
+  logic          [(USER_WIDTH*8)-1:0] special_k_c;
+  logic          [(USER_WIDTH*8)-1:0] special_k_r;
 
   pcie_tsos_t    [             MAX_NUM_LANES-1:0] ordered_set_c;
   pcie_tsos_t    [             MAX_NUM_LANES-1:0] ordered_set_r;

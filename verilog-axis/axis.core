@@ -11,6 +11,7 @@ filesets:
       - rtl/axis_fifo.v
       - rtl/priority_encoder.v
       - rtl/axis_adapter.v
+      - rtl/axis_async_fifo.v
     file_type: systemVerilogSource
 
 targets:

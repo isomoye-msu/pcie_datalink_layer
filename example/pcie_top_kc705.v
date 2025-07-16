@@ -115,7 +115,7 @@ module pcie_top_kc705 #(
   );
 
   // Parameters
-  localparam CLK_RATE = 200;
+  localparam CLK_RATE = 100;
   localparam MAX_NUM_LANES = 1;
   localparam DATA_WIDTH = 32;
   localparam STRB_WIDTH = DATA_WIDTH / 8;
@@ -314,6 +314,8 @@ module pcie_top_kc705 #(
       .clk_i            (sys_clk),
       .rst_i            (!sys_rst_n),
       .en_i             (1'b1),
+      .pipe_rx_usr_clk_i(PIPE_RXUSRCLK_IN),
+      .pipe_tx_usr_clk_i(PIPE_TXOUTCLK_OUT),
       .fc_initialized_o (fc_initialized_o),
       .phy_txdata       (phy_txdata),
       .phy_txdata_valid (phy_txdata_valid),
@@ -710,7 +712,7 @@ module pcie_top_kc705 #(
       .PIPE_RXDATAK         (phy_rxdatak[3:0]),
       //---------- PIPE Command Ports ------------------
       .PIPE_TXDETECTRX      (phy_txdetectrx),
-      .PIPE_TXELECIDLE      (tx_elec_idle),
+      .PIPE_TXELECIDLE      (phy_txelecidle),
       .PIPE_TXCOMPLIANCE    (phy_txcompliance),
       .PIPE_RXPOLARITY      (phy_rxpolarity),
       .PIPE_POWERDOWN       (phy_powerdown),

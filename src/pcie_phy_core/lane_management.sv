@@ -51,6 +51,20 @@ module lane_management
   localparam int MaxWordsPerTransaction = 512 / DATA_WIDTH;
 
 
+  localparam int PcieDataSize = $size(
+      data_valid_r
+  ) + $size(
+      data_out_r
+  ) + $size(
+      block_start_r
+  ) + $size(
+      d_k_out_r
+  ) + $size(
+      sync_header_r
+  );
+
+
+
   //retry mechanism enum
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -93,6 +107,9 @@ module lane_management
 
   logic             [                             5:0] word_count_c;
   logic             [                             5:0] word_count_r;
+
+  logic             [                             5:0] fifo_word_count_c;
+  logic             [                             5:0] fifo_word_count_r;
   logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_c;
   logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_r;
   logic             [               MAX_NUM_LANES-1:0] data_valid_c;
@@ -138,6 +155,17 @@ module lane_management
   logic             [                         (4)-1:0] temp_d_k;
   logic             [                             7:0] current_byte;
 
+  logic                                                fifo_full;
+  logic                                                fifo_empty;
+
+
+  logic             [           (4*MAX_NUM_LANES)-1:0] d_k_out_temp;
+  logic             [           (2*MAX_NUM_LANES)-1:0] sync_header_temp;
+
+
+  logic                                                read_en_r;
+  logic                                                read_en_c;
+
 
 
   assign is_ordered_set = s_phy_axis_tvalid & s_phy_axis_tready;
@@ -146,23 +174,27 @@ module lane_management
 
   always_ff @(posedge clk_i) begin : main_seq_block
     if (rst_i || (pipe_width_c != pipe_width_r)) begin
-      pipe_width_r  <= PipeWidthGen1;
-      sync_count_r  <= '0;
-      sync_width_r  <= '0;
+      pipe_width_r      <= PipeWidthGen1;
+      sync_count_r      <= '0;
+      sync_width_r      <= '0;
       // sync_header_r <= '0;
-      d_k_out_r     <= '{default :'d0 };
-      axis_sync_r   <= '0;
-      data_valid_r  <= '0;
-      block_start_r <= '0;
-      curr_state    <= ST_IDLE;
+      d_k_out_r         <= '{default: 'd0};
+      axis_sync_r       <= '0;
+      data_valid_r      <= '0;
+      block_start_r     <= '0;
+      read_en_r         <= '0;
+      fifo_word_count_r <= '0;
+      curr_state        <= ST_IDLE;
     end else begin
-      block_start_r <= block_start_c;
-      sync_count_r  <= sync_count_c;
-      sync_width_r  <= sync_width_c;
-      d_k_out_r     <= d_k_out_c;
-      axis_sync_r   <= axis_sync_c;
-      data_valid_r  <= data_valid_c;
-      curr_state    <= next_state;
+      block_start_r     <= block_start_c;
+      sync_count_r      <= sync_count_c;
+      sync_width_r      <= sync_width_c;
+      d_k_out_r         <= d_k_out_c;
+      axis_sync_r       <= axis_sync_c;
+      data_valid_r      <= data_valid_c;
+      fifo_word_count_r <= fifo_word_count_c;
+      read_en_r         <= read_en_c;
+      curr_state        <= next_state;
     end
     pipe_width_r             <= pipe_width_c;
     // d_k_out_r                <= d_k_out_c;
@@ -266,7 +298,7 @@ module lane_management
     replace_lane_c           = replace_lane_r;
     input_byte_start_index_c = input_byte_start_index_r;
     ready_out                = '0;
-    complete_c               = complete_r;
+    complete_c               = '0;
     data_out                 = '0;
     lane_idx                 = '0;
     data_k_out               = '0;
@@ -383,6 +415,7 @@ module lane_management
                   lane_start_index_c = '0;
                   next_state         = ST_IDLE;
                   pkt_count_c        = '0;
+                  complete_c         = '1;
                   word_count_c       = '0;
                   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
                     if (lane < num_active_lanes_i) begin
@@ -419,7 +452,8 @@ module lane_management
       end
       ST_LANE_MNGT_TX_PHY: begin
         if (s_phy_axis_tvalid) begin
-          lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
+          // TODO: change to lane reversal flag ... lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
+          lane_idx = byte_count_r;
           bytes_sent_c = bytes_sent_r + 1'b1;
           byte_count_c = byte_count_r + 1'b1;
           if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
@@ -435,6 +469,7 @@ module lane_management
               bytes_sent_c = '0;
               if (s_phy_axis_tlast) begin
                 next_state   = ST_IDLE;
+                complete_c   = '1;
                 pkt_count_c  = '0;
                 word_count_c = '0;
               end
@@ -458,25 +493,54 @@ module lane_management
     endcase
   end
 
+  always_comb begin : set_sync_fifo_ready
+    read_en_c         = read_en_r;
+    fifo_word_count_c = fifo_word_count_r;
+    if (complete_c) begin
+      read_en_c = '1;
+      fifo_word_count_c = word_count_r;
+    end else if (read_en_r) begin
+      fifo_word_count_c = fifo_word_count_r - 1'b1;
+      if (fifo_word_count_r <= 32'b0) begin
+        read_en_c = '0;
+      end
+    end
+  end
 
   always_comb begin : flatten_decrambler
     for (int i = 0; i < MAX_NUM_LANES; i++) begin
       // data_out_o[32*i+:32]  = data_out_r[32*i+:32];
       // data_valid_o[i]       = data_valid_r[i];
-      d_k_out_o[4*i+:4]     = d_k_out_r[i];
-      sync_header_o[2*i+:2] = sync_header_r[i];
+      d_k_out_temp[4*i+:4]     = d_k_out_r[i];
+      sync_header_temp[2*i+:2] = sync_header_r[i];
     end
   end
 
 
+  //packed data storage fifo
+  synchronous_fifo #(
+      .DEPTH(100),
+      .DATA_WIDTH(PcieDataSize)
+  ) synchronous_fifo_inst (
+      .clk_i   (clk_i),
+      .rst_i   (rst_i),
+      .w_en_i  (data_valid_r),
+      .r_en_i  (read_en_r),
+      .data_in ({data_valid_r, data_out_r, block_start_r, d_k_out_temp,sync_header_temp}),
+      .data_out({data_valid_o, data_out_o, start_block_o, d_k_out_o,sync_header_o}),
+      .full_o  (fifo_full),
+      .empty_o (fifo_empty)
+  );
+
   // assign sync_header_o      = sync_header_r;
   assign s_dllp_axis_tready = ready_out & is_dllp_r;
   assign s_phy_axis_tready  = ready_out & is_phy_r;
-  assign data_valid_o       = data_valid_r;
+
   // assign data_valid_o       = data_valid_r;
-  // assign d_k_out_o          = d_k_out_r;
-  assign data_out_o         = data_out_r;
-  assign pipe_width_o       = pipe_width_r;
-  assign start_block_o      = block_start_r;
+  // // assign data_valid_o       = data_valid_r;
+  // // assign d_k_out_o          = d_k_out_r;
+  // assign data_out_o         = data_out_r;
+  // assign pipe_width_o       = pipe_width_r;
+  // assign start_block_o      = block_start_r;
 
 endmodule

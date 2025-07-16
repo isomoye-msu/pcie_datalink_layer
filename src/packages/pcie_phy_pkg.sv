@@ -279,7 +279,7 @@ package pcie_phy_pkg;
   } gen_os_struct_t;
 
 
-  typedef struct packed {logic [7:0][15:0] symbols;} pcie_ordered_set_t;
+  typedef struct packed {logic [15:0][7:0] symbols;} pcie_ordered_set_t;
 
 
 

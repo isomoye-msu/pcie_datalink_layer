@@ -18,6 +18,7 @@ filesets:
       - fusesoc:pcie:base_uvm
       - fusesoc:pcie:lint
       - fusesoc:pcie:phy_scrambler
+      - async_fifo
 
 targets:
   default:

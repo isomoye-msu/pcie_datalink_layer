@@ -20,6 +20,8 @@ module pcie_phy_top
     input  logic                                    clk_i,                 //! 100MHz clock signal
     input  logic                                    rst_i,                 //! Reset signal
     input  logic                                    en_i,
+    input  logic                                    pipe_rx_usr_clk_i,
+    input  logic                                    pipe_tx_usr_clk_i,
     // input  logic [                             5:0] num_active_lanes_i,
     // input  logic [               MAX_NUM_LANES-1:0] lane_active_i,
     // input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
@@ -106,6 +108,7 @@ module pcie_phy_top
   parameter int RETRY_TLP_SIZE = 3;
   parameter int MAX_PAYLOAD_SIZE = 256;
 
+
   logic                                      link_up;
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
   logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
@@ -122,8 +125,8 @@ module pcie_phy_top
   logic              [                  5:0] pipe_width;
   logic              [                  5:0] num_active_lanes_i;
 
-  assign pipe_width_o   = pipe_width;
-  assign phy_txelecidle = '0;
+  assign pipe_width_o = pipe_width;
+  // assign phy_txelecidle = '0;
 
 
   pcie_ordered_set_t [MAX_NUM_LANES-1:0] rx_ordered_set;
@@ -145,9 +148,9 @@ module pcie_phy_top
   logic              [MAX_NUM_LANES-1:0] active_lanes;
   logic              [MAX_NUM_LANES-1:0] lane_status;
 
-  assign phy_rate      = curr_data_rate;
-  assign phy_powerdown = '0;
-  assign link_up_o     = link_up;
+  assign phy_rate  = curr_data_rate - 1'b1;
+  // assign phy_powerdown = '0;
+  assign link_up_o = link_up;
 
   always_ff @(posedge clk_i) begin
     if (rst_i) begin
@@ -176,7 +179,8 @@ module pcie_phy_top
       .USER_WIDTH   (USER_WIDTH)
   ) phy_receive_inst (
       .clk_i             (clk_i),
-      .rst_i             (rst_i),
+      .rst_i             (rst_i || phy_phystatus_rst),
+      .pipe_rx_usr_clk_i (pipe_rx_usr_clk_i),
       .en_i              (en_i),
       .link_up_i         (link_up),
       .pipe_data_i       (phy_rxdata),
@@ -209,7 +213,9 @@ module pcie_phy_top
       .USER_WIDTH   (USER_WIDTH)
   ) phy_transmit_inst (
       .clk_i                   (clk_i),
-      .rst_i                   (rst_i),
+      .pipe_rx_usr_clk_i       (pipe_rx_usr_clk_i),
+      .pipe_tx_usr_clk_i       (pipe_tx_usr_clk_i),
+      .rst_i                   (rst_i || phy_phystatus_rst),
       .en_i                    (en_i),
       .link_up_i               (link_up),
       .pipe_data_o             (phy_txdata),
@@ -234,7 +240,6 @@ module pcie_phy_top
   );
 
 
-
   pcie_ltssm_downstream #(
       .CLK_RATE     (CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
@@ -242,29 +247,36 @@ module pcie_phy_top
       .KEEP_WIDTH   (KEEP_WIDTH),
       .USER_WIDTH   (USER_WIDTH)
   ) pcie_ltssm_downstream_inst (
-      .clk_i                   (clk_i),
-      .rst_i                   (rst_i),
-      .en_i                    (en_i),
-      .link_up_o               (link_up),
-      .is_timeout_i            (),
-      .recovery_i              (),
-      .error_o                 (),
-      .success_o               (),
-      .error_loopback_o        (),
-      .error_disable_o         (),
-      .ts1_valid_i             (ts1_valid),
-      .ts2_valid_i             (ts2_valid),
-      .idle_valid_i            (idle_valid),
-      .phy_rxstatus_i          (phy_rxstatus),
-      .phy_phystatus_i         (phy_phystatus),
-      .phy_phystatus_rst_i     (phy_phystatus_rst),
-      .phy_txdetectrx_o        (phy_txdetectrx),
-      .active_lanes_o          (active_lanes),
+      .clk_i              (pipe_rx_usr_clk_i),
+      .rst_i              (rst_i || phy_phystatus_rst),
+      .en_i               (en_i),
+      .link_up_o          (link_up),
+      .is_timeout_i       (),
+      .recovery_i         (),
+      .error_o            (),
+      .success_o          (),
+      .error_loopback_o   (),
+      .error_disable_o    (),
+      .ts1_valid_i        (ts1_valid),
+      .ts2_valid_i        (ts2_valid),
+      .idle_valid_i       (idle_valid),
+      .phy_rxstatus_i     (phy_rxstatus),
+      .phy_phystatus_i    (phy_phystatus),
+      .phy_phystatus_rst_i(phy_phystatus_rst),
+      .phy_txdetectrx_o   (phy_txdetectrx),
+      .active_lanes_o     (active_lanes),
+      .phy_txelecidle_o   (phy_txelecidle),
+      .phy_txdeemph_o     (phy_txdeemph),
+      .phy_powerdown_o    (phy_powerdown),
+      .phy_txcompliance_o (phy_txcompliance),
+      .phy_rxpolarity_o   (phy_rxpolarity),
+      .phy_txmargin_o     (phy_txmargin),
+
       //   .lane_active_i(lane_active_i),
       .lanes_ts2_satisfied_i   (),
       .config_copmlete_ts2_i   (),
       .from_l0_i               (),
-      .receiver_detected_i     (),
+      .receiver_detected_i     (lane_status),
       .phy_rxelecidle_i        (phy_rxelecidle),
       .tx_enter_elec_idle_o    (),
       .goto_cfg_o              (),

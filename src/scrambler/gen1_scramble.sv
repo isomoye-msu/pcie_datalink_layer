@@ -83,7 +83,7 @@ module gen1_scramble
         if (i < (pipe_width_i >> 3)) begin
           //check if special symbol
           if (data_k_in_i[byte_idx]) begin
-            if(data_in_i[i*8+:8] != PAD_) begin
+            if(data_in_i[byte_idx*8+:8] != PAD_) begin
               disable_scrambling = '0;
             end
             disable_scrambling[i] = '1;
@@ -91,7 +91,7 @@ module gen1_scramble
             //don't scramble
             data_out_c[byte_idx*8+:8] = data_in_i[byte_idx*8+:8];
             //check if comma
-            if (data_in_i[i*8+:8] == COM) begin
+            if (data_in_i[byte_idx*8+:8] == COM) begin
               //reset lfsr
               scramble_reset[i] = '1;
               disable_scrambling = '1;

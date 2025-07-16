@@ -16,6 +16,7 @@ module phy_receive
     //Control
     input  logic                                                 en_i,
     input  logic                                                 link_up_i,
+    input  logic                                                 pipe_rx_usr_clk_i,
     input  logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
     input  logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
     input  logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
@@ -82,6 +83,13 @@ module phy_receive
   logic                                    wr_en;
   logic                                    rd_en;
 
+
+//   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] fifo_pipe_data;
+//   logic [               MAX_NUM_LANES-1:0] fifo_pipe_data_valid;
+//   logic [           (4*MAX_NUM_LANES)-1:0] fifo_pipe_data_k;
+//   logic [           (2*MAX_NUM_LANES)-1:0] fifo_pipe_sync_header;
+//   logic [             (MAX_NUM_LANES)-1:0] fifo_pipe_block_start;
+
   localparam int PcieDataSize = $size(
       descrambler_data
   ) + $size(
@@ -91,6 +99,8 @@ module phy_receive
   ) + $size(
       descrambler_sync_header
   );
+
+  localparam int PcieLaneDataSize = 1 + DATA_WIDTH + 4 + 2 + 1;
 
 
   //   logic              [                  DATA_WIDTH-1:0] m_dllp_axis_tdata;
@@ -109,8 +119,21 @@ module phy_receive
 
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_lane_descramble
 
+    logic read_ready;
+    logic read_ready_reg;
+
+
+    always_ff @(posedge clk_i) begin
+      if (rst_i) begin
+        read_ready_reg <= '0;
+      end else begin
+        read_ready_reg <= read_ready == '0;
+      end
+    end
+
+
     scrambler descrambler_inst (
-        .clk_i           (clk_i),
+        .clk_i           (pipe_rx_usr_clk_i),
         .rst_i           (rst_i),
         .lane_number     (lane),
         .curr_data_rate_i(curr_data_rate_i),
@@ -127,13 +150,14 @@ module phy_receive
         .block_start_o   ()
     );
 
+
     ordered_set_handler #(
         .CLK_RATE  (CLK_RATE),
         .DATA_WIDTH(DATA_WIDTH),
         .KEEP_WIDTH(KEEP_WIDTH),
         .USER_WIDTH(USER_WIDTH)
     ) ordered_set_handler_inst (
-        .clk_i           (clk_i),
+        .clk_i           (pipe_rx_usr_clk_i),
         .rst_i           (rst_i),
         .curr_data_rate_i(curr_data_rate_i),
         .pipe_width_i    (pipe_width_i),
@@ -153,7 +177,7 @@ module phy_receive
       .DATA_WIDTH(DATA_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) block_alignment_inst (
-      .clk_i             (clk_i),
+      .clk_i             (pipe_rx_usr_clk_i),
       .rst_i             (rst_i),
       .phy_link_up_i     (link_up_i),
       .lane_reverse_i    ('0),
@@ -174,7 +198,7 @@ module phy_receive
       .DATA_WIDTH(DATA_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) pack_data_inst (
-      .clk_i             (clk_i),
+      .clk_i             (pipe_rx_usr_clk_i),
       .rst_i             (rst_i),
       .phy_link_up_i     (link_up_i),
       .lane_reverse_i    ('0),
@@ -193,20 +217,39 @@ module phy_receive
   );
 
 
+    async_fifo #(
+        .DSIZE(PcieDataSize),
+        .ASIZE(10)
+    ) async_fifo_inst (
+        .wclk(pipe_rx_usr_clk_i),
+        .wrst_n(!rst_i || link_up_i),
+        .winc(wr_en),
+        .wdata({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
+        .wfull(fifo_full),
+        .awfull(),
+        .rclk(clk_i),
+        .rrst_n(!rst_i),
+        .rinc(read_ready_reg),
+        .rdata({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
+        .rempty(fifo_empty),
+        .arempty()
+    );
+
+
   //packed data storage fifo
-  synchronous_fifo #(
-      .DEPTH(20),
-      .DATA_WIDTH(PcieDataSize)
-  ) synchronous_fifo_inst (
-      .clk_i   (clk_i),
-      .rst_i   (rst_i || !link_up_i),
-      .w_en_i  (wr_en),
-      .r_en_i  (rd_en),
-      .data_in ({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
-      .data_out({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
-      .full_o  (fifo_full),
-      .empty_o (fifo_empty)
-  );
+//   synchronous_fifo #(
+//       .DEPTH(20),
+//       .DATA_WIDTH(PcieDataSize)
+//   ) synchronous_fifo_inst (
+//       .clk_i   (clk_i),
+//       .rst_i   (rst_i || !link_up_i),
+//       .w_en_i  (wr_en),
+//       .r_en_i  (rd_en),
+//       .data_in ({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
+//       .data_out({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
+//       .full_o  (fifo_full),
+//       .empty_o (fifo_empty)
+//   );
 
   data_handler #(
       .DATA_WIDTH(DATA_WIDTH),
