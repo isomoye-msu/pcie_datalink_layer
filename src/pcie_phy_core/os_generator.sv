@@ -41,29 +41,43 @@ module os_generator
   } os_gen_state_e;
 
 
-  os_gen_state_e                                  curr_state;
-  os_gen_state_e                                  next_state;
+  // os_gen_state_e                                  curr_state;
+  // os_gen_state_e                                  D.state;
 
-  logic          [                           7:0] axis_pkt_cnt_c;
-  logic          [                           7:0] axis_pkt_cnt_r;
+  // logic          [                           7:0] D.axis_pkt_cnt;
+  // logic          [                           7:0] Q.axis_pkt_cnt;
 
-  logic          [                           7:0] os_pkt_cnt_c;
-  logic          [                           7:0] os_pkt_cnt_r;
+  // logic          [                           7:0] os_pkt_cnt_c;
+  // logic          [                           7:0] Q.os_pkt_cnt;
 
-  logic          [(USER_WIDTH*8)-1:0] special_k_c;
-  logic          [(USER_WIDTH*8)-1:0] special_k_r;
+  // logic          [(USER_WIDTH*8)-1:0] D.special_k;
+  // logic          [(USER_WIDTH*8)-1:0] Q.special_k;
 
-  pcie_tsos_t    [             MAX_NUM_LANES-1:0] ordered_set_c;
-  pcie_tsos_t    [             MAX_NUM_LANES-1:0] ordered_set_r;
+  // pcie_tsos_t    [             MAX_NUM_LANES-1:0] D.ordered_set;
+  // pcie_tsos_t    [             MAX_NUM_LANES-1:0] Q.ordered_set;
   //! internal_axis_signals
-  logic          [(DATA_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tdata;
-  logic          [(KEEP_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tkeep;
-  logic                                           ltssm_axis_tvalid;
-  logic                                           ltssm_axis_tlast;
-  logic          [(USER_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tuser;
-  logic                                           ltssm_axis_tready;
-  logic                                           os_sent_c;
+  logic [(DATA_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tdata;
+  logic [(KEEP_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tkeep;
+  logic                                  ltssm_axis_tvalid;
+  logic                                  ltssm_axis_tlast;
+  logic [(USER_WIDTH*MAX_NUM_LANES)-1:0] ltssm_axis_tuser;
+  logic                                  ltssm_axis_tready;
+  // logic                                           D.os_sent;
 
+
+  typedef struct {
+    os_gen_state_e                  state;
+    logic [7:0]                     axis_pkt_cnt;
+    logic [7:0]                     os_pkt_cnt;
+    logic [(USER_WIDTH*8)-1:0]      special_k;
+    pcie_tsos_t [MAX_NUM_LANES-1:0] ordered_set;
+    pcie_tsos_t                     temp_ordered_set;
+    logic                           os_sent;
+    gen_os_struct_t                 gen_os_ctrl;
+
+  } os_get_t;
+
+  os_get_t Q, D;
 
   // pcie_tsos_t        [             MAX_NUM_LANES-1:0] ordered_set_i;
 
@@ -71,28 +85,38 @@ module os_generator
   //! main sequential block
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state <= ST_IDLE;
-          ordered_set_r  <= '0;
-    os_sent_o      <= '0;
-    axis_pkt_cnt_r <= '0;
-    os_pkt_cnt_r   <= '0;
-    special_k_r    <= '0;
+      Q <= '{
+          state: ST_IDLE,
+          ordered_set: pcie_tsos_t'('0),
+          temp_ordered_set: pcie_tsos_t'('0),
+          gen_os_ctrl: gen_os_struct_t'(00),
+          default: 'd0
+      };
+      // curr_state     <= ST_IDLE;
+      // Q.ordered_set  <= '0;
+      // os_sent_o      <= '0;
+      // Q.axis_pkt_cnt <= '0;
+      // Q.os_pkt_cnt   <= '0;
+      // Q.special_k    <= '0;
     end else begin
-      curr_state <= next_state;
-          ordered_set_r  <= ordered_set_c;
-    os_sent_o      <= os_sent_c;
-    axis_pkt_cnt_r <= axis_pkt_cnt_c;
-    os_pkt_cnt_r   <= os_pkt_cnt_c;
-    special_k_r    <= special_k_c;
+      Q <= D;
+      // curr_state     <= D.state;
+      // Q.ordered_set  <= D.ordered_set;
+      // os_sent_o      <= D.os_sent;
+      // Q.axis_pkt_cnt <= D.axis_pkt_cnt;
+      // Q.os_pkt_cnt   <= os_pkt_cnt_c;
+      // Q.special_k    <= D.special_k;
     end
     //non-resetable
   end
 
+  assign os_sent_o = D.os_sent;
 
   always_comb begin : send_ordered_set
     pcie_tsos_t temp_os;
-    axis_pkt_cnt_c    = axis_pkt_cnt_r;
-    os_pkt_cnt_c      = os_pkt_cnt_r;
+    D                 = Q;
+    // D.axis_pkt_cnt    = Q.axis_pkt_cnt;
+    // os_pkt_cnt_c      = Q.os_pkt_cnt;
     //axis signals
     ltssm_axis_tdata  = '0;
     ltssm_axis_tkeep  = '0;
@@ -100,76 +124,85 @@ module os_generator
     ltssm_axis_tlast  = '0;
     ltssm_axis_tuser  = '0;
     // ordered_set_tx_in_process_c = ordered_set_tx_in_process_r;
-    next_state        = curr_state;
+    // D.state        = curr_state;
     //ordered set
-    ordered_set_c     = ordered_set_r;
-    os_sent_c         = '0;
-    temp_os           = ordered_set_r;
-    special_k_c       = special_k_r;
-    case (curr_state)
+    // D.ordered_set     = Q.ordered_set;
+    D.os_sent         = '0;
+    temp_os           = Q.ordered_set;
+    // D.special_k       = Q.special_k;
+    case (Q.state)
       ST_IDLE: begin
         if (gen_os_ctrl_i.valid) begin
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            ordered_set_c[i] = ordered_set_i;
+            D.ordered_set[i] = ordered_set_i;
           end
-          // ordered_set_c = ordered_set_i;
-          axis_pkt_cnt_c = '0;
-          next_state    = ST_BUILD;
+          D.temp_ordered_set = ordered_set_i;
+          // D.ordered_set = ordered_set_i;
+          D.axis_pkt_cnt     = '0;
+          D.gen_os_ctrl      = gen_os_ctrl_i;
+          D.state            = ST_BUILD;
         end
       end
       ST_BUILD: begin
-        os_pkt_cnt_c   = 32'd3;
-        special_k_c    = '0;
-        special_k_c[0] = '1;
-        axis_pkt_cnt_c = '0;
+        D.os_pkt_cnt   = 32'd3;
+        D.special_k    = '0;
+        D.special_k[0] = '1;
+        D.axis_pkt_cnt = '0;
         if ((gen_os_ctrl_i.gen_ts1 || gen_os_ctrl_i.gen_ts2)) begin
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            if (ordered_set_r[i].link_num == PAD_) begin
-              special_k_c[1] = '1;
+            if (Q.ordered_set[i].link_num == PAD_) begin
+              D.special_k[1] = '1;
             end
 
             if (gen_os_ctrl_i.set_lane) begin
-              ordered_set_c[i].lane_num = i;
+              D.ordered_set[i].lane_num = i;
             end else begin
-              special_k_c[2] = '1;
+              D.special_k[2] = '1;
             end
 
-            if (ordered_set_r[i].ts_s6.ts1.ec != '0) begin
-              ordered_set_c[i].ts_s6.ts1.trans_preset =
-              preset_i[i].lane_equal_reg.downstream_tx_preset;
-            end
+            // if (Q.ordered_set[i].ts_s6.ts1.ec != '0) begin
+            //   D.ordered_set[i].ts_s6.ts1.trans_preset =
+            //   preset_i[i].lane_equal_reg.downstream_tx_preset;
+            // end
           end
         end
 
         if (gen_os_ctrl_i.gen_idle) begin
-          special_k_c = '0;
+          D.special_k = '0;
           // os_pkt_cnt_c = 32'd1;
         end
 
-        if(gen_os_ctrl_i.gen_eios) begin
-          special_k_c = '1;
+        if (gen_os_ctrl_i.gen_eios) begin
+          D.special_k = '1;
         end
-        next_state = ST_SEND;
+        D.state = ST_SEND;
       end
       ST_SEND: begin
         //packet accepted or empty
         if (ltssm_axis_tready) begin
           //increment packet count
-          axis_pkt_cnt_c = axis_pkt_cnt_r + 1;
+          D.axis_pkt_cnt = Q.axis_pkt_cnt + 1;
           //build axis packet
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            ltssm_axis_tdata[32*i+:32] = ordered_set_r[i][32*axis_pkt_cnt_r+:32];
+            ltssm_axis_tdata[32*i+:32] = Q.ordered_set[i][32*Q.axis_pkt_cnt+:32];
           end
-          ltssm_axis_tuser  = special_k_r[USER_WIDTH*axis_pkt_cnt_r+:USER_WIDTH];
+          ltssm_axis_tuser  = Q.special_k[USER_WIDTH*Q.axis_pkt_cnt+:USER_WIDTH];
           ltssm_axis_tkeep  = '1;
           ltssm_axis_tvalid = '1;
           ltssm_axis_tlast  = '0;
-          if (axis_pkt_cnt_r >= os_pkt_cnt_r) begin
-            next_state       = ST_IDLE;
+          if (Q.axis_pkt_cnt >= Q.os_pkt_cnt) begin
+            //this hack allows for streamin uninterrupted ordered sets
+            //required by the GTP/GTX transievers
+            if (Q.gen_os_ctrl == gen_os_ctrl_i && !send_ltssm_os_i
+            && (ordered_set_i == Q.temp_ordered_set)) begin
+
+            end else begin
+              D.state = ST_IDLE;
+            end
             //assert last
             ltssm_axis_tlast = '1;
-            os_sent_c        = '1;
-            axis_pkt_cnt_c   = '0;
+            D.os_sent        = '1;
+            D.axis_pkt_cnt   = '0;
           end
 
         end

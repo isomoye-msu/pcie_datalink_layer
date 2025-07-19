@@ -1,0 +1,660 @@
+#-----------------------------------------------------------
+# Vivado v2022.1 (64-bit)
+# SW Build 3526262 on Mon Apr 18 15:47:01 MDT 2022
+# IP Build 3524634 on Mon Apr 18 20:55:01 MDT 2022
+# Start of session at: Fri Jul 18 21:42:55 2025
+# Process ID: 4176428
+# Current directory: /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1
+# Command line: vivado -log pcie_7x_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source pcie_7x_0.tcl
+# Log file: /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/pcie_7x_0.vds
+# Journal file: /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/vivado.jou
+# Running On: capc-ub22-is, OS: Linux, CPU Frequency: 2793.437 MHz, CPU Physical cores: 16, Host memory: 33607 MB
+#-----------------------------------------------------------
+source pcie_7x_0.tcl -notrace
+create_project: Time (s): cpu = 00:00:08 ; elapsed = 00:00:09 . Memory (MB): peak = 2888.375 ; gain = 0.023 ; free physical = 3123 ; free virtual = 15323
+Command: synth_design -top pcie_7x_0 -part xc7k325tffg900-2 -incremental_mode off -mode out_of_context
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7k325t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7k325t'
+INFO: [Common 17-86] Your Synthesis license expires in 8 day(s)
+INFO: [Common 17-1540] The version limit for your license is '2025.03' and has expired for new software. A version limit expiration means that, although you may be able to continue to use the current version of tools or IP with this license, you will not be eligible for new releases.
+INFO: [Device 21-403] Loading part xc7k325tffg900-2
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 4 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 4176524
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:04 ; elapsed = 00:00:04 . Memory (MB): peak = 2896.379 ; gain = 0.000 ; free physical = 1251 ; free virtual = 13451
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0.v:53]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie2_top' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie2_top.v:58]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_core_top' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_core_top.v:62]
+INFO: [Synth 8-6157] synthesizing module 'xpm_cdc_single' [/tools/C/research/tools/Xilinx/Vivado/2022.1/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv:152]
+INFO: [Synth 8-6155] done synthesizing module 'xpm_cdc_single' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/data/ip/xpm/xpm_cdc/hdl/xpm_cdc.sv:152]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_top' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_top.v:61]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_top' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_top.v:67]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_rx' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx.v:69]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_rx_pipeline' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx_pipeline.v:69]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_rx_pipeline' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx_pipeline.v:69]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_rx_null_gen' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx_null_gen.v:70]
+INFO: [Synth 8-226] default block is never used [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx_null_gen.v:252]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_rx_null_gen' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx_null_gen.v:70]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_rx' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_rx.v:69]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_tx' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx.v:69]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_tx_thrtl_ctl' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_thrtl_ctl.v:70]
+INFO: [Synth 8-226] default block is never used [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_thrtl_ctl.v:572]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_tx_thrtl_ctl' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_thrtl_ctl.v:70]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_axi_basic_tx_pipeline' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_pipeline.v:70]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_tx_pipeline' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_pipeline.v:70]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_tx' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx.v:69]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_axi_basic_top' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_top.v:67]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_7x' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_7x.v:62]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_bram_top_7x' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:71]
+WARNING: [Synth 8-639] system function call 'time' not supported [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:138]
+INFO: [Synth 8-251] [1'b0]  ROWS_TX 1 COLS_TX 4 [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:138]
+WARNING: [Synth 8-639] system function call 'time' not supported [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:139]
+INFO: [Synth 8-251] [1'b0]  ROWS_RX 1 COLS_RX 4 [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:139]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_brams_7x' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_brams_7x.v:64]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_bram_7x' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_7x.v:62]
+INFO: [Synth 8-6157] synthesizing module 'xil_internal_svlib_BRAM_TDP_MACRO' [/tools/C/research/tools/Xilinx/Vivado/2022.1/data/verilog/src/unimacro/BRAM_TDP_MACRO.v:30]
+INFO: [Synth 8-6157] synthesizing module 'RAMB36E1' [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:103900]
+INFO: [Synth 8-6155] done synthesizing module 'RAMB36E1' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:103900]
+INFO: [Synth 8-6155] done synthesizing module 'xil_internal_svlib_BRAM_TDP_MACRO' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/data/verilog/src/unimacro/BRAM_TDP_MACRO.v:30]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_bram_7x' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_7x.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_brams_7x' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_brams_7x.v:64]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_bram_top_7x' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_bram_top_7x.v:71]
+INFO: [Synth 8-6157] synthesizing module 'PCIE_2_1' [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:84722]
+INFO: [Synth 8-6155] done synthesizing module 'PCIE_2_1' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:84722]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_7x' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_7x.v:62]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_pipe_pipeline' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_pipeline.v:62]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_pipe_misc' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_misc.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_pipe_misc' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_misc.v:62]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pcie_pipe_lane' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_lane.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_pipe_lane' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_lane.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_pipe_pipeline' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_pipe_pipeline.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie_top' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie_top.v:61]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gt_top' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_top.v:61]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gt_rx_valid_filter_7x' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:61]
+INFO: [Synth 8-155] case statement is not full and has no default [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:190]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gt_rx_valid_filter_7x' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:61]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_wrapper' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_wrapper.v:155]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_reset' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_reset.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_reset' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_reset.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_qpll_reset' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_reset.v:65]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_qpll_reset' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_reset.v:65]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_rate' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_rate.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_rate' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_rate.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_drp' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_drp.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_drp' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_drp.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_eq' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_eq.v:66]
+INFO: [Synth 8-226] default block is never used [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_eq.v:401]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_rxeq_scan' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_rxeq_scan.v:65]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_rxeq_scan' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_rxeq_scan.v:65]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_eq' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_eq.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gt_common' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_common.v:55]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_qpll_drp' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_drp.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_qpll_drp' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_drp.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_qpll_wrapper' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_wrapper.v:66]
+INFO: [Synth 8-6157] synthesizing module 'GTXE2_COMMON' [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:37795]
+INFO: [Synth 8-6155] done synthesizing module 'GTXE2_COMMON' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:37795]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gtp_cpllpd_ovrd' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gtp_cpllpd_ovrd.v:54]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gtp_cpllpd_ovrd' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gtp_cpllpd_ovrd.v:54]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_qpll_wrapper' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_qpll_wrapper.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gt_common' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_common.v:55]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_user' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_user.v:66]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_user' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_user.v:66]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_pipe_sync' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_sync.v:71]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_sync' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_sync.v:71]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gt_wrapper' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_wrapper.v:66]
+INFO: [Synth 8-6157] synthesizing module 'GTXE2_CHANNEL' [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:37122]
+INFO: [Synth 8-6155] done synthesizing module 'GTXE2_CHANNEL' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:37122]
+INFO: [Synth 8-6157] synthesizing module 'pcie_7x_0_gtx_cpllpd_ovrd' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gtx_cpllpd_ovrd.v:54]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gtx_cpllpd_ovrd' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gtx_cpllpd_ovrd.v:54]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gt_wrapper' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_wrapper.v:66]
+INFO: [Synth 8-6157] synthesizing module 'BUFG' [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:1082]
+INFO: [Synth 8-6155] done synthesizing module 'BUFG' (0#1) [/tools/C/research/tools/Xilinx/Vivado/2022.1/scripts/rt/data/unisim_comp.v:1082]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pipe_wrapper' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_wrapper.v:155]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_gt_top' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_top.v:61]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_core_top' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_core_top.v:62]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0_pcie2_top' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pcie2_top.v:58]
+WARNING: [Synth 8-7071] port 'pipe_debug_0' of module 'pcie_7x_0_pcie2_top' is unconnected for instance 'inst' [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0.v:816]
+WARNING: [Synth 8-7023] instance 'inst' of module 'pcie_7x_0_pcie2_top' has 295 connections declared, but only 294 given [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0.v:816]
+INFO: [Synth 8-6155] done synthesizing module 'pcie_7x_0' (0#1) [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0.v:53]
+WARNING: [Synth 8-6014] Unused sequential element trn_rdllp_src_rdy_d_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_thrtl_ctl.v:420]
+WARNING: [Synth 8-6014] Unused sequential element reg_tlast_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_thrtl_ctl.v:654]
+WARNING: [Synth 8-6014] Unused sequential element flush_axi_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_axi_basic_tx_pipeline.v:527]
+WARNING: [Synth 8-6014] Unused sequential element reg_eios_detected_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:134]
+WARNING: [Synth 8-6014] Unused sequential element gt_rx_is_skp0_q_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:143]
+WARNING: [Synth 8-6014] Unused sequential element gt_rx_is_skp1_q_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_gt_rx_valid_filter_7x.v:144]
+WARNING: [Synth 8-6014] Unused sequential element resetovrd_disble.reset_cnt_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_user.v:383]
+WARNING: [Synth 8-6014] Unused sequential element gen3_rdy_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_user.v:561]
+WARNING: [Synth 8-6014] Unused sequential element rxsync_fsm_disable.rxsync_done_reg was removed.  [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0_pipe_sync.v:612]
+WARNING: [Synth 8-7129] Port GT_TXPHDLYRESET in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_TXSYNCMODE in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_TXSYNCIN in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_TXSYNCALLIN in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_RXSYNCMODE in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_RXSYNCIN in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port GT_RXSYNCALLIN in module pcie_7x_0_gt_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port INT_QPLLLOCK_OUT[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port INT_QPLLOUTCLK_OUT[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port INT_QPLLOUTREFCLK_OUT[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLRESET[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port PIPE_MMCM_RST_N in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port INT_PCLK_SEL_SLAVE[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port PIPE_RXOUTCLK_IN[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[11] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[10] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[9] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[8] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[7] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[6] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[5] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[4] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[3] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[2] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_CRSCODE[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[17] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[16] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[15] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[14] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[13] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[12] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[11] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[10] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[9] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[8] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[7] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[6] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[5] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[4] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[3] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[2] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_FSM[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_DONE[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_DONE[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_RESET[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_DRP_RESET[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLLOCK[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLLOCK[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLOUTCLK[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLOUTCLK[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLOUTREFCLK[1] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port QPLL_QPLLOUTREFCLK[0] in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port PIPE_JTAG_EN in module pcie_7x_0_pipe_wrapper is either unconnected or has no load
+WARNING: [Synth 8-7129] Port PLM_IN_RS in module pcie_7x_0_gt_rx_valid_filter_7x is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx_reset in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_rx1_polarity in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_compliance in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_char_is_k[1] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_char_is_k[0] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[15] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[14] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[13] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[12] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[11] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[10] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[9] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[8] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[7] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[6] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[5] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[4] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[3] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[2] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[1] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_data[0] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_elec_idle in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_powerdown[1] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx1_powerdown[0] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_rx2_polarity in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_compliance in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_char_is_k[1] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_char_is_k[0] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[15] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[14] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[13] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[12] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[11] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[10] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[9] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[8] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[7] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[6] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[5] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[4] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[3] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[2] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[1] in module pcie_7x_0_gt_top is either unconnected or has no load
+WARNING: [Synth 8-7129] Port pipe_tx2_data[0] in module pcie_7x_0_gt_top is either unconnected or has no load
+INFO: [Common 17-14] Message 'Synth 8-7129' appears 100 times and further instances of the messages will be disabled. Use the Tcl command set_msg_config to change the current settings.
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 2896.379 ; gain = 0.000 ; free physical = 2286 ; free virtual = 14487
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2896.379 ; gain = 0.000 ; free physical = 2282 ; free virtual = 14483
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:08 . Memory (MB): peak = 2896.379 ; gain = 0.000 ; free physical = 2282 ; free virtual = 14483
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00.06 ; elapsed = 00:00:00.06 . Memory (MB): peak = 2896.379 ; gain = 0.000 ; free physical = 2275 ; free virtual = 14476
+INFO: [Netlist 29-17] Analyzing 8 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0_ooc.xdc] for cell 'inst'
+Finished Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/synth/pcie_7x_0_ooc.xdc] for cell 'inst'
+Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0-PCIE_X0Y0.xdc] for cell 'inst'
+Finished Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0-PCIE_X0Y0.xdc] for cell 'inst'
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/source/pcie_7x_0-PCIE_X0Y0.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/pcie_7x_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/pcie_7x_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/dont_touch.xdc]
+Finished Parsing XDC File [/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/dont_touch.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [/tools/C/research/tools/Xilinx/Vivado/2022.1/data/ip/xpm/xpm_cdc/tcl/xpm_cdc_single.tcl]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/pcie_7x_0_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/pcie_7x_0_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+INFO: [Project 1-1714] 2 XPM XDC files have been applied to the design.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 3004.223 ; gain = 0.000 ; free physical = 2197 ; free virtual = 14399
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00.07 ; elapsed = 00:00:00.07 . Memory (MB): peak = 3004.223 ; gain = 0.000 ; free physical = 2197 ; free virtual = 14399
+INFO: [Designutils 20-5008] Incremental synthesis strategy off
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2293 ; free virtual = 14494
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7k325tffg900-2
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2293 ; free virtual = 14494
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+Applied set_property KEEP_HIERARCHY = SOFT for inst. (constraint file  /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/dont_touch.xdc, line 9).
+Applied set_property KEEP_HIERARCHY = SOFT for inst/inst/phy_lnk_up_cdc. (constraint file  auto generated constraint).
+Applied set_property KEEP_HIERARCHY = SOFT for inst/inst/pl_received_hot_rst_cdc. (constraint file  auto generated constraint).
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:15 ; elapsed = 00:00:16 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2292 ; free virtual = 14494
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'reg_state_eios_det_reg' in module 'pcie_7x_0_gt_rx_valid_filter_7x'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_reg' in module 'pcie_7x_0_pipe_reset'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_reg' in module 'pcie_7x_0_qpll_reset'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_reg' in module 'pcie_7x_0_rxeq_scan'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_tx_reg' in module 'pcie_7x_0_pipe_eq'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_rx_reg' in module 'pcie_7x_0_pipe_eq'
+INFO: [Synth 8-802] inferred FSM for state register 'fsm_reg' in module 'pcie_7x_0_qpll_drp'
+INFO: [Synth 8-802] inferred FSM for state register 'txsync_fsm.fsm_tx_reg' in module 'pcie_7x_0_pipe_sync'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+*
+            EIOS_DET_IDL |                            00001 |                            00001
+        EIOS_DET_NO_STR0 |                            00010 |                            00010
+           EIOS_DET_STR0 |                            00100 |                            00100
+           EIOS_DET_STR1 |                            01000 |                            01000
+           EIOS_DET_DONE |                            10000 |                            10000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3898] No Re-encoding of one hot register 'reg_state_eios_det_reg' in module 'pcie_7x_0_gt_rx_valid_filter_7x'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+            FSM_CFG_WAIT |                00000000000000010 |                            00001
+           FSM_CPLLRESET |                00000000000000001 |                            00010
+            FSM_CPLLLOCK |                00000000100000000 |                            00101
+                 FSM_DRP |                00100000000000000 |                            00110
+             FSM_GTRESET |                00010000000000000 |                            00111
+           FSM_MMCM_LOCK |                00000000000100000 |                            01100
+           FSM_RESETDONE |                00000000000010000 |                            01101
+             FSM_CPLL_PD |                00000000000000100 |                            01110
+        FSM_TXSYNC_START |                00000000000001000 |                            01111
+         FSM_TXSYNC_DONE |                00000001000000000 |                            10000
+                FSM_IDLE |                00000010000000000 |                            00000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'fsm_reg' using encoding 'one-hot' in module 'pcie_7x_0_pipe_reset'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+           FSM_WAIT_LOCK |                         00000001 |                             0010
+           FSM_MMCM_LOCK |                         00000010 |                             0011
+       FSM_DRP_START_NOM |                         00000100 |                             0100
+        FSM_DRP_DONE_NOM |                         00001000 |                             0101
+            FSM_QPLLLOCK |                         00010000 |                             0110
+        FSM_QPLL_PDRESET |                         00100000 |                             1011
+             FSM_QPLL_PD |                         01000000 |                             1100
+                FSM_IDLE |                         10000000 |                             0001
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'fsm_reg' using encoding 'one-hot' in module 'pcie_7x_0_qpll_reset'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  iSTATE |                            00001 |                             0000
+*
+                FSM_IDLE |                            00010 |                             0001
+              FSM_PRESET |                            00100 |                             0010
+            FSM_CONVERGE |                            01000 |                             0100
+     FSM_NEW_TXCOEFF_REQ |                            10000 |                             1000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'fsm_reg' using encoding 'one-hot' in module 'pcie_7x_0_rxeq_scan'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  iSTATE |                              000 |                           000000
+*
+           FSM_TXEQ_IDLE |                              001 |                           000001
+         FSM_TXEQ_PRESET |                              010 |                           000010
+        FSM_TXEQ_TXCOEFF |                              011 |                           000100
+          FSM_TXEQ_REMAP |                              100 |                           001000
+          FSM_TXEQ_QUERY |                              101 |                           010000
+           FSM_TXEQ_DONE |                              110 |                           100000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'fsm_tx_reg' using encoding 'sequential' in module 'pcie_7x_0_pipe_eq'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  iSTATE |                          0000001 |                           000000
+*
+           FSM_RXEQ_IDLE |                          0000010 |                           000001
+         FSM_RXEQ_PRESET |                          0000100 |                           000010
+        FSM_RXEQ_TXCOEFF |                          0001000 |                           000100
+             FSM_RXEQ_LF |                          0010000 |                           001000
+FSM_RXEQ_NEW_TXCOEFF_REQ |                          0100000 |                           010000
+           FSM_RXEQ_DONE |                          1000000 |                           100000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'fsm_rx_reg' using encoding 'one-hot' in module 'pcie_7x_0_pipe_eq'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+*
+                FSM_IDLE |                        000000001 |                        000000001
+                FSM_LOAD |                        000000010 |                        000000010
+                FSM_READ |                        000000100 |                        000000100
+                FSM_RRDY |                        000001000 |                        000001000
+               FSM_WRITE |                        000010000 |                        000010000
+                FSM_WRDY |                        000100000 |                        000100000
+                FSM_DONE |                        001000000 |                        001000000
+           FSM_QPLLRESET |                        010000000 |                        010000000
+            FSM_QPLLLOCK |                        100000000 |                        100000000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3898] No Re-encoding of one hot register 'fsm_reg' in module 'pcie_7x_0_qpll_drp'
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                  iSTATE |                          0000001 |                           000000
+*
+         FSM_TXSYNC_IDLE |                          0000010 |                           000001
+           FSM_MMCM_LOCK |                          0000100 |                           000010
+        FSM_TXSYNC_START |                          0001000 |                           000100
+        FSM_TXPHINITDONE |                          0010000 |                           001000
+        FSM_TXSYNC_DONE1 |                          0100000 |                           010000
+        FSM_TXSYNC_DONE2 |                          1000000 |                           100000
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'txsync_fsm.fsm_tx_reg' using encoding 'one-hot' in module 'pcie_7x_0_pipe_sync'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:17 ; elapsed = 00:00:19 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2273 ; free virtual = 14476
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   2 Input   22 Bit       Adders := 1     
+	   2 Input   12 Bit       Adders := 1     
+	   2 Input   11 Bit       Adders := 1     
+	   2 Input    6 Bit       Adders := 2     
+	   2 Input    5 Bit       Adders := 1     
+	   2 Input    4 Bit       Adders := 3     
+	   2 Input    3 Bit       Adders := 3     
+	   2 Input    2 Bit       Adders := 5     
+	   2 Input    1 Bit       Adders := 2     
++---Registers : 
+	              128 Bit    Registers := 2     
+	               96 Bit    Registers := 2     
+	               64 Bit    Registers := 3     
+	               22 Bit    Registers := 2     
+	               19 Bit    Registers := 1     
+	               18 Bit    Registers := 8     
+	               16 Bit    Registers := 7     
+	               12 Bit    Registers := 1     
+	                8 Bit    Registers := 6     
+	                7 Bit    Registers := 2     
+	                6 Bit    Registers := 17    
+	                5 Bit    Registers := 3     
+	                4 Bit    Registers := 11    
+	                3 Bit    Registers := 13    
+	                2 Bit    Registers := 20    
+	                1 Bit    Registers := 262   
++---Muxes : 
+	   2 Input   64 Bit        Muxes := 1     
+	   2 Input   22 Bit        Muxes := 4     
+	   5 Input   22 Bit        Muxes := 1     
+	   2 Input   19 Bit        Muxes := 1     
+	   7 Input   19 Bit        Muxes := 1     
+	   2 Input   18 Bit        Muxes := 3     
+	  24 Input   18 Bit        Muxes := 1     
+	   7 Input   18 Bit        Muxes := 2     
+	  11 Input   17 Bit        Muxes := 1     
+	   2 Input   17 Bit        Muxes := 8     
+	   2 Input   16 Bit        Muxes := 5     
+	   2 Input   15 Bit        Muxes := 2     
+	   2 Input   14 Bit        Muxes := 2     
+	   2 Input   13 Bit        Muxes := 1     
+	   2 Input   12 Bit        Muxes := 4     
+	   2 Input   10 Bit        Muxes := 1     
+	  10 Input    9 Bit        Muxes := 1     
+	   2 Input    9 Bit        Muxes := 3     
+	   3 Input    9 Bit        Muxes := 1     
+	   5 Input    8 Bit        Muxes := 1     
+	   2 Input    8 Bit        Muxes := 10    
+	   8 Input    8 Bit        Muxes := 2     
+	   3 Input    8 Bit        Muxes := 1     
+	   2 Input    7 Bit        Muxes := 13    
+	   7 Input    7 Bit        Muxes := 2     
+	   4 Input    7 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 2     
+	   7 Input    6 Bit        Muxes := 3     
+	   8 Input    6 Bit        Muxes := 1     
+	   2 Input    5 Bit        Muxes := 30    
+	   3 Input    5 Bit        Muxes := 1     
+	   6 Input    5 Bit        Muxes := 1     
+	  11 Input    5 Bit        Muxes := 1     
+	   8 Input    5 Bit        Muxes := 1     
+	   5 Input    5 Bit        Muxes := 1     
+	   2 Input    4 Bit        Muxes := 10    
+	   8 Input    4 Bit        Muxes := 1     
+	   3 Input    4 Bit        Muxes := 2     
+	   7 Input    4 Bit        Muxes := 1     
+	   2 Input    3 Bit        Muxes := 16    
+	   3 Input    3 Bit        Muxes := 1     
+	  32 Input    3 Bit        Muxes := 1     
+	   7 Input    3 Bit        Muxes := 3     
+	   4 Input    3 Bit        Muxes := 1     
+	  10 Input    3 Bit        Muxes := 1     
+	   4 Input    2 Bit        Muxes := 1     
+	   2 Input    2 Bit        Muxes := 6     
+	  32 Input    2 Bit        Muxes := 1     
+	   7 Input    2 Bit        Muxes := 1     
+	   2 Input    1 Bit        Muxes := 53    
+	   6 Input    1 Bit        Muxes := 3     
+	  11 Input    1 Bit        Muxes := 3     
+	   8 Input    1 Bit        Muxes := 8     
+	  32 Input    1 Bit        Muxes := 19    
+	   5 Input    1 Bit        Muxes := 8     
+	   4 Input    1 Bit        Muxes := 2     
+	   7 Input    1 Bit        Muxes := 17    
+	  10 Input    1 Bit        Muxes := 3     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 840 (col length:140)
+BRAMs: 890 (col length: RAMB18 140 RAMB36 70)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+WARNING: [Synth 8-7080] Parallel synthesis criteria is not met
+INFO: [Synth 8-3332] Sequential element (inst/gt_top_i/pipe_wrapper_i/pipe_reset.pipe_reset_i/FSM_onehot_fsm_reg[12]) is unused and will be removed from module pcie_7x_0_pcie2_top.
+INFO: [Synth 8-3332] Sequential element (inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_eq.pipe_eq_i/rxeq_scan_i/FSM_onehot_fsm_reg[0]) is unused and will be removed from module pcie_7x_0_pcie2_top.
+INFO: [Synth 8-3332] Sequential element (inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_eq.pipe_eq_i/FSM_onehot_fsm_rx_reg[0]) is unused and will be removed from module pcie_7x_0_pcie2_top.
+INFO: [Synth 8-3332] Sequential element (inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_sync_i/FSM_onehot_txsync_fsm.fsm_tx_reg[0]) is unused and will be removed from module pcie_7x_0_pcie2_top.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:22 ; elapsed = 00:00:24 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2253 ; free virtual = 14464
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:27 ; elapsed = 00:00:29 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2074 ; free virtual = 14285
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Timing Optimization : Time (s): cpu = 00:00:28 ; elapsed = 00:00:30 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2041 ; free virtual = 14253
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Technology Mapping
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Technology Mapping : Time (s): cpu = 00:00:29 ; elapsed = 00:00:31 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2045 ; free virtual = 14256
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Flattening Before IO Insertion
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Final Netlist Cleanup
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished IO Insertion : Time (s): cpu = 00:00:33 ; elapsed = 00:00:35 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2059 ; free virtual = 14270
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Instances
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Instances : Time (s): cpu = 00:00:33 ; elapsed = 00:00:35 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2059 ; free virtual = 14270
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Rebuilding User Hierarchy
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Rebuilding User Hierarchy : Time (s): cpu = 00:00:33 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2060 ; free virtual = 14271
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Ports
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Ports : Time (s): cpu = 00:00:33 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2060 ; free virtual = 14272
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:33 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2062 ; free virtual = 14273
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Renaming Generated Nets
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Renaming Generated Nets : Time (s): cpu = 00:00:33 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2062 ; free virtual = 14273
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Static Shift Register Report:
++--------------------+-------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|Module Name         | RTL Name                                                                                  | Length | Width | Reset Signal | Pull out first Reg | Pull out last Reg | SRL16E | SRLC32E | 
++--------------------+-------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+|pcie_7x_0_pcie2_top | inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[95]     | 96     | 1     | NO           | NO                 | YES               | 0      | 3       | 
+|pcie_7x_0_pcie2_top | inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[127] | 128    | 1     | NO           | NO                 | YES               | 0      | 4       | 
+|pcie_7x_0_pcie2_top | inst/ltssm_reg2_reg[5]                                                                    | 3      | 6     | NO           | NO                 | YES               | 6      | 0       | 
++--------------------+-------------------------------------------------------------------------------------------+--------+-------+--------------+--------------------+-------------------+--------+---------+
+
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Writing Synthesis Report
+---------------------------------------------------------------------------------
+
+Report BlackBoxes: 
++-+--------------+----------+
+| |BlackBox name |Instances |
++-+--------------+----------+
++-+--------------+----------+
+
+Report Cell Usage: 
++------+--------------+------+
+|      |Cell          |Count |
++------+--------------+------+
+|1     |BUFG          |     1|
+|2     |CARRY4        |    18|
+|3     |GTXE2_CHANNEL |     1|
+|4     |GTXE2_COMMON  |     1|
+|5     |LUT1          |    46|
+|6     |LUT2          |   109|
+|7     |LUT3          |   157|
+|8     |LUT4          |    91|
+|9     |LUT5          |   155|
+|10    |LUT6          |   190|
+|11    |MUXF7         |    10|
+|12    |PCIE_2        |     1|
+|13    |RAMB36E1      |     8|
+|14    |SRL16E        |     6|
+|15    |SRLC32E       |     7|
+|16    |FDCE          |     9|
+|17    |FDPE          |     2|
+|18    |FDRE          |  1017|
+|19    |FDSE          |    21|
++------+--------------+------+
+---------------------------------------------------------------------------------
+Finished Writing Synthesis Report : Time (s): cpu = 00:00:33 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2062 ; free virtual = 14273
+---------------------------------------------------------------------------------
+Synthesis finished with 0 errors, 0 critical warnings and 382 warnings.
+Synthesis Optimization Runtime : Time (s): cpu = 00:00:30 ; elapsed = 00:00:32 . Memory (MB): peak = 3004.223 ; gain = 0.000 ; free physical = 2110 ; free virtual = 14321
+Synthesis Optimization Complete : Time (s): cpu = 00:00:34 ; elapsed = 00:00:36 . Memory (MB): peak = 3004.223 ; gain = 107.844 ; free physical = 2110 ; free virtual = 14321
+INFO: [Project 1-571] Translating synthesized netlist
+Netlist sorting complete. Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.04 . Memory (MB): peak = 3004.223 ; gain = 0.000 ; free physical = 2197 ; free virtual = 14408
+INFO: [Netlist 29-17] Analyzing 36 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Opt 31-138] Pushed 0 inverter(s) to 0 load pin(s).
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 3041.160 ; gain = 0.000 ; free physical = 2139 ; free virtual = 14350
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Synth Design complete, checksum: 49068bdb
+INFO: [Common 17-83] Releasing license: Synthesis
+133 Infos, 114 Warnings, 0 Critical Warnings and 0 Errors encountered.
+synth_design completed successfully
+synth_design: Time (s): cpu = 00:00:43 ; elapsed = 00:00:43 . Memory (MB): peak = 3041.160 ; gain = 152.785 ; free physical = 2382 ; free virtual = 14593
+INFO: [Common 17-1381] The checkpoint '/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/pcie_7x_0.dcp' has been generated.
+INFO: [Coretcl 2-1648] Added synthesis output to IP cache for IP pcie_7x_0, cache-ID = 47a3b8e35ea983d0
+INFO: [Coretcl 2-1174] Renamed 10 cell refs.
+INFO: [Common 17-1381] The checkpoint '/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.runs/pcie_7x_0_synth_1/pcie_7x_0.dcp' has been generated.
+INFO: [runtcl-4] Executing : report_utilization -file pcie_7x_0_utilization_synth.rpt -pb pcie_7x_0_utilization_synth.pb
+INFO: [Common 17-206] Exiting Vivado at Fri Jul 18 21:43:59 2025...

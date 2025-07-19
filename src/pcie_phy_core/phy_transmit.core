@@ -5,6 +5,9 @@ description: pcie physical layer transmit block
 filesets:
   rtl:
     files:
+      - lfsr.v
+      - synchronous_lifo.sv
+      - synchronous_fifo.sv
       - lane_management.sv
       - frame_symbols.sv
       - os_generator.sv

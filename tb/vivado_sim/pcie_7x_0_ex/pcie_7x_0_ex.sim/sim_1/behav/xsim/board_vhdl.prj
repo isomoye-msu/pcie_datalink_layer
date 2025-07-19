@@ -1,0 +1,25 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../imports/EP_MEM.vhd" \
+"../../../../imports/PIO.vhd" \
+"../../../../imports/PIO_EP.vhd" \
+"../../../../imports/PIO_EP_MEM_ACCESS.vhd" \
+"../../../../imports/PIO_RX_ENGINE.vhd" \
+"../../../../imports/PIO_TO_CTRL.vhd" \
+"../../../../imports/PIO_TX_ENGINE.vhd" \
+"../../../../imports/test_interface.vhd" \
+"../../../../imports/pci_exp_usrapp_cfg.vhd" \
+"../../../../imports/pci_exp_usrapp_pl.vhd" \
+"../../../../imports/pci_exp_usrapp_rx.vhd" \
+"../../../../imports/pci_exp_usrapp_tx.vhd" \
+"../../../../imports/pcie_2_1_rport_7x.vhd" \
+"../../../../imports/pcie_app_7x.vhd" \
+"../../../../imports/pcie_axi_trn_bridge.vhd" \
+"../../../../imports/sys_clk_gen.vhd" \
+"../../../../imports/sys_clk_gen_ds.vhd" \
+"../../../../imports/tests.vhd" \
+"../../../../imports/xilinx_pcie_2_1_rport_7x.vhd" \
+"../../../../imports/board.vhd" \
+
+# Do not sort compile order
+nosort

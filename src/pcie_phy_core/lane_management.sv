@@ -51,19 +51,6 @@ module lane_management
   localparam int MaxWordsPerTransaction = 512 / DATA_WIDTH;
 
 
-  localparam int PcieDataSize = $size(
-      data_valid_r
-  ) + $size(
-      data_out_r
-  ) + $size(
-      block_start_r
-  ) + $size(
-      d_k_out_r
-  ) + $size(
-      sync_header_r
-  );
-
-
 
   //retry mechanism enum
   typedef enum logic [4:0] {
@@ -114,8 +101,8 @@ module lane_management
   logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_out_r;
   logic             [               MAX_NUM_LANES-1:0] data_valid_c;
   logic             [               MAX_NUM_LANES-1:0] data_valid_r;
-  logic             [                             3:0] d_k_out_c                [MAX_NUM_LANES];
-  logic             [                             3:0] d_k_out_r                [MAX_NUM_LANES];
+  logic             [           (4*MAX_NUM_LANES)-1:0] d_k_out_c;
+  logic             [           (4*MAX_NUM_LANES)-1:0] d_k_out_r;
 
   logic                                                is_ordered_set;
   logic                                                is_data;
@@ -165,10 +152,31 @@ module lane_management
 
   logic                                                read_en_r;
   logic                                                read_en_c;
+  logic             [( MAX_NUM_LANES* DATA_WIDTH)-1:0] temp_data_out;
 
 
 
-  assign is_ordered_set = s_phy_axis_tvalid & s_phy_axis_tready;
+  logic             [  (DATA_WIDTH*MAX_NUM_LANES)-1:0] fifo_phy_axis_tdata;
+  logic             [  (KEEP_WIDTH*MAX_NUM_LANES)-1:0] fifo_phy_axis_tkeep;
+  logic                                                fifo_phy_axis_tvalid;
+  logic                                                fifo_phy_axis_tlast;
+  logic             [  (USER_WIDTH*MAX_NUM_LANES)-1:0] fifo_phy_axis_tuser;
+  logic                                                fifo_phy_axis_tready;
+
+  localparam int PcieDataSize = $size(
+      data_valid_r
+  ) + $size(
+      data_out_r
+  ) + $size(
+      block_start_r
+  ) + $size(
+      d_k_out_r
+  ) + $size(
+      sync_header_r
+  );
+
+
+  assign is_ordered_set = fifo_phy_axis_tvalid & fifo_phy_axis_tready;
   assign is_data        = s_dllp_axis_tvalid & s_dllp_axis_tready;
 
 
@@ -194,9 +202,9 @@ module lane_management
       data_valid_r      <= data_valid_c;
       fifo_word_count_r <= fifo_word_count_c;
       read_en_r         <= read_en_c;
+      pipe_width_r      <= pipe_width_c;
       curr_state        <= next_state;
     end
-    pipe_width_r             <= pipe_width_c;
     // d_k_out_r                <= d_k_out_c;
     data_in_r                <= data_in_c;
     is_phy_r                 <= is_phy_c;
@@ -329,7 +337,7 @@ module lane_management
             data_in_c[8*i+:8]  = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
             data_out_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
           end
-        end else if (s_dllp_axis_tvalid) begin
+        end else if (s_dllp_axis_tvalid && fifo_empty && !complete_r) begin
           pkt_count_c              = '0;
           word_count_c             = '0;
           lane_start_index_c       = '0;
@@ -402,7 +410,7 @@ module lane_management
               lane_start_index_c          = current_lane + 1;
               input_byte_start_index_c    = input_byte_start_index_r[BytesPerTransfer-2:0] + i;
               data_out                    = data_out_r[current_lane*32+:32];
-              temp_d_k                    = d_k_out_r[current_lane];
+              temp_d_k                    = d_k_out_r[current_lane*4+:4];
               temp_d_k[current_byte]      = s_dllp_axis_tuser[i+input_byte_start_index_r];
               data_out[8*current_byte+:8] = s_dllp_axis_tdata[(i+input_byte_start_index_r)*8+:8];
               if (input_byte_start_index_r + i == BytesPerTransfer - 1) begin
@@ -445,47 +453,78 @@ module lane_management
               //   end
               // end
             end
-            d_k_out_c[current_lane]         = temp_d_k;
+            d_k_out_c[current_lane*4+:4]    = temp_d_k;
             data_out_c[current_lane*32+:32] = data_out;
           end
         end
       end
       ST_LANE_MNGT_TX_PHY: begin
-        if (s_phy_axis_tvalid) begin
+        if (fifo_phy_axis_tvalid) begin
           // TODO: change to lane reversal flag ... lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
-          lane_idx = byte_count_r;
-          bytes_sent_c = bytes_sent_r + 1'b1;
-          byte_count_c = byte_count_r + 1'b1;
-          if (byte_count_r >= (pipe_width_r >> 3) - 1) begin
-            word_count_c = word_count_r + 1'b1;
+          // ready_out = '1;
+          byte_count_c = byte_count_r + (pipe_width_r >> 3);
+          for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+            if (lane < num_active_lanes_i) begin
+              data_valid_c[lane]      = '1;
+              d_k_out_c[lane*4+:4]    = '0;
+              data_out_c[lane*32+:32] = '0;
+              for (int byte_ = 0; byte_ < DATA_WIDTH / 8; byte_++) begin
+                if (byte_ < (pipe_width_r >> 3)) begin
+                  data_out_c[(lane*32)+(byte_*8)+:8]   =
+                  fifo_phy_axis_tdata[(lane*32)+((byte_+byte_count_r)*8)+:8];
+                  d_k_out_c[byte_] = fifo_phy_axis_tuser[byte_ + byte_count_r];
+                end
+              end
+            end
+          end
+          if ((byte_count_r + (pipe_width_r >> 3)) >= (DATA_WIDTH / 8) - 1) begin
             byte_count_c = '0;
-            for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-              if (lane < num_active_lanes_i) begin
-                data_valid_c[lane] = '1;
+            ready_out = '1;
+            if (fifo_phy_axis_tlast) begin
+              if (s_phy_axis_tvalid) begin
+
+              end else begin
+                next_state = ST_IDLE;
               end
-            end
-            if (bytes_sent_r >= (DATA_WIDTH / 8) - 1) begin
-              ready_out = '1;
-              bytes_sent_c = '0;
-              if (s_phy_axis_tlast) begin
-                next_state   = ST_IDLE;
-                complete_c   = '1;
-                pkt_count_c  = '0;
-                word_count_c = '0;
-              end
+              complete_c   = '1;
+              pkt_count_c  = '0;
+              word_count_c = '0;
             end
           end
-          for (int i = 0; i < MAX_NUM_LANES; i++) begin
-            data_out  = data_out_r[i*32+:32];
-            temp_d_k  = d_k_out_r[i];
-            lane_data = s_phy_axis_tdata[i*32+:32];
-            if (i < num_active_lanes_i) begin
-              temp_d_k[lane_idx]      = s_phy_axis_tuser[bytes_sent_r];
-              data_out[8*lane_idx+:8] = lane_data[bytes_sent_r*8+:8];
-            end
-            d_k_out_c[i]         = temp_d_k;
-            data_out_c[i*32+:32] = data_out;
-          end
+
+          // lane_idx = byte_count_r;
+          // bytes_sent_c = bytes_sent_r + 1'b1;
+          // byte_count_c = byte_count_r + 1'b1;
+          // if (byte_count_r >= DATA_WIDTH/8 - 1) begin
+          //   word_count_c = word_count_r + 1'b1;
+          //   byte_count_c = '0;
+          //   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+          //     if (lane < num_active_lanes_i) begin
+          //       data_valid_c[lane] = '1;
+          //     end
+          //   end
+          //   if (bytes_sent_r >= (DATA_WIDTH / 8) - 1) begin
+          //     ready_out = '1;
+          //     bytes_sent_c = '0;
+          //     if (s_phy_axis_tlast) begin
+          //       next_state   = ST_IDLE;
+          //       complete_c   = '1;
+          //       pkt_count_c  = '0;
+          //       word_count_c = '0;
+          //     end
+          //   end
+          // end
+          // for (int i = 0; i < MAX_NUM_LANES; i++) begin
+          //   data_out  = data_out_r[i*32+:32];
+          //   temp_d_k  = d_k_out_r[i*4+:4] | 4'b0;
+          //   lane_data = s_phy_axis_tdata[i*32+:32];
+          //   if (i < num_active_lanes_i) begin
+          //     temp_d_k[lane_idx]      = s_phy_axis_tuser[bytes_sent_r];
+          //     data_out[8*lane_idx+:8] = lane_data[bytes_sent_r*8+:8];
+          //   end
+          //   d_k_out_c[i*4+:4]    = temp_d_k;
+          //   data_out_c[i*32+:32] = data_out;
+          // end
         end
       end
       default: begin
@@ -497,8 +536,8 @@ module lane_management
     read_en_c         = read_en_r;
     fifo_word_count_c = fifo_word_count_r;
     if (complete_c) begin
-      read_en_c = '1;
       fifo_word_count_c = word_count_r;
+      read_en_c = '1;
     end else if (read_en_r) begin
       fifo_word_count_c = fifo_word_count_r - 1'b1;
       if (fifo_word_count_r <= 32'b0) begin
@@ -511,36 +550,92 @@ module lane_management
     for (int i = 0; i < MAX_NUM_LANES; i++) begin
       // data_out_o[32*i+:32]  = data_out_r[32*i+:32];
       // data_valid_o[i]       = data_valid_r[i];
-      d_k_out_temp[4*i+:4]     = d_k_out_r[i];
+      // d_k_out_temp[4*i+:4]     = d_k_out_r[i*4+:4];
       sync_header_temp[2*i+:2] = sync_header_r[i];
     end
   end
 
 
-  //packed data storage fifo
-  synchronous_fifo #(
-      .DEPTH(100),
-      .DATA_WIDTH(PcieDataSize)
-  ) synchronous_fifo_inst (
-      .clk_i   (clk_i),
-      .rst_i   (rst_i),
-      .w_en_i  (data_valid_r),
-      .r_en_i  (read_en_r),
-      .data_in ({data_valid_r, data_out_r, block_start_r, d_k_out_temp,sync_header_temp}),
-      .data_out({data_valid_o, data_out_o, start_block_o, d_k_out_o,sync_header_o}),
-      .full_o  (fifo_full),
-      .empty_o (fifo_empty)
+
+  //axi-stream output register instance
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH * MAX_NUM_LANES),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH * MAX_NUM_LANES),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH * MAX_NUM_LANES),
+      .REG_TYPE(SkidBuffer)
+  ) axis_register_inst (
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (s_phy_axis_tdata),
+      .s_axis_tkeep (s_phy_axis_tkeep),
+      .s_axis_tvalid(s_phy_axis_tvalid),
+      .s_axis_tready(s_phy_axis_tready),
+      .s_axis_tlast (s_phy_axis_tlast),
+      .s_axis_tuser (s_phy_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (fifo_phy_axis_tdata),
+      .m_axis_tkeep (fifo_phy_axis_tkeep),
+      .m_axis_tvalid(fifo_phy_axis_tvalid),
+      .m_axis_tready(fifo_phy_axis_tready),
+      .m_axis_tlast (fifo_phy_axis_tlast),
+      .m_axis_tuser (fifo_phy_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
   );
 
-  // assign sync_header_o      = sync_header_r;
-  assign s_dllp_axis_tready = ready_out & is_dllp_r;
-  assign s_phy_axis_tready  = ready_out & is_phy_r;
 
-  // assign data_valid_o       = data_valid_r;
+  // synchronous_lifo #(
+  //     .DEPTH(100),
+  //     .DATA_W(PcieDataSize),
+  //     .FWFT_MODE("FALSE")
+  // ) synchronous_lifo_inst (
+  //     .clk (clk_i),
+  //     .nrst(!rst_i),
+
+  //     .w_req (data_valid_r),
+  //     .w_data({d_k_out_r, data_valid_r, data_out_r}),
+
+  //     .r_req (complete_r),
+  //     .r_data({d_k_out_o, data_valid_o, temp_data_out}),
+
+  //     .cnt  (),
+  //     .empty(fifo_empty),
+  //     .full ()
+  // );
+
+  //packed data storage fifo
+  // synchronous_fifo #(
+  //     .DEPTH(100),
+  //     .DATA_WIDTH(PcieDataSize)
+  // ) synchronous_fifo_inst (
+  //     .clk_i   (clk_i),
+  //     .rst_i   (rst_i),
+  //     .w_en_i  (data_valid_r),
+  //     .r_en_i  (read_en_r),
+  //     .data_in ({sync_header_temp, block_start_r, d_k_out_temp,data_valid_r,data_out_r}),
+  //     .data_out({sync_header_o   ,start_block_o , d_k_out_o,data_valid_o,data_out_o}),
+  //     .full_o  (fifo_full),
+  //     .empty_o (fifo_empty)
+  // );
+
+  // assign sync_header_o      = sync_header_r;
+  assign s_dllp_axis_tready   = ready_out & is_dllp_r;
+  assign fifo_phy_axis_tready = ready_out & is_phy_r;
+
+  assign data_valid_o         = '1;
+  assign data_out_o           = data_valid_r ? data_out_r : '0;
   // // assign data_valid_o       = data_valid_r;
-  // // assign d_k_out_o          = d_k_out_r;
-  // assign data_out_o         = data_out_r;
-  // assign pipe_width_o       = pipe_width_r;
+  assign d_k_out_o            = d_k_out_r;
+  // assign data_out_o           = temp_data_out;
+  assign pipe_width_o         = pipe_width_r;
   // assign start_block_o      = block_start_r;
 
 endmodule

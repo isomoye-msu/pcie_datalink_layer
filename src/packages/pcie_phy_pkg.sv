@@ -226,9 +226,9 @@ package pcie_phy_pkg;
   // all other LTSSM states, it is Reserved.
 
   typedef enum logic [8:0] {
-    gen1_basic = 9'b000_00010,
-    gen2_basic = 9'b000_00110,
-    gen3_basic = 9'b000_01110
+    gen1_basic = 8'b000_00010,
+    gen2_basic = 8'b000_00110,
+    gen3_basic = 8'b000_01110
   } rate_id_e;
 
   typedef enum logic [4:0] {
@@ -354,10 +354,10 @@ package pcie_phy_pkg;
 
 
 
-  function static void gen_tsos(
-      output pcie_ordered_set_t tsos_out, input rate_speed_e rate_speed = gen1,
+  function static pcie_ordered_set_t gen_tsos(
+      input rate_speed_e rate_speed = gen1,
       input train_seq_e TSOS = TS1, input train_seq_e link_num = PAD_,
-      input train_seq_e lane_num = PAD_, input rate_id_t rate_id = gen3_basic,
+      input train_seq_e lane_num = PAD_, input rate_id_t rate_id = gen1_basic,
       input training_ctrl_t train_ctrl = '0, input ts_symbol6_union_t ts_s6 = TSOS,
       input ts1_symbol6_t ts_s7 = TSOS, input ts1_symbol6_t ts_s8 = TSOS,
       input ts1_symbol6_t ts_s9 = TSOS);
@@ -372,7 +372,7 @@ package pcie_phy_pkg;
         temp_os.lane_num   = lane_num;
         temp_os.rate_id    = rate_id;
         temp_os.train_ctrl = train_ctrl;
-        temp_os.n_fts      = 8'h04;
+        temp_os.n_fts      = '1;//8'h04;
         temp_os.ts_s6      = TSOS;
         temp_os.ts_s7      = TSOS;
         temp_os.ts_s7      = TSOS;
@@ -408,7 +408,7 @@ package pcie_phy_pkg;
         end
       end
       //return
-      tsos_out = temp_os;
+      return temp_os;
     end
   endfunction
 
@@ -423,7 +423,7 @@ package pcie_phy_pkg;
     begin
 
       pcie_tsos_t temp_os;
-      gen_tsos(temp_os, rate_speed, TSOS, link_num, lane_num, rate_id, train_ctrl, ts_s6, ts_s7,
+      temp_os = gen_tsos( rate_speed, TSOS, link_num, lane_num, rate_id, train_ctrl, ts_s6, ts_s7,
                ts_s8, ts_s9);
       // temp_os            = '0;
       // temp_os.link_num   = link_num;
@@ -505,19 +505,37 @@ package pcie_phy_pkg;
   //   end
   // endfunction
 
-  function static void gen_idle(output pcie_ordered_set_t idle_out);
+    function static pcie_ordered_set_t gen_zeros();
     begin
       pcie_ordered_set_t temp_os;
       temp_os = '0;
       for (int i = 0; i < 16; i++) begin
-        temp_os[8*i+:8] = '0;
+        // temp_os[8*i+:8] = '0;
         // if (i[1:0] == '0) begin
         //   temp_os[8*i+:8] = COM;
         // end else begin
         //   temp_os[8*i+:8] = IDL;
         // end
       end
-      idle_out = temp_os;
+      return temp_os;
+    end
+  endfunction
+
+
+
+  function static pcie_ordered_set_t gen_idle();
+    begin
+      pcie_ordered_set_t temp_os;
+      temp_os = '0;
+      for (int i = 0; i < 16; i++) begin
+        // temp_os[8*i+:8] = '0;
+        if (i[1:0] == '0) begin
+          temp_os[8*i+:8] = COM;
+        end else begin
+          temp_os[8*i+:8] = IDL;
+        end
+      end
+      return temp_os;
     end
   endfunction
 

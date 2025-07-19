@@ -152,9 +152,10 @@ module pcie_phy_top
   // assign phy_powerdown = '0;
   assign link_up_o = link_up;
 
-  always_ff @(posedge clk_i) begin
-    if (rst_i) begin
-      lane_status <= '0;
+  always_ff @(posedge pipe_rx_usr_clk_i) begin
+    if (rst_i || phy_phystatus_rst) begin
+      lane_status        <= '0;
+      num_active_lanes_i <= '0;
     end else begin
       for (int i = 0; i < MAX_NUM_LANES; i++) begin
         if (phy_phystatus[i] && phy_rxstatus[i*3+:3] == 3'b011) begin

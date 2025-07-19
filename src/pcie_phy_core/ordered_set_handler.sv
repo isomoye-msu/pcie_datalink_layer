@@ -63,6 +63,9 @@ module ordered_set_handler
   pcie_ordered_set_t                  ordered_set_c;
   pcie_ordered_set_t                  ordered_set_r;
 
+  pcie_ordered_set_t                  ordered_set_out_c;
+  pcie_ordered_set_t                  ordered_set_out_r;
+
   logic                               check_ordered_set_c;
   logic                               check_ordered_set_r;
   logic                               idle_valid_c;
@@ -92,7 +95,7 @@ module ordered_set_handler
   logic              [          31:0] data_store_c;
   logic              [          31:0] data_store_r;
 
-  assign ordered_set_o = ordered_set_r;
+  assign ordered_set_o = ordered_set_out_r;
   assign pkt_full = (axis_pkt_cnt_r + byte_shift)>= MaxWordsPerOrderedSet;  //axis_pkt_cnt_r >= packets_per_words - 1;
 
 
@@ -115,6 +118,7 @@ module ordered_set_handler
       skp1_r              <= '0;
       skp2_r              <= '0;
       skp3_r              <= '0;
+      ordered_set_out_r   <= '0;
     end else begin
       curr_state          <= next_state;
       ordered_set_r       <= ordered_set_c;
@@ -127,6 +131,7 @@ module ordered_set_handler
       skp1_r              <= skp1_c;
       skp2_r              <= skp2_c;
       skp3_r              <= skp3_c;
+      ordered_set_out_r   <= ordered_set_out_c;
       check_ordered_set_r <= check_ordered_set_c;
     end
     //non-resetable
@@ -229,24 +234,9 @@ module ordered_set_handler
       ST_RX_GEN1: begin
         if (data_valid_i) begin
           axis_pkt_cnt_c = axis_pkt_cnt_r + byte_shift;
-          for (int i = 0; i < 4; i++) begin
-            if (i < byte_shift) begin
-              ordered_set_c[(axis_pkt_cnt_r+i)*8+:8] = data_in_i[8*i+:8];
-              if (data_k_in_i[i] && (data_in_i[8*i+:8] == IDL) &&
-              (axis_pkt_cnt_r >= packets_per_words)) begin
-                check_ordered_set_c = '1;
-                axis_pkt_cnt_c      = '0;
-                next_state          = ST_IDLE;
-              end
-              // if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-              //   ordered_set_c[31:0] = data_in_i >> 8 * i;
-              //   next_state = ST_RX_GEN1;
-              //   axis_pkt_cnt_c = byte_shift - i;
-              // end
-            end
-          end
           if (pkt_full) begin
             check_ordered_set_c = '1;
+            ordered_set_out_c   = ordered_set_c;
             axis_pkt_cnt_c      = '0;
             if (data_k_in_i > 1) begin
               axis_pkt_cnt_c = 1'b1;
@@ -254,6 +244,26 @@ module ordered_set_handler
               next_state = ST_RX_GEN1_OVRFL;
             end else begin
               next_state = ST_IDLE;
+            end
+          end
+          for (int i = 0; i < 4; i++) begin
+            if (i < byte_shift) begin
+              ordered_set_c[(axis_pkt_cnt_r+i)*8+:8] = data_in_i[8*i+:8];
+              if (data_k_in_i[i] && (data_in_i[8*i+:8] == IDL)) begin
+                check_ordered_set_c = '0;
+                axis_pkt_cnt_c      = '0;
+                idle_valid_c        = '1;
+                next_state          = ST_IDLE;
+              end
+              if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
+                ordered_set_c[7:0] = data_in_i >> 8 * i;
+                next_state = ST_RX_GEN1;
+                axis_pkt_cnt_c = byte_shift - i;
+              end
+              // if ((data_k_in_i[i]) && !(data_in_i[i*8+:8] inside {COM, PAD_, IDL})) begin
+              //   check_ordered_set_c = '0;
+              //   next_state = ST_IDLE;
+              // end
             end
           end
         end
@@ -265,7 +275,14 @@ module ordered_set_handler
           ordered_set_c[7:0] = data_store_r[7:0];
           for (int i = 0; i < 4; i++) begin
             if (i < byte_shift) begin
-              ordered_set_c[(axis_pkt_cnt_r+i)*8+:8] = data_in_i[8*i+:8];
+              if (data_k_in_i[i] && (data_in_i[8*i+:8] == IDL)) begin
+                check_ordered_set_c = '0;
+                idle_valid_c        = '1;
+                // axis_pkt_cnt_c      = '0;
+                next_state          = ST_IDLE;
+              end else begin
+                ordered_set_c[(axis_pkt_cnt_r+i)*8+:8] = data_in_i[8*i+:8];
+              end
             end
           end
         end
@@ -276,6 +293,7 @@ module ordered_set_handler
           axis_pkt_cnt_c = axis_pkt_cnt_r + 1'b1;
           if (pkt_full) begin
             check_ordered_set_c = '1;
+            ordered_set_out_c   = ordered_set_c;
             axis_pkt_cnt_c      = '0;
             next_state          = ST_IDLE;
           end

@@ -39,7 +39,7 @@ module pcie_top_kc705 #(
 
     parameter PCIE_PLL_SEL       = "CPLL",
     parameter PCIE_ASYNC_EN      = "FALSE",
-    parameter PCIE_TXBUF_EN      = "FALSE",
+    parameter PCIE_TXBUF_EN      = "TRUE",
     parameter PL_INTERFACE       = "FALSE",
     parameter CFG_MGMT_IF        = "FALSE",
     parameter CFG_CTL_IF         = "TRUE",
@@ -219,84 +219,114 @@ module pcie_top_kc705 #(
   wire                                    m_app_axis_tlast;
   wire [              APP_USER_WIDTH-1:0] m_app_axis_tuser;
   wire                                    m_app_axis_tready;
+  localparam USERCLK2_FREQ   =  (USER_CLK2_DIV2 == "FALSE") ? USER_CLK_FREQ :
+										(USER_CLK_FREQ == 4) ? 3 :
+										(USER_CLK_FREQ == 3) ? 2 :
+										 USER_CLK_FREQ;
+  // GT to PIPE
 
+  reg  [MAX_NUM_LANES-1:0] gtx_rx_init_Xxuserrdy0;
 
-  reg  [               MAX_NUM_LANES-1:0] gtx_rx_init_Xxuserrdy0;
+  wire                     clock_locked;
+  wire                     pipe_mmcm_rst_n;
 
+  wire                     PIPE_PCLK_IN;
+  wire                     PIPE_USERCLK1_IN;
+  wire                     PIPE_USERCLK2_IN;
+
+  wire [              4:0] gt_reset_fsm;
+
+  reg                      reg_clock_locked;
 
   //-------------------------------------------------------
   // 3. Configuration (CFG) Interface
   //-------------------------------------------------------
-  wire                                    cfg_err_cor;
-  wire                                    cfg_err_ur;
-  wire                                    cfg_err_ecrc;
-  wire                                    cfg_err_cpl_timeout;
-  wire                                    cfg_err_cpl_abort;
-  wire                                    cfg_err_cpl_unexpect;
-  wire                                    cfg_err_posted;
-  wire                                    cfg_err_locked;
-  wire [                            47:0] cfg_err_tlp_cpl_header;
-  wire                                    cfg_interrupt;
-  wire                                    cfg_interrupt_assert;
-  wire [                             7:0] cfg_interrupt_di;
-  wire                                    cfg_interrupt_stat;
-  wire [                             4:0] cfg_pciecap_interrupt_msgnum;
-  wire                                    cfg_turnoff_ok;
-  wire                                    cfg_to_turnoff;
-  wire                                    cfg_trn_pending;
-  wire                                    cfg_pm_halt_aspm_l0s;
-  wire                                    cfg_pm_halt_aspm_l1;
-  wire                                    cfg_pm_force_state_en;
-  wire [                             1:0] cfg_pm_force_state;
-  wire                                    cfg_pm_wake;
-  wire [                             7:0] cfg_bus_number;
-  wire [                             4:0] cfg_device_number;
-  wire [                             2:0] cfg_function_number;
-  wire [                            63:0] cfg_dsn;
-  wire [                           127:0] cfg_err_aer_headerlog;
-  wire [                             4:0] cfg_aer_interrupt_msgnum;
+  wire                     cfg_err_cor;
+  wire                     cfg_err_ur;
+  wire                     cfg_err_ecrc;
+  wire                     cfg_err_cpl_timeout;
+  wire                     cfg_err_cpl_abort;
+  wire                     cfg_err_cpl_unexpect;
+  wire                     cfg_err_posted;
+  wire                     cfg_err_locked;
+  wire [             47:0] cfg_err_tlp_cpl_header;
+  wire                     cfg_interrupt;
+  wire                     cfg_interrupt_assert;
+  wire [              7:0] cfg_interrupt_di;
+  wire                     cfg_interrupt_stat;
+  wire [              4:0] cfg_pciecap_interrupt_msgnum;
+  wire                     cfg_turnoff_ok;
+  wire                     cfg_to_turnoff;
+  wire                     cfg_trn_pending;
+  wire                     cfg_pm_halt_aspm_l0s;
+  wire                     cfg_pm_halt_aspm_l1;
+  wire                     cfg_pm_force_state_en;
+  wire [              1:0] cfg_pm_force_state;
+  wire                     cfg_pm_wake;
+  wire [              7:0] cfg_bus_number;
+  wire [              4:0] cfg_device_number;
+  wire [              2:0] cfg_function_number;
+  wire [             63:0] cfg_dsn;
+  wire [            127:0] cfg_err_aer_headerlog;
+  wire [              4:0] cfg_aer_interrupt_msgnum;
 
-  wire [                            31:0] cfg_mgmt_di;
-  wire [                             3:0] cfg_mgmt_byte_en;
-  wire [                             9:0] cfg_mgmt_dwaddr;
-  wire                                    cfg_mgmt_wr_en;
-  wire                                    cfg_mgmt_rd_en;
-  wire                                    cfg_mgmt_wr_readonly;
+  wire [             31:0] cfg_mgmt_di;
+  wire [              3:0] cfg_mgmt_byte_en;
+  wire [              9:0] cfg_mgmt_dwaddr;
+  wire                     cfg_mgmt_wr_en;
+  wire                     cfg_mgmt_rd_en;
+  wire                     cfg_mgmt_wr_readonly;
 
 
   //-------------------------------------------------------
   // 4. Physical Layer Control and Status (PL) Interface
   //-------------------------------------------------------
 
-  wire                                    pl_directed_link_auton;
-  wire [                             1:0] pl_directed_link_change;
-  wire                                    pl_directed_link_speed;
-  wire [                             1:0] pl_directed_link_width;
-  wire                                    pl_upstream_prefer_deemph;
+  wire                     pl_directed_link_auton;
+  wire [              1:0] pl_directed_link_change;
+  wire                     pl_directed_link_speed;
+  wire [              1:0] pl_directed_link_width;
+  wire                     pl_upstream_prefer_deemph;
 
-  wire                                    sys_rst_n_c;
+  wire                     sys_rst_n_c;
 
   // Wires used for external clocking connectivity
-  wire                                    pipe_pclk_in;
-  wire                                    pipe_rxusrclk_in;
-  wire [                             7:0] pipe_rxoutclk_in;
-  wire                                    pipe_dclk_in;
-  wire                                    pipe_userclk1_in;
-  wire                                    pipe_userclk2_in;
-  wire                                    pipe_mmcm_lock_in;
+  wire                     pipe_pclk_in;
+  wire                     pipe_rxusrclk_in;
+  wire [              7:0] pipe_rxoutclk_in;
+  wire                     pipe_dclk_in;
+  wire                     pipe_userclk1_in;
+  wire                     pipe_userclk2_in;
+  wire                     pipe_mmcm_lock_in;
 
-  wire                                    pipe_txoutclk_out;
-  wire [                             7:0] pipe_rxoutclk_out;
-  wire [                             7:0] pipe_pclk_sel_out;
-  wire                                    pipe_gen3_out;
-  wire                                    pipe_oobclk_in;
+  wire                     pipe_txoutclk_out;
+  wire [              7:0] pipe_rxoutclk_out;
+  wire [              7:0] pipe_pclk_sel_out;
+  wire                     pipe_gen3_out;
+  wire                     pipe_oobclk_in;
 
-  wire                                    rx_np_req;
+  wire                     rx_np_req;
 
   // Flow Control
-  wire [                             2:0] fc_sel;
+  wire [              2:0] fc_sel;
 
-  wire                                    link_up;
+  wire                     link_up;
+
+  wire                     PIPE_TXOUTCLK_OUT;
+  wire                     PIPE_DCLK_IN;
+  wire                     PIPE_MMCM_LOCK_IN;
+  wire                     PIPE_RXUSRCLK_IN;
+  wire                     PIPE_OOBCLK_IN;
+
+
+  wire                     trn_lnk_up;
+  reg                      user_reset_int;
+  reg                      bridge_reset_int;
+  reg                      bridge_reset_d;
+  reg                      phy_rdy_n;
+  wire                     user_clk_out;  // actually is user_clk2
+  reg                      user_reset_out;
+  reg                      user_lnk_up;
 
   pcie_phy_top #(
       .CLK_RATE     (CLK_RATE),
@@ -315,7 +345,7 @@ module pcie_top_kc705 #(
       .rst_i            (!sys_rst_n),
       .en_i             (1'b1),
       .pipe_rx_usr_clk_i(PIPE_RXUSRCLK_IN),
-      .pipe_tx_usr_clk_i(PIPE_TXOUTCLK_OUT),
+      .pipe_tx_usr_clk_i(PIPE_RXUSRCLK_IN),
       .fc_initialized_o (fc_initialized_o),
       .phy_txdata       (phy_txdata),
       .phy_txdata_valid (phy_txdata_valid),
@@ -569,14 +599,6 @@ module pcie_top_kc705 #(
   );
 
 
-  wire trn_lnk_up;
-  reg  user_reset_int;
-  reg  bridge_reset_int;
-  reg  bridge_reset_d;
-  reg  phy_rdy_n;
-  wire user_clk_out;  // actually is user_clk2
-  reg  user_reset_out;
-  reg  user_lnk_up;
   always @(posedge user_clk_out) begin
     if (!sys_rst_n) begin
       user_lnk_up <= 1'b0;
@@ -593,13 +615,6 @@ module pcie_top_kc705 #(
     end
   end
 
-  wire PIPE_PCLK_IN;
-  wire PIPE_USERCLK1_IN;
-  wire PIPE_USERCLK2_IN;
-
-  wire [4:0] gt_reset_fsm;
-
-  reg reg_clock_locked;
   always @(posedge PIPE_PCLK_IN or negedge clock_locked) begin
     if (!clock_locked) reg_clock_locked <= 1'b0;
     else reg_clock_locked <= 1'b1;
@@ -610,16 +625,8 @@ module pcie_top_kc705 #(
   end
 
 
-
-  wire clock_locked;
-  wire pipe_mmcm_rst_n;
   assign pipe_mmcm_rst_n = sys_rst_n;
 
-  wire PIPE_TXOUTCLK_OUT;
-  wire PIPE_DCLK_IN;
-  wire PIPE_MMCM_LOCK_IN;
-  wire PIPE_RXUSRCLK_IN;
-  wire PIPE_OOBCLK_IN;
   generate
     if (EXTERNAL_MMCM == "FALSE") begin : in_module_mmcm
       // clock for pipe
@@ -656,11 +663,6 @@ module pcie_top_kc705 #(
 
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
-  localparam USERCLK2_FREQ   =  (USER_CLK2_DIV2 == "FALSE") ? USER_CLK_FREQ :
-										(USER_CLK_FREQ == 4) ? 3 :
-										(USER_CLK_FREQ == 3) ? 2 :
-										 USER_CLK_FREQ;
-  // GT to PIPE
   pipe_wrapper #(
       .PCIE_SIM_MODE             ("TRUE"),
       // synthesis translate_off
@@ -697,7 +699,7 @@ module pcie_top_kc705 #(
       //---------- PIPE Clock & Reset Ports ------------------
       .PIPE_CLK    (sys_clk),
       .PIPE_RESET_N(sys_rst_n),
-      //.PIPE_PCLK                       ( pipe_clk ),
+      // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------
       .PIPE_TXDATA (phy_txdata),
       .PIPE_TXDATAK(phy_txdatak),
