@@ -1,10 +1,10 @@
 // Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2022.1 (lin64) Build 3526262 Mon Apr 18 15:47:01 MDT 2022
-// Date        : Fri Jul 18 21:43:58 2025
+// Date        : Tue Jul  8 09:15:09 2025
 // Host        : capc-ub22-is running 64-bit Ubuntu 22.04.5 LTS
 // Command     : write_verilog -force -mode funcsim
-//               /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/pcie_7x_0_sim_netlist.v
+//               /tools/C/research/pcie/KC705_pci_driver/KC705_pci_hardware/pcie_test/pcie_test.gen/sources_1/ip/pcie_7x_0/pcie_7x_0_sim_netlist.v
 // Design      : pcie_7x_0
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -12,7 +12,7 @@
 // --------------------------------------------------------------------------------
 `timescale 1 ps / 1 ps
 
-(* CHECK_LICENSE_TYPE = "pcie_7x_0,pcie_7x_0_pcie2_top,{}" *) (* DowngradeIPIdentifiedWarnings = "yes" *) (* X_CORE_INFO = "pcie_7x_0_pcie2_top,Vivado 2022.1" *) 
+(* CHECK_LICENSE_TYPE = "pcie_7x_0,pcie_7x_0_pcie2_top,{}" *) (* downgradeipidentifiedwarnings = "yes" *) (* x_core_info = "pcie_7x_0_pcie2_top,Vivado 2022.1" *) 
 (* NotValidForBitStream *)
 module pcie_7x_0
    (pci_exp_txp,
@@ -191,182 +191,182 @@ module pcie_7x_0
     pcie_drp_di,
     pcie_drp_do,
     pcie_drp_rdy);
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt txp" *) output [0:0]pci_exp_txp;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt txn" *) output [0:0]pci_exp_txn;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt rxp" *) input [0:0]pci_exp_rxp;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt rxn" *) input [0:0]pci_exp_rxn;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock pclk_in" *) input pipe_pclk_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxusrclk_in" *) input pipe_rxusrclk_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxoutclk_in" *) input [0:0]pipe_rxoutclk_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock dclk_in" *) input pipe_dclk_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock userclk1_in" *) input pipe_userclk1_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock userclk2_in" *) input pipe_userclk2_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock oobclk_in" *) input pipe_oobclk_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock mmcm_lock_in" *) input pipe_mmcm_lock_in;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock txoutclk_out" *) output pipe_txoutclk_out;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxoutclk_out" *) output [0:0]pipe_rxoutclk_out;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock pclk_sel_out" *) output [0:0]pipe_pclk_sel_out;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock gen3_out" *) output pipe_gen3_out;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.user_clk_out CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.user_clk_out, ASSOCIATED_BUSIF m_axis_rx:s_axis_tx, FREQ_HZ 125000000, ASSOCIATED_RESET user_reset_out, FREQ_TOLERANCE_HZ 0, PHASE 0.0, INSERT_VIP 0" *) output user_clk_out;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.user_reset_out RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.user_reset_out, POLARITY ACTIVE_HIGH, INSERT_VIP 0" *) output user_reset_out;
+  (* x_interface_info = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt txp" *) output [0:0]pci_exp_txp;
+  (* x_interface_info = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt txn" *) output [0:0]pci_exp_txn;
+  (* x_interface_info = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt rxp" *) input [0:0]pci_exp_rxp;
+  (* x_interface_info = "xilinx.com:interface:pcie_7x_mgt:1.0 pcie_7x_mgt rxn" *) input [0:0]pci_exp_rxn;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock pclk_in" *) input pipe_pclk_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxusrclk_in" *) input pipe_rxusrclk_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxoutclk_in" *) input [0:0]pipe_rxoutclk_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock dclk_in" *) input pipe_dclk_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock userclk1_in" *) input pipe_userclk1_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock userclk2_in" *) input pipe_userclk2_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock oobclk_in" *) input pipe_oobclk_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock mmcm_lock_in" *) input pipe_mmcm_lock_in;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock txoutclk_out" *) output pipe_txoutclk_out;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock rxoutclk_out" *) output [0:0]pipe_rxoutclk_out;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock pclk_sel_out" *) output [0:0]pipe_pclk_sel_out;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock gen3_out" *) output pipe_gen3_out;
+  (* x_interface_info = "xilinx.com:signal:clock:1.0 CLK.user_clk_out CLK" *) (* x_interface_parameter = "XIL_INTERFACENAME CLK.user_clk_out, ASSOCIATED_BUSIF m_axis_rx:s_axis_tx, FREQ_HZ 125000000, ASSOCIATED_RESET user_reset_out, FREQ_TOLERANCE_HZ 0, PHASE 0.0, INSERT_VIP 0" *) output user_clk_out;
+  (* x_interface_info = "xilinx.com:signal:reset:1.0 RST.user_reset_out RST" *) (* x_interface_parameter = "XIL_INTERFACENAME RST.user_reset_out, POLARITY ACTIVE_HIGH, INSERT_VIP 0" *) output user_reset_out;
   output user_lnk_up;
   output user_app_rdy;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_buf_av" *) output [5:0]tx_buf_av;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_cfg_req" *) output tx_cfg_req;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_err_drop" *) output tx_err_drop;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TREADY" *) output s_axis_tx_tready;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TDATA" *) input [63:0]s_axis_tx_tdata;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TKEEP" *) input [7:0]s_axis_tx_tkeep;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TLAST" *) input s_axis_tx_tlast;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TVALID" *) input s_axis_tx_tvalid;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 s_axis_tx TUSER" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME s_axis_tx, TDATA_NUM_BYTES 8, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 4, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.0, LAYERED_METADATA undef, INSERT_VIP 0" *) input [3:0]s_axis_tx_tuser;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control tx_cfg_gnt" *) input tx_cfg_gnt;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TDATA" *) output [63:0]m_axis_rx_tdata;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TKEEP" *) output [7:0]m_axis_rx_tkeep;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TLAST" *) output m_axis_rx_tlast;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TVALID" *) output m_axis_rx_tvalid;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TREADY" *) input m_axis_rx_tready;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:axis:1.0 m_axis_rx TUSER" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME m_axis_rx, TDATA_NUM_BYTES 8, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 22, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.0, LAYERED_METADATA undef, INSERT_VIP 0" *) output [21:0]m_axis_rx_tuser;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control rx_np_ok" *) input rx_np_ok;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control rx_np_req" *) input rx_np_req;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc CPLD" *) output [11:0]fc_cpld;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc CPLH" *) output [7:0]fc_cplh;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc NPD" *) output [11:0]fc_npd;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc NPH" *) output [7:0]fc_nph;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc PD" *) output [11:0]fc_pd;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc PH" *) output [7:0]fc_ph;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc SEL" *) input [2:0]fc_sel;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_DATA" *) output [31:0]cfg_mgmt_do;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_WRITE_DONE" *) output cfg_mgmt_rd_wr_done;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status status" *) output [15:0]cfg_status;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status command" *) output [15:0]cfg_command;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dstatus" *) output [15:0]cfg_dstatus;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dcommand" *) output [15:0]cfg_dcommand;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status lstatus" *) output [15:0]cfg_lstatus;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status lcommand" *) output [15:0]cfg_lcommand;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dcommand2" *) output [15:0]cfg_dcommand2;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pcie_link_state" *) output [2:0]cfg_pcie_link_state;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_pme_en" *) output cfg_pmcsr_pme_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_powerstate" *) output [1:0]cfg_pmcsr_powerstate;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_pme_status" *) output cfg_pmcsr_pme_status;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status received_func_lvl_rst" *) output cfg_received_func_lvl_rst;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt WRITE_DATA" *) input [31:0]cfg_mgmt_di;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt BYTE_EN" *) input [3:0]cfg_mgmt_byte_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt ADDR" *) input [9:0]cfg_mgmt_dwaddr;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt WRITE_EN" *) input cfg_mgmt_wr_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_EN" *) input cfg_mgmt_rd_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READONLY" *) input cfg_mgmt_wr_readonly;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err ecrc" *) input cfg_err_ecrc;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err ur" *) input cfg_err_ur;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_timeout" *) input cfg_err_cpl_timeout;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_unexpect" *) input cfg_err_cpl_unexpect;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_abort" *) input cfg_err_cpl_abort;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err posted" *) input cfg_err_posted;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cor" *) input cfg_err_cor;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err atomic_egress_blocked" *) input cfg_err_atomic_egress_blocked;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err internal_cor" *) input cfg_err_internal_cor;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err malformed" *) input cfg_err_malformed;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err mc_blocked" *) input cfg_err_mc_blocked;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err poisoned" *) input cfg_err_poisoned;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err norecovery" *) input cfg_err_norecovery;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err tlp_cpl_header" *) input [47:0]cfg_err_tlp_cpl_header;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_rdy" *) output cfg_err_cpl_rdy;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err locked" *) input cfg_err_locked;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err acs" *) input cfg_err_acs;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err internal_uncor" *) input cfg_err_internal_uncor;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control trn_pending" *) input cfg_trn_pending;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_halt_aspm_l0s" *) input cfg_pm_halt_aspm_l0s;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_halt_aspm_l1" *) input cfg_pm_halt_aspm_l1;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_force_state_en" *) input cfg_pm_force_state_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_force_state" *) input [1:0]cfg_pm_force_state;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control dsn" *) input [63:0]cfg_dsn;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt interrupt" *) input cfg_interrupt;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt rdy" *) output cfg_interrupt_rdy;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt assert" *) input cfg_interrupt_assert;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt write_data" *) input [7:0]cfg_interrupt_di;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt read_data" *) output [7:0]cfg_interrupt_do;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt mmenable" *) output [2:0]cfg_interrupt_mmenable;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msienable" *) output cfg_interrupt_msienable;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msixenable" *) output cfg_interrupt_msixenable;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msixfm" *) output cfg_interrupt_msixfm;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt stat" *) input cfg_interrupt_stat;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt pciecap_interrupt_msgnum" *) input [4:0]cfg_pciecap_interrupt_msgnum;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status turnoff" *) output cfg_to_turnoff;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control turnoff_ok" *) input cfg_turnoff_ok;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status bus_number" *) output [7:0]cfg_bus_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status device_number" *) output [4:0]cfg_device_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status function_number" *) output [2:0]cfg_function_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_wake" *) input cfg_pm_wake;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_send_pme_to" *) input cfg_pm_send_pme_to;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_bus_number" *) input [7:0]cfg_ds_bus_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_device_number" *) input [4:0]cfg_ds_device_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_function_number" *) input [2:0]cfg_ds_function_number;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt TYPE1_CFG_REG_ACCESS" *) input cfg_mgmt_wr_rw1c_as_rw;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received" *) output cfg_msg_received;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd data" *) output [15:0]cfg_msg_data;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status bridge_serr_en" *) output cfg_bridge_serr_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status slot_control_electromech_il_ctl_pulse" *) output cfg_slot_control_electromech_il_ctl_pulse;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_corr_err_en" *) output cfg_root_control_syserr_corr_err_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_non_fatal_err_en" *) output cfg_root_control_syserr_non_fatal_err_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_fatal_err_en" *) output cfg_root_control_syserr_fatal_err_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_pme_int_en" *) output cfg_root_control_pme_int_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_corr_err_reporting_en" *) output cfg_aer_rooterr_corr_err_reporting_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_non_fatal_err_reporting_en" *) output cfg_aer_rooterr_non_fatal_err_reporting_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_fatal_err_reporting_en" *) output cfg_aer_rooterr_fatal_err_reporting_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_corr_err_received" *) output cfg_aer_rooterr_corr_err_received;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_non_fatal_err_received" *) output cfg_aer_rooterr_non_fatal_err_received;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_fatal_err_received" *) output cfg_aer_rooterr_fatal_err_received;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_cor" *) output cfg_msg_received_err_cor;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_non_fatal" *) output cfg_msg_received_err_non_fatal;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_fatal" *) output cfg_msg_received_err_fatal;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received_pm_as_nak" *) output cfg_msg_received_pm_as_nak;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd pm_pme" *) output cfg_msg_received_pm_pme;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd pme_to_ack" *) output cfg_msg_received_pme_to_ack;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_a" *) output cfg_msg_received_assert_int_a;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_b" *) output cfg_msg_received_assert_int_b;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_c" *) output cfg_msg_received_assert_int_c;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_d" *) output cfg_msg_received_assert_int_d;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_a" *) output cfg_msg_received_deassert_int_a;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_b" *) output cfg_msg_received_deassert_int_b;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_c" *) output cfg_msg_received_deassert_int_c;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_d" *) output cfg_msg_received_deassert_int_d;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received_setslotpowerlimit" *) output cfg_msg_received_setslotpowerlimit;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_change" *) input [1:0]pl_directed_link_change;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_width" *) input [1:0]pl_directed_link_width;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_speed" *) input pl_directed_link_speed;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_auton" *) input pl_directed_link_auton;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl upstream_prefer_deemph" *) input pl_upstream_prefer_deemph;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl sel_lnk_rate" *) output pl_sel_lnk_rate;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl sel_lnk_width" *) output [1:0]pl_sel_lnk_width;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl ltssm_state" *) output [5:0]pl_ltssm_state;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl lane_reversal_mode" *) output [1:0]pl_lane_reversal_mode;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl phy_lnk_up" *) output pl_phy_lnk_up;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl tx_pm_state" *) output [2:0]pl_tx_pm_state;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl rx_pm_state" *) output [1:0]pl_rx_pm_state;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_upcfg_cap" *) output pl_link_upcfg_cap;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_gen2_cap" *) output pl_link_gen2_cap;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_partner_gen2_supported" *) output pl_link_partner_gen2_supported;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl initial_link_width" *) output [2:0]pl_initial_link_width;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_change_done" *) output pl_directed_change_done;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl received_hot_rst" *) output pl_received_hot_rst;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl transmit_hot_rst" *) input pl_transmit_hot_rst;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl downstream_deemph_source" *) input pl_downstream_deemph_source;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err err_aer_headerlog" *) input [127:0]cfg_err_aer_headerlog;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_interrupt_msgnum" *) input [4:0]cfg_aer_interrupt_msgnum;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err err_aer_headerlog_set" *) output cfg_err_aer_headerlog_set;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_ecrc_check_en" *) output cfg_aer_ecrc_check_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_ecrc_gen_en" *) output cfg_aer_ecrc_gen_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status vc_tcvc_map" *) output [6:0]cfg_vc_tcvc_map;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 CLK.sys_clk CLK" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME CLK.sys_clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, INSERT_VIP 0" *) input sys_clk;
-  (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 RST.sys_rst_n RST" *) (* X_INTERFACE_PARAMETER = "XIL_INTERFACENAME RST.sys_rst_n, POLARITY ACTIVE_LOW, INSERT_VIP 0" *) input sys_rst_n;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:pipe_clock:1.0 pipe_clock mmcm_rst_n" *) input pipe_mmcm_rst_n;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_buf_av" *) output [5:0]tx_buf_av;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_cfg_req" *) output tx_cfg_req;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status tx_err_drop" *) output tx_err_drop;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TREADY" *) (* x_interface_parameter = "XIL_INTERFACENAME s_axis_tx, TDATA_NUM_BYTES 8, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 4, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.0, LAYERED_METADATA undef, INSERT_VIP 0" *) output s_axis_tx_tready;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TDATA" *) input [63:0]s_axis_tx_tdata;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TKEEP" *) input [7:0]s_axis_tx_tkeep;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TLAST" *) input s_axis_tx_tlast;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TVALID" *) input s_axis_tx_tvalid;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 s_axis_tx TUSER" *) input [3:0]s_axis_tx_tuser;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control tx_cfg_gnt" *) input tx_cfg_gnt;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TDATA" *) (* x_interface_parameter = "XIL_INTERFACENAME m_axis_rx, TDATA_NUM_BYTES 8, TDEST_WIDTH 0, TID_WIDTH 0, TUSER_WIDTH 22, HAS_TREADY 1, HAS_TSTRB 0, HAS_TKEEP 1, HAS_TLAST 1, FREQ_HZ 100000000, PHASE 0.0, LAYERED_METADATA undef, INSERT_VIP 0" *) output [63:0]m_axis_rx_tdata;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TKEEP" *) output [7:0]m_axis_rx_tkeep;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TLAST" *) output m_axis_rx_tlast;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TVALID" *) output m_axis_rx_tvalid;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TREADY" *) input m_axis_rx_tready;
+  (* x_interface_info = "xilinx.com:interface:axis:1.0 m_axis_rx TUSER" *) output [21:0]m_axis_rx_tuser;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control rx_np_ok" *) input rx_np_ok;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control rx_np_req" *) input rx_np_req;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc CPLD" *) output [11:0]fc_cpld;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc CPLH" *) output [7:0]fc_cplh;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc NPD" *) output [11:0]fc_npd;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc NPH" *) output [7:0]fc_nph;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc PD" *) output [11:0]fc_pd;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc PH" *) output [7:0]fc_ph;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_fc:1.0 pcie_cfg_fc SEL" *) input [2:0]fc_sel;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_DATA" *) output [31:0]cfg_mgmt_do;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_WRITE_DONE" *) output cfg_mgmt_rd_wr_done;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status status" *) output [15:0]cfg_status;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status command" *) output [15:0]cfg_command;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dstatus" *) output [15:0]cfg_dstatus;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dcommand" *) output [15:0]cfg_dcommand;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status lstatus" *) output [15:0]cfg_lstatus;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status lcommand" *) output [15:0]cfg_lcommand;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status dcommand2" *) output [15:0]cfg_dcommand2;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pcie_link_state" *) output [2:0]cfg_pcie_link_state;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_pme_en" *) output cfg_pmcsr_pme_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_powerstate" *) output [1:0]cfg_pmcsr_powerstate;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status pmcsr_pme_status" *) output cfg_pmcsr_pme_status;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status received_func_lvl_rst" *) output cfg_received_func_lvl_rst;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt WRITE_DATA" *) input [31:0]cfg_mgmt_di;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt BYTE_EN" *) input [3:0]cfg_mgmt_byte_en;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt ADDR" *) input [9:0]cfg_mgmt_dwaddr;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt WRITE_EN" *) input cfg_mgmt_wr_en;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READ_EN" *) input cfg_mgmt_rd_en;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt READONLY" *) input cfg_mgmt_wr_readonly;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err ecrc" *) input cfg_err_ecrc;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err ur" *) input cfg_err_ur;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_timeout" *) input cfg_err_cpl_timeout;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_unexpect" *) input cfg_err_cpl_unexpect;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_abort" *) input cfg_err_cpl_abort;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err posted" *) input cfg_err_posted;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cor" *) input cfg_err_cor;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err atomic_egress_blocked" *) input cfg_err_atomic_egress_blocked;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err internal_cor" *) input cfg_err_internal_cor;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err malformed" *) input cfg_err_malformed;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err mc_blocked" *) input cfg_err_mc_blocked;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err poisoned" *) input cfg_err_poisoned;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err norecovery" *) input cfg_err_norecovery;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err tlp_cpl_header" *) input [47:0]cfg_err_tlp_cpl_header;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err cpl_rdy" *) output cfg_err_cpl_rdy;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err locked" *) input cfg_err_locked;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err acs" *) input cfg_err_acs;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err internal_uncor" *) input cfg_err_internal_uncor;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control trn_pending" *) input cfg_trn_pending;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_halt_aspm_l0s" *) input cfg_pm_halt_aspm_l0s;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_halt_aspm_l1" *) input cfg_pm_halt_aspm_l1;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_force_state_en" *) input cfg_pm_force_state_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_force_state" *) input [1:0]cfg_pm_force_state;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control dsn" *) input [63:0]cfg_dsn;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt interrupt" *) input cfg_interrupt;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt rdy" *) output cfg_interrupt_rdy;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt assert" *) input cfg_interrupt_assert;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt write_data" *) input [7:0]cfg_interrupt_di;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt read_data" *) output [7:0]cfg_interrupt_do;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt mmenable" *) output [2:0]cfg_interrupt_mmenable;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msienable" *) output cfg_interrupt_msienable;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msixenable" *) output cfg_interrupt_msixenable;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt msixfm" *) output cfg_interrupt_msixfm;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt stat" *) input cfg_interrupt_stat;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_interrupt:1.0 pcie2_cfg_interrupt pciecap_interrupt_msgnum" *) input [4:0]cfg_pciecap_interrupt_msgnum;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status turnoff" *) output cfg_to_turnoff;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control turnoff_ok" *) input cfg_turnoff_ok;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status bus_number" *) output [7:0]cfg_bus_number;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status device_number" *) output [4:0]cfg_device_number;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status function_number" *) output [2:0]cfg_function_number;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_wake" *) input cfg_pm_wake;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control pm_send_pme_to" *) input cfg_pm_send_pme_to;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_bus_number" *) input [7:0]cfg_ds_bus_number;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_device_number" *) input [4:0]cfg_ds_device_number;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_control:1.0 pcie2_cfg_control ds_function_number" *) input [2:0]cfg_ds_function_number;
+  (* x_interface_info = "xilinx.com:interface:pcie_cfg_mgmt:1.0 pcie_cfg_mgmt TYPE1_CFG_REG_ACCESS" *) input cfg_mgmt_wr_rw1c_as_rw;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received" *) output cfg_msg_received;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd data" *) output [15:0]cfg_msg_data;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status bridge_serr_en" *) output cfg_bridge_serr_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status slot_control_electromech_il_ctl_pulse" *) output cfg_slot_control_electromech_il_ctl_pulse;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_corr_err_en" *) output cfg_root_control_syserr_corr_err_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_non_fatal_err_en" *) output cfg_root_control_syserr_non_fatal_err_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_syserr_fatal_err_en" *) output cfg_root_control_syserr_fatal_err_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status root_control_pme_int_en" *) output cfg_root_control_pme_int_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_corr_err_reporting_en" *) output cfg_aer_rooterr_corr_err_reporting_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_non_fatal_err_reporting_en" *) output cfg_aer_rooterr_non_fatal_err_reporting_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_fatal_err_reporting_en" *) output cfg_aer_rooterr_fatal_err_reporting_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_corr_err_received" *) output cfg_aer_rooterr_corr_err_received;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_non_fatal_err_received" *) output cfg_aer_rooterr_non_fatal_err_received;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status aer_rooterr_fatal_err_received" *) output cfg_aer_rooterr_fatal_err_received;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_cor" *) output cfg_msg_received_err_cor;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_non_fatal" *) output cfg_msg_received_err_non_fatal;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd err_fatal" *) output cfg_msg_received_err_fatal;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received_pm_as_nak" *) output cfg_msg_received_pm_as_nak;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd pm_pme" *) output cfg_msg_received_pm_pme;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd pme_to_ack" *) output cfg_msg_received_pme_to_ack;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_a" *) output cfg_msg_received_assert_int_a;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_b" *) output cfg_msg_received_assert_int_b;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_c" *) output cfg_msg_received_assert_int_c;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd assert_int_d" *) output cfg_msg_received_assert_int_d;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_a" *) output cfg_msg_received_deassert_int_a;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_b" *) output cfg_msg_received_deassert_int_b;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_c" *) output cfg_msg_received_deassert_int_c;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd deassert_int_d" *) output cfg_msg_received_deassert_int_d;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_msg_rcvd:1.0 pcie2_cfg_msg_rcvd received_setslotpowerlimit" *) output cfg_msg_received_setslotpowerlimit;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_change" *) input [1:0]pl_directed_link_change;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_width" *) input [1:0]pl_directed_link_width;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_speed" *) input pl_directed_link_speed;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_link_auton" *) input pl_directed_link_auton;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl upstream_prefer_deemph" *) input pl_upstream_prefer_deemph;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl sel_lnk_rate" *) output pl_sel_lnk_rate;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl sel_lnk_width" *) output [1:0]pl_sel_lnk_width;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl ltssm_state" *) output [5:0]pl_ltssm_state;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl lane_reversal_mode" *) output [1:0]pl_lane_reversal_mode;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl phy_lnk_up" *) output pl_phy_lnk_up;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl tx_pm_state" *) output [2:0]pl_tx_pm_state;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl rx_pm_state" *) output [1:0]pl_rx_pm_state;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_upcfg_cap" *) output pl_link_upcfg_cap;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_gen2_cap" *) output pl_link_gen2_cap;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl link_partner_gen2_supported" *) output pl_link_partner_gen2_supported;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl initial_link_width" *) output [2:0]pl_initial_link_width;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl directed_change_done" *) output pl_directed_change_done;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl received_hot_rst" *) output pl_received_hot_rst;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl transmit_hot_rst" *) input pl_transmit_hot_rst;
+  (* x_interface_info = "xilinx.com:interface:pcie2_pl:1.0 pcie2_pl downstream_deemph_source" *) input pl_downstream_deemph_source;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err err_aer_headerlog" *) input [127:0]cfg_err_aer_headerlog;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_interrupt_msgnum" *) input [4:0]cfg_aer_interrupt_msgnum;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err err_aer_headerlog_set" *) output cfg_err_aer_headerlog_set;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_ecrc_check_en" *) output cfg_aer_ecrc_check_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_err:1.0 pcie2_cfg_err aer_ecrc_gen_en" *) output cfg_aer_ecrc_gen_en;
+  (* x_interface_info = "xilinx.com:interface:pcie2_cfg_status:1.0 pcie2_cfg_status vc_tcvc_map" *) output [6:0]cfg_vc_tcvc_map;
+  (* x_interface_info = "xilinx.com:signal:clock:1.0 CLK.sys_clk CLK" *) (* x_interface_parameter = "XIL_INTERFACENAME CLK.sys_clk, FREQ_HZ 100000000, FREQ_TOLERANCE_HZ 0, PHASE 0.0, INSERT_VIP 0" *) input sys_clk;
+  (* x_interface_info = "xilinx.com:signal:reset:1.0 RST.sys_rst_n RST" *) (* x_interface_parameter = "XIL_INTERFACENAME RST.sys_rst_n, POLARITY ACTIVE_LOW, INSERT_VIP 0" *) input sys_rst_n;
+  (* x_interface_info = "xilinx.com:interface:pipe_clock:1.0 pipe_clock mmcm_rst_n" *) input pipe_mmcm_rst_n;
   input pcie_drp_clk;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DEN" *) input pcie_drp_en;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DWE" *) input pcie_drp_we;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DADDR" *) input [8:0]pcie_drp_addr;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DI" *) input [15:0]pcie_drp_di;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DO" *) output [15:0]pcie_drp_do;
-  (* X_INTERFACE_INFO = "xilinx.com:interface:drp:1.0 drp DRDY" *) output pcie_drp_rdy;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DEN" *) input pcie_drp_en;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DWE" *) input pcie_drp_we;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DADDR" *) input [8:0]pcie_drp_addr;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DI" *) input [15:0]pcie_drp_di;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DO" *) output [15:0]pcie_drp_do;
+  (* x_interface_info = "xilinx.com:interface:drp:1.0 drp DRDY" *) output pcie_drp_rdy;
 
   wire \<const0> ;
   wire \<const1> ;
@@ -476,7 +476,7 @@ module pcie_7x_0
   wire [7:0]fc_ph;
   wire [2:0]fc_sel;
   wire [63:0]m_axis_rx_tdata;
-  wire [7:4]\^m_axis_rx_tkeep ;
+  wire [7:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [21:0]\^m_axis_rx_tuser ;
@@ -540,89 +540,88 @@ module pcie_7x_0
   wire user_clk_out;
   wire user_lnk_up;
   wire user_reset_out;
-  wire NLW_inst_ext_ch_gt_drpclk_UNCONNECTED;
-  wire NLW_inst_int_dclk_out_UNCONNECTED;
-  wire NLW_inst_int_mmcm_lock_out_UNCONNECTED;
-  wire NLW_inst_int_oobclk_out_UNCONNECTED;
-  wire NLW_inst_int_pclk_out_slave_UNCONNECTED;
-  wire NLW_inst_int_pipe_rxusrclk_out_UNCONNECTED;
-  wire NLW_inst_int_userclk1_out_UNCONNECTED;
-  wire NLW_inst_int_userclk2_out_UNCONNECTED;
-  wire NLW_inst_pipe_qrst_idle_UNCONNECTED;
-  wire NLW_inst_pipe_rate_idle_UNCONNECTED;
-  wire NLW_inst_pipe_rst_idle_UNCONNECTED;
-  wire NLW_inst_qpll_drp_clk_UNCONNECTED;
-  wire NLW_inst_qpll_drp_gen3_UNCONNECTED;
-  wire NLW_inst_qpll_drp_ovrd_UNCONNECTED;
-  wire NLW_inst_qpll_drp_rst_n_UNCONNECTED;
-  wire NLW_inst_qpll_drp_start_UNCONNECTED;
-  wire NLW_inst_qpll_qplld_UNCONNECTED;
-  wire NLW_inst_startup_cfgclk_UNCONNECTED;
-  wire NLW_inst_startup_cfgmclk_UNCONNECTED;
-  wire NLW_inst_startup_eos_UNCONNECTED;
-  wire NLW_inst_startup_preq_UNCONNECTED;
-  wire NLW_inst_user_app_rdy_UNCONNECTED;
-  wire [15:3]NLW_inst_cfg_command_UNCONNECTED;
-  wire [15:15]NLW_inst_cfg_dcommand_UNCONNECTED;
-  wire [15:12]NLW_inst_cfg_dcommand2_UNCONNECTED;
-  wire [15:4]NLW_inst_cfg_dstatus_UNCONNECTED;
-  wire [15:2]NLW_inst_cfg_lcommand_UNCONNECTED;
-  wire [12:2]NLW_inst_cfg_lstatus_UNCONNECTED;
-  wire [15:0]NLW_inst_cfg_status_UNCONNECTED;
-  wire [11:0]NLW_inst_common_commands_out_UNCONNECTED;
-  wire [15:0]NLW_inst_ext_ch_gt_drpdo_UNCONNECTED;
-  wire [0:0]NLW_inst_ext_ch_gt_drprdy_UNCONNECTED;
-  wire [0:0]NLW_inst_gt_ch_drp_rdy_UNCONNECTED;
-  wire [31:0]NLW_inst_icap_o_UNCONNECTED;
-  wire [1:0]NLW_inst_int_qplllock_out_UNCONNECTED;
-  wire [1:0]NLW_inst_int_qplloutclk_out_UNCONNECTED;
-  wire [1:0]NLW_inst_int_qplloutrefclk_out_UNCONNECTED;
-  wire [0:0]NLW_inst_int_rxoutclk_out_UNCONNECTED;
-  wire [3:0]NLW_inst_m_axis_rx_tkeep_UNCONNECTED;
-  wire [20:9]NLW_inst_m_axis_rx_tuser_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_cpll_lock_UNCONNECTED;
-  wire [31:0]NLW_inst_pipe_debug_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_0_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_1_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_2_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_3_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_4_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_5_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_6_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_7_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_8_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_debug_9_UNCONNECTED;
-  wire [14:0]NLW_inst_pipe_dmonitorout_UNCONNECTED;
-  wire [6:0]NLW_inst_pipe_drp_fsm_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_eyescandataerror_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_qpll_lock_UNCONNECTED;
-  wire [11:0]NLW_inst_pipe_qrst_fsm_UNCONNECTED;
-  wire [4:0]NLW_inst_pipe_rate_fsm_UNCONNECTED;
-  wire [4:0]NLW_inst_pipe_rst_fsm_UNCONNECTED;
-  wire [2:0]NLW_inst_pipe_rxbufstatus_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxcommadet_UNCONNECTED;
-  wire [7:0]NLW_inst_pipe_rxdisperr_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxdlysresetdone_UNCONNECTED;
-  wire [7:0]NLW_inst_pipe_rxnotintable_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxphaligndone_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxpmaresetdone_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxprbserr_UNCONNECTED;
-  wire [2:0]NLW_inst_pipe_rxstatus_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_rxsyncdone_UNCONNECTED;
-  wire [6:0]NLW_inst_pipe_sync_fsm_rx_UNCONNECTED;
-  wire [5:0]NLW_inst_pipe_sync_fsm_tx_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_0_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_1_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_2_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_3_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_4_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_5_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_6_sigs_UNCONNECTED;
-  wire [24:0]NLW_inst_pipe_tx_7_sigs_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_txdlysresetdone_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_txphaligndone_UNCONNECTED;
-  wire [0:0]NLW_inst_pipe_txphinitdone_UNCONNECTED;
-  wire [1:0]NLW_inst_qpll_qpllreset_UNCONNECTED;
+  wire NLW_U0_ext_ch_gt_drpclk_UNCONNECTED;
+  wire NLW_U0_int_dclk_out_UNCONNECTED;
+  wire NLW_U0_int_mmcm_lock_out_UNCONNECTED;
+  wire NLW_U0_int_oobclk_out_UNCONNECTED;
+  wire NLW_U0_int_pclk_out_slave_UNCONNECTED;
+  wire NLW_U0_int_pipe_rxusrclk_out_UNCONNECTED;
+  wire NLW_U0_int_userclk1_out_UNCONNECTED;
+  wire NLW_U0_int_userclk2_out_UNCONNECTED;
+  wire NLW_U0_pipe_qrst_idle_UNCONNECTED;
+  wire NLW_U0_pipe_rate_idle_UNCONNECTED;
+  wire NLW_U0_pipe_rst_idle_UNCONNECTED;
+  wire NLW_U0_qpll_drp_clk_UNCONNECTED;
+  wire NLW_U0_qpll_drp_gen3_UNCONNECTED;
+  wire NLW_U0_qpll_drp_ovrd_UNCONNECTED;
+  wire NLW_U0_qpll_drp_rst_n_UNCONNECTED;
+  wire NLW_U0_qpll_drp_start_UNCONNECTED;
+  wire NLW_U0_qpll_qplld_UNCONNECTED;
+  wire NLW_U0_startup_cfgclk_UNCONNECTED;
+  wire NLW_U0_startup_cfgmclk_UNCONNECTED;
+  wire NLW_U0_startup_eos_UNCONNECTED;
+  wire NLW_U0_startup_preq_UNCONNECTED;
+  wire NLW_U0_user_app_rdy_UNCONNECTED;
+  wire [15:3]NLW_U0_cfg_command_UNCONNECTED;
+  wire [15:15]NLW_U0_cfg_dcommand_UNCONNECTED;
+  wire [15:12]NLW_U0_cfg_dcommand2_UNCONNECTED;
+  wire [15:4]NLW_U0_cfg_dstatus_UNCONNECTED;
+  wire [15:2]NLW_U0_cfg_lcommand_UNCONNECTED;
+  wire [12:2]NLW_U0_cfg_lstatus_UNCONNECTED;
+  wire [15:0]NLW_U0_cfg_status_UNCONNECTED;
+  wire [11:0]NLW_U0_common_commands_out_UNCONNECTED;
+  wire [15:0]NLW_U0_ext_ch_gt_drpdo_UNCONNECTED;
+  wire [0:0]NLW_U0_ext_ch_gt_drprdy_UNCONNECTED;
+  wire [0:0]NLW_U0_gt_ch_drp_rdy_UNCONNECTED;
+  wire [31:0]NLW_U0_icap_o_UNCONNECTED;
+  wire [1:0]NLW_U0_int_qplllock_out_UNCONNECTED;
+  wire [1:0]NLW_U0_int_qplloutclk_out_UNCONNECTED;
+  wire [1:0]NLW_U0_int_qplloutrefclk_out_UNCONNECTED;
+  wire [0:0]NLW_U0_int_rxoutclk_out_UNCONNECTED;
+  wire [20:9]NLW_U0_m_axis_rx_tuser_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_cpll_lock_UNCONNECTED;
+  wire [31:0]NLW_U0_pipe_debug_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_0_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_1_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_2_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_3_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_4_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_5_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_6_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_7_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_8_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_debug_9_UNCONNECTED;
+  wire [14:0]NLW_U0_pipe_dmonitorout_UNCONNECTED;
+  wire [6:0]NLW_U0_pipe_drp_fsm_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_eyescandataerror_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_qpll_lock_UNCONNECTED;
+  wire [11:0]NLW_U0_pipe_qrst_fsm_UNCONNECTED;
+  wire [4:0]NLW_U0_pipe_rate_fsm_UNCONNECTED;
+  wire [4:0]NLW_U0_pipe_rst_fsm_UNCONNECTED;
+  wire [2:0]NLW_U0_pipe_rxbufstatus_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxcommadet_UNCONNECTED;
+  wire [7:0]NLW_U0_pipe_rxdisperr_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxdlysresetdone_UNCONNECTED;
+  wire [7:0]NLW_U0_pipe_rxnotintable_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxphaligndone_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxpmaresetdone_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxprbserr_UNCONNECTED;
+  wire [2:0]NLW_U0_pipe_rxstatus_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_rxsyncdone_UNCONNECTED;
+  wire [6:0]NLW_U0_pipe_sync_fsm_rx_UNCONNECTED;
+  wire [5:0]NLW_U0_pipe_sync_fsm_tx_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_0_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_1_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_2_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_3_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_4_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_5_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_6_sigs_UNCONNECTED;
+  wire [24:0]NLW_U0_pipe_tx_7_sigs_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_txdlysresetdone_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_txphaligndone_UNCONNECTED;
+  wire [0:0]NLW_U0_pipe_txphinitdone_UNCONNECTED;
+  wire [1:0]NLW_U0_qpll_qpllreset_UNCONNECTED;
 
   assign cfg_command[15] = \<const0> ;
   assign cfg_command[14] = \<const0> ;
@@ -691,11 +690,6 @@ module pcie_7x_0
   assign cfg_status[2] = \<const0> ;
   assign cfg_status[1] = \<const0> ;
   assign cfg_status[0] = \<const0> ;
-  assign m_axis_rx_tkeep[7:4] = \^m_axis_rx_tkeep [7:4];
-  assign m_axis_rx_tkeep[3] = \<const1> ;
-  assign m_axis_rx_tkeep[2] = \<const1> ;
-  assign m_axis_rx_tkeep[1] = \<const1> ;
-  assign m_axis_rx_tkeep[0] = \<const1> ;
   assign m_axis_rx_tuser[21] = \^m_axis_rx_tuser [21];
   assign m_axis_rx_tuser[20] = \<const0> ;
   assign m_axis_rx_tuser[19:17] = \^m_axis_rx_tuser [19:17];
@@ -711,15 +705,12 @@ module pcie_7x_0
   assign user_app_rdy = \<const1> ;
   GND GND
        (.G(\<const0> ));
-  VCC VCC
-       (.P(\<const1> ));
   (* CFG_CTL_IF = "TRUE" *) 
   (* CFG_FC_IF = "TRUE" *) 
   (* CFG_MGMT_IF = "TRUE" *) 
   (* CFG_STATUS_IF = "TRUE" *) 
   (* CLASS_CODE = "058000" *) 
   (* C_DATA_WIDTH = "64" *) 
-  (* DowngradeIPIdentifiedWarnings = "yes" *) 
   (* ENABLE_JTAG_DBG = "FALSE" *) 
   (* ERR_REPORTING_IF = "TRUE" *) 
   (* EXT_CH_GT_DRP = "FALSE" *) 
@@ -790,7 +781,7 @@ module pcie_7x_0
   (* c_fc_nph = "12" *) 
   (* c_fc_pd = "437" *) 
   (* c_fc_ph = "32" *) 
-  (* c_gen1 = "1'b0" *) 
+  (* c_gen1 = "FALSE" *) 
   (* c_header_type = "00" *) 
   (* c_hw_auton_spd_disable = "FALSE" *) 
   (* c_int_width = "64" *) 
@@ -905,6 +896,7 @@ module pcie_7x_0
   (* dis_scl_fctr_d1_state = "0" *) 
   (* dis_scl_fctr_d2_state = "0" *) 
   (* dis_scl_fctr_d3_state = "0" *) 
+  (* downgradeipidentifiedwarnings = "yes" *) 
   (* dsi = "0" *) 
   (* ep_l0s_accpt_lat = "000" *) 
   (* ep_l1_accpt_lat = "111" *) 
@@ -933,7 +925,7 @@ module pcie_7x_0
   (* subsys_ven_id = "10EE" *) 
   (* ven_id = "10EE" *) 
   (* xrom_bar = "00000000" *) 
-  pcie_7x_0_pcie2_top inst
+  pcie_7x_0_pcie2_top U0
        (.cfg_aer_ecrc_check_en(cfg_aer_ecrc_check_en),
         .cfg_aer_ecrc_gen_en(cfg_aer_ecrc_gen_en),
         .cfg_aer_interrupt_msgnum(cfg_aer_interrupt_msgnum),
@@ -945,16 +937,16 @@ module pcie_7x_0
         .cfg_aer_rooterr_non_fatal_err_reporting_en(cfg_aer_rooterr_non_fatal_err_reporting_en),
         .cfg_bridge_serr_en(cfg_bridge_serr_en),
         .cfg_bus_number(cfg_bus_number),
-        .cfg_command({NLW_inst_cfg_command_UNCONNECTED[15:11],\^cfg_command }),
-        .cfg_dcommand({NLW_inst_cfg_dcommand_UNCONNECTED[15],\^cfg_dcommand }),
-        .cfg_dcommand2({NLW_inst_cfg_dcommand2_UNCONNECTED[15:12],\^cfg_dcommand2 }),
+        .cfg_command({NLW_U0_cfg_command_UNCONNECTED[15:11],\^cfg_command }),
+        .cfg_dcommand({NLW_U0_cfg_dcommand_UNCONNECTED[15],\^cfg_dcommand }),
+        .cfg_dcommand2({NLW_U0_cfg_dcommand2_UNCONNECTED[15:12],\^cfg_dcommand2 }),
         .cfg_dev_id_pf0({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1}),
         .cfg_device_number(cfg_device_number),
         .cfg_ds_bus_number(cfg_ds_bus_number),
         .cfg_ds_device_number(cfg_ds_device_number),
         .cfg_ds_function_number(cfg_ds_function_number),
         .cfg_dsn(cfg_dsn),
-        .cfg_dstatus({NLW_inst_cfg_dstatus_UNCONNECTED[15:6],\^cfg_dstatus }),
+        .cfg_dstatus({NLW_U0_cfg_dstatus_UNCONNECTED[15:6],\^cfg_dstatus }),
         .cfg_err_acs(1'b0),
         .cfg_err_aer_headerlog(cfg_err_aer_headerlog),
         .cfg_err_aer_headerlog_set(cfg_err_aer_headerlog_set),
@@ -986,7 +978,7 @@ module pcie_7x_0
         .cfg_interrupt_msixfm(cfg_interrupt_msixfm),
         .cfg_interrupt_rdy(cfg_interrupt_rdy),
         .cfg_interrupt_stat(cfg_interrupt_stat),
-        .cfg_lcommand({NLW_inst_cfg_lcommand_UNCONNECTED[15:12],\^cfg_lcommand }),
+        .cfg_lcommand({NLW_U0_cfg_lcommand_UNCONNECTED[15:12],\^cfg_lcommand }),
         .cfg_lstatus(\^cfg_lstatus ),
         .cfg_mgmt_byte_en(cfg_mgmt_byte_en),
         .cfg_mgmt_di(cfg_mgmt_di),
@@ -1032,7 +1024,7 @@ module pcie_7x_0
         .cfg_root_control_syserr_fatal_err_en(cfg_root_control_syserr_fatal_err_en),
         .cfg_root_control_syserr_non_fatal_err_en(cfg_root_control_syserr_non_fatal_err_en),
         .cfg_slot_control_electromech_il_ctl_pulse(cfg_slot_control_electromech_il_ctl_pulse),
-        .cfg_status(NLW_inst_cfg_status_UNCONNECTED[15:0]),
+        .cfg_status(NLW_U0_cfg_status_UNCONNECTED[15:0]),
         .cfg_subsys_id_pf0({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1}),
         .cfg_subsys_ven_id({1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b0,1'b1,1'b1,1'b1,1'b0}),
         .cfg_to_turnoff(cfg_to_turnoff),
@@ -1041,13 +1033,13 @@ module pcie_7x_0
         .cfg_vc_tcvc_map(cfg_vc_tcvc_map),
         .cfg_ven_id({1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b0,1'b1,1'b1,1'b1,1'b0}),
         .common_commands_in({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .common_commands_out(NLW_inst_common_commands_out_UNCONNECTED[11:0]),
+        .common_commands_out(NLW_U0_common_commands_out_UNCONNECTED[11:0]),
         .ext_ch_gt_drpaddr({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ext_ch_gt_drpclk(NLW_inst_ext_ch_gt_drpclk_UNCONNECTED),
+        .ext_ch_gt_drpclk(NLW_U0_ext_ch_gt_drpclk_UNCONNECTED),
         .ext_ch_gt_drpdi({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .ext_ch_gt_drpdo(NLW_inst_ext_ch_gt_drpdo_UNCONNECTED[15:0]),
+        .ext_ch_gt_drpdo(NLW_U0_ext_ch_gt_drpdo_UNCONNECTED[15:0]),
         .ext_ch_gt_drpen(1'b0),
-        .ext_ch_gt_drprdy(NLW_inst_ext_ch_gt_drprdy_UNCONNECTED[0]),
+        .ext_ch_gt_drprdy(NLW_U0_ext_ch_gt_drprdy_UNCONNECTED[0]),
         .ext_ch_gt_drpwe(1'b0),
         .fc_cpld(fc_cpld),
         .fc_cplh(fc_cplh),
@@ -1056,26 +1048,26 @@ module pcie_7x_0
         .fc_pd(fc_pd),
         .fc_ph(fc_ph),
         .fc_sel(fc_sel),
-        .gt_ch_drp_rdy(NLW_inst_gt_ch_drp_rdy_UNCONNECTED[0]),
+        .gt_ch_drp_rdy(NLW_U0_gt_ch_drp_rdy_UNCONNECTED[0]),
         .icap_clk(1'b0),
         .icap_csib(1'b0),
         .icap_i({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .icap_o(NLW_inst_icap_o_UNCONNECTED[31:0]),
+        .icap_o(NLW_U0_icap_o_UNCONNECTED[31:0]),
         .icap_rdwrb(1'b0),
-        .int_dclk_out(NLW_inst_int_dclk_out_UNCONNECTED),
-        .int_mmcm_lock_out(NLW_inst_int_mmcm_lock_out_UNCONNECTED),
-        .int_oobclk_out(NLW_inst_int_oobclk_out_UNCONNECTED),
-        .int_pclk_out_slave(NLW_inst_int_pclk_out_slave_UNCONNECTED),
+        .int_dclk_out(NLW_U0_int_dclk_out_UNCONNECTED),
+        .int_mmcm_lock_out(NLW_U0_int_mmcm_lock_out_UNCONNECTED),
+        .int_oobclk_out(NLW_U0_int_oobclk_out_UNCONNECTED),
+        .int_pclk_out_slave(NLW_U0_int_pclk_out_slave_UNCONNECTED),
         .int_pclk_sel_slave(1'b0),
-        .int_pipe_rxusrclk_out(NLW_inst_int_pipe_rxusrclk_out_UNCONNECTED),
-        .int_qplllock_out(NLW_inst_int_qplllock_out_UNCONNECTED[1:0]),
-        .int_qplloutclk_out(NLW_inst_int_qplloutclk_out_UNCONNECTED[1:0]),
-        .int_qplloutrefclk_out(NLW_inst_int_qplloutrefclk_out_UNCONNECTED[1:0]),
-        .int_rxoutclk_out(NLW_inst_int_rxoutclk_out_UNCONNECTED[0]),
-        .int_userclk1_out(NLW_inst_int_userclk1_out_UNCONNECTED),
-        .int_userclk2_out(NLW_inst_int_userclk2_out_UNCONNECTED),
+        .int_pipe_rxusrclk_out(NLW_U0_int_pipe_rxusrclk_out_UNCONNECTED),
+        .int_qplllock_out(NLW_U0_int_qplllock_out_UNCONNECTED[1:0]),
+        .int_qplloutclk_out(NLW_U0_int_qplloutclk_out_UNCONNECTED[1:0]),
+        .int_qplloutrefclk_out(NLW_U0_int_qplloutrefclk_out_UNCONNECTED[1:0]),
+        .int_rxoutclk_out(NLW_U0_int_rxoutclk_out_UNCONNECTED[0]),
+        .int_userclk1_out(NLW_U0_int_userclk1_out_UNCONNECTED),
+        .int_userclk2_out(NLW_U0_int_userclk2_out_UNCONNECTED),
         .m_axis_rx_tdata(m_axis_rx_tdata),
-        .m_axis_rx_tkeep({\^m_axis_rx_tkeep ,NLW_inst_m_axis_rx_tkeep_UNCONNECTED[3:0]}),
+        .m_axis_rx_tkeep(m_axis_rx_tkeep),
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(\^m_axis_rx_tuser ),
@@ -1091,22 +1083,22 @@ module pcie_7x_0
         .pcie_drp_en(pcie_drp_en),
         .pcie_drp_rdy(pcie_drp_rdy),
         .pcie_drp_we(pcie_drp_we),
-        .pipe_cpll_lock(NLW_inst_pipe_cpll_lock_UNCONNECTED[0]),
+        .pipe_cpll_lock(NLW_U0_pipe_cpll_lock_UNCONNECTED[0]),
         .pipe_dclk_in(pipe_dclk_in),
-        .pipe_debug(NLW_inst_pipe_debug_UNCONNECTED[31:0]),
-        .pipe_debug_0(NLW_inst_pipe_debug_0_UNCONNECTED[0]),
-        .pipe_debug_1(NLW_inst_pipe_debug_1_UNCONNECTED[0]),
-        .pipe_debug_2(NLW_inst_pipe_debug_2_UNCONNECTED[0]),
-        .pipe_debug_3(NLW_inst_pipe_debug_3_UNCONNECTED[0]),
-        .pipe_debug_4(NLW_inst_pipe_debug_4_UNCONNECTED[0]),
-        .pipe_debug_5(NLW_inst_pipe_debug_5_UNCONNECTED[0]),
-        .pipe_debug_6(NLW_inst_pipe_debug_6_UNCONNECTED[0]),
-        .pipe_debug_7(NLW_inst_pipe_debug_7_UNCONNECTED[0]),
-        .pipe_debug_8(NLW_inst_pipe_debug_8_UNCONNECTED[0]),
-        .pipe_debug_9(NLW_inst_pipe_debug_9_UNCONNECTED[0]),
-        .pipe_dmonitorout(NLW_inst_pipe_dmonitorout_UNCONNECTED[14:0]),
-        .pipe_drp_fsm(NLW_inst_pipe_drp_fsm_UNCONNECTED[6:0]),
-        .pipe_eyescandataerror(NLW_inst_pipe_eyescandataerror_UNCONNECTED[0]),
+        .pipe_debug(NLW_U0_pipe_debug_UNCONNECTED[31:0]),
+        .pipe_debug_0(NLW_U0_pipe_debug_0_UNCONNECTED[0]),
+        .pipe_debug_1(NLW_U0_pipe_debug_1_UNCONNECTED[0]),
+        .pipe_debug_2(NLW_U0_pipe_debug_2_UNCONNECTED[0]),
+        .pipe_debug_3(NLW_U0_pipe_debug_3_UNCONNECTED[0]),
+        .pipe_debug_4(NLW_U0_pipe_debug_4_UNCONNECTED[0]),
+        .pipe_debug_5(NLW_U0_pipe_debug_5_UNCONNECTED[0]),
+        .pipe_debug_6(NLW_U0_pipe_debug_6_UNCONNECTED[0]),
+        .pipe_debug_7(NLW_U0_pipe_debug_7_UNCONNECTED[0]),
+        .pipe_debug_8(NLW_U0_pipe_debug_8_UNCONNECTED[0]),
+        .pipe_debug_9(NLW_U0_pipe_debug_9_UNCONNECTED[0]),
+        .pipe_dmonitorout(NLW_U0_pipe_dmonitorout_UNCONNECTED[14:0]),
+        .pipe_drp_fsm(NLW_U0_pipe_drp_fsm_UNCONNECTED[6:0]),
+        .pipe_eyescandataerror(NLW_U0_pipe_eyescandataerror_UNCONNECTED[0]),
         .pipe_gen3_out(pipe_gen3_out),
         .pipe_loopback({1'b0,1'b0,1'b0}),
         .pipe_mmcm_lock_in(pipe_mmcm_lock_in),
@@ -1114,13 +1106,13 @@ module pcie_7x_0
         .pipe_oobclk_in(pipe_oobclk_in),
         .pipe_pclk_in(pipe_pclk_in),
         .pipe_pclk_sel_out(pipe_pclk_sel_out),
-        .pipe_qpll_lock(NLW_inst_pipe_qpll_lock_UNCONNECTED[0]),
-        .pipe_qrst_fsm(NLW_inst_pipe_qrst_fsm_UNCONNECTED[11:0]),
-        .pipe_qrst_idle(NLW_inst_pipe_qrst_idle_UNCONNECTED),
-        .pipe_rate_fsm(NLW_inst_pipe_rate_fsm_UNCONNECTED[4:0]),
-        .pipe_rate_idle(NLW_inst_pipe_rate_idle_UNCONNECTED),
-        .pipe_rst_fsm(NLW_inst_pipe_rst_fsm_UNCONNECTED[4:0]),
-        .pipe_rst_idle(NLW_inst_pipe_rst_idle_UNCONNECTED),
+        .pipe_qpll_lock(NLW_U0_pipe_qpll_lock_UNCONNECTED[0]),
+        .pipe_qrst_fsm(NLW_U0_pipe_qrst_fsm_UNCONNECTED[11:0]),
+        .pipe_qrst_idle(NLW_U0_pipe_qrst_idle_UNCONNECTED),
+        .pipe_rate_fsm(NLW_U0_pipe_rate_fsm_UNCONNECTED[4:0]),
+        .pipe_rate_idle(NLW_U0_pipe_rate_idle_UNCONNECTED),
+        .pipe_rst_fsm(NLW_U0_pipe_rst_fsm_UNCONNECTED[4:0]),
+        .pipe_rst_idle(NLW_U0_pipe_rst_idle_UNCONNECTED),
         .pipe_rx_0_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .pipe_rx_1_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .pipe_rx_2_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
@@ -1129,36 +1121,36 @@ module pcie_7x_0
         .pipe_rx_5_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .pipe_rx_6_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .pipe_rx_7_sigs({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .pipe_rxbufstatus(NLW_inst_pipe_rxbufstatus_UNCONNECTED[2:0]),
-        .pipe_rxcommadet(NLW_inst_pipe_rxcommadet_UNCONNECTED[0]),
-        .pipe_rxdisperr(NLW_inst_pipe_rxdisperr_UNCONNECTED[7:0]),
-        .pipe_rxdlysresetdone(NLW_inst_pipe_rxdlysresetdone_UNCONNECTED[0]),
-        .pipe_rxnotintable(NLW_inst_pipe_rxnotintable_UNCONNECTED[7:0]),
+        .pipe_rxbufstatus(NLW_U0_pipe_rxbufstatus_UNCONNECTED[2:0]),
+        .pipe_rxcommadet(NLW_U0_pipe_rxcommadet_UNCONNECTED[0]),
+        .pipe_rxdisperr(NLW_U0_pipe_rxdisperr_UNCONNECTED[7:0]),
+        .pipe_rxdlysresetdone(NLW_U0_pipe_rxdlysresetdone_UNCONNECTED[0]),
+        .pipe_rxnotintable(NLW_U0_pipe_rxnotintable_UNCONNECTED[7:0]),
         .pipe_rxoutclk_in(1'b0),
         .pipe_rxoutclk_out(pipe_rxoutclk_out),
-        .pipe_rxphaligndone(NLW_inst_pipe_rxphaligndone_UNCONNECTED[0]),
-        .pipe_rxpmaresetdone(NLW_inst_pipe_rxpmaresetdone_UNCONNECTED[0]),
+        .pipe_rxphaligndone(NLW_U0_pipe_rxphaligndone_UNCONNECTED[0]),
+        .pipe_rxpmaresetdone(NLW_U0_pipe_rxpmaresetdone_UNCONNECTED[0]),
         .pipe_rxprbscntreset(1'b0),
-        .pipe_rxprbserr(NLW_inst_pipe_rxprbserr_UNCONNECTED[0]),
+        .pipe_rxprbserr(NLW_U0_pipe_rxprbserr_UNCONNECTED[0]),
         .pipe_rxprbssel({1'b0,1'b0,1'b0}),
-        .pipe_rxstatus(NLW_inst_pipe_rxstatus_UNCONNECTED[2:0]),
-        .pipe_rxsyncdone(NLW_inst_pipe_rxsyncdone_UNCONNECTED[0]),
+        .pipe_rxstatus(NLW_U0_pipe_rxstatus_UNCONNECTED[2:0]),
+        .pipe_rxsyncdone(NLW_U0_pipe_rxsyncdone_UNCONNECTED[0]),
         .pipe_rxusrclk_in(pipe_rxusrclk_in),
-        .pipe_sync_fsm_rx(NLW_inst_pipe_sync_fsm_rx_UNCONNECTED[6:0]),
-        .pipe_sync_fsm_tx(NLW_inst_pipe_sync_fsm_tx_UNCONNECTED[5:0]),
-        .pipe_tx_0_sigs(NLW_inst_pipe_tx_0_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_1_sigs(NLW_inst_pipe_tx_1_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_2_sigs(NLW_inst_pipe_tx_2_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_3_sigs(NLW_inst_pipe_tx_3_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_4_sigs(NLW_inst_pipe_tx_4_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_5_sigs(NLW_inst_pipe_tx_5_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_6_sigs(NLW_inst_pipe_tx_6_sigs_UNCONNECTED[24:0]),
-        .pipe_tx_7_sigs(NLW_inst_pipe_tx_7_sigs_UNCONNECTED[24:0]),
-        .pipe_txdlysresetdone(NLW_inst_pipe_txdlysresetdone_UNCONNECTED[0]),
+        .pipe_sync_fsm_rx(NLW_U0_pipe_sync_fsm_rx_UNCONNECTED[6:0]),
+        .pipe_sync_fsm_tx(NLW_U0_pipe_sync_fsm_tx_UNCONNECTED[5:0]),
+        .pipe_tx_0_sigs(NLW_U0_pipe_tx_0_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_1_sigs(NLW_U0_pipe_tx_1_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_2_sigs(NLW_U0_pipe_tx_2_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_3_sigs(NLW_U0_pipe_tx_3_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_4_sigs(NLW_U0_pipe_tx_4_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_5_sigs(NLW_U0_pipe_tx_5_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_6_sigs(NLW_U0_pipe_tx_6_sigs_UNCONNECTED[24:0]),
+        .pipe_tx_7_sigs(NLW_U0_pipe_tx_7_sigs_UNCONNECTED[24:0]),
+        .pipe_txdlysresetdone(NLW_U0_pipe_txdlysresetdone_UNCONNECTED[0]),
         .pipe_txinhibit(1'b0),
         .pipe_txoutclk_out(pipe_txoutclk_out),
-        .pipe_txphaligndone(NLW_inst_pipe_txphaligndone_UNCONNECTED[0]),
-        .pipe_txphinitdone(NLW_inst_pipe_txphinitdone_UNCONNECTED[0]),
+        .pipe_txphaligndone(NLW_U0_pipe_txphaligndone_UNCONNECTED[0]),
+        .pipe_txphinitdone(NLW_U0_pipe_txphinitdone_UNCONNECTED[0]),
         .pipe_txprbsforceerr(1'b0),
         .pipe_txprbssel({1'b0,1'b0,1'b0}),
         .pipe_userclk1_in(pipe_userclk1_in),
@@ -1183,20 +1175,20 @@ module pcie_7x_0
         .pl_transmit_hot_rst(pl_transmit_hot_rst),
         .pl_tx_pm_state(pl_tx_pm_state),
         .pl_upstream_prefer_deemph(pl_upstream_prefer_deemph),
-        .qpll_drp_clk(NLW_inst_qpll_drp_clk_UNCONNECTED),
+        .qpll_drp_clk(NLW_U0_qpll_drp_clk_UNCONNECTED),
         .qpll_drp_crscode({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .qpll_drp_done({1'b0,1'b0}),
         .qpll_drp_fsm({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .qpll_drp_gen3(NLW_inst_qpll_drp_gen3_UNCONNECTED),
-        .qpll_drp_ovrd(NLW_inst_qpll_drp_ovrd_UNCONNECTED),
+        .qpll_drp_gen3(NLW_U0_qpll_drp_gen3_UNCONNECTED),
+        .qpll_drp_ovrd(NLW_U0_qpll_drp_ovrd_UNCONNECTED),
         .qpll_drp_reset({1'b0,1'b0}),
-        .qpll_drp_rst_n(NLW_inst_qpll_drp_rst_n_UNCONNECTED),
-        .qpll_drp_start(NLW_inst_qpll_drp_start_UNCONNECTED),
-        .qpll_qplld(NLW_inst_qpll_qplld_UNCONNECTED),
+        .qpll_drp_rst_n(NLW_U0_qpll_drp_rst_n_UNCONNECTED),
+        .qpll_drp_start(NLW_U0_qpll_drp_start_UNCONNECTED),
+        .qpll_qplld(NLW_U0_qpll_qplld_UNCONNECTED),
         .qpll_qplllock({1'b0,1'b0}),
         .qpll_qplloutclk({1'b0,1'b0}),
         .qpll_qplloutrefclk({1'b0,1'b0}),
-        .qpll_qpllreset(NLW_inst_qpll_qpllreset_UNCONNECTED[1:0]),
+        .qpll_qpllreset(NLW_U0_qpll_qpllreset_UNCONNECTED[1:0]),
         .rx_np_ok(rx_np_ok),
         .rx_np_req(rx_np_req),
         .s_axis_tx_tdata(s_axis_tx_tdata),
@@ -1205,16 +1197,16 @@ module pcie_7x_0
         .s_axis_tx_tready(s_axis_tx_tready),
         .s_axis_tx_tuser(s_axis_tx_tuser),
         .s_axis_tx_tvalid(s_axis_tx_tvalid),
-        .startup_cfgclk(NLW_inst_startup_cfgclk_UNCONNECTED),
-        .startup_cfgmclk(NLW_inst_startup_cfgmclk_UNCONNECTED),
+        .startup_cfgclk(NLW_U0_startup_cfgclk_UNCONNECTED),
+        .startup_cfgmclk(NLW_U0_startup_cfgmclk_UNCONNECTED),
         .startup_clk(1'b0),
-        .startup_eos(NLW_inst_startup_eos_UNCONNECTED),
+        .startup_eos(NLW_U0_startup_eos_UNCONNECTED),
         .startup_eos_in(1'b0),
         .startup_gsr(1'b0),
         .startup_gts(1'b0),
         .startup_keyclearb(1'b1),
         .startup_pack(1'b0),
-        .startup_preq(NLW_inst_startup_preq_UNCONNECTED),
+        .startup_preq(NLW_U0_startup_preq_UNCONNECTED),
         .startup_usrcclko(1'b1),
         .startup_usrcclkts(1'b0),
         .startup_usrdoneo(1'b0),
@@ -1225,27 +1217,29 @@ module pcie_7x_0
         .tx_cfg_gnt(tx_cfg_gnt),
         .tx_cfg_req(tx_cfg_req),
         .tx_err_drop(tx_err_drop),
-        .user_app_rdy(NLW_inst_user_app_rdy_UNCONNECTED),
+        .user_app_rdy(NLW_U0_user_app_rdy_UNCONNECTED),
         .user_clk_out(user_clk_out),
         .user_lnk_up(user_lnk_up),
         .user_reset_out(user_reset_out));
+  VCC VCC
+       (.P(\<const1> ));
 endmodule
 
 module pcie_7x_0_axi_basic_rx
-   (E,
-    trn_rsrc_dsc_d,
-    m_axis_rx_tvalid_reg,
-    m_axis_rx_tkeep,
+   (trn_rsrc_dsc_d,
+    E,
+    m_axis_rx_tvalid_xhdl2_reg,
     m_axis_rx_tlast,
     trn_in_packet,
     reg_dsc_detect_reg,
     m_axis_rx_tuser,
-    Q,
+    m_axis_rx_tdata,
+    m_axis_rx_tkeep,
     \trn_rbar_hit_prev_reg[0] ,
     pipe_userclk2_in,
-    trn_rrem,
     trn_rsrc_dsc,
-    rsrc_rdy_filtered,
+    rsrc_rdy_filtered6_out,
+    trn_rrem,
     trn_reof,
     trn_rsrc_dsc_prev0,
     trn_rsof,
@@ -1256,20 +1250,20 @@ module pcie_7x_0_axi_basic_rx
     dsc_detect,
     trn_rd,
     trn_rbar_hit);
-  output [0:0]E;
   output trn_rsrc_dsc_d;
-  output m_axis_rx_tvalid_reg;
-  output [0:0]m_axis_rx_tkeep;
+  output [0:0]E;
+  output m_axis_rx_tvalid_xhdl2_reg;
   output m_axis_rx_tlast;
   output trn_in_packet;
   output reg_dsc_detect_reg;
   output [12:0]m_axis_rx_tuser;
-  output [63:0]Q;
+  output [63:0]m_axis_rx_tdata;
+  output [1:0]m_axis_rx_tkeep;
   input \trn_rbar_hit_prev_reg[0] ;
   input pipe_userclk2_in;
-  input [0:0]trn_rrem;
   input trn_rsrc_dsc;
-  input rsrc_rdy_filtered;
+  input rsrc_rdy_filtered6_out;
+  input [0:0]trn_rrem;
   input trn_reof;
   input trn_rsrc_dsc_prev0;
   input trn_rsof;
@@ -1282,30 +1276,25 @@ module pcie_7x_0_axi_basic_rx
   input [6:0]trn_rbar_hit;
 
   wire [0:0]E;
-  wire [63:0]Q;
   wire dsc_detect;
-  wire [0:0]m_axis_rx_tkeep;
+  wire [63:0]m_axis_rx_tdata;
+  wire [1:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [12:0]m_axis_rx_tuser;
-  wire m_axis_rx_tvalid_reg;
-  wire [10:0]new_pkt_len;
+  wire m_axis_rx_tvalid_xhdl2_reg;
   wire null_mux_sel;
+  wire [9:5]payload_len;
   wire pipe_userclk2_in;
+  wire [4:0]plusOp;
   wire reg_dsc_detect_reg;
-  wire rsrc_rdy_filtered;
+  wire rsrc_rdy_filtered6_out;
   wire rx_null_gen_inst_n_0;
   wire rx_null_gen_inst_n_1;
   wire rx_null_gen_inst_n_2;
   wire rx_null_gen_inst_n_3;
   wire rx_null_gen_inst_n_4;
-  wire rx_null_gen_inst_n_5;
-  wire rx_null_gen_inst_n_6;
-  wire rx_null_gen_inst_n_7;
-  wire rx_null_gen_inst_n_8;
-  wire rx_pipeline_inst_n_73;
-  wire rx_pipeline_inst_n_74;
-  wire rx_pipeline_inst_n_8;
+  wire rx_pipeline_inst_n_7;
   wire trn_in_packet;
   wire trn_in_packet_reg;
   wire [6:0]trn_rbar_hit;
@@ -1321,52 +1310,46 @@ module pcie_7x_0_axi_basic_rx
   wire trn_rsrc_dsc_prev0;
 
   pcie_7x_0_axi_basic_rx_null_gen rx_null_gen_inst
-       (.D({rx_null_gen_inst_n_0,rx_null_gen_inst_n_1}),
-        .Q({Q[30:29],Q[15],Q[1:0]}),
-        .S({rx_null_gen_inst_n_7,rx_null_gen_inst_n_8}),
+       (.D(rx_null_gen_inst_n_0),
         .cur_state_reg_0(\trn_rbar_hit_prev_reg[0] ),
-        .cur_state_reg_1(m_axis_rx_tvalid_reg),
+        .cur_state_reg_1(m_axis_rx_tvalid_xhdl2_reg),
+        .in0(plusOp),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(m_axis_rx_tuser[12]),
-        .\m_axis_rx_tuser_reg[19] (rx_pipeline_inst_n_74),
-        .\m_axis_rx_tuser_reg[21] (rx_pipeline_inst_n_73),
-        .new_pkt_len(new_pkt_len),
+        .\m_axis_rx_tuser_xhdl1_reg[19] (rx_pipeline_inst_n_7),
         .null_mux_sel(null_mux_sel),
-        .null_mux_sel_reg(rx_null_gen_inst_n_5),
-        .null_mux_sel_reg_0(rx_null_gen_inst_n_6),
-        .null_mux_sel_reg_1(rx_pipeline_inst_n_8),
+        .null_mux_sel_reg(rx_null_gen_inst_n_4),
         .pipe_userclk2_in(pipe_userclk2_in),
-        .\reg_pkt_len_counter_reg[0]_0 (rx_null_gen_inst_n_4),
-        .\reg_pkt_len_counter_reg[3]_0 (rx_null_gen_inst_n_3),
-        .\reg_tkeep[7]_i_7_0 (rx_null_gen_inst_n_2));
+        .\reg_pkt_len_counter_reg[0]_0 (rx_null_gen_inst_n_3),
+        .\reg_pkt_len_counter_reg[3]_0 (rx_null_gen_inst_n_2),
+        .\reg_pkt_len_counter_reg[9]_0 (payload_len),
+        .\reg_tkeep[7]_i_7_0 (rx_null_gen_inst_n_1));
   pcie_7x_0_axi_basic_rx_pipeline rx_pipeline_inst
-       (.D({rx_null_gen_inst_n_0,rx_null_gen_inst_n_1}),
+       (.D(rx_null_gen_inst_n_0),
         .E(E),
-        .Q(Q),
-        .S({rx_null_gen_inst_n_7,rx_null_gen_inst_n_8}),
         .dsc_detect(dsc_detect),
+        .in0(plusOp),
+        .m_axis_rx_tdata(m_axis_rx_tdata),
+        .\m_axis_rx_tdata_xhdl0_reg[30]_0 (payload_len),
         .m_axis_rx_tkeep(m_axis_rx_tkeep),
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(m_axis_rx_tuser),
-        .m_axis_rx_tvalid_reg_0(m_axis_rx_tvalid_reg),
-        .new_pkt_len(new_pkt_len),
+        .\m_axis_rx_tuser_xhdl1_reg[21]_0 (rx_null_gen_inst_n_3),
+        .m_axis_rx_tvalid_xhdl2_reg_0(m_axis_rx_tvalid_xhdl2_reg),
         .null_mux_sel(null_mux_sel),
-        .null_mux_sel_reg_0(rx_null_gen_inst_n_5),
-        .pcie_block_i(rx_pipeline_inst_n_73),
-        .pcie_block_i_0(rx_pipeline_inst_n_74),
+        .null_mux_sel_reg_0(rx_null_gen_inst_n_4),
+        .pcie_block_i(rx_pipeline_inst_n_7),
         .pipe_userclk2_in(pipe_userclk2_in),
         .reg_dsc_detect_reg_0(reg_dsc_detect_reg),
-        .\reg_tkeep_reg[7]_0 (rx_null_gen_inst_n_3),
-        .reg_tlast_reg_0(rx_null_gen_inst_n_6),
-        .rsrc_rdy_filtered(rsrc_rdy_filtered),
+        .\reg_tkeep_reg[7]_0 (rx_null_gen_inst_n_1),
+        .\reg_tkeep_reg[7]_1 (rx_null_gen_inst_n_2),
+        .rsrc_rdy_filtered6_out(rsrc_rdy_filtered6_out),
         .trn_in_packet(trn_in_packet),
         .trn_in_packet_reg_0(trn_in_packet_reg),
         .trn_rbar_hit(trn_rbar_hit),
         .\trn_rbar_hit_prev_reg[0]_0 (\trn_rbar_hit_prev_reg[0] ),
         .trn_rd(trn_rd),
-        .trn_rdst_rdy_reg_0(rx_null_gen_inst_n_2),
-        .trn_rdst_rdy_reg_1(rx_null_gen_inst_n_4),
         .trn_recrc_err(trn_recrc_err),
         .trn_reof(trn_reof),
         .trn_rerrfwd(trn_rerrfwd),
@@ -1374,8 +1357,7 @@ module pcie_7x_0_axi_basic_rx
         .trn_rsof(trn_rsof),
         .trn_rsrc_dsc(trn_rsrc_dsc),
         .trn_rsrc_dsc_d(trn_rsrc_dsc_d),
-        .trn_rsrc_dsc_prev0(trn_rsrc_dsc_prev0),
-        .user_reset_out_reg(rx_pipeline_inst_n_8));
+        .trn_rsrc_dsc_prev0(trn_rsrc_dsc_prev0));
 endmodule
 
 module pcie_7x_0_axi_basic_rx_null_gen
@@ -1384,83 +1366,82 @@ module pcie_7x_0_axi_basic_rx_null_gen
     \reg_pkt_len_counter_reg[3]_0 ,
     \reg_pkt_len_counter_reg[0]_0 ,
     null_mux_sel_reg,
-    null_mux_sel_reg_0,
-    S,
+    in0,
+    \reg_pkt_len_counter_reg[9]_0 ,
     cur_state_reg_0,
     pipe_userclk2_in,
     null_mux_sel,
-    \m_axis_rx_tuser_reg[19] ,
-    new_pkt_len,
+    \m_axis_rx_tuser_xhdl1_reg[19] ,
     m_axis_rx_tready,
-    null_mux_sel_reg_1,
     cur_state_reg_1,
-    m_axis_rx_tuser,
-    \m_axis_rx_tuser_reg[21] ,
-    Q);
-  output [1:0]D;
+    m_axis_rx_tuser);
+  output [0:0]D;
   output \reg_tkeep[7]_i_7_0 ;
   output \reg_pkt_len_counter_reg[3]_0 ;
   output \reg_pkt_len_counter_reg[0]_0 ;
   output null_mux_sel_reg;
-  output null_mux_sel_reg_0;
-  output [1:0]S;
+  input [4:0]in0;
+  input [4:0]\reg_pkt_len_counter_reg[9]_0 ;
   input cur_state_reg_0;
   input pipe_userclk2_in;
   input null_mux_sel;
-  input \m_axis_rx_tuser_reg[19] ;
-  input [10:0]new_pkt_len;
+  input \m_axis_rx_tuser_xhdl1_reg[19] ;
   input m_axis_rx_tready;
-  input null_mux_sel_reg_1;
   input cur_state_reg_1;
   input [0:0]m_axis_rx_tuser;
-  input \m_axis_rx_tuser_reg[21] ;
-  input [4:0]Q;
 
-  wire [1:0]D;
-  wire [4:0]Q;
-  wire [1:0]S;
+  wire [0:0]D;
   wire cur_state;
+  wire cur_state_i_2_n_0;
+  wire cur_state_i_3_n_0;
+  wire cur_state_i_4_n_0;
   wire cur_state_reg_0;
   wire cur_state_reg_1;
   wire m_axis_rx_tready;
   wire [0:0]m_axis_rx_tuser;
-  wire \m_axis_rx_tuser_reg[19] ;
-  wire \m_axis_rx_tuser_reg[21] ;
-  wire [10:0]new_pkt_len;
+  wire \m_axis_rx_tuser_xhdl1_reg[19] ;
+  wire minusOp__0_carry__0_i_1_n_0;
+  wire minusOp__0_carry__0_i_2_n_0;
+  wire minusOp__0_carry__0_i_3_n_0;
+  wire minusOp__0_carry__0_i_4_n_0;
+  wire minusOp__0_carry__0_n_0;
+  wire minusOp__0_carry__0_n_1;
+  wire minusOp__0_carry__0_n_2;
+  wire minusOp__0_carry__0_n_3;
+  wire minusOp__0_carry__1_i_1_n_0;
+  wire minusOp__0_carry__1_i_2_n_0;
+  wire minusOp__0_carry__1_i_3_n_0;
+  wire minusOp__0_carry__1_n_2;
+  wire minusOp__0_carry__1_n_3;
+  wire minusOp__0_carry_i_1_n_0;
+  wire minusOp__0_carry_i_2_n_0;
+  wire minusOp__0_carry_i_3_n_0;
+  wire minusOp__0_carry_i_4_n_0;
+  wire minusOp__0_carry_i_5_n_0;
+  wire minusOp__0_carry_n_0;
+  wire minusOp__0_carry_n_1;
+  wire minusOp__0_carry_n_2;
+  wire minusOp__0_carry_n_3;
+  (* RTL_KEEP = "true" *) wire [11:0]new_pkt_len;
+  (* RTL_KEEP = "true" *) wire [4:0]new_pkt_len_1;
   wire next_state;
   wire null_mux_sel;
   wire null_mux_sel_reg;
-  wire null_mux_sel_reg_0;
-  wire null_mux_sel_reg_1;
   wire pipe_userclk2_in;
   wire [11:1]pkt_len_counter;
-  wire [1:0]pkt_len_counter_0;
-  wire pkt_len_counter_dec__0_carry__0_i_1_n_0;
-  wire pkt_len_counter_dec__0_carry__0_i_2_n_0;
-  wire pkt_len_counter_dec__0_carry__0_i_3_n_0;
-  wire pkt_len_counter_dec__0_carry__0_i_4_n_0;
-  wire pkt_len_counter_dec__0_carry__0_n_0;
-  wire pkt_len_counter_dec__0_carry__0_n_1;
-  wire pkt_len_counter_dec__0_carry__0_n_2;
-  wire pkt_len_counter_dec__0_carry__0_n_3;
-  wire pkt_len_counter_dec__0_carry__1_i_1_n_0;
-  wire pkt_len_counter_dec__0_carry__1_i_2_n_0;
-  wire pkt_len_counter_dec__0_carry__1_i_3_n_0;
-  wire pkt_len_counter_dec__0_carry__1_n_2;
-  wire pkt_len_counter_dec__0_carry__1_n_3;
-  wire pkt_len_counter_dec__0_carry_i_1_n_0;
-  wire pkt_len_counter_dec__0_carry_i_2_n_0;
-  wire pkt_len_counter_dec__0_carry_i_3_n_0;
-  wire pkt_len_counter_dec__0_carry_i_4_n_0;
-  wire pkt_len_counter_dec__0_carry_i_5_n_0;
-  wire pkt_len_counter_dec__0_carry_n_0;
-  wire pkt_len_counter_dec__0_carry_n_1;
-  wire pkt_len_counter_dec__0_carry_n_2;
-  wire pkt_len_counter_dec__0_carry_n_3;
   wire [11:0]reg_pkt_len_counter;
-  wire \reg_pkt_len_counter[11]_i_2_n_0 ;
-  wire \reg_pkt_len_counter[11]_i_3_n_0 ;
-  wire \reg_pkt_len_counter[11]_i_4_n_0 ;
+  wire \reg_pkt_len_counter[0]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[10]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[11]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[1]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[2]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[3]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[4]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[5]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[6]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[7]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[8]_i_1_n_0 ;
+  wire \reg_pkt_len_counter[9]_i_1_n_0 ;
   wire \reg_pkt_len_counter_reg[0]_0 ;
   wire \reg_pkt_len_counter_reg[3]_0 ;
   wire \reg_tkeep[7]_i_4_n_0 ;
@@ -1468,573 +1449,558 @@ module pcie_7x_0_axi_basic_rx_null_gen
   wire \reg_tkeep[7]_i_6_n_0 ;
   wire \reg_tkeep[7]_i_7_0 ;
   wire \reg_tkeep[7]_i_7_n_0 ;
-  wire [11:2]sel0;
-  wire [3:2]NLW_pkt_len_counter_dec__0_carry__1_CO_UNCONNECTED;
-  wire [3:3]NLW_pkt_len_counter_dec__0_carry__1_O_UNCONNECTED;
+  wire [3:2]NLW_minusOp__0_carry__1_CO_UNCONNECTED;
+  wire [3:3]NLW_minusOp__0_carry__1_O_UNCONNECTED;
 
+  assign new_pkt_len[9:5] = \reg_pkt_len_counter_reg[9]_0 [4:0];
+  assign new_pkt_len_1 = in0[4:0];
   LUT5 #(
     .INIT(32'hAAAAAAEA)) 
     cur_state_i_1
-       (.I0(\reg_pkt_len_counter[11]_i_2_n_0 ),
+       (.I0(cur_state_i_2_n_0),
         .I1(m_axis_rx_tready),
         .I2(cur_state_reg_1),
         .I3(cur_state),
         .I4(m_axis_rx_tuser),
         .O(next_state));
-  FDRE cur_state_reg
+  LUT6 #(
+    .INIT(64'hAAAAAAA8AAAAAAAA)) 
+    cur_state_i_2
+       (.I0(cur_state),
+        .I1(reg_pkt_len_counter[4]),
+        .I2(reg_pkt_len_counter[6]),
+        .I3(reg_pkt_len_counter[7]),
+        .I4(cur_state_i_3_n_0),
+        .I5(cur_state_i_4_n_0),
+        .O(cur_state_i_2_n_0));
+  LUT4 #(
+    .INIT(16'hFFFE)) 
+    cur_state_i_3
+       (.I0(reg_pkt_len_counter[8]),
+        .I1(reg_pkt_len_counter[5]),
+        .I2(reg_pkt_len_counter[9]),
+        .I3(reg_pkt_len_counter[2]),
+        .O(cur_state_i_3_n_0));
+  LUT6 #(
+    .INIT(64'h0000000000000700)) 
+    cur_state_i_4
+       (.I0(reg_pkt_len_counter[0]),
+        .I1(reg_pkt_len_counter[1]),
+        .I2(reg_pkt_len_counter[3]),
+        .I3(m_axis_rx_tready),
+        .I4(reg_pkt_len_counter[10]),
+        .I5(reg_pkt_len_counter[11]),
+        .O(cur_state_i_4_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    cur_state_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(next_state),
         .Q(cur_state),
         .R(cur_state_reg_0));
+  LUT1 #(
+    .INIT(2'h2)) 
+    i_0
+       (.I0(1'b0),
+        .O(new_pkt_len[11]));
+  LUT1 #(
+    .INIT(2'h2)) 
+    i_1
+       (.I0(1'b0),
+        .O(new_pkt_len[10]));
   LUT6 #(
     .INIT(64'h5555555500000400)) 
-    \m_axis_rx_tuser[19]_i_1 
+    \m_axis_rx_tuser_xhdl1[19]_i_2 
        (.I0(cur_state_reg_0),
         .I1(\reg_tkeep[7]_i_7_0 ),
         .I2(\reg_pkt_len_counter_reg[3]_0 ),
         .I3(null_mux_sel),
-        .I4(pkt_len_counter_0[0]),
-        .I5(\m_axis_rx_tuser_reg[19] ),
-        .O(D[0]));
+        .I4(\reg_pkt_len_counter[0]_i_1_n_0 ),
+        .I5(\m_axis_rx_tuser_xhdl1_reg[19] ),
+        .O(D));
   LUT6 #(
-    .INIT(64'h00000000FF80FF08)) 
-    \m_axis_rx_tuser[21]_i_2 
+    .INIT(64'h202A808A2A208A80)) 
+    \m_axis_rx_tuser_xhdl1[21]_i_3 
        (.I0(\reg_tkeep[7]_i_7_0 ),
-        .I1(null_mux_sel),
-        .I2(\reg_pkt_len_counter_reg[3]_0 ),
-        .I3(\m_axis_rx_tuser_reg[21] ),
-        .I4(pkt_len_counter_0[0]),
-        .I5(cur_state_reg_0),
-        .O(D[1]));
-  LUT6 #(
-    .INIT(64'h0000000077F7FFFF)) 
-    null_mux_sel_i_1
-       (.I0(\reg_tkeep[7]_i_7_0 ),
-        .I1(null_mux_sel),
-        .I2(pkt_len_counter_0[0]),
-        .I3(\reg_pkt_len_counter_reg[3]_0 ),
-        .I4(m_axis_rx_tready),
-        .I5(null_mux_sel_reg_1),
-        .O(null_mux_sel_reg));
+        .I1(pkt_len_counter[1]),
+        .I2(cur_state_i_2_n_0),
+        .I3(new_pkt_len[1]),
+        .I4(reg_pkt_len_counter[0]),
+        .I5(new_pkt_len[0]),
+        .O(\reg_pkt_len_counter_reg[0]_0 ));
   (* ADDER_THRESHOLD = "35" *) 
-  CARRY4 pkt_len_counter_dec__0_carry
+  CARRY4 minusOp__0_carry
        (.CI(1'b0),
-        .CO({pkt_len_counter_dec__0_carry_n_0,pkt_len_counter_dec__0_carry_n_1,pkt_len_counter_dec__0_carry_n_2,pkt_len_counter_dec__0_carry_n_3}),
+        .CO({minusOp__0_carry_n_0,minusOp__0_carry_n_1,minusOp__0_carry_n_2,minusOp__0_carry_n_3}),
         .CYINIT(1'b0),
-        .DI({reg_pkt_len_counter[3:2],pkt_len_counter_dec__0_carry_i_1_n_0,1'b0}),
+        .DI({reg_pkt_len_counter[3:2],minusOp__0_carry_i_1_n_0,1'b0}),
         .O(pkt_len_counter[4:1]),
-        .S({pkt_len_counter_dec__0_carry_i_2_n_0,pkt_len_counter_dec__0_carry_i_3_n_0,pkt_len_counter_dec__0_carry_i_4_n_0,pkt_len_counter_dec__0_carry_i_5_n_0}));
+        .S({minusOp__0_carry_i_2_n_0,minusOp__0_carry_i_3_n_0,minusOp__0_carry_i_4_n_0,minusOp__0_carry_i_5_n_0}));
   (* ADDER_THRESHOLD = "35" *) 
-  CARRY4 pkt_len_counter_dec__0_carry__0
-       (.CI(pkt_len_counter_dec__0_carry_n_0),
-        .CO({pkt_len_counter_dec__0_carry__0_n_0,pkt_len_counter_dec__0_carry__0_n_1,pkt_len_counter_dec__0_carry__0_n_2,pkt_len_counter_dec__0_carry__0_n_3}),
+  CARRY4 minusOp__0_carry__0
+       (.CI(minusOp__0_carry_n_0),
+        .CO({minusOp__0_carry__0_n_0,minusOp__0_carry__0_n_1,minusOp__0_carry__0_n_2,minusOp__0_carry__0_n_3}),
         .CYINIT(1'b0),
         .DI(reg_pkt_len_counter[7:4]),
         .O(pkt_len_counter[8:5]),
-        .S({pkt_len_counter_dec__0_carry__0_i_1_n_0,pkt_len_counter_dec__0_carry__0_i_2_n_0,pkt_len_counter_dec__0_carry__0_i_3_n_0,pkt_len_counter_dec__0_carry__0_i_4_n_0}));
+        .S({minusOp__0_carry__0_i_1_n_0,minusOp__0_carry__0_i_2_n_0,minusOp__0_carry__0_i_3_n_0,minusOp__0_carry__0_i_4_n_0}));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__0_i_1
+    minusOp__0_carry__0_i_1
        (.I0(reg_pkt_len_counter[7]),
         .I1(reg_pkt_len_counter[8]),
-        .O(pkt_len_counter_dec__0_carry__0_i_1_n_0));
+        .O(minusOp__0_carry__0_i_1_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__0_i_2
+    minusOp__0_carry__0_i_2
        (.I0(reg_pkt_len_counter[6]),
         .I1(reg_pkt_len_counter[7]),
-        .O(pkt_len_counter_dec__0_carry__0_i_2_n_0));
+        .O(minusOp__0_carry__0_i_2_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__0_i_3
+    minusOp__0_carry__0_i_3
        (.I0(reg_pkt_len_counter[5]),
         .I1(reg_pkt_len_counter[6]),
-        .O(pkt_len_counter_dec__0_carry__0_i_3_n_0));
+        .O(minusOp__0_carry__0_i_3_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__0_i_4
+    minusOp__0_carry__0_i_4
        (.I0(reg_pkt_len_counter[4]),
         .I1(reg_pkt_len_counter[5]),
-        .O(pkt_len_counter_dec__0_carry__0_i_4_n_0));
+        .O(minusOp__0_carry__0_i_4_n_0));
   (* ADDER_THRESHOLD = "35" *) 
-  CARRY4 pkt_len_counter_dec__0_carry__1
-       (.CI(pkt_len_counter_dec__0_carry__0_n_0),
-        .CO({NLW_pkt_len_counter_dec__0_carry__1_CO_UNCONNECTED[3:2],pkt_len_counter_dec__0_carry__1_n_2,pkt_len_counter_dec__0_carry__1_n_3}),
+  CARRY4 minusOp__0_carry__1
+       (.CI(minusOp__0_carry__0_n_0),
+        .CO({NLW_minusOp__0_carry__1_CO_UNCONNECTED[3:2],minusOp__0_carry__1_n_2,minusOp__0_carry__1_n_3}),
         .CYINIT(1'b0),
         .DI({1'b0,1'b0,reg_pkt_len_counter[9:8]}),
-        .O({NLW_pkt_len_counter_dec__0_carry__1_O_UNCONNECTED[3],pkt_len_counter[11:9]}),
-        .S({1'b0,pkt_len_counter_dec__0_carry__1_i_1_n_0,pkt_len_counter_dec__0_carry__1_i_2_n_0,pkt_len_counter_dec__0_carry__1_i_3_n_0}));
+        .O({NLW_minusOp__0_carry__1_O_UNCONNECTED[3],pkt_len_counter[11:9]}),
+        .S({1'b0,minusOp__0_carry__1_i_1_n_0,minusOp__0_carry__1_i_2_n_0,minusOp__0_carry__1_i_3_n_0}));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__1_i_1
+    minusOp__0_carry__1_i_1
        (.I0(reg_pkt_len_counter[10]),
         .I1(reg_pkt_len_counter[11]),
-        .O(pkt_len_counter_dec__0_carry__1_i_1_n_0));
+        .O(minusOp__0_carry__1_i_1_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__1_i_2
+    minusOp__0_carry__1_i_2
        (.I0(reg_pkt_len_counter[9]),
         .I1(reg_pkt_len_counter[10]),
-        .O(pkt_len_counter_dec__0_carry__1_i_2_n_0));
+        .O(minusOp__0_carry__1_i_2_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry__1_i_3
+    minusOp__0_carry__1_i_3
        (.I0(reg_pkt_len_counter[8]),
         .I1(reg_pkt_len_counter[9]),
-        .O(pkt_len_counter_dec__0_carry__1_i_3_n_0));
+        .O(minusOp__0_carry__1_i_3_n_0));
   LUT2 #(
     .INIT(4'hB)) 
-    pkt_len_counter_dec__0_carry_i_1
+    minusOp__0_carry_i_1
        (.I0(reg_pkt_len_counter[1]),
         .I1(m_axis_rx_tready),
-        .O(pkt_len_counter_dec__0_carry_i_1_n_0));
+        .O(minusOp__0_carry_i_1_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry_i_2
+    minusOp__0_carry_i_2
        (.I0(reg_pkt_len_counter[3]),
         .I1(reg_pkt_len_counter[4]),
-        .O(pkt_len_counter_dec__0_carry_i_2_n_0));
+        .O(minusOp__0_carry_i_2_n_0));
   LUT2 #(
     .INIT(4'h9)) 
-    pkt_len_counter_dec__0_carry_i_3
+    minusOp__0_carry_i_3
        (.I0(reg_pkt_len_counter[2]),
         .I1(reg_pkt_len_counter[3]),
-        .O(pkt_len_counter_dec__0_carry_i_3_n_0));
+        .O(minusOp__0_carry_i_3_n_0));
   LUT3 #(
     .INIT(8'hD2)) 
-    pkt_len_counter_dec__0_carry_i_4
+    minusOp__0_carry_i_4
        (.I0(m_axis_rx_tready),
         .I1(reg_pkt_len_counter[1]),
         .I2(reg_pkt_len_counter[2]),
-        .O(pkt_len_counter_dec__0_carry_i_4_n_0));
+        .O(minusOp__0_carry_i_4_n_0));
   LUT2 #(
     .INIT(4'h6)) 
-    pkt_len_counter_dec__0_carry_i_5
+    minusOp__0_carry_i_5
        (.I0(reg_pkt_len_counter[1]),
         .I1(m_axis_rx_tready),
-        .O(pkt_len_counter_dec__0_carry_i_5_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair73" *) 
+        .O(minusOp__0_carry_i_5_n_0));
+  LUT1 #(
+    .INIT(2'h2)) 
+    new_pkt_len_1_inst
+       (.I0(new_pkt_len_1[4]),
+        .O(new_pkt_len[4]));
+  LUT1 #(
+    .INIT(2'h2)) 
+    new_pkt_len_1_inst__0
+       (.I0(new_pkt_len_1[3]),
+        .O(new_pkt_len[3]));
+  LUT1 #(
+    .INIT(2'h2)) 
+    new_pkt_len_1_inst__1
+       (.I0(new_pkt_len_1[2]),
+        .O(new_pkt_len[2]));
+  LUT1 #(
+    .INIT(2'h2)) 
+    new_pkt_len_1_inst__2
+       (.I0(new_pkt_len_1[1]),
+        .O(new_pkt_len[1]));
+  LUT1 #(
+    .INIT(2'h2)) 
+    new_pkt_len_1_inst__3
+       (.I0(new_pkt_len_1[0]),
+        .O(new_pkt_len[0]));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[0]_i_1 
        (.I0(reg_pkt_len_counter[0]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[0]),
-        .O(pkt_len_counter_0[0]));
-  (* SOFT_HLUTNM = "soft_lutpair70" *) 
+        .O(\reg_pkt_len_counter[0]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[10]_i_1 
        (.I0(pkt_len_counter[10]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[10]),
-        .O(sel0[10]));
-  (* SOFT_HLUTNM = "soft_lutpair70" *) 
-  LUT2 #(
-    .INIT(4'h8)) 
+        .O(\reg_pkt_len_counter[10]_i_1_n_0 ));
+  LUT3 #(
+    .INIT(8'hE2)) 
     \reg_pkt_len_counter[11]_i_1 
-       (.I0(pkt_len_counter[11]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
-        .O(sel0[11]));
-  LUT6 #(
-    .INIT(64'hAAAAAAA8AAAAAAAA)) 
-    \reg_pkt_len_counter[11]_i_2 
-       (.I0(cur_state),
-        .I1(reg_pkt_len_counter[3]),
-        .I2(reg_pkt_len_counter[8]),
-        .I3(reg_pkt_len_counter[7]),
-        .I4(\reg_pkt_len_counter[11]_i_3_n_0 ),
-        .I5(\reg_pkt_len_counter[11]_i_4_n_0 ),
-        .O(\reg_pkt_len_counter[11]_i_2_n_0 ));
-  LUT4 #(
-    .INIT(16'hFFEF)) 
-    \reg_pkt_len_counter[11]_i_3 
-       (.I0(reg_pkt_len_counter[5]),
-        .I1(reg_pkt_len_counter[4]),
-        .I2(m_axis_rx_tready),
-        .I3(reg_pkt_len_counter[9]),
-        .O(\reg_pkt_len_counter[11]_i_3_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000007)) 
-    \reg_pkt_len_counter[11]_i_4 
-       (.I0(reg_pkt_len_counter[0]),
-        .I1(reg_pkt_len_counter[1]),
-        .I2(reg_pkt_len_counter[2]),
-        .I3(reg_pkt_len_counter[6]),
-        .I4(reg_pkt_len_counter[10]),
-        .I5(reg_pkt_len_counter[11]),
-        .O(\reg_pkt_len_counter[11]_i_4_n_0 ));
+       (.I0(new_pkt_len[11]),
+        .I1(cur_state_i_2_n_0),
+        .I2(pkt_len_counter[11]),
+        .O(\reg_pkt_len_counter[11]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hE2)) 
     \reg_pkt_len_counter[1]_i_1 
        (.I0(new_pkt_len[1]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(pkt_len_counter[1]),
-        .O(pkt_len_counter_0[1]));
-  (* SOFT_HLUTNM = "soft_lutpair69" *) 
+        .O(\reg_pkt_len_counter[1]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[2]_i_1 
        (.I0(pkt_len_counter[2]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[2]),
-        .O(sel0[2]));
-  (* SOFT_HLUTNM = "soft_lutpair73" *) 
+        .O(\reg_pkt_len_counter[2]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[3]_i_1 
        (.I0(pkt_len_counter[3]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[3]),
-        .O(sel0[3]));
-  LUT4 #(
-    .INIT(16'h1EEE)) 
-    \reg_pkt_len_counter[3]_i_7 
-       (.I0(Q[2]),
-        .I1(Q[3]),
-        .I2(Q[1]),
-        .I3(Q[4]),
-        .O(S[1]));
-  LUT4 #(
-    .INIT(16'h6999)) 
-    \reg_pkt_len_counter[3]_i_8 
-       (.I0(Q[3]),
-        .I1(Q[2]),
-        .I2(Q[4]),
-        .I3(Q[0]),
-        .O(S[0]));
-  (* SOFT_HLUTNM = "soft_lutpair67" *) 
+        .O(\reg_pkt_len_counter[3]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[4]_i_1 
        (.I0(pkt_len_counter[4]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[4]),
-        .O(sel0[4]));
-  (* SOFT_HLUTNM = "soft_lutpair71" *) 
+        .O(\reg_pkt_len_counter[4]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[5]_i_1 
        (.I0(pkt_len_counter[5]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[5]),
-        .O(sel0[5]));
-  (* SOFT_HLUTNM = "soft_lutpair68" *) 
+        .O(\reg_pkt_len_counter[5]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[6]_i_1 
        (.I0(pkt_len_counter[6]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[6]),
-        .O(sel0[6]));
-  (* SOFT_HLUTNM = "soft_lutpair72" *) 
+        .O(\reg_pkt_len_counter[6]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[7]_i_1 
        (.I0(pkt_len_counter[7]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[7]),
-        .O(sel0[7]));
-  (* SOFT_HLUTNM = "soft_lutpair66" *) 
+        .O(\reg_pkt_len_counter[7]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[8]_i_1 
        (.I0(pkt_len_counter[8]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[8]),
-        .O(sel0[8]));
-  (* SOFT_HLUTNM = "soft_lutpair71" *) 
+        .O(\reg_pkt_len_counter[8]_i_1_n_0 ));
   LUT3 #(
     .INIT(8'hB8)) 
     \reg_pkt_len_counter[9]_i_1 
        (.I0(pkt_len_counter[9]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[9]),
-        .O(sel0[9]));
-  FDRE \reg_pkt_len_counter_reg[0] 
+        .O(\reg_pkt_len_counter[9]_i_1_n_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(pkt_len_counter_0[0]),
+        .D(\reg_pkt_len_counter[0]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[0]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[10] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[10] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[10]),
+        .D(\reg_pkt_len_counter[10]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[10]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[11] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[11] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[11]),
+        .D(\reg_pkt_len_counter[11]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[11]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(pkt_len_counter_0[1]),
+        .D(\reg_pkt_len_counter[1]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[1]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[2]),
+        .D(\reg_pkt_len_counter[2]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[2]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[3]),
+        .D(\reg_pkt_len_counter[3]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[3]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[4]),
+        .D(\reg_pkt_len_counter[4]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[4]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[5] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[5]),
+        .D(\reg_pkt_len_counter[5]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[5]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[6] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[6] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[6]),
+        .D(\reg_pkt_len_counter[6]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[6]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[7] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[7] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[7]),
+        .D(\reg_pkt_len_counter[7]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[7]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[8] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[8] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[8]),
+        .D(\reg_pkt_len_counter[8]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[8]),
         .R(cur_state_reg_0));
-  FDRE \reg_pkt_len_counter_reg[9] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \reg_pkt_len_counter_reg[9] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(sel0[9]),
+        .D(\reg_pkt_len_counter[9]_i_1_n_0 ),
         .Q(reg_pkt_len_counter[9]),
         .R(cur_state_reg_0));
   LUT6 #(
-    .INIT(64'h0000000000000001)) 
+    .INIT(64'h0000000000000010)) 
     \reg_tkeep[7]_i_2 
-       (.I0(sel0[11]),
-        .I1(sel0[10]),
-        .I2(\reg_tkeep[7]_i_4_n_0 ),
-        .I3(\reg_tkeep[7]_i_5_n_0 ),
-        .I4(\reg_tkeep[7]_i_6_n_0 ),
+       (.I0(\reg_pkt_len_counter[9]_i_1_n_0 ),
+        .I1(\reg_tkeep[7]_i_4_n_0 ),
+        .I2(\reg_tkeep[7]_i_5_n_0 ),
+        .I3(\reg_tkeep[7]_i_6_n_0 ),
+        .I4(\reg_pkt_len_counter[4]_i_1_n_0 ),
         .I5(\reg_tkeep[7]_i_7_n_0 ),
         .O(\reg_tkeep[7]_i_7_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair72" *) 
   LUT3 #(
     .INIT(8'h47)) 
     \reg_tkeep[7]_i_3 
        (.I0(pkt_len_counter[1]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I1(cur_state_i_2_n_0),
         .I2(new_pkt_len[1]),
         .O(\reg_pkt_len_counter_reg[3]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair66" *) 
   LUT5 #(
     .INIT(32'hFFFACCFA)) 
     \reg_tkeep[7]_i_4 
-       (.I0(new_pkt_len[8]),
-        .I1(pkt_len_counter[8]),
-        .I2(new_pkt_len[9]),
-        .I3(\reg_pkt_len_counter[11]_i_2_n_0 ),
-        .I4(pkt_len_counter[9]),
+       (.I0(new_pkt_len[7]),
+        .I1(pkt_len_counter[7]),
+        .I2(new_pkt_len[8]),
+        .I3(cur_state_i_2_n_0),
+        .I4(pkt_len_counter[8]),
         .O(\reg_tkeep[7]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair68" *) 
   LUT5 #(
-    .INIT(32'hFFFACCFA)) 
+    .INIT(32'h00053305)) 
     \reg_tkeep[7]_i_5 
-       (.I0(new_pkt_len[6]),
-        .I1(pkt_len_counter[6]),
-        .I2(new_pkt_len[7]),
-        .I3(\reg_pkt_len_counter[11]_i_2_n_0 ),
-        .I4(pkt_len_counter[7]),
+       (.I0(new_pkt_len[11]),
+        .I1(pkt_len_counter[11]),
+        .I2(new_pkt_len[10]),
+        .I3(cur_state_i_2_n_0),
+        .I4(pkt_len_counter[10]),
         .O(\reg_tkeep[7]_i_5_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair67" *) 
   LUT5 #(
     .INIT(32'hFFFACCFA)) 
     \reg_tkeep[7]_i_6 
-       (.I0(new_pkt_len[4]),
-        .I1(pkt_len_counter[4]),
+       (.I0(new_pkt_len[6]),
+        .I1(pkt_len_counter[6]),
         .I2(new_pkt_len[5]),
-        .I3(\reg_pkt_len_counter[11]_i_2_n_0 ),
+        .I3(cur_state_i_2_n_0),
         .I4(pkt_len_counter[5]),
         .O(\reg_tkeep[7]_i_6_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair69" *) 
   LUT5 #(
     .INIT(32'hFFFACCFA)) 
     \reg_tkeep[7]_i_7 
-       (.I0(new_pkt_len[2]),
-        .I1(pkt_len_counter[2]),
-        .I2(new_pkt_len[3]),
-        .I3(\reg_pkt_len_counter[11]_i_2_n_0 ),
-        .I4(pkt_len_counter[3]),
+       (.I0(new_pkt_len[3]),
+        .I1(pkt_len_counter[3]),
+        .I2(new_pkt_len[2]),
+        .I3(cur_state_i_2_n_0),
+        .I4(pkt_len_counter[2]),
         .O(\reg_tkeep[7]_i_7_n_0 ));
-  LUT5 #(
-    .INIT(32'hFFFFB000)) 
-    reg_tlast_i_1
-       (.I0(\reg_pkt_len_counter_reg[3]_0 ),
-        .I1(pkt_len_counter_0[0]),
-        .I2(null_mux_sel),
-        .I3(\reg_tkeep[7]_i_7_0 ),
-        .I4(\m_axis_rx_tuser_reg[21] ),
-        .O(null_mux_sel_reg_0));
   LUT6 #(
-    .INIT(64'hB8308800FFFFFFFF)) 
-    trn_rdst_rdy_i_3
-       (.I0(pkt_len_counter[1]),
-        .I1(\reg_pkt_len_counter[11]_i_2_n_0 ),
-        .I2(new_pkt_len[1]),
-        .I3(reg_pkt_len_counter[0]),
-        .I4(new_pkt_len[0]),
-        .I5(null_mux_sel),
-        .O(\reg_pkt_len_counter_reg[0]_0 ));
+    .INIT(64'h8888888800088808)) 
+    reg_tlast_i_2
+       (.I0(null_mux_sel),
+        .I1(\reg_tkeep[7]_i_7_0 ),
+        .I2(new_pkt_len[0]),
+        .I3(cur_state_i_2_n_0),
+        .I4(reg_pkt_len_counter[0]),
+        .I5(\reg_pkt_len_counter_reg[3]_0 ),
+        .O(null_mux_sel_reg));
 endmodule
 
 module pcie_7x_0_axi_basic_rx_pipeline
-   (E,
-    trn_rsrc_dsc_d,
-    m_axis_rx_tvalid_reg_0,
-    m_axis_rx_tkeep,
+   (trn_rsrc_dsc_d,
+    E,
+    m_axis_rx_tvalid_xhdl2_reg_0,
     m_axis_rx_tlast,
     null_mux_sel,
     trn_in_packet,
     reg_dsc_detect_reg_0,
-    user_reset_out_reg,
-    Q,
     pcie_block_i,
-    pcie_block_i_0,
-    new_pkt_len,
+    m_axis_rx_tdata,
+    m_axis_rx_tkeep,
     m_axis_rx_tuser,
+    in0,
+    \m_axis_rx_tdata_xhdl0_reg[30]_0 ,
     \trn_rbar_hit_prev_reg[0]_0 ,
     pipe_userclk2_in,
-    trn_rrem,
     trn_rsrc_dsc,
-    rsrc_rdy_filtered,
+    rsrc_rdy_filtered6_out,
+    trn_rrem,
     trn_reof,
-    reg_tlast_reg_0,
     trn_rsrc_dsc_prev0,
     trn_rsof,
     trn_recrc_err,
     trn_rerrfwd,
-    null_mux_sel_reg_0,
     trn_in_packet_reg_0,
     m_axis_rx_tready,
     dsc_detect,
-    trn_rdst_rdy_reg_0,
-    trn_rdst_rdy_reg_1,
+    null_mux_sel_reg_0,
     \reg_tkeep_reg[7]_0 ,
+    \reg_tkeep_reg[7]_1 ,
     trn_rd,
     trn_rbar_hit,
-    S,
-    D);
-  output [0:0]E;
+    D,
+    \m_axis_rx_tuser_xhdl1_reg[21]_0 );
   output trn_rsrc_dsc_d;
-  output m_axis_rx_tvalid_reg_0;
-  output [0:0]m_axis_rx_tkeep;
+  output [0:0]E;
+  output m_axis_rx_tvalid_xhdl2_reg_0;
   output m_axis_rx_tlast;
   output null_mux_sel;
   output trn_in_packet;
   output reg_dsc_detect_reg_0;
-  output user_reset_out_reg;
-  output [63:0]Q;
   output pcie_block_i;
-  output pcie_block_i_0;
-  output [10:0]new_pkt_len;
+  output [63:0]m_axis_rx_tdata;
+  output [1:0]m_axis_rx_tkeep;
   output [12:0]m_axis_rx_tuser;
+  output [4:0]in0;
+  output [4:0]\m_axis_rx_tdata_xhdl0_reg[30]_0 ;
   input \trn_rbar_hit_prev_reg[0]_0 ;
   input pipe_userclk2_in;
-  input [0:0]trn_rrem;
   input trn_rsrc_dsc;
-  input rsrc_rdy_filtered;
+  input rsrc_rdy_filtered6_out;
+  input [0:0]trn_rrem;
   input trn_reof;
-  input reg_tlast_reg_0;
   input trn_rsrc_dsc_prev0;
   input trn_rsof;
   input trn_recrc_err;
   input trn_rerrfwd;
-  input null_mux_sel_reg_0;
   input trn_in_packet_reg_0;
   input m_axis_rx_tready;
   input dsc_detect;
-  input trn_rdst_rdy_reg_0;
-  input trn_rdst_rdy_reg_1;
+  input null_mux_sel_reg_0;
   input \reg_tkeep_reg[7]_0 ;
+  input \reg_tkeep_reg[7]_1 ;
   input [63:0]trn_rd;
   input [6:0]trn_rbar_hit;
-  input [1:0]S;
-  input [1:0]D;
+  input [0:0]D;
+  input \m_axis_rx_tuser_xhdl1_reg[21]_0 ;
 
-  wire [1:0]D;
+  wire [0:0]D;
   wire [0:0]E;
-  wire [63:0]Q;
-  wire [1:0]S;
   wire data_hold;
   wire data_prev;
   wire dsc_detect;
-  wire \m_axis_rx_tdata[63]_i_1_n_0 ;
-  wire [0:0]m_axis_rx_tkeep;
+  wire [4:0]in0;
+  wire [4:2]is_eof_prev;
+  wire [63:0]m_axis_rx_tdata;
+  wire \m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ;
+  wire [4:0]\m_axis_rx_tdata_xhdl0_reg[30]_0 ;
+  wire [1:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [12:0]m_axis_rx_tuser;
-  wire \m_axis_rx_tuser[0]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[14]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[14]_i_2_n_0 ;
-  wire \m_axis_rx_tuser[18]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[1]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[21]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[2]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[3]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[4]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[5]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[6]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[7]_i_1_n_0 ;
-  wire \m_axis_rx_tuser[8]_i_1_n_0 ;
-  wire m_axis_rx_tvalid_i_1_n_0;
-  wire m_axis_rx_tvalid_reg_0;
-  wire [10:0]new_pkt_len;
+  wire [18:0]m_axis_rx_tuser_xhdl1;
+  wire \m_axis_rx_tuser_xhdl1[14]_i_2_n_0 ;
+  wire \m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ;
+  wire \m_axis_rx_tuser_xhdl1[21]_i_1_n_0 ;
+  wire \m_axis_rx_tuser_xhdl1[21]_i_2_n_0 ;
+  wire \m_axis_rx_tuser_xhdl1_reg[21]_0 ;
+  wire m_axis_rx_tvalid_xhdl2_i_1_n_0;
+  wire m_axis_rx_tvalid_xhdl2_reg_0;
+  wire new_pkt_len_1_inferred_i_6_n_0;
   wire null_mux_sel;
+  wire null_mux_sel_i_1_n_0;
+  wire null_mux_sel_i_2_n_0;
   wire null_mux_sel_reg_0;
   wire [63:0]p_1_in;
-  wire [1:0]packet_overhead;
   wire pcie_block_i;
-  wire pcie_block_i_0;
   wire pipe_userclk2_in;
   wire reg_dsc_detect_i_1_n_0;
   wire reg_dsc_detect_reg_0;
-  wire \reg_pkt_len_counter[10]_i_3_n_0 ;
-  wire \reg_pkt_len_counter[10]_i_4_n_0 ;
-  wire \reg_pkt_len_counter[3]_i_5_n_0 ;
-  wire \reg_pkt_len_counter[3]_i_6_n_0 ;
-  wire \reg_pkt_len_counter[7]_i_3_n_0 ;
-  wire \reg_pkt_len_counter[7]_i_4_n_0 ;
-  wire \reg_pkt_len_counter[7]_i_5_n_0 ;
-  wire \reg_pkt_len_counter[7]_i_6_n_0 ;
-  wire \reg_pkt_len_counter_reg[10]_i_2_n_3 ;
-  wire \reg_pkt_len_counter_reg[3]_i_2_n_0 ;
-  wire \reg_pkt_len_counter_reg[3]_i_2_n_1 ;
-  wire \reg_pkt_len_counter_reg[3]_i_2_n_2 ;
-  wire \reg_pkt_len_counter_reg[3]_i_2_n_3 ;
-  wire \reg_pkt_len_counter_reg[7]_i_2_n_0 ;
-  wire \reg_pkt_len_counter_reg[7]_i_2_n_1 ;
-  wire \reg_pkt_len_counter_reg[7]_i_2_n_2 ;
-  wire \reg_pkt_len_counter_reg[7]_i_2_n_3 ;
-  wire [7:7]reg_tkeep;
+  wire \reg_tkeep[7]_i_1_n_0 ;
   wire \reg_tkeep_reg[7]_0 ;
-  wire reg_tlast_reg_0;
-  wire rsrc_rdy_filtered;
+  wire \reg_tkeep_reg[7]_1 ;
+  wire reg_tlast_i_1_n_0;
+  wire rsrc_rdy_filtered6_out;
   wire trn_in_packet;
   wire trn_in_packet_reg_0;
   wire [6:0]trn_rbar_hit;
@@ -2042,18 +2008,13 @@ module pcie_7x_0_axi_basic_rx_pipeline
   wire \trn_rbar_hit_prev_reg[0]_0 ;
   wire [63:0]trn_rd;
   wire [63:0]trn_rd_prev;
-  wire trn_rdst_rdy_i_1_n_0;
-  wire trn_rdst_rdy_i_2_n_0;
-  wire trn_rdst_rdy_reg_0;
-  wire trn_rdst_rdy_reg_1;
+  wire trn_rdst_rdy_xhdl4_i_1_n_0;
   wire trn_recrc_err;
   wire trn_recrc_err_prev;
   wire trn_reof;
-  wire trn_reof_prev;
   wire trn_rerrfwd;
   wire trn_rerrfwd_prev;
   wire [0:0]trn_rrem;
-  wire trn_rrem_prev;
   wire trn_rsof;
   wire trn_rsof_prev;
   wire trn_rsrc_dsc;
@@ -2061,1156 +2022,1428 @@ module pcie_7x_0_axi_basic_rx_pipeline
   wire trn_rsrc_dsc_prev;
   wire trn_rsrc_dsc_prev0;
   wire trn_rsrc_rdy_prev;
-  wire user_reset_out_reg;
-  wire [3:1]\NLW_reg_pkt_len_counter_reg[10]_i_2_CO_UNCONNECTED ;
-  wire [3:2]\NLW_reg_pkt_len_counter_reg[10]_i_2_O_UNCONNECTED ;
 
   LUT2 #(
     .INIT(4'h2)) 
     data_prev_i_1
-       (.I0(m_axis_rx_tvalid_reg_0),
+       (.I0(m_axis_rx_tvalid_xhdl2_reg_0),
         .I1(m_axis_rx_tready),
         .O(data_hold));
-  FDRE data_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    data_prev_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(data_hold),
         .Q(data_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair102" *) 
+  (* SOFT_HLUTNM = "soft_lutpair95" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[0]_i_1 
+    \m_axis_rx_tdata_xhdl0[0]_i_1 
        (.I0(trn_rd_prev[0]),
         .I1(data_prev),
         .I2(trn_rd[32]),
         .O(p_1_in[0]));
-  (* SOFT_HLUTNM = "soft_lutpair105" *) 
+  (* SOFT_HLUTNM = "soft_lutpair98" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[10]_i_1 
+    \m_axis_rx_tdata_xhdl0[10]_i_1 
        (.I0(trn_rd_prev[10]),
         .I1(data_prev),
         .I2(trn_rd[42]),
         .O(p_1_in[10]));
-  (* SOFT_HLUTNM = "soft_lutpair103" *) 
+  (* SOFT_HLUTNM = "soft_lutpair96" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[11]_i_1 
+    \m_axis_rx_tdata_xhdl0[11]_i_1 
        (.I0(trn_rd_prev[11]),
         .I1(data_prev),
         .I2(trn_rd[43]),
         .O(p_1_in[11]));
-  (* SOFT_HLUTNM = "soft_lutpair100" *) 
+  (* SOFT_HLUTNM = "soft_lutpair93" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[12]_i_1 
+    \m_axis_rx_tdata_xhdl0[12]_i_1 
        (.I0(trn_rd_prev[12]),
         .I1(data_prev),
         .I2(trn_rd[44]),
         .O(p_1_in[12]));
-  (* SOFT_HLUTNM = "soft_lutpair98" *) 
+  (* SOFT_HLUTNM = "soft_lutpair91" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[13]_i_1 
+    \m_axis_rx_tdata_xhdl0[13]_i_1 
        (.I0(trn_rd_prev[13]),
         .I1(data_prev),
         .I2(trn_rd[45]),
         .O(p_1_in[13]));
-  (* SOFT_HLUTNM = "soft_lutpair108" *) 
+  (* SOFT_HLUTNM = "soft_lutpair101" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[14]_i_1 
+    \m_axis_rx_tdata_xhdl0[14]_i_1 
        (.I0(trn_rd_prev[14]),
         .I1(data_prev),
         .I2(trn_rd[46]),
         .O(p_1_in[14]));
-  (* SOFT_HLUTNM = "soft_lutpair101" *) 
+  (* SOFT_HLUTNM = "soft_lutpair94" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[15]_i_1 
+    \m_axis_rx_tdata_xhdl0[15]_i_1 
        (.I0(trn_rd_prev[15]),
         .I1(data_prev),
         .I2(trn_rd[47]),
         .O(p_1_in[15]));
-  (* SOFT_HLUTNM = "soft_lutpair97" *) 
+  (* SOFT_HLUTNM = "soft_lutpair90" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[16]_i_1 
+    \m_axis_rx_tdata_xhdl0[16]_i_1 
        (.I0(trn_rd_prev[16]),
         .I1(data_prev),
         .I2(trn_rd[48]),
         .O(p_1_in[16]));
-  (* SOFT_HLUTNM = "soft_lutpair93" *) 
+  (* SOFT_HLUTNM = "soft_lutpair86" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[17]_i_1 
+    \m_axis_rx_tdata_xhdl0[17]_i_1 
        (.I0(trn_rd_prev[17]),
         .I1(data_prev),
         .I2(trn_rd[49]),
         .O(p_1_in[17]));
-  (* SOFT_HLUTNM = "soft_lutpair91" *) 
+  (* SOFT_HLUTNM = "soft_lutpair84" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[18]_i_1 
+    \m_axis_rx_tdata_xhdl0[18]_i_1 
        (.I0(trn_rd_prev[18]),
         .I1(data_prev),
         .I2(trn_rd[50]),
         .O(p_1_in[18]));
-  (* SOFT_HLUTNM = "soft_lutpair105" *) 
+  (* SOFT_HLUTNM = "soft_lutpair98" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[19]_i_1 
+    \m_axis_rx_tdata_xhdl0[19]_i_1 
        (.I0(trn_rd_prev[19]),
         .I1(data_prev),
         .I2(trn_rd[51]),
         .O(p_1_in[19]));
-  (* SOFT_HLUTNM = "soft_lutpair108" *) 
+  (* SOFT_HLUTNM = "soft_lutpair101" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[1]_i_1 
+    \m_axis_rx_tdata_xhdl0[1]_i_1 
        (.I0(trn_rd_prev[1]),
         .I1(data_prev),
         .I2(trn_rd[33]),
         .O(p_1_in[1]));
-  (* SOFT_HLUTNM = "soft_lutpair101" *) 
+  (* SOFT_HLUTNM = "soft_lutpair94" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[20]_i_1 
+    \m_axis_rx_tdata_xhdl0[20]_i_1 
        (.I0(trn_rd_prev[20]),
         .I1(data_prev),
         .I2(trn_rd[52]),
         .O(p_1_in[20]));
-  (* SOFT_HLUTNM = "soft_lutpair96" *) 
+  (* SOFT_HLUTNM = "soft_lutpair89" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[21]_i_1 
+    \m_axis_rx_tdata_xhdl0[21]_i_1 
        (.I0(trn_rd_prev[21]),
         .I1(data_prev),
         .I2(trn_rd[53]),
         .O(p_1_in[21]));
-  (* SOFT_HLUTNM = "soft_lutpair104" *) 
+  (* SOFT_HLUTNM = "soft_lutpair97" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[22]_i_1 
+    \m_axis_rx_tdata_xhdl0[22]_i_1 
        (.I0(trn_rd_prev[22]),
         .I1(data_prev),
         .I2(trn_rd[54]),
         .O(p_1_in[22]));
-  (* SOFT_HLUTNM = "soft_lutpair106" *) 
+  (* SOFT_HLUTNM = "soft_lutpair99" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[23]_i_1 
+    \m_axis_rx_tdata_xhdl0[23]_i_1 
        (.I0(trn_rd_prev[23]),
         .I1(data_prev),
         .I2(trn_rd[55]),
         .O(p_1_in[23]));
-  (* SOFT_HLUTNM = "soft_lutpair99" *) 
+  (* SOFT_HLUTNM = "soft_lutpair92" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[24]_i_1 
+    \m_axis_rx_tdata_xhdl0[24]_i_1 
        (.I0(trn_rd_prev[24]),
         .I1(data_prev),
         .I2(trn_rd[56]),
         .O(p_1_in[24]));
-  (* SOFT_HLUTNM = "soft_lutpair90" *) 
+  (* SOFT_HLUTNM = "soft_lutpair83" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[25]_i_1 
+    \m_axis_rx_tdata_xhdl0[25]_i_1 
        (.I0(trn_rd_prev[25]),
         .I1(data_prev),
         .I2(trn_rd[57]),
         .O(p_1_in[25]));
-  (* SOFT_HLUTNM = "soft_lutpair88" *) 
+  (* SOFT_HLUTNM = "soft_lutpair81" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[26]_i_1 
+    \m_axis_rx_tdata_xhdl0[26]_i_1 
        (.I0(trn_rd_prev[26]),
         .I1(data_prev),
         .I2(trn_rd[58]),
         .O(p_1_in[26]));
-  (* SOFT_HLUTNM = "soft_lutpair91" *) 
+  (* SOFT_HLUTNM = "soft_lutpair84" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[27]_i_1 
+    \m_axis_rx_tdata_xhdl0[27]_i_1 
        (.I0(trn_rd_prev[27]),
         .I1(data_prev),
         .I2(trn_rd[59]),
         .O(p_1_in[27]));
-  (* SOFT_HLUTNM = "soft_lutpair95" *) 
+  (* SOFT_HLUTNM = "soft_lutpair88" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[28]_i_1 
+    \m_axis_rx_tdata_xhdl0[28]_i_1 
        (.I0(trn_rd_prev[28]),
         .I1(data_prev),
         .I2(trn_rd[60]),
         .O(p_1_in[28]));
-  (* SOFT_HLUTNM = "soft_lutpair87" *) 
+  (* SOFT_HLUTNM = "soft_lutpair80" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[29]_i_1 
+    \m_axis_rx_tdata_xhdl0[29]_i_1 
        (.I0(trn_rd_prev[29]),
         .I1(data_prev),
         .I2(trn_rd[61]),
         .O(p_1_in[29]));
-  (* SOFT_HLUTNM = "soft_lutpair99" *) 
+  (* SOFT_HLUTNM = "soft_lutpair92" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[2]_i_1 
+    \m_axis_rx_tdata_xhdl0[2]_i_1 
        (.I0(trn_rd_prev[2]),
         .I1(data_prev),
         .I2(trn_rd[34]),
         .O(p_1_in[2]));
-  (* SOFT_HLUTNM = "soft_lutpair86" *) 
+  (* SOFT_HLUTNM = "soft_lutpair79" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[30]_i_1 
+    \m_axis_rx_tdata_xhdl0[30]_i_1 
        (.I0(trn_rd_prev[30]),
         .I1(data_prev),
         .I2(trn_rd[62]),
         .O(p_1_in[30]));
-  (* SOFT_HLUTNM = "soft_lutpair81" *) 
+  (* SOFT_HLUTNM = "soft_lutpair74" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[31]_i_1 
+    \m_axis_rx_tdata_xhdl0[31]_i_1 
        (.I0(trn_rd_prev[31]),
         .I1(data_prev),
         .I2(trn_rd[63]),
         .O(p_1_in[31]));
-  (* SOFT_HLUTNM = "soft_lutpair85" *) 
+  (* SOFT_HLUTNM = "soft_lutpair78" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[32]_i_1 
+    \m_axis_rx_tdata_xhdl0[32]_i_1 
        (.I0(trn_rd_prev[32]),
         .I1(data_prev),
         .I2(trn_rd[0]),
         .O(p_1_in[32]));
-  (* SOFT_HLUTNM = "soft_lutpair77" *) 
+  (* SOFT_HLUTNM = "soft_lutpair70" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[33]_i_1 
+    \m_axis_rx_tdata_xhdl0[33]_i_1 
        (.I0(trn_rd_prev[33]),
         .I1(data_prev),
         .I2(trn_rd[1]),
         .O(p_1_in[33]));
-  (* SOFT_HLUTNM = "soft_lutpair84" *) 
+  (* SOFT_HLUTNM = "soft_lutpair77" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[34]_i_1 
+    \m_axis_rx_tdata_xhdl0[34]_i_1 
        (.I0(trn_rd_prev[34]),
         .I1(data_prev),
         .I2(trn_rd[2]),
         .O(p_1_in[34]));
-  (* SOFT_HLUTNM = "soft_lutpair78" *) 
+  (* SOFT_HLUTNM = "soft_lutpair71" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[35]_i_1 
+    \m_axis_rx_tdata_xhdl0[35]_i_1 
        (.I0(trn_rd_prev[35]),
         .I1(data_prev),
         .I2(trn_rd[3]),
         .O(p_1_in[35]));
-  (* SOFT_HLUTNM = "soft_lutpair86" *) 
+  (* SOFT_HLUTNM = "soft_lutpair79" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[36]_i_1 
+    \m_axis_rx_tdata_xhdl0[36]_i_1 
        (.I0(trn_rd_prev[36]),
         .I1(data_prev),
         .I2(trn_rd[4]),
         .O(p_1_in[36]));
-  (* SOFT_HLUTNM = "soft_lutpair77" *) 
+  (* SOFT_HLUTNM = "soft_lutpair70" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[37]_i_1 
+    \m_axis_rx_tdata_xhdl0[37]_i_1 
        (.I0(trn_rd_prev[37]),
         .I1(data_prev),
         .I2(trn_rd[5]),
         .O(p_1_in[37]));
-  (* SOFT_HLUTNM = "soft_lutpair84" *) 
+  (* SOFT_HLUTNM = "soft_lutpair77" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[38]_i_1 
+    \m_axis_rx_tdata_xhdl0[38]_i_1 
        (.I0(trn_rd_prev[38]),
         .I1(data_prev),
         .I2(trn_rd[6]),
         .O(p_1_in[38]));
-  (* SOFT_HLUTNM = "soft_lutpair80" *) 
+  (* SOFT_HLUTNM = "soft_lutpair73" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[39]_i_1 
+    \m_axis_rx_tdata_xhdl0[39]_i_1 
        (.I0(trn_rd_prev[39]),
         .I1(data_prev),
         .I2(trn_rd[7]),
         .O(p_1_in[39]));
-  (* SOFT_HLUTNM = "soft_lutpair107" *) 
+  (* SOFT_HLUTNM = "soft_lutpair100" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[3]_i_1 
+    \m_axis_rx_tdata_xhdl0[3]_i_1 
        (.I0(trn_rd_prev[3]),
         .I1(data_prev),
         .I2(trn_rd[35]),
         .O(p_1_in[3]));
-  (* SOFT_HLUTNM = "soft_lutpair82" *) 
+  (* SOFT_HLUTNM = "soft_lutpair75" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[40]_i_1 
+    \m_axis_rx_tdata_xhdl0[40]_i_1 
        (.I0(trn_rd_prev[40]),
         .I1(data_prev),
         .I2(trn_rd[8]),
         .O(p_1_in[40]));
-  (* SOFT_HLUTNM = "soft_lutpair81" *) 
+  (* SOFT_HLUTNM = "soft_lutpair74" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[41]_i_1 
+    \m_axis_rx_tdata_xhdl0[41]_i_1 
        (.I0(trn_rd_prev[41]),
         .I1(data_prev),
         .I2(trn_rd[9]),
         .O(p_1_in[41]));
-  (* SOFT_HLUTNM = "soft_lutpair80" *) 
+  (* SOFT_HLUTNM = "soft_lutpair73" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[42]_i_1 
+    \m_axis_rx_tdata_xhdl0[42]_i_1 
        (.I0(trn_rd_prev[42]),
         .I1(data_prev),
         .I2(trn_rd[10]),
         .O(p_1_in[42]));
-  (* SOFT_HLUTNM = "soft_lutpair82" *) 
+  (* SOFT_HLUTNM = "soft_lutpair75" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[43]_i_1 
+    \m_axis_rx_tdata_xhdl0[43]_i_1 
        (.I0(trn_rd_prev[43]),
         .I1(data_prev),
         .I2(trn_rd[11]),
         .O(p_1_in[43]));
-  (* SOFT_HLUTNM = "soft_lutpair88" *) 
+  (* SOFT_HLUTNM = "soft_lutpair81" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[44]_i_1 
+    \m_axis_rx_tdata_xhdl0[44]_i_1 
        (.I0(trn_rd_prev[44]),
         .I1(data_prev),
         .I2(trn_rd[12]),
         .O(p_1_in[44]));
-  (* SOFT_HLUTNM = "soft_lutpair87" *) 
+  (* SOFT_HLUTNM = "soft_lutpair80" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[45]_i_1 
+    \m_axis_rx_tdata_xhdl0[45]_i_1 
        (.I0(trn_rd_prev[45]),
         .I1(data_prev),
         .I2(trn_rd[13]),
         .O(p_1_in[45]));
-  (* SOFT_HLUTNM = "soft_lutpair79" *) 
+  (* SOFT_HLUTNM = "soft_lutpair72" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[46]_i_1 
+    \m_axis_rx_tdata_xhdl0[46]_i_1 
        (.I0(trn_rd_prev[46]),
         .I1(data_prev),
         .I2(trn_rd[14]),
         .O(p_1_in[46]));
-  (* SOFT_HLUTNM = "soft_lutpair90" *) 
+  (* SOFT_HLUTNM = "soft_lutpair83" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[47]_i_1 
+    \m_axis_rx_tdata_xhdl0[47]_i_1 
        (.I0(trn_rd_prev[47]),
         .I1(data_prev),
         .I2(trn_rd[15]),
         .O(p_1_in[47]));
-  (* SOFT_HLUTNM = "soft_lutpair79" *) 
+  (* SOFT_HLUTNM = "soft_lutpair72" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[48]_i_1 
+    \m_axis_rx_tdata_xhdl0[48]_i_1 
        (.I0(trn_rd_prev[48]),
         .I1(data_prev),
         .I2(trn_rd[16]),
         .O(p_1_in[48]));
-  (* SOFT_HLUTNM = "soft_lutpair94" *) 
+  (* SOFT_HLUTNM = "soft_lutpair87" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[49]_i_1 
+    \m_axis_rx_tdata_xhdl0[49]_i_1 
        (.I0(trn_rd_prev[49]),
         .I1(data_prev),
         .I2(trn_rd[17]),
         .O(p_1_in[49]));
-  (* SOFT_HLUTNM = "soft_lutpair107" *) 
+  (* SOFT_HLUTNM = "soft_lutpair100" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[4]_i_1 
+    \m_axis_rx_tdata_xhdl0[4]_i_1 
        (.I0(trn_rd_prev[4]),
         .I1(data_prev),
         .I2(trn_rd[36]),
         .O(p_1_in[4]));
-  (* SOFT_HLUTNM = "soft_lutpair92" *) 
+  (* SOFT_HLUTNM = "soft_lutpair85" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[50]_i_1 
+    \m_axis_rx_tdata_xhdl0[50]_i_1 
        (.I0(trn_rd_prev[50]),
         .I1(data_prev),
         .I2(trn_rd[18]),
         .O(p_1_in[50]));
-  (* SOFT_HLUTNM = "soft_lutpair89" *) 
+  (* SOFT_HLUTNM = "soft_lutpair82" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[51]_i_1 
+    \m_axis_rx_tdata_xhdl0[51]_i_1 
        (.I0(trn_rd_prev[51]),
         .I1(data_prev),
         .I2(trn_rd[19]),
         .O(p_1_in[51]));
-  (* SOFT_HLUTNM = "soft_lutpair78" *) 
+  (* SOFT_HLUTNM = "soft_lutpair71" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[52]_i_1 
+    \m_axis_rx_tdata_xhdl0[52]_i_1 
        (.I0(trn_rd_prev[52]),
         .I1(data_prev),
         .I2(trn_rd[20]),
         .O(p_1_in[52]));
-  (* SOFT_HLUTNM = "soft_lutpair85" *) 
+  (* SOFT_HLUTNM = "soft_lutpair78" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[53]_i_1 
+    \m_axis_rx_tdata_xhdl0[53]_i_1 
        (.I0(trn_rd_prev[53]),
         .I1(data_prev),
         .I2(trn_rd[21]),
         .O(p_1_in[53]));
-  (* SOFT_HLUTNM = "soft_lutpair83" *) 
+  (* SOFT_HLUTNM = "soft_lutpair76" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[54]_i_1 
+    \m_axis_rx_tdata_xhdl0[54]_i_1 
        (.I0(trn_rd_prev[54]),
         .I1(data_prev),
         .I2(trn_rd[22]),
         .O(p_1_in[54]));
-  (* SOFT_HLUTNM = "soft_lutpair83" *) 
+  (* SOFT_HLUTNM = "soft_lutpair76" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[55]_i_1 
+    \m_axis_rx_tdata_xhdl0[55]_i_1 
        (.I0(trn_rd_prev[55]),
         .I1(data_prev),
         .I2(trn_rd[23]),
         .O(p_1_in[55]));
-  (* SOFT_HLUTNM = "soft_lutpair98" *) 
+  (* SOFT_HLUTNM = "soft_lutpair91" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[56]_i_1 
+    \m_axis_rx_tdata_xhdl0[56]_i_1 
        (.I0(trn_rd_prev[56]),
         .I1(data_prev),
         .I2(trn_rd[24]),
         .O(p_1_in[56]));
-  (* SOFT_HLUTNM = "soft_lutpair95" *) 
+  (* SOFT_HLUTNM = "soft_lutpair88" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[57]_i_1 
+    \m_axis_rx_tdata_xhdl0[57]_i_1 
        (.I0(trn_rd_prev[57]),
         .I1(data_prev),
         .I2(trn_rd[25]),
         .O(p_1_in[57]));
-  (* SOFT_HLUTNM = "soft_lutpair97" *) 
+  (* SOFT_HLUTNM = "soft_lutpair90" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[58]_i_1 
+    \m_axis_rx_tdata_xhdl0[58]_i_1 
        (.I0(trn_rd_prev[58]),
         .I1(data_prev),
         .I2(trn_rd[26]),
         .O(p_1_in[58]));
-  (* SOFT_HLUTNM = "soft_lutpair89" *) 
+  (* SOFT_HLUTNM = "soft_lutpair82" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[59]_i_1 
+    \m_axis_rx_tdata_xhdl0[59]_i_1 
        (.I0(trn_rd_prev[59]),
         .I1(data_prev),
         .I2(trn_rd[27]),
         .O(p_1_in[59]));
-  (* SOFT_HLUTNM = "soft_lutpair96" *) 
+  (* SOFT_HLUTNM = "soft_lutpair89" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[5]_i_1 
+    \m_axis_rx_tdata_xhdl0[5]_i_1 
        (.I0(trn_rd_prev[5]),
         .I1(data_prev),
         .I2(trn_rd[37]),
         .O(p_1_in[5]));
-  (* SOFT_HLUTNM = "soft_lutpair92" *) 
+  (* SOFT_HLUTNM = "soft_lutpair85" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[60]_i_1 
+    \m_axis_rx_tdata_xhdl0[60]_i_1 
        (.I0(trn_rd_prev[60]),
         .I1(data_prev),
         .I2(trn_rd[28]),
         .O(p_1_in[60]));
-  (* SOFT_HLUTNM = "soft_lutpair102" *) 
+  (* SOFT_HLUTNM = "soft_lutpair95" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[61]_i_1 
+    \m_axis_rx_tdata_xhdl0[61]_i_1 
        (.I0(trn_rd_prev[61]),
         .I1(data_prev),
         .I2(trn_rd[29]),
         .O(p_1_in[61]));
-  (* SOFT_HLUTNM = "soft_lutpair93" *) 
+  (* SOFT_HLUTNM = "soft_lutpair86" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[62]_i_1 
+    \m_axis_rx_tdata_xhdl0[62]_i_1 
        (.I0(trn_rd_prev[62]),
         .I1(data_prev),
         .I2(trn_rd[30]),
         .O(p_1_in[62]));
   LUT2 #(
     .INIT(4'hB)) 
-    \m_axis_rx_tdata[63]_i_1 
+    \m_axis_rx_tdata_xhdl0[63]_i_1 
        (.I0(m_axis_rx_tready),
-        .I1(m_axis_rx_tvalid_reg_0),
-        .O(\m_axis_rx_tdata[63]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair106" *) 
+        .I1(m_axis_rx_tvalid_xhdl2_reg_0),
+        .O(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair99" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[63]_i_2 
+    \m_axis_rx_tdata_xhdl0[63]_i_2 
        (.I0(trn_rd_prev[63]),
         .I1(data_prev),
         .I2(trn_rd[31]),
         .O(p_1_in[63]));
-  (* SOFT_HLUTNM = "soft_lutpair94" *) 
+  (* SOFT_HLUTNM = "soft_lutpair87" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[6]_i_1 
+    \m_axis_rx_tdata_xhdl0[6]_i_1 
        (.I0(trn_rd_prev[6]),
         .I1(data_prev),
         .I2(trn_rd[38]),
         .O(p_1_in[6]));
-  (* SOFT_HLUTNM = "soft_lutpair104" *) 
+  (* SOFT_HLUTNM = "soft_lutpair97" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[7]_i_1 
+    \m_axis_rx_tdata_xhdl0[7]_i_1 
        (.I0(trn_rd_prev[7]),
         .I1(data_prev),
         .I2(trn_rd[39]),
         .O(p_1_in[7]));
-  (* SOFT_HLUTNM = "soft_lutpair103" *) 
+  (* SOFT_HLUTNM = "soft_lutpair96" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[8]_i_1 
+    \m_axis_rx_tdata_xhdl0[8]_i_1 
        (.I0(trn_rd_prev[8]),
         .I1(data_prev),
         .I2(trn_rd[40]),
         .O(p_1_in[8]));
-  (* SOFT_HLUTNM = "soft_lutpair100" *) 
+  (* SOFT_HLUTNM = "soft_lutpair93" *) 
   LUT3 #(
     .INIT(8'hB8)) 
-    \m_axis_rx_tdata[9]_i_1 
+    \m_axis_rx_tdata_xhdl0[9]_i_1 
        (.I0(trn_rd_prev[9]),
         .I1(data_prev),
         .I2(trn_rd[41]),
         .O(p_1_in[9]));
-  FDRE \m_axis_rx_tdata_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[0] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[0]),
-        .Q(Q[0]),
+        .Q(m_axis_rx_tdata[0]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[10] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[10] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[10]),
-        .Q(Q[10]),
+        .Q(m_axis_rx_tdata[10]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[11] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[11] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[11]),
-        .Q(Q[11]),
+        .Q(m_axis_rx_tdata[11]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[12] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[12] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[12]),
-        .Q(Q[12]),
+        .Q(m_axis_rx_tdata[12]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[13] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[13] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[13]),
-        .Q(Q[13]),
+        .Q(m_axis_rx_tdata[13]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[14] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[14] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[14]),
-        .Q(Q[14]),
+        .Q(m_axis_rx_tdata[14]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[15] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[15] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[15]),
-        .Q(Q[15]),
+        .Q(m_axis_rx_tdata[15]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[16] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[16] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[16]),
-        .Q(Q[16]),
+        .Q(m_axis_rx_tdata[16]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[17] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[17] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[17]),
-        .Q(Q[17]),
+        .Q(m_axis_rx_tdata[17]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[18] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[18] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[18]),
-        .Q(Q[18]),
+        .Q(m_axis_rx_tdata[18]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[19] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[19] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[19]),
-        .Q(Q[19]),
+        .Q(m_axis_rx_tdata[19]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[1] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[1]),
-        .Q(Q[1]),
+        .Q(m_axis_rx_tdata[1]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[20] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[20] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[20]),
-        .Q(Q[20]),
+        .Q(m_axis_rx_tdata[20]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[21] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[21] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[21]),
-        .Q(Q[21]),
+        .Q(m_axis_rx_tdata[21]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[22] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[22] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[22]),
-        .Q(Q[22]),
+        .Q(m_axis_rx_tdata[22]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[23] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[23] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[23]),
-        .Q(Q[23]),
+        .Q(m_axis_rx_tdata[23]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[24] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[24] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[24]),
-        .Q(Q[24]),
+        .Q(m_axis_rx_tdata[24]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[25] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[25] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[25]),
-        .Q(Q[25]),
+        .Q(m_axis_rx_tdata[25]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[26] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[26] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[26]),
-        .Q(Q[26]),
+        .Q(m_axis_rx_tdata[26]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[27] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[27] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[27]),
-        .Q(Q[27]),
+        .Q(m_axis_rx_tdata[27]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[28] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[28] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[28]),
-        .Q(Q[28]),
+        .Q(m_axis_rx_tdata[28]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[29] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[29] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[29]),
-        .Q(Q[29]),
+        .Q(m_axis_rx_tdata[29]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[2] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[2]),
-        .Q(Q[2]),
+        .Q(m_axis_rx_tdata[2]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[30] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[30] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[30]),
-        .Q(Q[30]),
+        .Q(m_axis_rx_tdata[30]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[31] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[31] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[31]),
-        .Q(Q[31]),
+        .Q(m_axis_rx_tdata[31]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[32] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[32] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[32]),
-        .Q(Q[32]),
+        .Q(m_axis_rx_tdata[32]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[33] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[33] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[33]),
-        .Q(Q[33]),
+        .Q(m_axis_rx_tdata[33]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[34] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[34] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[34]),
-        .Q(Q[34]),
+        .Q(m_axis_rx_tdata[34]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[35] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[35] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[35]),
-        .Q(Q[35]),
+        .Q(m_axis_rx_tdata[35]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[36] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[36] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[36]),
-        .Q(Q[36]),
+        .Q(m_axis_rx_tdata[36]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[37] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[37] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[37]),
-        .Q(Q[37]),
+        .Q(m_axis_rx_tdata[37]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[38] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[38] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[38]),
-        .Q(Q[38]),
+        .Q(m_axis_rx_tdata[38]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[39] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[39] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[39]),
-        .Q(Q[39]),
+        .Q(m_axis_rx_tdata[39]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[3] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[3]),
-        .Q(Q[3]),
+        .Q(m_axis_rx_tdata[3]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[40] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[40] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[40]),
-        .Q(Q[40]),
+        .Q(m_axis_rx_tdata[40]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[41] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[41] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[41]),
-        .Q(Q[41]),
+        .Q(m_axis_rx_tdata[41]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[42] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[42] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[42]),
-        .Q(Q[42]),
+        .Q(m_axis_rx_tdata[42]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[43] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[43] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[43]),
-        .Q(Q[43]),
+        .Q(m_axis_rx_tdata[43]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[44] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[44] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[44]),
-        .Q(Q[44]),
+        .Q(m_axis_rx_tdata[44]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[45] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[45] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[45]),
-        .Q(Q[45]),
+        .Q(m_axis_rx_tdata[45]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[46] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[46] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[46]),
-        .Q(Q[46]),
+        .Q(m_axis_rx_tdata[46]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[47] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[47] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[47]),
-        .Q(Q[47]),
+        .Q(m_axis_rx_tdata[47]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[48] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[48] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[48]),
-        .Q(Q[48]),
+        .Q(m_axis_rx_tdata[48]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[49] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[49] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[49]),
-        .Q(Q[49]),
+        .Q(m_axis_rx_tdata[49]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[4] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[4]),
-        .Q(Q[4]),
+        .Q(m_axis_rx_tdata[4]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[50] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[50] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[50]),
-        .Q(Q[50]),
+        .Q(m_axis_rx_tdata[50]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[51] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[51] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[51]),
-        .Q(Q[51]),
+        .Q(m_axis_rx_tdata[51]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[52] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[52] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[52]),
-        .Q(Q[52]),
+        .Q(m_axis_rx_tdata[52]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[53] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[53] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[53]),
-        .Q(Q[53]),
+        .Q(m_axis_rx_tdata[53]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[54] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[54] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[54]),
-        .Q(Q[54]),
+        .Q(m_axis_rx_tdata[54]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[55] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[55] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[55]),
-        .Q(Q[55]),
+        .Q(m_axis_rx_tdata[55]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[56] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[56] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[56]),
-        .Q(Q[56]),
+        .Q(m_axis_rx_tdata[56]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[57] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[57] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[57]),
-        .Q(Q[57]),
+        .Q(m_axis_rx_tdata[57]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[58] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[58] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[58]),
-        .Q(Q[58]),
+        .Q(m_axis_rx_tdata[58]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[59] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[59] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[59]),
-        .Q(Q[59]),
+        .Q(m_axis_rx_tdata[59]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[5] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[5]),
-        .Q(Q[5]),
+        .Q(m_axis_rx_tdata[5]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[60] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[60] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[60]),
-        .Q(Q[60]),
+        .Q(m_axis_rx_tdata[60]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[61] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[61] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[61]),
-        .Q(Q[61]),
+        .Q(m_axis_rx_tdata[61]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[62] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[62] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[62]),
-        .Q(Q[62]),
+        .Q(m_axis_rx_tdata[62]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[63] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[63] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[63]),
-        .Q(Q[63]),
+        .Q(m_axis_rx_tdata[63]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[6] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[6] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[6]),
-        .Q(Q[6]),
+        .Q(m_axis_rx_tdata[6]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[7] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[7] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[7]),
-        .Q(Q[7]),
+        .Q(m_axis_rx_tdata[7]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[8] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[8] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[8]),
-        .Q(Q[8]),
+        .Q(m_axis_rx_tdata[8]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \m_axis_rx_tdata_reg[9] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tdata_xhdl0_reg[9] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
         .D(p_1_in[9]),
-        .Q(Q[9]),
+        .Q(m_axis_rx_tdata[9]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
   LUT5 #(
-    .INIT(32'h000000E2)) 
-    \m_axis_rx_tuser[0]_i_1 
-       (.I0(trn_recrc_err),
+    .INIT(32'h000000B8)) 
+    \m_axis_rx_tuser_xhdl1[0]_i_1 
+       (.I0(trn_recrc_err_prev),
         .I1(data_prev),
-        .I2(trn_recrc_err_prev),
+        .I2(trn_recrc_err),
         .I3(\trn_rbar_hit_prev_reg[0]_0 ),
         .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[0]_i_1_n_0 ));
+        .O(m_axis_rx_tuser_xhdl1[0]));
   LUT6 #(
     .INIT(64'h0000000004F40404)) 
-    \m_axis_rx_tuser[14]_i_1 
+    \m_axis_rx_tuser_xhdl1[14]_i_1 
        (.I0(trn_rsrc_dsc),
         .I1(trn_rsof),
         .I2(data_prev),
         .I3(trn_rsrc_dsc_prev),
         .I4(trn_rsof_prev),
-        .I5(\m_axis_rx_tuser[14]_i_2_n_0 ),
-        .O(\m_axis_rx_tuser[14]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair74" *) 
+        .I5(\m_axis_rx_tuser_xhdl1[14]_i_2_n_0 ),
+        .O(m_axis_rx_tuser_xhdl1[14]));
+  (* SOFT_HLUTNM = "soft_lutpair65" *) 
   LUT2 #(
     .INIT(4'hE)) 
-    \m_axis_rx_tuser[14]_i_2 
+    \m_axis_rx_tuser_xhdl1[14]_i_2 
        (.I0(\trn_rbar_hit_prev_reg[0]_0 ),
         .I1(null_mux_sel),
-        .O(\m_axis_rx_tuser[14]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair75" *) 
+        .O(\m_axis_rx_tuser_xhdl1[14]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair66" *) 
   LUT1 #(
     .INIT(2'h1)) 
-    \m_axis_rx_tuser[18]_i_1 
+    \m_axis_rx_tuser_xhdl1[18]_i_1 
        (.I0(\trn_rbar_hit_prev_reg[0]_0 ),
-        .O(\m_axis_rx_tuser[18]_i_1_n_0 ));
-  LUT4 #(
-    .INIT(16'h00E2)) 
-    \m_axis_rx_tuser[19]_i_2 
-       (.I0(trn_rrem),
-        .I1(data_prev),
-        .I2(trn_rrem_prev),
-        .I3(null_mux_sel),
-        .O(pcie_block_i_0));
-  LUT5 #(
-    .INIT(32'h000000B8)) 
-    \m_axis_rx_tuser[1]_i_1 
-       (.I0(trn_rerrfwd_prev),
-        .I1(data_prev),
-        .I2(trn_rerrfwd),
-        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
-        .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[1]_i_1_n_0 ));
+        .O(m_axis_rx_tuser_xhdl1[18]));
   LUT3 #(
     .INIT(8'hEF)) 
-    \m_axis_rx_tuser[21]_i_1 
+    \m_axis_rx_tuser_xhdl1[19]_i_1 
        (.I0(\trn_rbar_hit_prev_reg[0]_0 ),
         .I1(m_axis_rx_tready),
-        .I2(m_axis_rx_tvalid_reg_0),
-        .O(\m_axis_rx_tuser[21]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair75" *) 
+        .I2(m_axis_rx_tvalid_xhdl2_reg_0),
+        .O(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ));
+  LUT4 #(
+    .INIT(16'h00E2)) 
+    \m_axis_rx_tuser_xhdl1[19]_i_3 
+       (.I0(trn_rrem),
+        .I1(data_prev),
+        .I2(is_eof_prev[2]),
+        .I3(null_mux_sel),
+        .O(pcie_block_i));
+  LUT5 #(
+    .INIT(32'h000000E2)) 
+    \m_axis_rx_tuser_xhdl1[1]_i_1 
+       (.I0(trn_rerrfwd),
+        .I1(data_prev),
+        .I2(trn_rerrfwd_prev),
+        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
+        .I4(null_mux_sel),
+        .O(m_axis_rx_tuser_xhdl1[1]));
+  LUT6 #(
+    .INIT(64'h0000AAAAFC0CAAAA)) 
+    \m_axis_rx_tuser_xhdl1[21]_i_1 
+       (.I0(m_axis_rx_tuser[12]),
+        .I1(\m_axis_rx_tuser_xhdl1[21]_i_2_n_0 ),
+        .I2(null_mux_sel),
+        .I3(\m_axis_rx_tuser_xhdl1_reg[21]_0 ),
+        .I4(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .I5(\trn_rbar_hit_prev_reg[0]_0 ),
+        .O(\m_axis_rx_tuser_xhdl1[21]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair64" *) 
+  LUT3 #(
+    .INIT(8'hB8)) 
+    \m_axis_rx_tuser_xhdl1[21]_i_2 
+       (.I0(is_eof_prev[4]),
+        .I1(data_prev),
+        .I2(trn_reof),
+        .O(\m_axis_rx_tuser_xhdl1[21]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair66" *) 
   LUT5 #(
     .INIT(32'h000000B8)) 
-    \m_axis_rx_tuser[2]_i_1 
+    \m_axis_rx_tuser_xhdl1[2]_i_1 
        (.I0(trn_rbar_hit_prev[0]),
         .I1(data_prev),
         .I2(trn_rbar_hit[0]),
         .I3(\trn_rbar_hit_prev_reg[0]_0 ),
         .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[2]_i_1_n_0 ));
-  LUT5 #(
-    .INIT(32'h000000E2)) 
-    \m_axis_rx_tuser[3]_i_1 
-       (.I0(trn_rbar_hit[1]),
-        .I1(data_prev),
-        .I2(trn_rbar_hit_prev[1]),
-        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
-        .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[3]_i_1_n_0 ));
-  LUT5 #(
-    .INIT(32'h000000E2)) 
-    \m_axis_rx_tuser[4]_i_1 
-       (.I0(trn_rbar_hit[2]),
-        .I1(data_prev),
-        .I2(trn_rbar_hit_prev[2]),
-        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
-        .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[4]_i_1_n_0 ));
+        .O(m_axis_rx_tuser_xhdl1[2]));
   LUT5 #(
     .INIT(32'h000000B8)) 
-    \m_axis_rx_tuser[5]_i_1 
+    \m_axis_rx_tuser_xhdl1[3]_i_1 
+       (.I0(trn_rbar_hit_prev[1]),
+        .I1(data_prev),
+        .I2(trn_rbar_hit[1]),
+        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
+        .I4(null_mux_sel),
+        .O(m_axis_rx_tuser_xhdl1[3]));
+  LUT5 #(
+    .INIT(32'h000000B8)) 
+    \m_axis_rx_tuser_xhdl1[4]_i_1 
+       (.I0(trn_rbar_hit_prev[2]),
+        .I1(data_prev),
+        .I2(trn_rbar_hit[2]),
+        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
+        .I4(null_mux_sel),
+        .O(m_axis_rx_tuser_xhdl1[4]));
+  LUT5 #(
+    .INIT(32'h000000B8)) 
+    \m_axis_rx_tuser_xhdl1[5]_i_1 
        (.I0(trn_rbar_hit_prev[3]),
         .I1(data_prev),
         .I2(trn_rbar_hit[3]),
         .I3(\trn_rbar_hit_prev_reg[0]_0 ),
         .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[5]_i_1_n_0 ));
+        .O(m_axis_rx_tuser_xhdl1[5]));
+  LUT5 #(
+    .INIT(32'h000000E2)) 
+    \m_axis_rx_tuser_xhdl1[6]_i_1 
+       (.I0(trn_rbar_hit[4]),
+        .I1(data_prev),
+        .I2(trn_rbar_hit_prev[4]),
+        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
+        .I4(null_mux_sel),
+        .O(m_axis_rx_tuser_xhdl1[6]));
+  (* SOFT_HLUTNM = "soft_lutpair65" *) 
   LUT5 #(
     .INIT(32'h000000B8)) 
-    \m_axis_rx_tuser[6]_i_1 
-       (.I0(trn_rbar_hit_prev[4]),
+    \m_axis_rx_tuser_xhdl1[7]_i_1 
+       (.I0(trn_rbar_hit_prev[5]),
         .I1(data_prev),
-        .I2(trn_rbar_hit[4]),
+        .I2(trn_rbar_hit[5]),
         .I3(\trn_rbar_hit_prev_reg[0]_0 ),
         .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[6]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair74" *) 
+        .O(m_axis_rx_tuser_xhdl1[7]));
   LUT5 #(
-    .INIT(32'h000000E2)) 
-    \m_axis_rx_tuser[7]_i_1 
-       (.I0(trn_rbar_hit[5]),
+    .INIT(32'h000000B8)) 
+    \m_axis_rx_tuser_xhdl1[8]_i_1 
+       (.I0(trn_rbar_hit_prev[6]),
         .I1(data_prev),
-        .I2(trn_rbar_hit_prev[5]),
+        .I2(trn_rbar_hit[6]),
         .I3(\trn_rbar_hit_prev_reg[0]_0 ),
         .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[7]_i_1_n_0 ));
-  LUT5 #(
-    .INIT(32'h000000E2)) 
-    \m_axis_rx_tuser[8]_i_1 
-       (.I0(trn_rbar_hit[6]),
-        .I1(data_prev),
-        .I2(trn_rbar_hit_prev[6]),
-        .I3(\trn_rbar_hit_prev_reg[0]_0 ),
-        .I4(null_mux_sel),
-        .O(\m_axis_rx_tuser[8]_i_1_n_0 ));
-  FDRE \m_axis_rx_tuser_reg[0] 
+        .O(m_axis_rx_tuser_xhdl1[8]));
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[0] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[0]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[0]),
         .Q(m_axis_rx_tuser[0]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[14] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[14] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[14]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[14]),
         .Q(m_axis_rx_tuser[9]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[18] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[18] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[18]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[18]),
         .Q(m_axis_rx_tuser[10]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[19] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[19] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(D[0]),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(D),
         .Q(m_axis_rx_tuser[11]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[1] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[1]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[1]),
         .Q(m_axis_rx_tuser[1]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[21] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[21] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(D[1]),
+        .CE(1'b1),
+        .D(\m_axis_rx_tuser_xhdl1[21]_i_1_n_0 ),
         .Q(m_axis_rx_tuser[12]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[2] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[2]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[2]),
         .Q(m_axis_rx_tuser[2]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[3] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[3]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[3]),
         .Q(m_axis_rx_tuser[3]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[4] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[4]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[4]),
         .Q(m_axis_rx_tuser[4]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[5] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[5]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[5]),
         .Q(m_axis_rx_tuser[5]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[6] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[6] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[6]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[6]),
         .Q(m_axis_rx_tuser[6]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[7] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[7] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[7]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[7]),
         .Q(m_axis_rx_tuser[7]),
         .R(1'b0));
-  FDRE \m_axis_rx_tuser_reg[8] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \m_axis_rx_tuser_xhdl1_reg[8] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tuser[21]_i_1_n_0 ),
-        .D(\m_axis_rx_tuser[8]_i_1_n_0 ),
+        .CE(\m_axis_rx_tuser_xhdl1[19]_i_1_n_0 ),
+        .D(m_axis_rx_tuser_xhdl1[8]),
         .Q(m_axis_rx_tuser[8]),
         .R(1'b0));
   LUT6 #(
     .INIT(64'hFFFFFFFFFFFFFECE)) 
-    m_axis_rx_tvalid_i_1
-       (.I0(rsrc_rdy_filtered),
+    m_axis_rx_tvalid_xhdl2_i_1
+       (.I0(rsrc_rdy_filtered6_out),
         .I1(null_mux_sel),
         .I2(data_prev),
         .I3(trn_rsrc_rdy_prev),
         .I4(reg_dsc_detect_reg_0),
         .I5(dsc_detect),
-        .O(m_axis_rx_tvalid_i_1_n_0));
-  FDRE m_axis_rx_tvalid_reg
+        .O(m_axis_rx_tvalid_xhdl2_i_1_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    m_axis_rx_tvalid_xhdl2_reg
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
-        .D(m_axis_rx_tvalid_i_1_n_0),
-        .Q(m_axis_rx_tvalid_reg_0),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
+        .D(m_axis_rx_tvalid_xhdl2_i_1_n_0),
+        .Q(m_axis_rx_tvalid_xhdl2_reg_0),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair68" *) 
+  LUT4 #(
+    .INIT(16'h7800)) 
+    new_pkt_len_1_inferred_i_1
+       (.I0(new_pkt_len_1_inferred_i_6_n_0),
+        .I1(m_axis_rx_tdata[3]),
+        .I2(m_axis_rx_tdata[4]),
+        .I3(m_axis_rx_tdata[30]),
+        .O(in0[4]));
+  (* SOFT_HLUTNM = "soft_lutpair68" *) 
+  LUT3 #(
+    .INIT(8'h6A)) 
+    new_pkt_len_1_inferred_i_2
+       (.I0(new_pkt_len_1_inferred_i_6_n_0),
+        .I1(m_axis_rx_tdata[3]),
+        .I2(m_axis_rx_tdata[30]),
+        .O(in0[3]));
   LUT6 #(
-    .INIT(64'hABAAABAAABAABBBB)) 
+    .INIT(64'h017FFE8000000000)) 
+    new_pkt_len_1_inferred_i_3
+       (.I0(m_axis_rx_tdata[0]),
+        .I1(m_axis_rx_tdata[15]),
+        .I2(m_axis_rx_tdata[29]),
+        .I3(m_axis_rx_tdata[1]),
+        .I4(m_axis_rx_tdata[2]),
+        .I5(m_axis_rx_tdata[30]),
+        .O(in0[2]));
+  (* SOFT_HLUTNM = "soft_lutpair67" *) 
+  LUT5 #(
+    .INIT(32'hB73F3F48)) 
+    new_pkt_len_1_inferred_i_4
+       (.I0(m_axis_rx_tdata[0]),
+        .I1(m_axis_rx_tdata[30]),
+        .I2(m_axis_rx_tdata[1]),
+        .I3(m_axis_rx_tdata[15]),
+        .I4(m_axis_rx_tdata[29]),
+        .O(in0[1]));
+  (* SOFT_HLUTNM = "soft_lutpair67" *) 
+  LUT4 #(
+    .INIT(16'h6999)) 
+    new_pkt_len_1_inferred_i_5
+       (.I0(m_axis_rx_tdata[29]),
+        .I1(m_axis_rx_tdata[15]),
+        .I2(m_axis_rx_tdata[0]),
+        .I3(m_axis_rx_tdata[30]),
+        .O(in0[0]));
+  LUT6 #(
+    .INIT(64'hAAA8000080000000)) 
+    new_pkt_len_1_inferred_i_6
+       (.I0(m_axis_rx_tdata[2]),
+        .I1(m_axis_rx_tdata[0]),
+        .I2(m_axis_rx_tdata[15]),
+        .I3(m_axis_rx_tdata[29]),
+        .I4(m_axis_rx_tdata[30]),
+        .I5(m_axis_rx_tdata[1]),
+        .O(new_pkt_len_1_inferred_i_6_n_0));
+  LUT2 #(
+    .INIT(4'h8)) 
+    new_pkt_len_inferred_i_1
+       (.I0(m_axis_rx_tdata[30]),
+        .I1(m_axis_rx_tdata[9]),
+        .O(\m_axis_rx_tdata_xhdl0_reg[30]_0 [4]));
+  (* SOFT_HLUTNM = "soft_lutpair103" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    new_pkt_len_inferred_i_2
+       (.I0(m_axis_rx_tdata[30]),
+        .I1(m_axis_rx_tdata[8]),
+        .O(\m_axis_rx_tdata_xhdl0_reg[30]_0 [3]));
+  (* SOFT_HLUTNM = "soft_lutpair103" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    new_pkt_len_inferred_i_3
+       (.I0(m_axis_rx_tdata[30]),
+        .I1(m_axis_rx_tdata[7]),
+        .O(\m_axis_rx_tdata_xhdl0_reg[30]_0 [2]));
+  (* SOFT_HLUTNM = "soft_lutpair102" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    new_pkt_len_inferred_i_4
+       (.I0(m_axis_rx_tdata[30]),
+        .I1(m_axis_rx_tdata[6]),
+        .O(\m_axis_rx_tdata_xhdl0_reg[30]_0 [1]));
+  (* SOFT_HLUTNM = "soft_lutpair102" *) 
+  LUT2 #(
+    .INIT(4'h8)) 
+    new_pkt_len_inferred_i_5
+       (.I0(m_axis_rx_tdata[30]),
+        .I1(m_axis_rx_tdata[5]),
+        .O(\m_axis_rx_tdata_xhdl0_reg[30]_0 [0]));
+  LUT6 #(
+    .INIT(64'h0000000055FF1103)) 
+    null_mux_sel_i_1
+       (.I0(null_mux_sel_reg_0),
+        .I1(null_mux_sel_i_2_n_0),
+        .I2(m_axis_rx_tvalid_xhdl2_reg_0),
+        .I3(m_axis_rx_tready),
+        .I4(null_mux_sel),
+        .I5(\trn_rbar_hit_prev_reg[0]_0 ),
+        .O(null_mux_sel_i_1_n_0));
+  (* SOFT_HLUTNM = "soft_lutpair69" *) 
+  LUT2 #(
+    .INIT(4'h1)) 
     null_mux_sel_i_2
-       (.I0(\trn_rbar_hit_prev_reg[0]_0 ),
-        .I1(null_mux_sel),
-        .I2(m_axis_rx_tready),
-        .I3(m_axis_rx_tvalid_reg_0),
-        .I4(dsc_detect),
-        .I5(reg_dsc_detect_reg_0),
-        .O(user_reset_out_reg));
-  FDRE null_mux_sel_reg
+       (.I0(reg_dsc_detect_reg_0),
+        .I1(dsc_detect),
+        .O(null_mux_sel_i_2_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    null_mux_sel_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(null_mux_sel_reg_0),
+        .D(null_mux_sel_i_1_n_0),
         .Q(null_mux_sel),
         .R(1'b0));
-  (* SOFT_HLUTNM = "soft_lutpair76" *) 
+  (* SOFT_HLUTNM = "soft_lutpair69" *) 
   LUT3 #(
     .INIT(8'hDC)) 
     reg_dsc_detect_i_1
@@ -3218,736 +3451,826 @@ module pcie_7x_0_axi_basic_rx_pipeline
         .I1(dsc_detect),
         .I2(reg_dsc_detect_reg_0),
         .O(reg_dsc_detect_i_1_n_0));
-  FDRE reg_dsc_detect_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    reg_dsc_detect_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(reg_dsc_detect_i_1_n_0),
         .Q(reg_dsc_detect_reg_0),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[10]_i_3 
-       (.I0(Q[30]),
-        .I1(Q[9]),
-        .O(\reg_pkt_len_counter[10]_i_3_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[10]_i_4 
-       (.I0(Q[30]),
-        .I1(Q[8]),
-        .O(\reg_pkt_len_counter[10]_i_4_n_0 ));
-  LUT2 #(
-    .INIT(4'hE)) 
-    \reg_pkt_len_counter[3]_i_3 
-       (.I0(Q[29]),
-        .I1(Q[15]),
-        .O(packet_overhead[1]));
-  LUT2 #(
-    .INIT(4'h9)) 
-    \reg_pkt_len_counter[3]_i_4 
-       (.I0(Q[15]),
-        .I1(Q[29]),
-        .O(packet_overhead[0]));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[3]_i_5 
-       (.I0(Q[30]),
-        .I1(Q[3]),
-        .O(\reg_pkt_len_counter[3]_i_5_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[3]_i_6 
-       (.I0(Q[30]),
-        .I1(Q[2]),
-        .O(\reg_pkt_len_counter[3]_i_6_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[7]_i_3 
-       (.I0(Q[30]),
-        .I1(Q[7]),
-        .O(\reg_pkt_len_counter[7]_i_3_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[7]_i_4 
-       (.I0(Q[30]),
-        .I1(Q[6]),
-        .O(\reg_pkt_len_counter[7]_i_4_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[7]_i_5 
-       (.I0(Q[30]),
-        .I1(Q[5]),
-        .O(\reg_pkt_len_counter[7]_i_5_n_0 ));
-  LUT2 #(
-    .INIT(4'h8)) 
-    \reg_pkt_len_counter[7]_i_6 
-       (.I0(Q[30]),
-        .I1(Q[4]),
-        .O(\reg_pkt_len_counter[7]_i_6_n_0 ));
-  CARRY4 \reg_pkt_len_counter_reg[10]_i_2 
-       (.CI(\reg_pkt_len_counter_reg[7]_i_2_n_0 ),
-        .CO({\NLW_reg_pkt_len_counter_reg[10]_i_2_CO_UNCONNECTED [3],new_pkt_len[10],\NLW_reg_pkt_len_counter_reg[10]_i_2_CO_UNCONNECTED [1],\reg_pkt_len_counter_reg[10]_i_2_n_3 }),
-        .CYINIT(1'b0),
-        .DI({1'b0,1'b0,1'b0,1'b0}),
-        .O({\NLW_reg_pkt_len_counter_reg[10]_i_2_O_UNCONNECTED [3:2],new_pkt_len[9:8]}),
-        .S({1'b0,1'b1,\reg_pkt_len_counter[10]_i_3_n_0 ,\reg_pkt_len_counter[10]_i_4_n_0 }));
-  CARRY4 \reg_pkt_len_counter_reg[3]_i_2 
-       (.CI(1'b0),
-        .CO({\reg_pkt_len_counter_reg[3]_i_2_n_0 ,\reg_pkt_len_counter_reg[3]_i_2_n_1 ,\reg_pkt_len_counter_reg[3]_i_2_n_2 ,\reg_pkt_len_counter_reg[3]_i_2_n_3 }),
-        .CYINIT(1'b0),
-        .DI({1'b0,1'b0,packet_overhead}),
-        .O(new_pkt_len[3:0]),
-        .S({\reg_pkt_len_counter[3]_i_5_n_0 ,\reg_pkt_len_counter[3]_i_6_n_0 ,S}));
-  CARRY4 \reg_pkt_len_counter_reg[7]_i_2 
-       (.CI(\reg_pkt_len_counter_reg[3]_i_2_n_0 ),
-        .CO({\reg_pkt_len_counter_reg[7]_i_2_n_0 ,\reg_pkt_len_counter_reg[7]_i_2_n_1 ,\reg_pkt_len_counter_reg[7]_i_2_n_2 ,\reg_pkt_len_counter_reg[7]_i_2_n_3 }),
-        .CYINIT(1'b0),
-        .DI({1'b0,1'b0,1'b0,1'b0}),
-        .O(new_pkt_len[7:4]),
-        .S({\reg_pkt_len_counter[7]_i_3_n_0 ,\reg_pkt_len_counter[7]_i_4_n_0 ,\reg_pkt_len_counter[7]_i_5_n_0 ,\reg_pkt_len_counter[7]_i_6_n_0 }));
   LUT6 #(
     .INIT(64'h7F7F7F7070707F70)) 
     \reg_tkeep[7]_i_1 
-       (.I0(trn_rdst_rdy_reg_0),
-        .I1(\reg_tkeep_reg[7]_0 ),
+       (.I0(\reg_tkeep_reg[7]_0 ),
+        .I1(\reg_tkeep_reg[7]_1 ),
         .I2(null_mux_sel),
         .I3(trn_rrem),
         .I4(data_prev),
-        .I5(trn_rrem_prev),
-        .O(reg_tkeep));
-  FDSE \reg_tkeep_reg[7] 
+        .I5(is_eof_prev[2]),
+        .O(\reg_tkeep[7]_i_1_n_0 ));
+  FDSE #(
+    .INIT(1'b0)) 
+    \reg_tkeep_reg[3] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
-        .D(reg_tkeep),
-        .Q(m_axis_rx_tkeep),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
+        .D(1'b1),
+        .Q(m_axis_rx_tkeep[0]),
         .S(\trn_rbar_hit_prev_reg[0]_0 ));
-  LUT4 #(
-    .INIT(16'h00E2)) 
-    reg_tlast_i_2
-       (.I0(trn_reof),
-        .I1(data_prev),
-        .I2(trn_reof_prev),
-        .I3(null_mux_sel),
-        .O(pcie_block_i));
-  FDRE reg_tlast_reg
+  FDSE #(
+    .INIT(1'b0)) 
+    \reg_tkeep_reg[7] 
        (.C(pipe_userclk2_in),
-        .CE(\m_axis_rx_tdata[63]_i_1_n_0 ),
-        .D(reg_tlast_reg_0),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
+        .D(\reg_tkeep[7]_i_1_n_0 ),
+        .Q(m_axis_rx_tkeep[1]),
+        .S(\trn_rbar_hit_prev_reg[0]_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair64" *) 
+  LUT5 #(
+    .INIT(32'hBABBBAAA)) 
+    reg_tlast_i_1
+       (.I0(null_mux_sel_reg_0),
+        .I1(null_mux_sel),
+        .I2(is_eof_prev[4]),
+        .I3(data_prev),
+        .I4(trn_reof),
+        .O(reg_tlast_i_1_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    reg_tlast_reg
+       (.C(pipe_userclk2_in),
+        .CE(\m_axis_rx_tdata_xhdl0[63]_i_1_n_0 ),
+        .D(reg_tlast_i_1_n_0),
         .Q(m_axis_rx_tlast),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_in_packet_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_in_packet_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_in_packet_reg_0),
         .Q(trn_in_packet),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[0]),
         .Q(trn_rbar_hit_prev[0]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[1]),
         .Q(trn_rbar_hit_prev[1]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[2]),
         .Q(trn_rbar_hit_prev[2]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[3]),
         .Q(trn_rbar_hit_prev[3]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[4]),
         .Q(trn_rbar_hit_prev[4]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[5] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[5]),
         .Q(trn_rbar_hit_prev[5]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rbar_hit_prev_reg[6] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rbar_hit_prev_reg[6] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rbar_hit[6]),
         .Q(trn_rbar_hit_prev[6]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[32]),
         .Q(trn_rd_prev[0]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[10] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[10] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[42]),
         .Q(trn_rd_prev[10]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[11] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[11] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[43]),
         .Q(trn_rd_prev[11]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[12] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[12] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[44]),
         .Q(trn_rd_prev[12]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[13] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[13] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[45]),
         .Q(trn_rd_prev[13]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[14] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[14] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[46]),
         .Q(trn_rd_prev[14]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[15] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[15] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[47]),
         .Q(trn_rd_prev[15]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[16] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[16] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[48]),
         .Q(trn_rd_prev[16]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[17] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[17] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[49]),
         .Q(trn_rd_prev[17]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[18] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[18] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[50]),
         .Q(trn_rd_prev[18]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[19] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[19] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[51]),
         .Q(trn_rd_prev[19]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[33]),
         .Q(trn_rd_prev[1]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[20] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[20] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[52]),
         .Q(trn_rd_prev[20]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[21] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[21] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[53]),
         .Q(trn_rd_prev[21]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[22] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[22] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[54]),
         .Q(trn_rd_prev[22]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[23] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[23] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[55]),
         .Q(trn_rd_prev[23]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[24] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[24] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[56]),
         .Q(trn_rd_prev[24]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[25] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[25] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[57]),
         .Q(trn_rd_prev[25]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[26] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[26] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[58]),
         .Q(trn_rd_prev[26]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[27] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[27] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[59]),
         .Q(trn_rd_prev[27]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[28] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[28] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[60]),
         .Q(trn_rd_prev[28]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[29] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[29] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[61]),
         .Q(trn_rd_prev[29]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[34]),
         .Q(trn_rd_prev[2]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[30] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[30] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[62]),
         .Q(trn_rd_prev[30]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[31] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[31] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[63]),
         .Q(trn_rd_prev[31]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[32] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[32] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[0]),
         .Q(trn_rd_prev[32]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[33] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[33] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[1]),
         .Q(trn_rd_prev[33]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[34] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[34] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[2]),
         .Q(trn_rd_prev[34]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[35] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[35] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[3]),
         .Q(trn_rd_prev[35]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[36] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[36] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[4]),
         .Q(trn_rd_prev[36]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[37] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[37] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[5]),
         .Q(trn_rd_prev[37]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[38] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[38] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[6]),
         .Q(trn_rd_prev[38]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[39] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[39] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[7]),
         .Q(trn_rd_prev[39]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[35]),
         .Q(trn_rd_prev[3]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[40] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[40] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[8]),
         .Q(trn_rd_prev[40]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[41] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[41] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[9]),
         .Q(trn_rd_prev[41]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[42] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[42] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[10]),
         .Q(trn_rd_prev[42]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[43] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[43] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[11]),
         .Q(trn_rd_prev[43]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[44] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[44] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[12]),
         .Q(trn_rd_prev[44]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[45] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[45] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[13]),
         .Q(trn_rd_prev[45]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[46] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[46] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[14]),
         .Q(trn_rd_prev[46]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[47] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[47] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[15]),
         .Q(trn_rd_prev[47]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[48] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[48] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[16]),
         .Q(trn_rd_prev[48]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[49] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[49] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[17]),
         .Q(trn_rd_prev[49]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[36]),
         .Q(trn_rd_prev[4]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[50] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[50] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[18]),
         .Q(trn_rd_prev[50]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[51] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[51] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[19]),
         .Q(trn_rd_prev[51]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[52] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[52] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[20]),
         .Q(trn_rd_prev[52]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[53] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[53] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[21]),
         .Q(trn_rd_prev[53]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[54] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[54] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[22]),
         .Q(trn_rd_prev[54]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[55] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[55] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[23]),
         .Q(trn_rd_prev[55]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[56] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[56] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[24]),
         .Q(trn_rd_prev[56]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[57] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[57] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[25]),
         .Q(trn_rd_prev[57]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[58] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[58] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[26]),
         .Q(trn_rd_prev[58]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[59] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[59] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[27]),
         .Q(trn_rd_prev[59]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[5] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[37]),
         .Q(trn_rd_prev[5]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[60] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[60] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[28]),
         .Q(trn_rd_prev[60]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[61] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[61] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[29]),
         .Q(trn_rd_prev[61]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[62] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[62] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[30]),
         .Q(trn_rd_prev[62]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[63] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[63] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[31]),
         .Q(trn_rd_prev[63]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[6] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[6] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[38]),
         .Q(trn_rd_prev[6]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[7] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[7] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[39]),
         .Q(trn_rd_prev[7]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[8] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[8] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[40]),
         .Q(trn_rd_prev[8]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rd_prev_reg[9] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rd_prev_reg[9] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rd[41]),
         .Q(trn_rd_prev[9]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
   LUT6 #(
-    .INIT(64'h3030FF3050505050)) 
-    trn_rdst_rdy_i_1
-       (.I0(m_axis_rx_tvalid_reg_0),
-        .I1(null_mux_sel),
-        .I2(trn_rdst_rdy_i_2_n_0),
-        .I3(trn_rdst_rdy_reg_0),
-        .I4(trn_rdst_rdy_reg_1),
+    .INIT(64'hFFFF000500030003)) 
+    trn_rdst_rdy_xhdl4_i_1
+       (.I0(null_mux_sel),
+        .I1(m_axis_rx_tvalid_xhdl2_reg_0),
+        .I2(reg_dsc_detect_reg_0),
+        .I3(dsc_detect),
+        .I4(null_mux_sel_reg_0),
         .I5(m_axis_rx_tready),
-        .O(trn_rdst_rdy_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair76" *) 
-  LUT2 #(
-    .INIT(4'h1)) 
-    trn_rdst_rdy_i_2
-       (.I0(reg_dsc_detect_reg_0),
-        .I1(dsc_detect),
-        .O(trn_rdst_rdy_i_2_n_0));
-  FDRE trn_rdst_rdy_reg
+        .O(trn_rdst_rdy_xhdl4_i_1_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rdst_rdy_xhdl4_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(trn_rdst_rdy_i_1_n_0),
+        .D(trn_rdst_rdy_xhdl4_i_1_n_0),
         .Q(E),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_recrc_err_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_recrc_err_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_recrc_err),
         .Q(trn_recrc_err_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_reof_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_reof_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_reof),
-        .Q(trn_reof_prev),
+        .Q(is_eof_prev[4]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_rerrfwd_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rerrfwd_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rerrfwd),
         .Q(trn_rerrfwd_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE \trn_rrem_prev_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \trn_rrem_prev_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rrem),
-        .Q(trn_rrem_prev),
+        .Q(is_eof_prev[2]),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_rsof_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rsof_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rsof),
         .Q(trn_rsof_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_rsrc_dsc_d_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rsrc_dsc_d_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_rsrc_dsc),
         .Q(trn_rsrc_dsc_d),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_rsrc_dsc_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rsrc_dsc_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
         .D(trn_rsrc_dsc_prev0),
         .Q(trn_rsrc_dsc_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
-  FDRE trn_rsrc_rdy_prev_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_rsrc_rdy_prev_reg
        (.C(pipe_userclk2_in),
         .CE(E),
-        .D(rsrc_rdy_filtered),
+        .D(rsrc_rdy_filtered6_out),
         .Q(trn_rsrc_rdy_prev),
         .R(\trn_rbar_hit_prev_reg[0]_0 ));
 endmodule
 
 module pcie_7x_0_axi_basic_top
-   (E,
-    trn_rsrc_dsc_d,
-    m_axis_rx_tvalid_reg,
-    m_axis_rx_tkeep,
+   (trn_rsrc_dsc_d,
+    E,
+    m_axis_rx_tvalid_xhdl2_reg,
     m_axis_rx_tlast,
-    reg_tcfg_gnt,
-    tready_thrtl_reg,
     trn_teof,
     trn_tsrc_rdy,
     trn_trem,
+    reg_tcfg_gnt,
+    tready_thrtl_xhdl1_reg,
     trn_in_packet,
     reg_dsc_detect,
     ppm_L1_thrtl,
     lnk_up_thrtl,
     m_axis_rx_tuser,
-    ppm_L1_trig,
     cfg_pm_turnoff_ok_n,
     trn_tcfg_gnt,
     trn_tsof,
+    ppm_L1_trig,
+    m_axis_rx_tdata,
+    m_axis_rx_tkeep,
     Q,
-    \throttle_ctl_pipeline.reg_tdata_reg[63] ,
-    \throttle_ctl_pipeline.reg_tuser_reg[3] ,
-    \throttle_ctl_pipeline.reg_tkeep_reg[7] ,
+    \xhdl12.reg_tuser_reg[3] ,
+    \tbuf_gap_cnt_reg[0] ,
     pipe_userclk2_in,
-    trn_rrem,
     trn_rsrc_dsc,
-    rsrc_rdy_filtered,
+    rsrc_rdy_filtered6_out,
+    trn_rrem,
     trn_reof,
     trn_rsrc_dsc_prev0,
     trn_rsof,
     trn_recrc_err,
     trn_rerrfwd,
-    tx_cfg_gnt,
-    trn_tcfg_req,
-    trn_tdst_rdy,
-    tbuf_av_min_trig,
-    cfg_turnoff_ok,
     s_axis_tx_tlast,
     s_axis_tx_tvalid,
     s_axis_tx_tkeep,
+    tx_cfg_gnt,
+    trn_tdst_rdy,
+    trn_tcfg_req,
+    cfg_turnoff_ok,
+    tbuf_av_min_trig,
     trn_in_packet_reg,
     ppm_L1_thrtl_reg,
     lnk_up_thrtl_reg,
     m_axis_rx_tready,
     dsc_detect,
     out,
-    tcfg_req_trig,
-    tready_thrtl_i_5,
-    cfg_pcie_link_state,
     s_axis_tx_tdata,
     s_axis_tx_tuser,
+    tready_thrtl_xhdl1_i_5,
     trn_tbuf_av,
+    tcfg_req_trig,
+    cfg_pcie_link_state,
     trn_rd,
     trn_rbar_hit,
     cfg_to_turnoff);
-  output [0:0]E;
   output trn_rsrc_dsc_d;
-  output m_axis_rx_tvalid_reg;
-  output [0:0]m_axis_rx_tkeep;
+  output [0:0]E;
+  output m_axis_rx_tvalid_xhdl2_reg;
   output m_axis_rx_tlast;
-  output reg_tcfg_gnt;
-  output tready_thrtl_reg;
   output trn_teof;
   output trn_tsrc_rdy;
   output [0:0]trn_trem;
+  output reg_tcfg_gnt;
+  output tready_thrtl_xhdl1_reg;
   output trn_in_packet;
   output reg_dsc_detect;
   output ppm_L1_thrtl;
   output lnk_up_thrtl;
   output [12:0]m_axis_rx_tuser;
-  output ppm_L1_trig;
   output cfg_pm_turnoff_ok_n;
   output trn_tcfg_gnt;
   output trn_tsof;
+  output ppm_L1_trig;
+  output [63:0]m_axis_rx_tdata;
+  output [1:0]m_axis_rx_tkeep;
   output [63:0]Q;
-  output [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63] ;
-  output [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3] ;
-  input \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
+  output [3:0]\xhdl12.reg_tuser_reg[3] ;
+  input \tbuf_gap_cnt_reg[0] ;
   input pipe_userclk2_in;
-  input [0:0]trn_rrem;
   input trn_rsrc_dsc;
-  input rsrc_rdy_filtered;
+  input rsrc_rdy_filtered6_out;
+  input [0:0]trn_rrem;
   input trn_reof;
   input trn_rsrc_dsc_prev0;
   input trn_rsof;
   input trn_recrc_err;
   input trn_rerrfwd;
-  input tx_cfg_gnt;
-  input trn_tcfg_req;
-  input trn_tdst_rdy;
-  input tbuf_av_min_trig;
-  input cfg_turnoff_ok;
   input s_axis_tx_tlast;
   input s_axis_tx_tvalid;
   input [0:0]s_axis_tx_tkeep;
+  input tx_cfg_gnt;
+  input trn_tdst_rdy;
+  input trn_tcfg_req;
+  input cfg_turnoff_ok;
+  input tbuf_av_min_trig;
   input trn_in_packet_reg;
   input ppm_L1_thrtl_reg;
   input lnk_up_thrtl_reg;
   input m_axis_rx_tready;
   input dsc_detect;
   input out;
-  input tcfg_req_trig;
-  input tready_thrtl_i_5;
-  input [2:0]cfg_pcie_link_state;
   input [63:0]s_axis_tx_tdata;
   input [3:0]s_axis_tx_tuser;
+  input tready_thrtl_xhdl1_i_5;
   input [5:0]trn_tbuf_av;
+  input tcfg_req_trig;
+  input [2:0]cfg_pcie_link_state;
   input [63:0]trn_rd;
   input [6:0]trn_rbar_hit;
   input cfg_to_turnoff;
@@ -3961,11 +4284,12 @@ module pcie_7x_0_axi_basic_top
   wire dsc_detect;
   wire lnk_up_thrtl;
   wire lnk_up_thrtl_reg;
-  wire [0:0]m_axis_rx_tkeep;
+  wire [63:0]m_axis_rx_tdata;
+  wire [1:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [12:0]m_axis_rx_tuser;
-  wire m_axis_rx_tvalid_reg;
+  wire m_axis_rx_tvalid_xhdl2_reg;
   wire out;
   wire pipe_userclk2_in;
   wire ppm_L1_thrtl;
@@ -3973,19 +4297,17 @@ module pcie_7x_0_axi_basic_top
   wire ppm_L1_trig;
   wire reg_dsc_detect;
   wire reg_tcfg_gnt;
-  wire rsrc_rdy_filtered;
+  wire rsrc_rdy_filtered6_out;
   wire [63:0]s_axis_tx_tdata;
   wire [0:0]s_axis_tx_tkeep;
   wire s_axis_tx_tlast;
   wire [3:0]s_axis_tx_tuser;
   wire s_axis_tx_tvalid;
   wire tbuf_av_min_trig;
+  wire \tbuf_gap_cnt_reg[0] ;
   wire tcfg_req_trig;
-  wire [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63] ;
-  wire \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
-  wire [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3] ;
-  wire tready_thrtl_i_5;
-  wire tready_thrtl_reg;
+  wire tready_thrtl_xhdl1_i_5;
+  wire tready_thrtl_xhdl1_reg;
   wire trn_in_packet;
   wire trn_in_packet_reg;
   wire [6:0]trn_rbar_hit;
@@ -4007,23 +4329,24 @@ module pcie_7x_0_axi_basic_top
   wire trn_tsof;
   wire trn_tsrc_rdy;
   wire tx_cfg_gnt;
+  wire [3:0]\xhdl12.reg_tuser_reg[3] ;
 
   pcie_7x_0_axi_basic_rx rx_inst
        (.E(E),
-        .Q(Q),
         .dsc_detect(dsc_detect),
+        .m_axis_rx_tdata(m_axis_rx_tdata),
         .m_axis_rx_tkeep(m_axis_rx_tkeep),
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(m_axis_rx_tuser),
-        .m_axis_rx_tvalid_reg(m_axis_rx_tvalid_reg),
+        .m_axis_rx_tvalid_xhdl2_reg(m_axis_rx_tvalid_xhdl2_reg),
         .pipe_userclk2_in(pipe_userclk2_in),
         .reg_dsc_detect_reg(reg_dsc_detect),
-        .rsrc_rdy_filtered(rsrc_rdy_filtered),
+        .rsrc_rdy_filtered6_out(rsrc_rdy_filtered6_out),
         .trn_in_packet(trn_in_packet),
         .trn_in_packet_reg(trn_in_packet_reg),
         .trn_rbar_hit(trn_rbar_hit),
-        .\trn_rbar_hit_prev_reg[0] (\throttle_ctl_pipeline.reg_tkeep_reg[7] ),
+        .\trn_rbar_hit_prev_reg[0] (\tbuf_gap_cnt_reg[0] ),
         .trn_rd(trn_rd),
         .trn_recrc_err(trn_recrc_err),
         .trn_reof(trn_reof),
@@ -4034,7 +4357,8 @@ module pcie_7x_0_axi_basic_top
         .trn_rsrc_dsc_d(trn_rsrc_dsc_d),
         .trn_rsrc_dsc_prev0(trn_rsrc_dsc_prev0));
   pcie_7x_0_axi_basic_tx tx_inst
-       (.cfg_pcie_link_state(cfg_pcie_link_state),
+       (.Q(Q),
+        .cfg_pcie_link_state(cfg_pcie_link_state),
         .cfg_pm_turnoff_ok_n(cfg_pm_turnoff_ok_n),
         .cfg_to_turnoff(cfg_to_turnoff),
         .cfg_turnoff_ok(cfg_turnoff_ok),
@@ -4052,12 +4376,10 @@ module pcie_7x_0_axi_basic_top
         .s_axis_tx_tuser(s_axis_tx_tuser),
         .s_axis_tx_tvalid(s_axis_tx_tvalid),
         .tbuf_av_min_trig(tbuf_av_min_trig),
+        .\tbuf_gap_cnt_reg[0] (\tbuf_gap_cnt_reg[0] ),
         .tcfg_req_trig(tcfg_req_trig),
-        .\throttle_ctl_pipeline.reg_tdata_reg[63] (\throttle_ctl_pipeline.reg_tdata_reg[63] ),
-        .\throttle_ctl_pipeline.reg_tkeep_reg[7] (\throttle_ctl_pipeline.reg_tkeep_reg[7] ),
-        .\throttle_ctl_pipeline.reg_tuser_reg[3] (\throttle_ctl_pipeline.reg_tuser_reg[3] ),
-        .tready_thrtl_i_5(tready_thrtl_i_5),
-        .tready_thrtl_reg(tready_thrtl_reg),
+        .tready_thrtl_xhdl1_i_5(tready_thrtl_xhdl1_i_5),
+        .tready_thrtl_xhdl1_reg(tready_thrtl_xhdl1_reg),
         .trn_tbuf_av(trn_tbuf_av),
         .trn_tcfg_gnt(trn_tcfg_gnt),
         .trn_tcfg_req(trn_tcfg_req),
@@ -4066,77 +4388,79 @@ module pcie_7x_0_axi_basic_top
         .trn_trem(trn_trem),
         .trn_tsof(trn_tsof),
         .trn_tsrc_rdy(trn_tsrc_rdy),
-        .tx_cfg_gnt(tx_cfg_gnt));
+        .tx_cfg_gnt(tx_cfg_gnt),
+        .\xhdl12.reg_tuser_reg[3] (\xhdl12.reg_tuser_reg[3] ));
 endmodule
 
 module pcie_7x_0_axi_basic_tx
-   (reg_tcfg_gnt,
-    tready_thrtl_reg,
-    trn_teof,
+   (trn_teof,
     trn_tsrc_rdy,
     trn_trem,
+    reg_tcfg_gnt,
+    tready_thrtl_xhdl1_reg,
     ppm_L1_thrtl,
     lnk_up_thrtl,
-    ppm_L1_trig,
     cfg_pm_turnoff_ok_n,
     trn_tcfg_gnt,
     trn_tsof,
-    \throttle_ctl_pipeline.reg_tdata_reg[63] ,
-    \throttle_ctl_pipeline.reg_tuser_reg[3] ,
-    \throttle_ctl_pipeline.reg_tkeep_reg[7] ,
-    tx_cfg_gnt,
-    pipe_userclk2_in,
-    trn_tcfg_req,
-    trn_tdst_rdy,
-    tbuf_av_min_trig,
-    cfg_turnoff_ok,
+    ppm_L1_trig,
+    Q,
+    \xhdl12.reg_tuser_reg[3] ,
+    \tbuf_gap_cnt_reg[0] ,
     s_axis_tx_tlast,
+    pipe_userclk2_in,
     s_axis_tx_tvalid,
     s_axis_tx_tkeep,
+    tx_cfg_gnt,
+    trn_tdst_rdy,
+    trn_tcfg_req,
+    cfg_turnoff_ok,
+    tbuf_av_min_trig,
     ppm_L1_thrtl_reg,
     lnk_up_thrtl_reg,
     out,
-    tcfg_req_trig,
-    tready_thrtl_i_5,
-    cfg_pcie_link_state,
     s_axis_tx_tdata,
     s_axis_tx_tuser,
+    tready_thrtl_xhdl1_i_5,
     trn_tbuf_av,
+    tcfg_req_trig,
+    cfg_pcie_link_state,
     cfg_to_turnoff);
-  output reg_tcfg_gnt;
-  output tready_thrtl_reg;
   output trn_teof;
   output trn_tsrc_rdy;
   output [0:0]trn_trem;
+  output reg_tcfg_gnt;
+  output tready_thrtl_xhdl1_reg;
   output ppm_L1_thrtl;
   output lnk_up_thrtl;
-  output ppm_L1_trig;
   output cfg_pm_turnoff_ok_n;
   output trn_tcfg_gnt;
   output trn_tsof;
-  output [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63] ;
-  output [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3] ;
-  input \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
-  input tx_cfg_gnt;
-  input pipe_userclk2_in;
-  input trn_tcfg_req;
-  input trn_tdst_rdy;
-  input tbuf_av_min_trig;
-  input cfg_turnoff_ok;
+  output ppm_L1_trig;
+  output [63:0]Q;
+  output [3:0]\xhdl12.reg_tuser_reg[3] ;
+  input \tbuf_gap_cnt_reg[0] ;
   input s_axis_tx_tlast;
+  input pipe_userclk2_in;
   input s_axis_tx_tvalid;
   input [0:0]s_axis_tx_tkeep;
+  input tx_cfg_gnt;
+  input trn_tdst_rdy;
+  input trn_tcfg_req;
+  input cfg_turnoff_ok;
+  input tbuf_av_min_trig;
   input ppm_L1_thrtl_reg;
   input lnk_up_thrtl_reg;
   input out;
-  input tcfg_req_trig;
-  input tready_thrtl_i_5;
-  input [2:0]cfg_pcie_link_state;
   input [63:0]s_axis_tx_tdata;
   input [3:0]s_axis_tx_tuser;
+  input tready_thrtl_xhdl1_i_5;
   input [5:0]trn_tbuf_av;
+  input tcfg_req_trig;
+  input [2:0]cfg_pcie_link_state;
   input cfg_to_turnoff;
 
+  wire [63:0]Q;
   wire axi_in_packet;
   wire [2:0]cfg_pcie_link_state;
   wire cfg_pm_turnoff_ok_n;
@@ -4158,13 +4482,10 @@ module pcie_7x_0_axi_basic_tx
   wire [3:0]s_axis_tx_tuser;
   wire s_axis_tx_tvalid;
   wire tbuf_av_min_trig;
+  wire \tbuf_gap_cnt_reg[0] ;
   wire tcfg_req_trig;
-  wire [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63] ;
-  wire \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
-  wire [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3] ;
-  wire \thrtl_ctl_enabled.tx_thrl_ctl_inst_n_4 ;
-  wire tready_thrtl_i_5;
-  wire tready_thrtl_reg;
+  wire tready_thrtl_xhdl1_i_5;
+  wire tready_thrtl_xhdl1_reg;
   wire [5:0]trn_tbuf_av;
   wire trn_tcfg_gnt;
   wire trn_tcfg_req;
@@ -4174,8 +4495,31 @@ module pcie_7x_0_axi_basic_tx
   wire trn_tsof;
   wire trn_tsrc_rdy;
   wire tx_cfg_gnt;
+  wire [3:0]\xhdl12.reg_tuser_reg[3] ;
+  wire \xhdl12.tx_thrl_ctl_inst_n_4 ;
 
-  pcie_7x_0_axi_basic_tx_thrtl_ctl \thrtl_ctl_enabled.tx_thrl_ctl_inst 
+  pcie_7x_0_axi_basic_tx_pipeline tx_pipeline_inst
+       (.Q(Q),
+        .\TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg_0 (tready_thrtl_xhdl1_reg),
+        .axi_in_packet(axi_in_packet),
+        .axi_in_packet_reg_0(\xhdl12.tx_thrl_ctl_inst_n_4 ),
+        .out(out),
+        .pipe_userclk2_in(pipe_userclk2_in),
+        .reg_disable_trn(reg_disable_trn),
+        .reg_tsrc_rdy0(reg_tsrc_rdy0),
+        .s_axis_tx_tdata(s_axis_tx_tdata),
+        .s_axis_tx_tkeep(s_axis_tx_tkeep),
+        .s_axis_tx_tlast(s_axis_tx_tlast),
+        .s_axis_tx_tuser(s_axis_tx_tuser),
+        .s_axis_tx_tvalid(s_axis_tx_tvalid),
+        .trn_tdst_rdy(trn_tdst_rdy),
+        .trn_teof(trn_teof),
+        .trn_trem(trn_trem),
+        .trn_tsof(trn_tsof),
+        .trn_tsrc_rdy(trn_tsrc_rdy),
+        .\xhdl12.reg_tuser_reg[0]_0 (\tbuf_gap_cnt_reg[0] ),
+        .\xhdl12.reg_tuser_reg[3]_0 (\xhdl12.reg_tuser_reg[3] ));
+  pcie_7x_0_axi_basic_tx_thrtl_ctl \xhdl12.tx_thrl_ctl_inst 
        (.axi_in_packet(axi_in_packet),
         .cfg_pcie_link_state(cfg_pcie_link_state),
         .cfg_pm_turnoff_ok_n(cfg_pm_turnoff_ok_n),
@@ -4193,40 +4537,19 @@ module pcie_7x_0_axi_basic_tx
         .reg_tsrc_rdy0(reg_tsrc_rdy0),
         .s_axis_tx_tdata({s_axis_tx_tdata[30:29],s_axis_tx_tdata[15],s_axis_tx_tdata[0]}),
         .s_axis_tx_tlast(s_axis_tx_tlast),
-        .s_axis_tx_tlast_0(\thrtl_ctl_enabled.tx_thrl_ctl_inst_n_4 ),
+        .s_axis_tx_tlast_0(\xhdl12.tx_thrl_ctl_inst_n_4 ),
         .s_axis_tx_tuser(s_axis_tx_tuser[0]),
         .s_axis_tx_tvalid(s_axis_tx_tvalid),
         .tbuf_av_min_trig(tbuf_av_min_trig),
-        .\tbuf_gap_cnt_reg[0]_0 (\throttle_ctl_pipeline.reg_tkeep_reg[7] ),
+        .\tbuf_gap_cnt_reg[0]_0 (\tbuf_gap_cnt_reg[0] ),
         .tcfg_req_trig(tcfg_req_trig),
-        .tready_thrtl_i_5_0(tready_thrtl_i_5),
-        .tready_thrtl_reg_0(tready_thrtl_reg),
+        .tready_thrtl_xhdl1_i_5_0(tready_thrtl_xhdl1_i_5),
+        .tready_thrtl_xhdl1_reg_0(tready_thrtl_xhdl1_reg),
         .trn_tbuf_av(trn_tbuf_av),
         .trn_tcfg_gnt(trn_tcfg_gnt),
         .trn_tcfg_req(trn_tcfg_req),
         .trn_tdst_rdy(trn_tdst_rdy),
         .tx_cfg_gnt(tx_cfg_gnt));
-  pcie_7x_0_axi_basic_tx_pipeline tx_pipeline_inst
-       (.axi_in_packet(axi_in_packet),
-        .axi_in_packet_reg_0(\thrtl_ctl_enabled.tx_thrl_ctl_inst_n_4 ),
-        .out(out),
-        .pipe_userclk2_in(pipe_userclk2_in),
-        .reg_disable_trn(reg_disable_trn),
-        .reg_tsrc_rdy0(reg_tsrc_rdy0),
-        .s_axis_tx_tdata(s_axis_tx_tdata),
-        .s_axis_tx_tkeep(s_axis_tx_tkeep),
-        .s_axis_tx_tlast(s_axis_tx_tlast),
-        .s_axis_tx_tuser(s_axis_tx_tuser),
-        .s_axis_tx_tvalid(s_axis_tx_tvalid),
-        .\throttle_ctl_pipeline.reg_tdata_reg[63]_0 (\throttle_ctl_pipeline.reg_tdata_reg[63] ),
-        .\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 (\throttle_ctl_pipeline.reg_tkeep_reg[7] ),
-        .\throttle_ctl_pipeline.reg_tuser_reg[3]_0 (\throttle_ctl_pipeline.reg_tuser_reg[3] ),
-        .\thrtl_ctl_trn_flush.reg_disable_trn_reg_0 (tready_thrtl_reg),
-        .trn_tdst_rdy(trn_tdst_rdy),
-        .trn_teof(trn_teof),
-        .trn_trem(trn_trem),
-        .trn_tsof(trn_tsof),
-        .trn_tsrc_rdy(trn_tsrc_rdy));
 endmodule
 
 module pcie_7x_0_axi_basic_tx_pipeline
@@ -4236,9 +4559,9 @@ module pcie_7x_0_axi_basic_tx_pipeline
     axi_in_packet,
     reg_disable_trn,
     trn_tsof,
-    \throttle_ctl_pipeline.reg_tdata_reg[63]_0 ,
-    \throttle_ctl_pipeline.reg_tuser_reg[3]_0 ,
-    \throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ,
+    Q,
+    \xhdl12.reg_tuser_reg[3]_0 ,
+    \xhdl12.reg_tuser_reg[0]_0 ,
     s_axis_tx_tlast,
     pipe_userclk2_in,
     reg_tsrc_rdy0,
@@ -4246,7 +4569,7 @@ module pcie_7x_0_axi_basic_tx_pipeline
     s_axis_tx_tkeep,
     axi_in_packet_reg_0,
     out,
-    \thrtl_ctl_trn_flush.reg_disable_trn_reg_0 ,
+    \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg_0 ,
     trn_tdst_rdy,
     s_axis_tx_tdata,
     s_axis_tx_tuser);
@@ -4256,9 +4579,9 @@ module pcie_7x_0_axi_basic_tx_pipeline
   output axi_in_packet;
   output reg_disable_trn;
   output trn_tsof;
-  output [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63]_0 ;
-  output [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3]_0 ;
-  input \throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ;
+  output [63:0]Q;
+  output [3:0]\xhdl12.reg_tuser_reg[3]_0 ;
+  input \xhdl12.reg_tuser_reg[0]_0 ;
   input s_axis_tx_tlast;
   input pipe_userclk2_in;
   input reg_tsrc_rdy0;
@@ -4266,11 +4589,14 @@ module pcie_7x_0_axi_basic_tx_pipeline
   input [0:0]s_axis_tx_tkeep;
   input axi_in_packet_reg_0;
   input out;
-  input \thrtl_ctl_trn_flush.reg_disable_trn_reg_0 ;
+  input \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg_0 ;
   input trn_tdst_rdy;
   input [63:0]s_axis_tx_tdata;
   input [3:0]s_axis_tx_tuser;
 
+  wire [63:0]Q;
+  wire \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_i_1_n_0 ;
+  wire \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg_0 ;
   wire axi_in_packet;
   wire axi_in_packet_reg_0;
   wire out;
@@ -4283,11 +4609,6 @@ module pcie_7x_0_axi_basic_tx_pipeline
   wire s_axis_tx_tlast;
   wire [3:0]s_axis_tx_tuser;
   wire s_axis_tx_tvalid;
-  wire [63:0]\throttle_ctl_pipeline.reg_tdata_reg[63]_0 ;
-  wire \throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ;
-  wire [3:0]\throttle_ctl_pipeline.reg_tuser_reg[3]_0 ;
-  wire \thrtl_ctl_trn_flush.reg_disable_trn_i_1_n_0 ;
-  wire \thrtl_ctl_trn_flush.reg_disable_trn_reg_0 ;
   wire trn_in_packet;
   wire trn_in_packet_i_1__0_n_0;
   wire trn_tdst_rdy;
@@ -4295,467 +4616,41 @@ module pcie_7x_0_axi_basic_tx_pipeline
   wire [0:0]trn_trem;
   wire trn_tsof;
   wire trn_tsrc_rdy;
+  wire \xhdl12.reg_tuser_reg[0]_0 ;
+  wire [3:0]\xhdl12.reg_tuser_reg[3]_0 ;
 
-  FDRE axi_in_packet_reg
+  LUT6 #(
+    .INIT(64'h0FFFFFFF04444444)) 
+    \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_i_1 
+       (.I0(out),
+        .I1(axi_in_packet),
+        .I2(\TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg_0 ),
+        .I3(s_axis_tx_tlast),
+        .I4(s_axis_tx_tvalid),
+        .I5(reg_disable_trn),
+        .O(\TNRTL_CTL_TRN_FLUSH.reg_disable_trn_i_1_n_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \TNRTL_CTL_TRN_FLUSH.reg_disable_trn_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(\TNRTL_CTL_TRN_FLUSH.reg_disable_trn_i_1_n_0 ),
+        .Q(reg_disable_trn),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    axi_in_packet_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(axi_in_packet_reg_0),
         .Q(axi_in_packet),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
   LUT2 #(
     .INIT(4'h2)) 
     pcie_block_i_i_31
        (.I0(reg_tvalid),
         .I1(trn_in_packet),
         .O(trn_tsof));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[0] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[0]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [0]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[10] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[10]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [10]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[11] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[11]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [11]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[12] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[12]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [12]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[13] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[13]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [13]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[14] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[14]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [14]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[15] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[15]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [15]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[16] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[16]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [16]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[17] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[17]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [17]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[18] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[18]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [18]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[19] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[19]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [19]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[1] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[1]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [1]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[20] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[20]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [20]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[21] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[21]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [21]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[22] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[22]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [22]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[23] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[23]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [23]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[24] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[24]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [24]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[25] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[25]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [25]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[26] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[26]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [26]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[27] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[27]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [27]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[28] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[28]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [28]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[29] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[29]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [29]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[2] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[2]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [2]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[30] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[30]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [30]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[31] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[31]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [31]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[32] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[32]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [32]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[33] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[33]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [33]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[34] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[34]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [34]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[35] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[35]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [35]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[36] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[36]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [36]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[37] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[37]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [37]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[38] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[38]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [38]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[39] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[39]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [39]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[3] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[3]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [3]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[40] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[40]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [40]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[41] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[41]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [41]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[42] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[42]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [42]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[43] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[43]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [43]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[44] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[44]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [44]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[45] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[45]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [45]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[46] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[46]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [46]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[47] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[47]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [47]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[48] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[48]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [48]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[49] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[49]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [49]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[4] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[4]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [4]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[50] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[50]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [50]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[51] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[51]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [51]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[52] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[52]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [52]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[53] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[53]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [53]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[54] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[54]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [54]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[55] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[55]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [55]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[56] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[56]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [56]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[57] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[57]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [57]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[58] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[58]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [58]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[59] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[59]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [59]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[5] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[5]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [5]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[60] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[60]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [60]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[61] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[61]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [61]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[62] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[62]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [62]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[63] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[63]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [63]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[6] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[6]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [6]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[7] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[7]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [7]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[8] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[8]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [8]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tdata_reg[9] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tdata[9]),
-        .Q(\throttle_ctl_pipeline.reg_tdata_reg[63]_0 [9]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tkeep_reg[7] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tkeep),
-        .Q(trn_trem),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tlast_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tlast),
-        .Q(trn_teof),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tsrc_rdy_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(reg_tsrc_rdy0),
-        .Q(trn_tsrc_rdy),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tuser_reg[0] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tuser[0]),
-        .Q(\throttle_ctl_pipeline.reg_tuser_reg[3]_0 [0]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tuser_reg[1] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tuser[1]),
-        .Q(\throttle_ctl_pipeline.reg_tuser_reg[3]_0 [1]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tuser_reg[2] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tuser[2]),
-        .Q(\throttle_ctl_pipeline.reg_tuser_reg[3]_0 [2]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tuser_reg[3] 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tuser[3]),
-        .Q(\throttle_ctl_pipeline.reg_tuser_reg[3]_0 [3]),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  FDRE \throttle_ctl_pipeline.reg_tvalid_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(s_axis_tx_tvalid),
-        .Q(reg_tvalid),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
-  LUT6 #(
-    .INIT(64'h0FFFFFFF04444444)) 
-    \thrtl_ctl_trn_flush.reg_disable_trn_i_1 
-       (.I0(out),
-        .I1(axi_in_packet),
-        .I2(\thrtl_ctl_trn_flush.reg_disable_trn_reg_0 ),
-        .I3(s_axis_tx_tvalid),
-        .I4(s_axis_tx_tlast),
-        .I5(reg_disable_trn),
-        .O(\thrtl_ctl_trn_flush.reg_disable_trn_i_1_n_0 ));
-  FDRE \thrtl_ctl_trn_flush.reg_disable_trn_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(\thrtl_ctl_trn_flush.reg_disable_trn_i_1_n_0 ),
-        .Q(reg_disable_trn),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
   LUT6 #(
     .INIT(64'h0000F088F000F000)) 
     trn_in_packet_i_1__0
@@ -4766,78 +4661,657 @@ module pcie_7x_0_axi_basic_tx_pipeline
         .I4(trn_teof),
         .I5(trn_tsrc_rdy),
         .O(trn_in_packet_i_1__0_n_0));
-  FDRE trn_in_packet_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_in_packet_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_in_packet_i_1__0_n_0),
         .Q(trn_in_packet),
-        .R(\throttle_ctl_pipeline.reg_tkeep_reg[7]_0 ));
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[0] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[0]),
+        .Q(Q[0]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[10] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[10]),
+        .Q(Q[10]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[11] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[11]),
+        .Q(Q[11]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[12] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[12]),
+        .Q(Q[12]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[13] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[13]),
+        .Q(Q[13]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[14] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[14]),
+        .Q(Q[14]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[15] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[15]),
+        .Q(Q[15]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[16] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[16]),
+        .Q(Q[16]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[17] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[17]),
+        .Q(Q[17]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[18] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[18]),
+        .Q(Q[18]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[19] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[19]),
+        .Q(Q[19]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[1] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[1]),
+        .Q(Q[1]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[20] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[20]),
+        .Q(Q[20]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[21] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[21]),
+        .Q(Q[21]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[22] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[22]),
+        .Q(Q[22]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[23] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[23]),
+        .Q(Q[23]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[24] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[24]),
+        .Q(Q[24]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[25] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[25]),
+        .Q(Q[25]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[26] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[26]),
+        .Q(Q[26]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[27] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[27]),
+        .Q(Q[27]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[28] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[28]),
+        .Q(Q[28]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[29] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[29]),
+        .Q(Q[29]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[2] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[2]),
+        .Q(Q[2]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[30] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[30]),
+        .Q(Q[30]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[31] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[31]),
+        .Q(Q[31]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[32] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[32]),
+        .Q(Q[32]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[33] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[33]),
+        .Q(Q[33]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[34] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[34]),
+        .Q(Q[34]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[35] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[35]),
+        .Q(Q[35]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[36] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[36]),
+        .Q(Q[36]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[37] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[37]),
+        .Q(Q[37]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[38] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[38]),
+        .Q(Q[38]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[39] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[39]),
+        .Q(Q[39]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[3] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[3]),
+        .Q(Q[3]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[40] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[40]),
+        .Q(Q[40]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[41] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[41]),
+        .Q(Q[41]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[42] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[42]),
+        .Q(Q[42]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[43] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[43]),
+        .Q(Q[43]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[44] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[44]),
+        .Q(Q[44]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[45] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[45]),
+        .Q(Q[45]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[46] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[46]),
+        .Q(Q[46]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[47] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[47]),
+        .Q(Q[47]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[48] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[48]),
+        .Q(Q[48]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[49] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[49]),
+        .Q(Q[49]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[4] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[4]),
+        .Q(Q[4]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[50] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[50]),
+        .Q(Q[50]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[51] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[51]),
+        .Q(Q[51]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[52] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[52]),
+        .Q(Q[52]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[53] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[53]),
+        .Q(Q[53]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[54] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[54]),
+        .Q(Q[54]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[55] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[55]),
+        .Q(Q[55]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[56] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[56]),
+        .Q(Q[56]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[57] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[57]),
+        .Q(Q[57]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[58] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[58]),
+        .Q(Q[58]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[59] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[59]),
+        .Q(Q[59]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[5] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[5]),
+        .Q(Q[5]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[60] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[60]),
+        .Q(Q[60]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[61] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[61]),
+        .Q(Q[61]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[62] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[62]),
+        .Q(Q[62]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[63] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[63]),
+        .Q(Q[63]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[6] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[6]),
+        .Q(Q[6]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[7] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[7]),
+        .Q(Q[7]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[8] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[8]),
+        .Q(Q[8]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tdata_reg[9] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tdata[9]),
+        .Q(Q[9]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tkeep_reg[7] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tkeep),
+        .Q(trn_trem),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tlast_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tlast),
+        .Q(trn_teof),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tsrc_rdy_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(reg_tsrc_rdy0),
+        .Q(trn_tsrc_rdy),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tuser_reg[0] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tuser[0]),
+        .Q(\xhdl12.reg_tuser_reg[3]_0 [0]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tuser_reg[1] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tuser[1]),
+        .Q(\xhdl12.reg_tuser_reg[3]_0 [1]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tuser_reg[2] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tuser[2]),
+        .Q(\xhdl12.reg_tuser_reg[3]_0 [2]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tuser_reg[3] 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tuser[3]),
+        .Q(\xhdl12.reg_tuser_reg[3]_0 [3]),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.reg_tvalid_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(s_axis_tx_tvalid),
+        .Q(reg_tvalid),
+        .R(\xhdl12.reg_tuser_reg[0]_0 ));
 endmodule
 
 module pcie_7x_0_axi_basic_tx_thrtl_ctl
    (reg_tcfg_gnt,
-    tready_thrtl_reg_0,
+    tready_thrtl_xhdl1_reg_0,
     ppm_L1_thrtl,
     lnk_up_thrtl,
     s_axis_tx_tlast_0,
-    ppm_L1_trig,
+    reg_tsrc_rdy0,
     cfg_pm_turnoff_ok_n,
     trn_tcfg_gnt,
-    reg_tsrc_rdy0,
+    ppm_L1_trig,
     \tbuf_gap_cnt_reg[0]_0 ,
     tx_cfg_gnt,
     pipe_userclk2_in,
-    trn_tcfg_req,
     trn_tdst_rdy,
-    tbuf_av_min_trig,
+    trn_tcfg_req,
     cfg_turnoff_ok,
+    tbuf_av_min_trig,
     ppm_L1_thrtl_reg_0,
     lnk_up_thrtl_reg_0,
-    s_axis_tx_tlast,
     s_axis_tx_tvalid,
+    s_axis_tx_tlast,
     axi_in_packet,
-    out,
-    tcfg_req_trig,
-    tready_thrtl_i_5_0,
-    cfg_pcie_link_state,
     s_axis_tx_tdata,
     s_axis_tx_tuser,
+    out,
     reg_disable_trn,
+    tready_thrtl_xhdl1_i_5_0,
     trn_tbuf_av,
+    tcfg_req_trig,
+    cfg_pcie_link_state,
     cfg_to_turnoff);
   output reg_tcfg_gnt;
-  output tready_thrtl_reg_0;
+  output tready_thrtl_xhdl1_reg_0;
   output ppm_L1_thrtl;
   output lnk_up_thrtl;
   output s_axis_tx_tlast_0;
-  output ppm_L1_trig;
+  output reg_tsrc_rdy0;
   output cfg_pm_turnoff_ok_n;
   output trn_tcfg_gnt;
-  output reg_tsrc_rdy0;
+  output ppm_L1_trig;
   input \tbuf_gap_cnt_reg[0]_0 ;
   input tx_cfg_gnt;
   input pipe_userclk2_in;
-  input trn_tcfg_req;
   input trn_tdst_rdy;
-  input tbuf_av_min_trig;
+  input trn_tcfg_req;
   input cfg_turnoff_ok;
+  input tbuf_av_min_trig;
   input ppm_L1_thrtl_reg_0;
   input lnk_up_thrtl_reg_0;
-  input s_axis_tx_tlast;
   input s_axis_tx_tvalid;
+  input s_axis_tx_tlast;
   input axi_in_packet;
-  input out;
-  input tcfg_req_trig;
-  input tready_thrtl_i_5_0;
-  input [2:0]cfg_pcie_link_state;
   input [3:0]s_axis_tx_tdata;
   input [0:0]s_axis_tx_tuser;
+  input out;
   input reg_disable_trn;
+  input tready_thrtl_xhdl1_i_5_0;
   input [5:0]trn_tbuf_av;
+  input tcfg_req_trig;
+  input [2:0]cfg_pcie_link_state;
   input cfg_to_turnoff;
 
-  wire \L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ;
-  wire \L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff_i_1_n_0 ;
+  wire CUR_STATE_A;
+  wire CUR_STATE_A_i_2_n_0;
+  wire NEXT_STATE_A;
   wire axi_in_packet;
   wire [2:0]cfg_pcie_link_state;
   wire [2:0]cfg_pcie_link_state_d;
@@ -4846,16 +5320,10 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   wire cfg_turnoff_ok;
   wire cfg_turnoff_ok_pending;
   wire cfg_turnoff_ok_pending_i_1_n_0;
-  wire cur_state;
-  wire cur_state_i_2_n_0;
-  wire \ecrc_pause_enabled.reg_tx_ecrc_pkt ;
-  wire \ecrc_pause_enabled.reg_tx_ecrc_pkt021_out ;
-  wire \ecrc_pause_enabled.reg_tx_ecrc_pkt_i_1_n_0 ;
+  wire gtOp;
   wire lnk_up_thrtl;
   wire lnk_up_thrtl_reg_0;
-  wire next_state;
   wire out;
-  wire p_2_in;
   wire pcie_block_i_i_38_n_0;
   wire pipe_userclk2_in;
   wire ppm_L1_thrtl;
@@ -4863,13 +5331,16 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   wire ppm_L1_trig;
   wire ppm_L23_thrtl;
   wire ppm_L23_thrtl_i_1_n_0;
-  wire ppm_L23_trig;
+  wire ppm_L23_trig16_out;
   wire reg_axi_in_pkt;
   wire reg_axi_in_pkt_i_1_n_0;
   wire reg_disable_trn;
   wire reg_tcfg_gnt;
+  wire reg_to_turnoff;
   wire reg_tsrc_rdy0;
   wire reg_turnoff_ok;
+  wire reg_tx_ecrc_pkt;
+  wire reg_tx_ecrc_pkt08_out;
   wire [3:0]s_axis_tx_tdata;
   wire s_axis_tx_tlast;
   wire s_axis_tx_tlast_0;
@@ -4878,7 +5349,7 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   wire [5:0]tbuf_av_d;
   wire tbuf_av_gap_thrtl;
   wire tbuf_av_gap_thrtl_i_1_n_0;
-  wire tbuf_av_gap_trig;
+  wire tbuf_av_gap_trig0_out;
   wire tbuf_av_min_thrtl;
   wire tbuf_av_min_trig;
   wire \tbuf_gap_cnt[0]_i_1_n_0 ;
@@ -4892,16 +5363,16 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   wire tcfg_req_thrtl;
   wire tcfg_req_thrtl_i_1_n_0;
   wire tcfg_req_trig;
-  wire tready_thrtl0;
-  wire tready_thrtl_i_10_n_0;
-  wire tready_thrtl_i_12_n_0;
-  wire tready_thrtl_i_2_n_0;
-  wire tready_thrtl_i_3_n_0;
-  wire tready_thrtl_i_4_n_0;
-  wire tready_thrtl_i_5_0;
-  wire tready_thrtl_i_6_n_0;
-  wire tready_thrtl_i_7_n_0;
-  wire tready_thrtl_reg_0;
+  wire tready_thrtl_xhdl10;
+  wire tready_thrtl_xhdl1_i_10_n_0;
+  wire tready_thrtl_xhdl1_i_12_n_0;
+  wire tready_thrtl_xhdl1_i_2_n_0;
+  wire tready_thrtl_xhdl1_i_3_n_0;
+  wire tready_thrtl_xhdl1_i_4_n_0;
+  wire tready_thrtl_xhdl1_i_5_0;
+  wire tready_thrtl_xhdl1_i_6_n_0;
+  wire tready_thrtl_xhdl1_i_7_n_0;
+  wire tready_thrtl_xhdl1_reg_0;
   wire [5:0]trn_tbuf_av;
   wire trn_tcfg_gnt;
   wire trn_tcfg_req;
@@ -4909,153 +5380,121 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   wire trn_tdst_rdy;
   wire trn_tdst_rdy_d;
   wire tx_cfg_gnt;
+  wire \xhdl12.xhdl14.xhdl15.reg_to_turnoff_i_1_n_0 ;
+  wire \xhdl17.reg_tx_ecrc_pkt_i_1_n_0 ;
 
-  FDRE \L23_thrtl_ep.reg_turnoff_ok_reg 
+  LUT6 #(
+    .INIT(64'h5455445554555555)) 
+    CUR_STATE_A_i_1
+       (.I0(CUR_STATE_A_i_2_n_0),
+        .I1(CUR_STATE_A),
+        .I2(s_axis_tx_tlast),
+        .I3(tready_thrtl_xhdl1_reg_0),
+        .I4(s_axis_tx_tvalid),
+        .I5(reg_axi_in_pkt),
+        .O(NEXT_STATE_A));
+  LUT6 #(
+    .INIT(64'h0000000000000001)) 
+    CUR_STATE_A_i_2
+       (.I0(tbuf_av_min_thrtl),
+        .I1(ppm_L1_thrtl),
+        .I2(tbuf_av_gap_thrtl),
+        .I3(tcfg_req_thrtl),
+        .I4(ppm_L23_thrtl),
+        .I5(lnk_up_thrtl),
+        .O(CUR_STATE_A_i_2_n_0));
+  FDSE CUR_STATE_A_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(cfg_turnoff_ok),
-        .Q(reg_turnoff_ok),
-        .R(\tbuf_gap_cnt_reg[0]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair114" *) 
-  LUT2 #(
-    .INIT(4'hE)) 
-    \L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff_i_1 
-       (.I0(cfg_to_turnoff),
-        .I1(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ),
-        .O(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff_i_1_n_0 ));
-  FDRE \L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff_i_1_n_0 ),
-        .Q(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ),
-        .R(\tbuf_gap_cnt_reg[0]_0 ));
+        .D(NEXT_STATE_A),
+        .Q(CUR_STATE_A),
+        .S(\tbuf_gap_cnt_reg[0]_0 ));
   LUT4 #(
     .INIT(16'h7F40)) 
     axi_in_packet_i_1
        (.I0(s_axis_tx_tlast),
         .I1(s_axis_tx_tvalid),
-        .I2(tready_thrtl_reg_0),
+        .I2(tready_thrtl_xhdl1_reg_0),
         .I3(axi_in_packet),
         .O(s_axis_tx_tlast_0));
-  FDRE \cfg_pcie_link_state_d_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \cfg_pcie_link_state_d_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(cfg_pcie_link_state[0]),
         .Q(cfg_pcie_link_state_d[0]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \cfg_pcie_link_state_d_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \cfg_pcie_link_state_d_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(cfg_pcie_link_state[1]),
         .Q(cfg_pcie_link_state_d[1]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \cfg_pcie_link_state_d_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \cfg_pcie_link_state_d_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(cfg_pcie_link_state[2]),
         .Q(cfg_pcie_link_state_d[2]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair111" *) 
+  (* SOFT_HLUTNM = "soft_lutpair106" *) 
   LUT5 #(
-    .INIT(32'h75553000)) 
+    .INIT(32'hFF404040)) 
     cfg_turnoff_ok_pending_i_1
-       (.I0(cfg_pm_turnoff_ok_n),
-        .I1(ppm_L23_thrtl),
-        .I2(reg_turnoff_ok),
-        .I3(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ),
+       (.I0(ppm_L23_thrtl),
+        .I1(reg_turnoff_ok),
+        .I2(reg_to_turnoff),
+        .I3(cfg_pm_turnoff_ok_n),
         .I4(cfg_turnoff_ok_pending),
         .O(cfg_turnoff_ok_pending_i_1_n_0));
-  FDRE cfg_turnoff_ok_pending_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    cfg_turnoff_ok_pending_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(cfg_turnoff_ok_pending_i_1_n_0),
         .Q(cfg_turnoff_ok_pending),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  LUT6 #(
-    .INIT(64'h5455445554555555)) 
-    cur_state_i_1__0
-       (.I0(cur_state_i_2_n_0),
-        .I1(cur_state),
-        .I2(s_axis_tx_tlast),
-        .I3(tready_thrtl_reg_0),
-        .I4(s_axis_tx_tvalid),
-        .I5(reg_axi_in_pkt),
-        .O(next_state));
-  LUT6 #(
-    .INIT(64'h0000000000000001)) 
-    cur_state_i_2
-       (.I0(ppm_L1_thrtl),
-        .I1(lnk_up_thrtl),
-        .I2(tcfg_req_thrtl),
-        .I3(ppm_L23_thrtl),
-        .I4(tbuf_av_gap_thrtl),
-        .I5(tbuf_av_min_thrtl),
-        .O(cur_state_i_2_n_0));
-  FDSE cur_state_reg
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(next_state),
-        .Q(cur_state),
-        .S(\tbuf_gap_cnt_reg[0]_0 ));
-  LUT5 #(
-    .INIT(32'hBFFFAAAA)) 
-    \ecrc_pause_enabled.reg_tx_ecrc_pkt_i_1 
-       (.I0(\ecrc_pause_enabled.reg_tx_ecrc_pkt021_out ),
-        .I1(tready_thrtl_reg_0),
-        .I2(s_axis_tx_tvalid),
-        .I3(s_axis_tx_tlast),
-        .I4(\ecrc_pause_enabled.reg_tx_ecrc_pkt ),
-        .O(\ecrc_pause_enabled.reg_tx_ecrc_pkt_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair112" *) 
-  LUT5 #(
-    .INIT(32'h00001444)) 
-    \ecrc_pause_enabled.reg_tx_ecrc_pkt_i_2 
-       (.I0(tready_thrtl_i_7_n_0),
-        .I1(s_axis_tx_tdata[2]),
-        .I2(s_axis_tx_tdata[3]),
-        .I3(s_axis_tx_tdata[0]),
-        .I4(s_axis_tx_tlast),
-        .O(\ecrc_pause_enabled.reg_tx_ecrc_pkt021_out ));
-  FDRE \ecrc_pause_enabled.reg_tx_ecrc_pkt_reg 
-       (.C(pipe_userclk2_in),
-        .CE(1'b1),
-        .D(\ecrc_pause_enabled.reg_tx_ecrc_pkt_i_1_n_0 ),
-        .Q(\ecrc_pause_enabled.reg_tx_ecrc_pkt ),
-        .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDSE lnk_up_thrtl_reg
+  FDSE #(
+    .INIT(1'b0)) 
+    lnk_up_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(lnk_up_thrtl_reg_0),
         .Q(lnk_up_thrtl),
         .S(\tbuf_gap_cnt_reg[0]_0 ));
   LUT6 #(
-    .INIT(64'h20202020A0AFA0A0)) 
+    .INIT(64'hDFDFDFDF5F505F5F)) 
     pcie_block_i_i_26
        (.I0(cfg_turnoff_ok_pending),
         .I1(tcfg_gnt_pending),
-        .I2(cur_state),
+        .I2(CUR_STATE_A),
         .I3(pcie_block_i_i_38_n_0),
         .I4(ppm_L23_thrtl),
         .I5(tcfg_req_thrtl),
         .O(cfg_pm_turnoff_ok_n));
-  (* SOFT_HLUTNM = "soft_lutpair113" *) 
+  (* SOFT_HLUTNM = "soft_lutpair108" *) 
   LUT4 #(
     .INIT(16'hA202)) 
     pcie_block_i_i_30
        (.I0(tcfg_req_thrtl),
         .I1(pcie_block_i_i_38_n_0),
-        .I2(cur_state),
+        .I2(CUR_STATE_A),
         .I3(tcfg_gnt_pending),
         .O(trn_tcfg_gnt));
-  (* SOFT_HLUTNM = "soft_lutpair109" *) 
+  (* SOFT_HLUTNM = "soft_lutpair104" *) 
   LUT5 #(
     .INIT(32'hFFFF20E0)) 
     pcie_block_i_i_38
        (.I0(reg_axi_in_pkt),
         .I1(s_axis_tx_tvalid),
-        .I2(tready_thrtl_reg_0),
+        .I2(tready_thrtl_xhdl1_reg_0),
         .I3(s_axis_tx_tlast),
-        .I4(cur_state_i_2_n_0),
+        .I4(CUR_STATE_A_i_2_n_0),
         .O(pcie_block_i_i_38_n_0));
   LUT6 #(
     .INIT(64'h0000010000000000)) 
@@ -5067,21 +5506,25 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
         .I4(cfg_pcie_link_state[1]),
         .I5(cfg_pcie_link_state[2]),
         .O(ppm_L1_trig));
-  FDRE ppm_L1_thrtl_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    ppm_L1_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(ppm_L1_thrtl_reg_0),
         .Q(ppm_L1_thrtl),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair111" *) 
+  (* SOFT_HLUTNM = "soft_lutpair106" *) 
   LUT3 #(
     .INIT(8'hF8)) 
     ppm_L23_thrtl_i_1
-       (.I0(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ),
+       (.I0(reg_to_turnoff),
         .I1(reg_turnoff_ok),
         .I2(ppm_L23_thrtl),
         .O(ppm_L23_thrtl_i_1_n_0));
-  FDRE ppm_L23_thrtl_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    ppm_L23_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(ppm_L23_thrtl_i_1_n_0),
@@ -5091,54 +5534,70 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
     .INIT(32'h00005F40)) 
     reg_axi_in_pkt_i_1
        (.I0(s_axis_tx_tlast),
-        .I1(tready_thrtl_reg_0),
+        .I1(tready_thrtl_xhdl1_reg_0),
         .I2(s_axis_tx_tvalid),
         .I3(reg_axi_in_pkt),
         .I4(\tbuf_gap_cnt_reg[0]_0 ),
         .O(reg_axi_in_pkt_i_1_n_0));
-  FDRE reg_axi_in_pkt_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    reg_axi_in_pkt_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(reg_axi_in_pkt_i_1_n_0),
         .Q(reg_axi_in_pkt),
         .R(1'b0));
-  FDRE reg_tcfg_gnt_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    reg_tcfg_gnt_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(tx_cfg_gnt),
         .Q(reg_tcfg_gnt),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[0]),
         .Q(tbuf_av_d[0]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[1]),
         .Q(tbuf_av_d[1]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[2]),
         .Q(tbuf_av_d[2]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[3] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[3]),
         .Q(tbuf_av_d[3]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[4] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[4]),
         .Q(tbuf_av_d[4]),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE \tbuf_av_d_reg[5] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_av_d_reg[5] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tbuf_av[5]),
@@ -5147,30 +5606,36 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
   LUT3 #(
     .INIT(8'hEA)) 
     tbuf_av_gap_thrtl_i_1
-       (.I0(tbuf_av_gap_trig),
+       (.I0(tbuf_av_gap_trig0_out),
         .I1(\tbuf_gap_cnt_reg_n_0_[0] ),
         .I2(tbuf_av_gap_thrtl),
         .O(tbuf_av_gap_thrtl_i_1_n_0));
-  FDRE tbuf_av_gap_thrtl_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    tbuf_av_gap_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(tbuf_av_gap_thrtl_i_1_n_0),
         .Q(tbuf_av_gap_thrtl),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE tbuf_av_min_thrtl_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    tbuf_av_min_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(tbuf_av_min_trig),
         .Q(tbuf_av_min_thrtl),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair113" *) 
+  (* SOFT_HLUTNM = "soft_lutpair108" *) 
   LUT2 #(
     .INIT(4'h7)) 
     \tbuf_gap_cnt[0]_i_1 
        (.I0(tbuf_av_gap_thrtl),
-        .I1(cur_state),
+        .I1(CUR_STATE_A),
         .O(\tbuf_gap_cnt[0]_i_1_n_0 ));
-  FDRE \tbuf_gap_cnt_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tbuf_gap_cnt_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(\tbuf_gap_cnt[0]_i_1_n_0 ),
@@ -5182,11 +5647,13 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
        (.I0(trn_tcfg_req_d),
         .I1(trn_tcfg_req),
         .I2(tcfg_gnt_pending),
-        .I3(cur_state),
+        .I3(CUR_STATE_A),
         .I4(pcie_block_i_i_38_n_0),
         .I5(tcfg_req_thrtl),
         .O(tcfg_gnt_pending_i_1_n_0));
-  FDRE tcfg_gnt_pending_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    tcfg_gnt_pending_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(tcfg_gnt_pending_i_1_n_0),
@@ -5202,7 +5669,7 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
         .I4(tcfg_req_cnt[0]),
         .I5(\tbuf_gap_cnt_reg[0]_0 ),
         .O(\tcfg_req_cnt[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair110" *) 
+  (* SOFT_HLUTNM = "soft_lutpair105" *) 
   LUT5 #(
     .INIT(32'hFFFF88F8)) 
     \tcfg_req_cnt[1]_i_1 
@@ -5212,13 +5679,17 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
         .I3(trn_tcfg_req_d),
         .I4(tcfg_gnt_pending),
         .O(\tcfg_req_cnt[1]_i_1_n_0 ));
-  FDRE \tcfg_req_cnt_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tcfg_req_cnt_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(\tcfg_req_cnt[0]_i_1_n_0 ),
         .Q(tcfg_req_cnt[0]),
         .R(1'b0));
-  FDRE \tcfg_req_cnt_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \tcfg_req_cnt_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(\tcfg_req_cnt[1]_i_1_n_0 ),
@@ -5231,138 +5702,196 @@ module pcie_7x_0_axi_basic_tx_thrtl_ctl
         .I1(trn_tcfg_req),
         .I2(trn_tdst_rdy_d),
         .I3(trn_tdst_rdy),
-        .I4(p_2_in),
+        .I4(gtOp),
         .I5(tcfg_req_thrtl),
         .O(tcfg_req_thrtl_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair110" *) 
+  (* SOFT_HLUTNM = "soft_lutpair105" *) 
   LUT2 #(
     .INIT(4'hE)) 
     tcfg_req_thrtl_i_2
        (.I0(tcfg_req_cnt[1]),
         .I1(tcfg_req_cnt[0]),
-        .O(p_2_in));
-  FDRE tcfg_req_thrtl_reg
+        .O(gtOp));
+  FDRE #(
+    .INIT(1'b0)) 
+    tcfg_req_thrtl_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(tcfg_req_thrtl_i_1_n_0),
         .Q(tcfg_req_thrtl),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  LUT4 #(
-    .INIT(16'h0080)) 
-    \throttle_ctl_pipeline.reg_tsrc_rdy_i_1 
-       (.I0(tready_thrtl_reg_0),
-        .I1(s_axis_tx_tvalid),
-        .I2(out),
-        .I3(reg_disable_trn),
-        .O(reg_tsrc_rdy0));
   LUT6 #(
     .INIT(64'hF1F1F1F10000F100)) 
-    tready_thrtl_i_1
-       (.I0(\ecrc_pause_enabled.reg_tx_ecrc_pkt ),
-        .I1(tready_thrtl_i_2_n_0),
-        .I2(tready_thrtl_i_3_n_0),
-        .I3(tready_thrtl_i_4_n_0),
-        .I4(tbuf_av_gap_trig),
-        .I5(tready_thrtl_i_6_n_0),
-        .O(tready_thrtl0));
+    tready_thrtl_xhdl1_i_1
+       (.I0(reg_tx_ecrc_pkt),
+        .I1(tready_thrtl_xhdl1_i_2_n_0),
+        .I2(tready_thrtl_xhdl1_i_3_n_0),
+        .I3(tready_thrtl_xhdl1_i_4_n_0),
+        .I4(tbuf_av_gap_trig0_out),
+        .I5(tready_thrtl_xhdl1_i_6_n_0),
+        .O(tready_thrtl_xhdl10));
   LUT6 #(
     .INIT(64'h00002000AAAAAAAA)) 
-    tready_thrtl_i_10
-       (.I0(tready_thrtl_i_5_0),
+    tready_thrtl_xhdl1_i_10
+       (.I0(tready_thrtl_xhdl1_i_5_0),
         .I1(tbuf_av_d[4]),
-        .I2(tbuf_av_d[0]),
-        .I3(tbuf_av_d[1]),
-        .I4(tready_thrtl_i_12_n_0),
-        .I5(tready_thrtl_i_3_n_0),
-        .O(tready_thrtl_i_10_n_0));
-  LUT4 #(
-    .INIT(16'hFFEF)) 
-    tready_thrtl_i_12
-       (.I0(tbuf_av_d[5]),
-        .I1(tbuf_av_d[2]),
         .I2(trn_tbuf_av[1]),
+        .I3(tbuf_av_d[1]),
+        .I4(tready_thrtl_xhdl1_i_12_n_0),
+        .I5(tready_thrtl_xhdl1_i_3_n_0),
+        .O(tready_thrtl_xhdl1_i_10_n_0));
+  LUT4 #(
+    .INIT(16'hFFFD)) 
+    tready_thrtl_xhdl1_i_12
+       (.I0(tbuf_av_d[0]),
+        .I1(tbuf_av_d[2]),
+        .I2(tbuf_av_d[5]),
         .I3(tbuf_av_d[3]),
-        .O(tready_thrtl_i_12_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair112" *) 
+        .O(tready_thrtl_xhdl1_i_12_n_0));
+  (* SOFT_HLUTNM = "soft_lutpair107" *) 
   LUT4 #(
     .INIT(16'h0078)) 
-    tready_thrtl_i_2
+    tready_thrtl_xhdl1_i_2
        (.I0(s_axis_tx_tdata[0]),
         .I1(s_axis_tx_tdata[3]),
         .I2(s_axis_tx_tdata[2]),
-        .I3(tready_thrtl_i_7_n_0),
-        .O(tready_thrtl_i_2_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair109" *) 
+        .I3(tready_thrtl_xhdl1_i_7_n_0),
+        .O(tready_thrtl_xhdl1_i_2_n_0));
+  (* SOFT_HLUTNM = "soft_lutpair104" *) 
   LUT3 #(
     .INIT(8'h7F)) 
-    tready_thrtl_i_3
-       (.I0(s_axis_tx_tlast),
-        .I1(s_axis_tx_tvalid),
-        .I2(tready_thrtl_reg_0),
-        .O(tready_thrtl_i_3_n_0));
+    tready_thrtl_xhdl1_i_3
+       (.I0(s_axis_tx_tvalid),
+        .I1(s_axis_tx_tlast),
+        .I2(tready_thrtl_xhdl1_reg_0),
+        .O(tready_thrtl_xhdl1_i_3_n_0));
   LUT6 #(
-    .INIT(64'h0000000000040000)) 
-    tready_thrtl_i_4
-       (.I0(ppm_L23_trig),
-        .I1(out),
-        .I2(tcfg_req_trig),
-        .I3(ppm_L1_trig),
-        .I4(cur_state_i_2_n_0),
-        .I5(tbuf_av_min_trig),
-        .O(tready_thrtl_i_4_n_0));
+    .INIT(64'h0000000000100000)) 
+    tready_thrtl_xhdl1_i_4
+       (.I0(tbuf_av_min_trig),
+        .I1(tcfg_req_trig),
+        .I2(out),
+        .I3(ppm_L23_trig16_out),
+        .I4(CUR_STATE_A_i_2_n_0),
+        .I5(ppm_L1_trig),
+        .O(tready_thrtl_xhdl1_i_4_n_0));
   LUT6 #(
     .INIT(64'hFFFFFFFF00100000)) 
-    tready_thrtl_i_5
+    tready_thrtl_xhdl1_i_5
        (.I0(tcfg_req_cnt[0]),
         .I1(tcfg_req_cnt[1]),
         .I2(trn_tdst_rdy),
         .I3(trn_tdst_rdy_d),
         .I4(tcfg_req_thrtl),
-        .I5(tready_thrtl_i_10_n_0),
-        .O(tbuf_av_gap_trig));
+        .I5(tready_thrtl_xhdl1_i_10_n_0),
+        .O(tbuf_av_gap_trig0_out));
   LUT5 #(
     .INIT(32'h000020E0)) 
-    tready_thrtl_i_6
+    tready_thrtl_xhdl1_i_6
        (.I0(reg_axi_in_pkt),
         .I1(s_axis_tx_tvalid),
-        .I2(tready_thrtl_reg_0),
+        .I2(tready_thrtl_xhdl1_reg_0),
         .I3(s_axis_tx_tlast),
-        .I4(cur_state),
-        .O(tready_thrtl_i_6_n_0));
+        .I4(CUR_STATE_A),
+        .O(tready_thrtl_xhdl1_i_6_n_0));
   LUT5 #(
     .INIT(32'hFFFFDFFF)) 
-    tready_thrtl_i_7
+    tready_thrtl_xhdl1_i_7
        (.I0(s_axis_tx_tuser),
-        .I1(s_axis_tx_tdata[1]),
+        .I1(reg_axi_in_pkt),
         .I2(s_axis_tx_tvalid),
-        .I3(tready_thrtl_reg_0),
-        .I4(reg_axi_in_pkt),
-        .O(tready_thrtl_i_7_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair114" *) 
+        .I3(tready_thrtl_xhdl1_reg_0),
+        .I4(s_axis_tx_tdata[1]),
+        .O(tready_thrtl_xhdl1_i_7_n_0));
+  (* SOFT_HLUTNM = "soft_lutpair109" *) 
   LUT2 #(
     .INIT(4'h8)) 
-    tready_thrtl_i_8
+    tready_thrtl_xhdl1_i_9
        (.I0(reg_turnoff_ok),
-        .I1(\L23_thrtl_ep.x7_L23_thrtl_ep.reg_to_turnoff ),
-        .O(ppm_L23_trig));
-  FDRE tready_thrtl_reg
+        .I1(reg_to_turnoff),
+        .O(ppm_L23_trig16_out));
+  FDRE #(
+    .INIT(1'b0)) 
+    tready_thrtl_xhdl1_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(tready_thrtl0),
-        .Q(tready_thrtl_reg_0),
+        .D(tready_thrtl_xhdl10),
+        .Q(tready_thrtl_xhdl1_reg_0),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDRE trn_tcfg_req_d_reg
+  FDRE #(
+    .INIT(1'b0)) 
+    trn_tcfg_req_d_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tcfg_req),
         .Q(trn_tcfg_req_d),
         .R(\tbuf_gap_cnt_reg[0]_0 ));
-  FDSE trn_tdst_rdy_d_reg
+  FDSE #(
+    .INIT(1'b0)) 
+    trn_tdst_rdy_d_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_tdst_rdy),
         .Q(trn_tdst_rdy_d),
         .S(\tbuf_gap_cnt_reg[0]_0 ));
+  LUT4 #(
+    .INIT(16'h0080)) 
+    \xhdl12.reg_tsrc_rdy_i_1 
+       (.I0(tready_thrtl_xhdl1_reg_0),
+        .I1(s_axis_tx_tvalid),
+        .I2(out),
+        .I3(reg_disable_trn),
+        .O(reg_tsrc_rdy0));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.xhdl14.reg_turnoff_ok_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(cfg_turnoff_ok),
+        .Q(reg_turnoff_ok),
+        .R(\tbuf_gap_cnt_reg[0]_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair109" *) 
+  LUT2 #(
+    .INIT(4'hE)) 
+    \xhdl12.xhdl14.xhdl15.reg_to_turnoff_i_1 
+       (.I0(cfg_to_turnoff),
+        .I1(reg_to_turnoff),
+        .O(\xhdl12.xhdl14.xhdl15.reg_to_turnoff_i_1_n_0 ));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl12.xhdl14.xhdl15.reg_to_turnoff_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(\xhdl12.xhdl14.xhdl15.reg_to_turnoff_i_1_n_0 ),
+        .Q(reg_to_turnoff),
+        .R(\tbuf_gap_cnt_reg[0]_0 ));
+  LUT5 #(
+    .INIT(32'hBFFFAAAA)) 
+    \xhdl17.reg_tx_ecrc_pkt_i_1 
+       (.I0(reg_tx_ecrc_pkt08_out),
+        .I1(tready_thrtl_xhdl1_reg_0),
+        .I2(s_axis_tx_tlast),
+        .I3(s_axis_tx_tvalid),
+        .I4(reg_tx_ecrc_pkt),
+        .O(\xhdl17.reg_tx_ecrc_pkt_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair107" *) 
+  LUT5 #(
+    .INIT(32'h00001444)) 
+    \xhdl17.reg_tx_ecrc_pkt_i_2 
+       (.I0(tready_thrtl_xhdl1_i_7_n_0),
+        .I1(s_axis_tx_tdata[2]),
+        .I2(s_axis_tx_tdata[3]),
+        .I3(s_axis_tx_tdata[0]),
+        .I4(s_axis_tx_tlast),
+        .O(reg_tx_ecrc_pkt08_out));
+  FDRE #(
+    .INIT(1'b0)) 
+    \xhdl17.reg_tx_ecrc_pkt_reg 
+       (.C(pipe_userclk2_in),
+        .CE(1'b1),
+        .D(\xhdl17.reg_tx_ecrc_pkt_i_1_n_0 ),
+        .Q(reg_tx_ecrc_pkt),
+        .R(\tbuf_gap_cnt_reg[0]_0 ));
 endmodule
 
 module pcie_7x_0_core_top
@@ -5371,6 +5900,7 @@ module pcie_7x_0_core_top
     user_reset_out,
     m_axis_rx_tvalid,
     s_axis_tx_tready,
+    pl_received_hot_rst,
     cfg_aer_ecrc_check_en,
     cfg_aer_ecrc_gen_en,
     cfg_aer_rooterr_corr_err_received,
@@ -5455,7 +5985,6 @@ module pcie_7x_0_core_top
     cfg_bus_number,
     cfg_device_number,
     cfg_function_number,
-    pl_received_hot_rst,
     cfg_mgmt_rd_wr_done,
     cfg_err_aer_headerlog_set,
     cfg_err_cpl_rdy,
@@ -5463,8 +5992,9 @@ module pcie_7x_0_core_top
     cfg_received_func_lvl_rst,
     pipe_pclk_in,
     m_axis_rx_tready,
-    s_axis_tx_tlast,
     s_axis_tx_tvalid,
+    s_axis_tx_tlast,
+    sys_rst_n,
     pipe_userclk2_in,
     pipe_userclk1_in,
     pcie_drp_clk,
@@ -5501,13 +6031,12 @@ module pcie_7x_0_core_top
     pipe_oobclk_in,
     pci_exp_rxn,
     pci_exp_rxp,
-    tx_cfg_gnt,
-    cfg_turnoff_ok,
     s_axis_tx_tdata,
     s_axis_tx_tuser,
     s_axis_tx_tkeep,
+    tx_cfg_gnt,
+    cfg_turnoff_ok,
     cfg_mgmt_byte_en,
-    sys_rst_n,
     cfg_trn_pending,
     cfg_mgmt_wr_rw1c_as_rw,
     cfg_mgmt_wr_readonly,
@@ -5540,6 +6069,7 @@ module pcie_7x_0_core_top
   output user_reset_out;
   output m_axis_rx_tvalid;
   output s_axis_tx_tready;
+  output pl_received_hot_rst;
   output cfg_aer_ecrc_check_en;
   output cfg_aer_ecrc_gen_en;
   output cfg_aer_rooterr_corr_err_received;
@@ -5618,13 +6148,12 @@ module pcie_7x_0_core_top
   output pipe_txoutclk_out;
   output user_lnk_up;
   output [63:0]m_axis_rx_tdata;
-  output [0:0]m_axis_rx_tkeep;
+  output [1:0]m_axis_rx_tkeep;
   output m_axis_rx_tlast;
   output [12:0]m_axis_rx_tuser;
   output [7:0]cfg_bus_number;
   output [4:0]cfg_device_number;
   output [2:0]cfg_function_number;
-  output pl_received_hot_rst;
   output cfg_mgmt_rd_wr_done;
   output cfg_err_aer_headerlog_set;
   output cfg_err_cpl_rdy;
@@ -5632,8 +6161,9 @@ module pcie_7x_0_core_top
   output cfg_received_func_lvl_rst;
   input pipe_pclk_in;
   input m_axis_rx_tready;
-  input s_axis_tx_tlast;
   input s_axis_tx_tvalid;
+  input s_axis_tx_tlast;
+  input sys_rst_n;
   input pipe_userclk2_in;
   input pipe_userclk1_in;
   input pcie_drp_clk;
@@ -5670,13 +6200,12 @@ module pcie_7x_0_core_top
   input pipe_oobclk_in;
   input [0:0]pci_exp_rxn;
   input [0:0]pci_exp_rxp;
-  input tx_cfg_gnt;
-  input cfg_turnoff_ok;
   input [63:0]s_axis_tx_tdata;
   input [3:0]s_axis_tx_tuser;
   input [0:0]s_axis_tx_tkeep;
+  input tx_cfg_gnt;
+  input cfg_turnoff_ok;
   input [3:0]cfg_mgmt_byte_en;
-  input sys_rst_n;
   input cfg_trn_pending;
   input cfg_mgmt_wr_rw1c_as_rw;
   input cfg_mgmt_wr_readonly;
@@ -5705,8 +6234,6 @@ module pcie_7x_0_core_top
   input cfg_pm_force_state_en;
   input cfg_pm_wake;
 
-  wire \_inferred__0/store_ltssm_inferred_i_2_n_0 ;
-  wire \_inferred__0/store_ltssm_inferred_i_3_n_0 ;
   wire bridge_reset_int;
   wire cfg_aer_ecrc_check_en;
   wire cfg_aer_ecrc_gen_en;
@@ -5761,6 +6288,7 @@ module pcie_7x_0_core_top
   wire [10:0]cfg_lcommand;
   wire [9:0]cfg_lstatus;
   wire [3:0]cfg_mgmt_byte_en;
+  wire [3:0]cfg_mgmt_byte_en_n;
   wire [31:0]cfg_mgmt_di;
   wire [31:0]cfg_mgmt_do;
   wire [9:0]cfg_mgmt_dwaddr;
@@ -5814,7 +6342,6 @@ module pcie_7x_0_core_top
   wire [7:0]fc_ph;
   wire [2:0]fc_sel;
   wire gen3_reg;
-  wire gt_top_i_n_11;
   wire gt_top_i_n_7;
   wire \ltssm_reg1_reg[0]_srl2_n_0 ;
   wire \ltssm_reg1_reg[1]_srl2_n_0 ;
@@ -5824,7 +6351,7 @@ module pcie_7x_0_core_top
   wire \ltssm_reg1_reg[5]_srl2_n_0 ;
   wire [5:0]ltssm_reg2;
   wire [63:0]m_axis_rx_tdata;
-  wire [0:0]m_axis_rx_tkeep;
+  wire [1:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [12:0]m_axis_rx_tuser;
@@ -5833,10 +6360,6 @@ module pcie_7x_0_core_top
   wire [0:0]pci_exp_rxp;
   wire [0:0]pci_exp_txn;
   wire [0:0]pci_exp_txp;
-  wire pcie_block_i_i_34_n_0;
-  wire pcie_block_i_i_35_n_0;
-  wire pcie_block_i_i_36_n_0;
-  wire pcie_block_i_i_37_n_0;
   wire [8:0]pcie_drp_addr;
   wire pcie_drp_clk;
   wire [15:0]pcie_drp_di;
@@ -5844,7 +6367,7 @@ module pcie_7x_0_core_top
   wire pcie_drp_en;
   wire pcie_drp_rdy;
   wire pcie_drp_we;
-  wire pcie_top_i_n_5;
+  wire pcie_top_i_n_4;
   wire pipe_dclk_in;
   wire pipe_mmcm_lock_in;
   wire pipe_oobclk_in;
@@ -5885,11 +6408,11 @@ module pcie_7x_0_core_top
   wire pl_link_upcfg_cap;
   wire [5:0]pl_ltssm_state;
   wire pl_phy_lnk_up;
+  wire pl_phy_lnk_up_int;
   wire pl_phy_lnk_up_sync;
-  wire pl_phy_lnk_up_wire;
   wire pl_received_hot_rst;
+  wire pl_received_hot_rst_int;
   wire pl_received_hot_rst_sync;
-  wire pl_received_hot_rst_wire;
   wire [1:0]pl_rx_pm_state;
   wire pl_sel_lnk_rate;
   wire [1:0]pl_sel_lnk_width;
@@ -5905,45 +6428,22 @@ module pcie_7x_0_core_top
   wire [3:0]s_axis_tx_tuser;
   wire s_axis_tx_tvalid;
   (* DONT_TOUCH *) wire store_ltssm;
+  wire store_ltssm_inferred_i_2_n_0;
+  wire store_ltssm_inferred_i_3_n_0;
   wire sys_clk;
-  wire sys_or_hot_rst;
   wire sys_rst_n;
-  wire trn_lnk_up;
+  wire sys_rst_n_0;
+  (* RTL_KEEP = "true" *) (* async_reg = "true" *) wire trn_lnk_up;
   wire [5:0]tx_buf_av;
   wire tx_cfg_gnt;
   wire tx_cfg_req;
   wire tx_err_drop;
-  (* RTL_KEEP = "true" *) (* async_reg = "true" *) wire user_lnk_up_int;
-  (* async_reg = "true" *) wire user_lnk_up_mux;
+  (* RTL_KEEP = "true" *) (* async_reg = "true" *) (* equivalent_register_removal = "no" *) wire user_lnk_up_d;
+  (* RTL_KEEP = "true" *) (* async_reg = "true" *) (* equivalent_register_removal = "no" *) wire user_lnk_up_int;
   wire user_reset_out;
+  wire user_reset_out_i_1_n_0;
 
   assign user_lnk_up = user_lnk_up_int;
-  LUT2 #(
-    .INIT(4'hE)) 
-    \_inferred__0/store_ltssm_inferred_i_1 
-       (.I0(\_inferred__0/store_ltssm_inferred_i_2_n_0 ),
-        .I1(\_inferred__0/store_ltssm_inferred_i_3_n_0 ),
-        .O(store_ltssm));
-  LUT6 #(
-    .INIT(64'h6FF6FFFFFFFF6FF6)) 
-    \_inferred__0/store_ltssm_inferred_i_2 
-       (.I0(ltssm_reg2[0]),
-        .I1(pl_ltssm_state[0]),
-        .I2(pl_ltssm_state[2]),
-        .I3(ltssm_reg2[2]),
-        .I4(pl_ltssm_state[1]),
-        .I5(ltssm_reg2[1]),
-        .O(\_inferred__0/store_ltssm_inferred_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'h6FF6FFFFFFFF6FF6)) 
-    \_inferred__0/store_ltssm_inferred_i_3 
-       (.I0(ltssm_reg2[3]),
-        .I1(pl_ltssm_state[3]),
-        .I2(pl_ltssm_state[5]),
-        .I3(ltssm_reg2[5]),
-        .I4(pl_ltssm_state[4]),
-        .I5(ltssm_reg2[4]),
-        .O(\_inferred__0/store_ltssm_inferred_i_3_n_0 ));
   pcie_7x_0_gt_top gt_top_i
        (.Q(pipe_rx0_data_gt),
         .QPLL_DRP_GEN3(gen3_reg),
@@ -5952,7 +6452,6 @@ module pcie_7x_0_core_top
         .pci_exp_rxp(pci_exp_rxp),
         .pci_exp_txn(pci_exp_txn),
         .pci_exp_txp(pci_exp_txp),
-        .phy_rdy_n_int_reg_0(gt_top_i_n_11),
         .pipe_dclk_in(pipe_dclk_in),
         .pipe_mmcm_lock_in(pipe_mmcm_lock_in),
         .pipe_oobclk_in(pipe_oobclk_in),
@@ -5977,11 +6476,12 @@ module pcie_7x_0_core_top
         .pipe_tx_rcvr_det(pipe_tx_rcvr_det_gt),
         .pipe_txoutclk_out(pipe_txoutclk_out),
         .pl_ltssm_state(pl_ltssm_state),
+        .reset_n_reg2_reg(sys_rst_n),
         .sys_clk(sys_clk),
-        .sys_rst_n(sys_rst_n),
+        .sys_rst_n(sys_rst_n_0),
         .sys_rst_n_0(gt_top_i_n_7));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[0]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[0]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[0]_srl2 
@@ -5993,8 +6493,8 @@ module pcie_7x_0_core_top
         .CLK(pipe_pclk_in),
         .D(pl_ltssm_state[0]),
         .Q(\ltssm_reg1_reg[0]_srl2_n_0 ));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[1]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[1]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[1]_srl2 
@@ -6006,8 +6506,8 @@ module pcie_7x_0_core_top
         .CLK(pipe_pclk_in),
         .D(pl_ltssm_state[1]),
         .Q(\ltssm_reg1_reg[1]_srl2_n_0 ));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[2]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[2]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[2]_srl2 
@@ -6019,8 +6519,8 @@ module pcie_7x_0_core_top
         .CLK(pipe_pclk_in),
         .D(pl_ltssm_state[2]),
         .Q(\ltssm_reg1_reg[2]_srl2_n_0 ));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[3]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[3]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[3]_srl2 
@@ -6032,8 +6532,8 @@ module pcie_7x_0_core_top
         .CLK(pipe_pclk_in),
         .D(pl_ltssm_state[3]),
         .Q(\ltssm_reg1_reg[3]_srl2_n_0 ));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[4]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[4]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[4]_srl2 
@@ -6045,8 +6545,8 @@ module pcie_7x_0_core_top
         .CLK(pipe_pclk_in),
         .D(pl_ltssm_state[4]),
         .Q(\ltssm_reg1_reg[4]_srl2_n_0 ));
-  (* srl_bus_name = "inst/\inst/ltssm_reg1_reg " *) 
-  (* srl_name = "inst/\inst/ltssm_reg1_reg[5]_srl2 " *) 
+  (* srl_bus_name = "U0/\inst/ltssm_reg1_reg " *) 
+  (* srl_name = "U0/\inst/ltssm_reg1_reg[5]_srl2 " *) 
   SRL16E #(
     .INIT(16'h0000)) 
     \ltssm_reg1_reg[5]_srl2 
@@ -6110,22 +6610,22 @@ module pcie_7x_0_core_top
     .INIT(2'h1)) 
     pcie_block_i_i_34
        (.I0(cfg_mgmt_byte_en[3]),
-        .O(pcie_block_i_i_34_n_0));
+        .O(cfg_mgmt_byte_en_n[3]));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_35
        (.I0(cfg_mgmt_byte_en[2]),
-        .O(pcie_block_i_i_35_n_0));
+        .O(cfg_mgmt_byte_en_n[2]));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_36
        (.I0(cfg_mgmt_byte_en[1]),
-        .O(pcie_block_i_i_36_n_0));
+        .O(cfg_mgmt_byte_en_n[1]));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_37
        (.I0(cfg_mgmt_byte_en[0]),
-        .O(pcie_block_i_i_37_n_0));
+        .O(cfg_mgmt_byte_en_n[0]));
   pcie_7x_0_pcie_top pcie_top_i
        (.bridge_reset_int(bridge_reset_int),
         .cfg_aer_ecrc_check_en(cfg_aer_ecrc_check_en),
@@ -6180,7 +6680,7 @@ module pcie_7x_0_core_top
         .cfg_interrupt_stat(cfg_interrupt_stat),
         .cfg_lcommand(cfg_lcommand),
         .cfg_lstatus(cfg_lstatus),
-        .cfg_mgmt_byte_en_n({pcie_block_i_i_34_n_0,pcie_block_i_i_35_n_0,pcie_block_i_i_36_n_0,pcie_block_i_i_37_n_0}),
+        .cfg_mgmt_byte_en_n(cfg_mgmt_byte_en_n),
         .cfg_mgmt_di(cfg_mgmt_di),
         .cfg_mgmt_do(cfg_mgmt_do),
         .cfg_mgmt_dwaddr(cfg_mgmt_dwaddr),
@@ -6238,7 +6738,7 @@ module pcie_7x_0_core_top
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(m_axis_rx_tuser),
-        .m_axis_rx_tvalid_reg(m_axis_rx_tvalid),
+        .m_axis_rx_tvalid_xhdl2_reg(m_axis_rx_tvalid),
         .out(user_lnk_up_int),
         .pcie_drp_addr(pcie_drp_addr),
         .pcie_drp_clk(pcie_drp_clk),
@@ -6280,7 +6780,7 @@ module pcie_7x_0_core_top
         .pl_link_upcfg_cap(pl_link_upcfg_cap),
         .pl_ltssm_state(pl_ltssm_state),
         .pl_phy_lnk_up(pl_phy_lnk_up),
-        .pl_received_hot_rst(pl_received_hot_rst_wire),
+        .pl_received_hot_rst(pl_received_hot_rst_int),
         .pl_rx_pm_state(pl_rx_pm_state),
         .pl_sel_lnk_rate(pl_sel_lnk_rate),
         .pl_sel_lnk_width(pl_sel_lnk_width),
@@ -6294,16 +6794,16 @@ module pcie_7x_0_core_top
         .s_axis_tx_tlast(s_axis_tx_tlast),
         .s_axis_tx_tuser(s_axis_tx_tuser),
         .s_axis_tx_tvalid(s_axis_tx_tvalid),
-        .src_in(pl_phy_lnk_up_wire),
-        .sys_rst_n(gt_top_i_n_11),
-        .\throttle_ctl_pipeline.reg_tkeep_reg[7] (user_reset_out),
-        .tready_thrtl_reg(s_axis_tx_tready),
+        .src_in(pl_phy_lnk_up_int),
+        .sys_rst_n(sys_rst_n_0),
+        .\tbuf_gap_cnt_reg[0] (user_reset_out),
+        .tready_thrtl_xhdl1_reg(s_axis_tx_tready),
         .trn_lnk_up(trn_lnk_up),
         .trn_tbuf_av(tx_buf_av),
         .trn_tcfg_req(tx_cfg_req),
         .tx_cfg_gnt(tx_cfg_gnt),
         .tx_err_drop(tx_err_drop),
-        .user_reset_int_reg(pcie_top_i_n_5));
+        .user_reset_int_reg(pcie_top_i_n_4));
   (* DEST_SYNC_FF = "2" *) 
   (* INIT_SYNC_FF = "0" *) 
   (* SIM_ASSERT_CHK = "0" *) 
@@ -6311,11 +6811,11 @@ module pcie_7x_0_core_top
   (* VERSION = "0" *) 
   (* XPM_CDC = "SINGLE" *) 
   (* XPM_MODULE = "TRUE" *) 
-  pcie_7x_0_xpm_cdc_single__2 phy_lnk_up_cdc
+  pcie_7x_0_xpm_cdc_single__2 pl_phy_lnk_up_cdc
        (.dest_clk(pipe_userclk2_in),
         .dest_out(pl_phy_lnk_up_sync),
         .src_clk(1'b0),
-        .src_in(pl_phy_lnk_up_wire));
+        .src_in(pl_phy_lnk_up_int));
   FDRE pl_phy_lnk_up_q_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
@@ -6333,46 +6833,74 @@ module pcie_7x_0_core_top
        (.dest_clk(pipe_userclk2_in),
         .dest_out(pl_received_hot_rst_sync),
         .src_clk(1'b0),
-        .src_in(pl_received_hot_rst_wire));
+        .src_in(pl_received_hot_rst_int));
   FDRE pl_received_hot_rst_q_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(pl_received_hot_rst_sync),
         .Q(pl_received_hot_rst),
         .R(gt_top_i_n_7));
+  LUT2 #(
+    .INIT(4'hE)) 
+    store_ltssm_inferred_i_1
+       (.I0(store_ltssm_inferred_i_2_n_0),
+        .I1(store_ltssm_inferred_i_3_n_0),
+        .O(store_ltssm));
+  LUT6 #(
+    .INIT(64'h6FF6FFFFFFFF6FF6)) 
+    store_ltssm_inferred_i_2
+       (.I0(pl_ltssm_state[0]),
+        .I1(ltssm_reg2[0]),
+        .I2(ltssm_reg2[2]),
+        .I3(pl_ltssm_state[2]),
+        .I4(ltssm_reg2[1]),
+        .I5(pl_ltssm_state[1]),
+        .O(store_ltssm_inferred_i_2_n_0));
+  LUT6 #(
+    .INIT(64'h6FF6FFFFFFFF6FF6)) 
+    store_ltssm_inferred_i_3
+       (.I0(pl_ltssm_state[3]),
+        .I1(ltssm_reg2[3]),
+        .I2(ltssm_reg2[5]),
+        .I3(pl_ltssm_state[5]),
+        .I4(ltssm_reg2[4]),
+        .I5(pl_ltssm_state[4]),
+        .O(store_ltssm_inferred_i_3_n_0));
   (* ASYNC_REG *) 
   (* KEEP = "yes" *) 
-  FDRE user_lnk_up_int_reg
+  (* equivalent_register_removal = "no" *) 
+  FDRE user_lnk_up_d_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(trn_lnk_up),
-        .Q(user_lnk_up_int),
+        .Q(user_lnk_up_d),
         .R(gt_top_i_n_7));
   (* ASYNC_REG *) 
   (* KEEP = "yes" *) 
-  FDRE user_lnk_up_mux_reg
+  (* equivalent_register_removal = "no" *) 
+  FDRE user_lnk_up_int_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(user_lnk_up_int),
-        .Q(user_lnk_up_mux),
+        .D(user_lnk_up_d),
+        .Q(user_lnk_up_int),
         .R(gt_top_i_n_7));
   FDPE user_reset_int_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
-        .D(pcie_top_i_n_5),
-        .PRE(sys_or_hot_rst),
+        .D(pcie_top_i_n_4),
+        .PRE(user_reset_out_i_1_n_0),
         .Q(bridge_reset_int));
   LUT2 #(
     .INIT(4'hB)) 
     user_reset_out_i_1
        (.I0(pl_received_hot_rst),
         .I1(sys_rst_n),
-        .O(sys_or_hot_rst));
+        .O(user_reset_out_i_1_n_0));
   FDPE user_reset_out_reg
        (.C(pipe_userclk2_in),
         .CE(1'b1),
         .D(bridge_reset_int),
-        .PRE(sys_or_hot_rst),
+        .PRE(user_reset_out_i_1_n_0),
         .Q(user_reset_out));
 endmodule
 
@@ -6452,445 +6980,483 @@ module pcie_7x_0_gt_rx_valid_filter_7x
     pipe_rx0_elec_idle,
     pipe_rx0_phy_status,
     \pl_ltssm_state_q_reg[5] ,
-    \gt_rxdata_q_reg[15]_0 ,
+    Q,
     pipe_rx0_char_is_k,
     \gt_rx_status_q_reg[2]_0 ,
     SR,
     pipe_pclk_in,
-    gt_rx_elec_idle_wire_filter,
-    gt_rx_phy_status_wire_filter,
+    PIPE_RXELECIDLE,
+    PIPE_PHYSTATUS,
     gt_rxvalid_q_reg_1,
-    Q,
+    gt_rxvalid_q_reg_2,
     D,
-    \gt_rxdata_q_reg[15]_1 ,
+    \gt_rxcharisk_q_reg[1]_0 ,
     \gt_rx_status_q_reg[2]_1 );
   output gt_rxvalid_q_reg_0;
   output pipe_rx0_elec_idle;
   output pipe_rx0_phy_status;
   output \pl_ltssm_state_q_reg[5] ;
-  output [15:0]\gt_rxdata_q_reg[15]_0 ;
+  output [15:0]Q;
   output [1:0]pipe_rx0_char_is_k;
   output [2:0]\gt_rx_status_q_reg[2]_0 ;
   input [0:0]SR;
   input pipe_pclk_in;
-  input [0:0]gt_rx_elec_idle_wire_filter;
-  input [0:0]gt_rx_phy_status_wire_filter;
+  input PIPE_RXELECIDLE;
+  input PIPE_PHYSTATUS;
   input gt_rxvalid_q_reg_1;
-  input [5:0]Q;
-  input [1:0]D;
-  input [15:0]\gt_rxdata_q_reg[15]_1 ;
+  input [5:0]gt_rxvalid_q_reg_2;
+  input [15:0]D;
+  input [1:0]\gt_rxcharisk_q_reg[1]_0 ;
   input [2:0]\gt_rx_status_q_reg[2]_1 ;
 
-  wire [1:0]D;
-  wire [5:0]Q;
+  wire [15:0]D;
+  wire \FSM_onehot_reg_state_eios_det[1]_i_1_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[1]_i_2_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[1]_i_3_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[2]_i_1_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[3]_i_1_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[3]_i_2_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[3]_i_3_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[3]_i_4_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[3]_i_5_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[5]_i_1_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det[5]_i_3_n_0 ;
+  wire \FSM_onehot_reg_state_eios_det_reg_n_0_[1] ;
+  wire \FSM_onehot_reg_state_eios_det_reg_n_0_[2] ;
+  wire \FSM_onehot_reg_state_eios_det_reg_n_0_[3] ;
+  wire \FSM_onehot_reg_state_eios_det_reg_n_0_[5] ;
+  wire PIPE_PHYSTATUS;
+  wire PIPE_RXELECIDLE;
+  wire [15:0]Q;
   wire [0:0]SR;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
-  wire [0:0]gt_rx_phy_status_wire_filter;
   wire [2:0]\gt_rx_status_q_reg[2]_0 ;
   wire [2:0]\gt_rx_status_q_reg[2]_1 ;
+  wire [1:0]\gt_rxcharisk_q_reg[1]_0 ;
   wire \gt_rxcharisk_q_reg_n_0_[0] ;
-  wire [15:0]\gt_rxdata_q_reg[15]_0 ;
-  wire [15:0]\gt_rxdata_q_reg[15]_1 ;
-  wire gt_rxvalid_q__0;
-  wire gt_rxvalid_q_i_3_n_0;
-  wire gt_rxvalid_q_n_0;
+  wire gt_rxvalid_q;
+  wire gt_rxvalid_q_i_4_n_0;
+  wire gt_rxvalid_q_i_5_n_0;
   wire gt_rxvalid_q_reg_0;
   wire gt_rxvalid_q_reg_1;
-  wire p_1_in;
-  wire [4:0]p_1_in__0;
+  wire [5:0]gt_rxvalid_q_reg_2;
+  wire p_0_in;
   wire pipe_pclk_in;
   wire [1:0]pipe_rx0_char_is_k;
   wire pipe_rx0_elec_idle;
   wire pipe_rx0_phy_status;
   wire \pl_ltssm_state_q_reg[5] ;
-  wire \reg_state_eios_det[0]_i_2_n_0 ;
-  wire \reg_state_eios_det[2]_i_2_n_0 ;
-  wire \reg_state_eios_det[2]_i_3_n_0 ;
-  wire \reg_state_eios_det[2]_i_4_n_0 ;
-  wire \reg_state_eios_det[2]_i_5_n_0 ;
-  wire \reg_state_eios_det[3]_i_2_n_0 ;
-  wire \reg_state_eios_det[3]_i_3_n_0 ;
-  wire \reg_state_eios_det[4]_i_1_n_0 ;
-  wire \reg_state_eios_det[4]_i_3_n_0 ;
-  wire \reg_state_eios_det[4]_i_4_n_0 ;
-  wire reg_symbol_after_eios;
-  wire [4:0]state_eios_det;
+  wire reg_symbol_after_eios_i_1_n_0;
+  wire reg_symbol_after_eios_i_2_n_0;
   wire symbol_after_eios;
 
-  FDRE gt_rx_phy_status_q_reg
+  LUT4 #(
+    .INIT(16'hFF80)) 
+    \FSM_onehot_reg_state_eios_det[1]_i_1 
+       (.I0(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .I1(\FSM_onehot_reg_state_eios_det[3]_i_2_n_0 ),
+        .I2(\FSM_onehot_reg_state_eios_det[3]_i_3_n_0 ),
+        .I3(\FSM_onehot_reg_state_eios_det[1]_i_2_n_0 ),
+        .O(\FSM_onehot_reg_state_eios_det[1]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFC5CCFFFFF5FC)) 
+    \FSM_onehot_reg_state_eios_det[1]_i_2 
+       (.I0(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .I1(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ),
+        .I2(\FSM_onehot_reg_state_eios_det_reg_n_0_[3] ),
+        .I3(\FSM_onehot_reg_state_eios_det[1]_i_3_n_0 ),
+        .I4(\FSM_onehot_reg_state_eios_det_reg_n_0_[5] ),
+        .I5(reg_symbol_after_eios_i_2_n_0),
+        .O(\FSM_onehot_reg_state_eios_det[1]_i_2_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  LUT2 #(
+    .INIT(4'h1)) 
+    \FSM_onehot_reg_state_eios_det[1]_i_3 
+       (.I0(symbol_after_eios),
+        .I1(\FSM_onehot_reg_state_eios_det_reg_n_0_[2] ),
+        .O(\FSM_onehot_reg_state_eios_det[1]_i_3_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  LUT2 #(
+    .INIT(4'h2)) 
+    \FSM_onehot_reg_state_eios_det[2]_i_1 
+       (.I0(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .I1(\FSM_onehot_reg_state_eios_det[3]_i_2_n_0 ),
+        .O(\FSM_onehot_reg_state_eios_det[2]_i_1_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  LUT3 #(
+    .INIT(8'h08)) 
+    \FSM_onehot_reg_state_eios_det[3]_i_1 
+       (.I0(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .I1(\FSM_onehot_reg_state_eios_det[3]_i_2_n_0 ),
+        .I2(\FSM_onehot_reg_state_eios_det[3]_i_3_n_0 ),
+        .O(\FSM_onehot_reg_state_eios_det[3]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hBFFFFFFFFFFFFFFF)) 
+    \FSM_onehot_reg_state_eios_det[3]_i_2 
+       (.I0(\FSM_onehot_reg_state_eios_det[3]_i_4_n_0 ),
+        .I1(Q[3]),
+        .I2(Q[5]),
+        .I3(Q[2]),
+        .I4(Q[4]),
+        .I5(reg_symbol_after_eios_i_2_n_0),
+        .O(\FSM_onehot_reg_state_eios_det[3]_i_2_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFFEFFFFFFF)) 
+    \FSM_onehot_reg_state_eios_det[3]_i_3 
+       (.I0(\FSM_onehot_reg_state_eios_det[3]_i_5_n_0 ),
+        .I1(Q[8]),
+        .I2(Q[11]),
+        .I3(Q[10]),
+        .I4(Q[15]),
+        .I5(Q[14]),
+        .O(\FSM_onehot_reg_state_eios_det[3]_i_3_n_0 ));
+  LUT5 #(
+    .INIT(32'hFFFDFFFF)) 
+    \FSM_onehot_reg_state_eios_det[3]_i_4 
+       (.I0(\gt_rxcharisk_q_reg_n_0_[0] ),
+        .I1(Q[0]),
+        .I2(Q[1]),
+        .I3(Q[6]),
+        .I4(Q[7]),
+        .O(\FSM_onehot_reg_state_eios_det[3]_i_4_n_0 ));
+  LUT4 #(
+    .INIT(16'hFF7F)) 
+    \FSM_onehot_reg_state_eios_det[3]_i_5 
+       (.I0(p_0_in),
+        .I1(Q[13]),
+        .I2(Q[12]),
+        .I3(Q[9]),
+        .O(\FSM_onehot_reg_state_eios_det[3]_i_5_n_0 ));
+  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  LUT3 #(
+    .INIT(8'h54)) 
+    \FSM_onehot_reg_state_eios_det[5]_i_1 
+       (.I0(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ),
+        .I1(\FSM_onehot_reg_state_eios_det_reg_n_0_[2] ),
+        .I2(symbol_after_eios),
+        .O(\FSM_onehot_reg_state_eios_det[5]_i_1_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFEFFFFFFFFF)) 
+    \FSM_onehot_reg_state_eios_det[5]_i_2 
+       (.I0(\FSM_onehot_reg_state_eios_det[5]_i_3_n_0 ),
+        .I1(Q[7]),
+        .I2(Q[6]),
+        .I3(Q[1]),
+        .I4(Q[0]),
+        .I5(\gt_rxcharisk_q_reg_n_0_[0] ),
+        .O(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ));
+  LUT4 #(
+    .INIT(16'h7FFF)) 
+    \FSM_onehot_reg_state_eios_det[5]_i_3 
+       (.I0(Q[3]),
+        .I1(Q[5]),
+        .I2(Q[2]),
+        .I3(Q[4]),
+        .O(\FSM_onehot_reg_state_eios_det[5]_i_3_n_0 ));
+  (* FSM_ENCODED_STATES = "eios_det_no_str0:000100,eios_det_str0:001000,eios_det_str1:010000,eios_det_idl:000010,eios_det_done:100000,iSTATE:000001" *) 
+  FDSE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_reg_state_eios_det_reg[1] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(gt_rx_phy_status_wire_filter),
+        .D(\FSM_onehot_reg_state_eios_det[1]_i_1_n_0 ),
+        .Q(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .S(SR));
+  (* FSM_ENCODED_STATES = "eios_det_no_str0:000100,eios_det_str0:001000,eios_det_str1:010000,eios_det_idl:000010,eios_det_done:100000,iSTATE:000001" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_reg_state_eios_det_reg[2] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(\FSM_onehot_reg_state_eios_det[2]_i_1_n_0 ),
+        .Q(\FSM_onehot_reg_state_eios_det_reg_n_0_[2] ),
+        .R(SR));
+  (* FSM_ENCODED_STATES = "eios_det_no_str0:000100,eios_det_str0:001000,eios_det_str1:010000,eios_det_idl:000010,eios_det_done:100000,iSTATE:000001" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_reg_state_eios_det_reg[3] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(\FSM_onehot_reg_state_eios_det[3]_i_1_n_0 ),
+        .Q(\FSM_onehot_reg_state_eios_det_reg_n_0_[3] ),
+        .R(SR));
+  (* FSM_ENCODED_STATES = "eios_det_no_str0:000100,eios_det_str0:001000,eios_det_str1:010000,eios_det_idl:000010,eios_det_done:100000,iSTATE:000001" *) 
+  FDRE #(
+    .INIT(1'b0)) 
+    \FSM_onehot_reg_state_eios_det_reg[5] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(\FSM_onehot_reg_state_eios_det[5]_i_1_n_0 ),
+        .Q(\FSM_onehot_reg_state_eios_det_reg_n_0_[5] ),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    gt_rx_phy_status_q_reg
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(PIPE_PHYSTATUS),
         .Q(pipe_rx0_phy_status),
         .R(SR));
-  LUT6 #(
-    .INIT(64'h0100000000000000)) 
-    \gt_rx_status_q[2]_i_2 
-       (.I0(Q[5]),
-        .I1(Q[0]),
-        .I2(Q[3]),
-        .I3(Q[2]),
-        .I4(Q[1]),
-        .I5(Q[4]),
-        .O(\pl_ltssm_state_q_reg[5] ));
-  FDRE \gt_rx_status_q_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rx_status_q_reg[0] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .D(\gt_rx_status_q_reg[2]_1 [0]),
         .Q(\gt_rx_status_q_reg[2]_0 [0]),
         .R(SR));
-  FDRE \gt_rx_status_q_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rx_status_q_reg[1] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .D(\gt_rx_status_q_reg[2]_1 [1]),
         .Q(\gt_rx_status_q_reg[2]_0 [1]),
         .R(SR));
-  FDRE \gt_rx_status_q_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rx_status_q_reg[2] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .D(\gt_rx_status_q_reg[2]_1 [2]),
         .Q(\gt_rx_status_q_reg[2]_0 [2]),
         .R(SR));
-  FDRE \gt_rxcharisk_q_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxcharisk_q_reg[0] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(\gt_rxcharisk_q_reg[1]_0 [0]),
+        .Q(\gt_rxcharisk_q_reg_n_0_[0] ),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxcharisk_q_reg[1] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(\gt_rxcharisk_q_reg[1]_0 [1]),
+        .Q(p_0_in),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[0] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .D(D[0]),
-        .Q(\gt_rxcharisk_q_reg_n_0_[0] ),
+        .Q(Q[0]),
         .R(SR));
-  FDRE \gt_rxcharisk_q_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[10] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[10]),
+        .Q(Q[10]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[11] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[11]),
+        .Q(Q[11]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[12] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[12]),
+        .Q(Q[12]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[13] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[13]),
+        .Q(Q[13]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[14] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[14]),
+        .Q(Q[14]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[15] 
+       (.C(pipe_pclk_in),
+        .CE(1'b1),
+        .D(D[15]),
+        .Q(Q[15]),
+        .R(SR));
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[1] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .D(D[1]),
-        .Q(p_1_in),
+        .Q(Q[1]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[0] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[2] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [0]),
-        .Q(\gt_rxdata_q_reg[15]_0 [0]),
+        .D(D[2]),
+        .Q(Q[2]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[10] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[3] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [10]),
-        .Q(\gt_rxdata_q_reg[15]_0 [10]),
+        .D(D[3]),
+        .Q(Q[3]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[11] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[4] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [11]),
-        .Q(\gt_rxdata_q_reg[15]_0 [11]),
+        .D(D[4]),
+        .Q(Q[4]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[12] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[5] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [12]),
-        .Q(\gt_rxdata_q_reg[15]_0 [12]),
+        .D(D[5]),
+        .Q(Q[5]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[13] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[6] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [13]),
-        .Q(\gt_rxdata_q_reg[15]_0 [13]),
+        .D(D[6]),
+        .Q(Q[6]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[14] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[7] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [14]),
-        .Q(\gt_rxdata_q_reg[15]_0 [14]),
+        .D(D[7]),
+        .Q(Q[7]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[15] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[8] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [15]),
-        .Q(\gt_rxdata_q_reg[15]_0 [15]),
+        .D(D[8]),
+        .Q(Q[8]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[1] 
+  FDRE #(
+    .INIT(1'b0)) 
+    \gt_rxdata_q_reg[9] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [1]),
-        .Q(\gt_rxdata_q_reg[15]_0 [1]),
+        .D(D[9]),
+        .Q(Q[9]),
         .R(SR));
-  FDRE \gt_rxdata_q_reg[2] 
+  FDRE #(
+    .INIT(1'b0)) 
+    gt_rxelecidle_q_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [2]),
-        .Q(\gt_rxdata_q_reg[15]_0 [2]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[3] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [3]),
-        .Q(\gt_rxdata_q_reg[15]_0 [3]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[4] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [4]),
-        .Q(\gt_rxdata_q_reg[15]_0 [4]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[5] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [5]),
-        .Q(\gt_rxdata_q_reg[15]_0 [5]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[6] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [6]),
-        .Q(\gt_rxdata_q_reg[15]_0 [6]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[7] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [7]),
-        .Q(\gt_rxdata_q_reg[15]_0 [7]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[8] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [8]),
-        .Q(\gt_rxdata_q_reg[15]_0 [8]),
-        .R(SR));
-  FDRE \gt_rxdata_q_reg[9] 
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(\gt_rxdata_q_reg[15]_1 [9]),
-        .Q(\gt_rxdata_q_reg[15]_0 [9]),
-        .R(SR));
-  FDRE gt_rxelecidle_q_reg
-       (.C(pipe_pclk_in),
-        .CE(1'b1),
-        .D(gt_rx_elec_idle_wire_filter),
+        .D(PIPE_RXELECIDLE),
         .Q(pipe_rx0_elec_idle),
         .R(SR));
   LUT5 #(
-    .INIT(32'h00010116)) 
-    gt_rxvalid_q
-       (.I0(state_eios_det[0]),
-        .I1(state_eios_det[1]),
-        .I2(state_eios_det[2]),
-        .I3(state_eios_det[3]),
-        .I4(state_eios_det[4]),
-        .O(gt_rxvalid_q_n_0));
-  LUT5 #(
-    .INIT(32'h000000EF)) 
+    .INIT(32'h45004545)) 
     gt_rxvalid_q_i_1
-       (.I0(\reg_state_eios_det[0]_i_2_n_0 ),
-        .I1(state_eios_det[0]),
-        .I2(gt_rxvalid_q_n_0),
-        .I3(gt_rxvalid_q_reg_1),
-        .I4(gt_rxvalid_q_i_3_n_0),
-        .O(gt_rxvalid_q__0));
+       (.I0(gt_rxvalid_q_reg_1),
+        .I1(\pl_ltssm_state_q_reg[5] ),
+        .I2(\FSM_onehot_reg_state_eios_det_reg_n_0_[5] ),
+        .I3(gt_rxvalid_q_i_4_n_0),
+        .I4(gt_rxvalid_q_i_5_n_0),
+        .O(gt_rxvalid_q));
   LUT6 #(
-    .INIT(64'h0000000000000020)) 
+    .INIT(64'hFEFFFFFFFFFFFFFF)) 
     gt_rxvalid_q_i_3
-       (.I0(\pl_ltssm_state_q_reg[5] ),
-        .I1(state_eios_det[2]),
-        .I2(state_eios_det[4]),
-        .I3(state_eios_det[0]),
-        .I4(state_eios_det[1]),
-        .I5(state_eios_det[3]),
-        .O(gt_rxvalid_q_i_3_n_0));
-  FDRE gt_rxvalid_q_reg
+       (.I0(gt_rxvalid_q_reg_2[5]),
+        .I1(gt_rxvalid_q_reg_2[0]),
+        .I2(gt_rxvalid_q_reg_2[3]),
+        .I3(gt_rxvalid_q_reg_2[2]),
+        .I4(gt_rxvalid_q_reg_2[1]),
+        .I5(gt_rxvalid_q_reg_2[4]),
+        .O(\pl_ltssm_state_q_reg[5] ));
+  LUT6 #(
+    .INIT(64'hFEFEFEFCFEFEFEFF)) 
+    gt_rxvalid_q_i_4
+       (.I0(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ),
+        .I1(\FSM_onehot_reg_state_eios_det_reg_n_0_[5] ),
+        .I2(\FSM_onehot_reg_state_eios_det_reg_n_0_[1] ),
+        .I3(symbol_after_eios),
+        .I4(\FSM_onehot_reg_state_eios_det_reg_n_0_[2] ),
+        .I5(\FSM_onehot_reg_state_eios_det_reg_n_0_[3] ),
+        .O(gt_rxvalid_q_i_4_n_0));
+  (* SOFT_HLUTNM = "soft_lutpair0" *) 
+  LUT3 #(
+    .INIT(8'h2F)) 
+    gt_rxvalid_q_i_5
+       (.I0(reg_symbol_after_eios_i_2_n_0),
+        .I1(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ),
+        .I2(\FSM_onehot_reg_state_eios_det_reg_n_0_[3] ),
+        .O(gt_rxvalid_q_i_5_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    gt_rxvalid_q_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(gt_rxvalid_q__0),
+        .D(gt_rxvalid_q),
         .Q(gt_rxvalid_q_reg_0),
         .R(SR));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  (* SOFT_HLUTNM = "soft_lutpair2" *) 
   LUT3 #(
     .INIT(8'h08)) 
     pcie_block_i_i_32
-       (.I0(p_1_in),
+       (.I0(p_0_in),
         .I1(gt_rxvalid_q_reg_0),
         .I2(symbol_after_eios),
         .O(pipe_rx0_char_is_k[1]));
-  (* SOFT_HLUTNM = "soft_lutpair1" *) 
+  (* SOFT_HLUTNM = "soft_lutpair2" *) 
   LUT2 #(
     .INIT(4'h8)) 
     pcie_block_i_i_33
        (.I0(gt_rxvalid_q_reg_0),
         .I1(\gt_rxcharisk_q_reg_n_0_[0] ),
         .O(pipe_rx0_char_is_k[0]));
-  LUT4 #(
-    .INIT(16'hF8F0)) 
-    \reg_state_eios_det[0]_i_1 
-       (.I0(state_eios_det[0]),
-        .I1(\reg_state_eios_det[2]_i_2_n_0 ),
-        .I2(\reg_state_eios_det[0]_i_2_n_0 ),
-        .I3(\reg_state_eios_det[2]_i_3_n_0 ),
-        .O(p_1_in__0[0]));
-  LUT6 #(
-    .INIT(64'hFFFF88FFFFFF88FA)) 
-    \reg_state_eios_det[0]_i_2 
-       (.I0(state_eios_det[2]),
-        .I1(\reg_state_eios_det[3]_i_3_n_0 ),
-        .I2(state_eios_det[1]),
-        .I3(\reg_state_eios_det[4]_i_3_n_0 ),
-        .I4(state_eios_det[4]),
-        .I5(state_eios_det[3]),
-        .O(\reg_state_eios_det[0]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair0" *) 
-  LUT2 #(
-    .INIT(4'h2)) 
-    \reg_state_eios_det[1]_i_1 
-       (.I0(state_eios_det[0]),
-        .I1(\reg_state_eios_det[2]_i_2_n_0 ),
-        .O(p_1_in__0[1]));
   (* SOFT_HLUTNM = "soft_lutpair0" *) 
   LUT3 #(
-    .INIT(8'h08)) 
-    \reg_state_eios_det[2]_i_1 
-       (.I0(state_eios_det[0]),
-        .I1(\reg_state_eios_det[2]_i_2_n_0 ),
-        .I2(\reg_state_eios_det[2]_i_3_n_0 ),
-        .O(p_1_in__0[2]));
-  LUT6 #(
-    .INIT(64'hEFFFFFFFFFFFFFFF)) 
-    \reg_state_eios_det[2]_i_2 
-       (.I0(\reg_state_eios_det[3]_i_3_n_0 ),
-        .I1(\reg_state_eios_det[2]_i_4_n_0 ),
-        .I2(\gt_rxdata_q_reg[15]_0 [3]),
-        .I3(\gt_rxdata_q_reg[15]_0 [5]),
-        .I4(\gt_rxdata_q_reg[15]_0 [2]),
-        .I5(\gt_rxdata_q_reg[15]_0 [4]),
-        .O(\reg_state_eios_det[2]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFEFFFFFFF)) 
-    \reg_state_eios_det[2]_i_3 
-       (.I0(\reg_state_eios_det[2]_i_5_n_0 ),
-        .I1(\gt_rxdata_q_reg[15]_0 [8]),
-        .I2(\gt_rxdata_q_reg[15]_0 [11]),
-        .I3(\gt_rxdata_q_reg[15]_0 [10]),
-        .I4(\gt_rxdata_q_reg[15]_0 [15]),
-        .I5(\gt_rxdata_q_reg[15]_0 [14]),
-        .O(\reg_state_eios_det[2]_i_3_n_0 ));
-  LUT5 #(
-    .INIT(32'hFFFFFDFF)) 
-    \reg_state_eios_det[2]_i_4 
-       (.I0(\gt_rxcharisk_q_reg_n_0_[0] ),
-        .I1(\gt_rxdata_q_reg[15]_0 [0]),
-        .I2(\gt_rxdata_q_reg[15]_0 [6]),
-        .I3(\gt_rxdata_q_reg[15]_0 [7]),
-        .I4(\gt_rxdata_q_reg[15]_0 [1]),
-        .O(\reg_state_eios_det[2]_i_4_n_0 ));
-  LUT4 #(
-    .INIT(16'hFF7F)) 
-    \reg_state_eios_det[2]_i_5 
-       (.I0(p_1_in),
-        .I1(\gt_rxdata_q_reg[15]_0 [13]),
-        .I2(\gt_rxdata_q_reg[15]_0 [12]),
-        .I3(\gt_rxdata_q_reg[15]_0 [9]),
-        .O(\reg_state_eios_det[2]_i_5_n_0 ));
-  LUT2 #(
-    .INIT(4'h2)) 
-    \reg_state_eios_det[3]_i_1 
-       (.I0(state_eios_det[2]),
-        .I1(\reg_state_eios_det[3]_i_2_n_0 ),
-        .O(p_1_in__0[3]));
-  (* SOFT_HLUTNM = "soft_lutpair2" *) 
-  LUT2 #(
-    .INIT(4'hB)) 
-    \reg_state_eios_det[3]_i_2 
-       (.I0(\reg_state_eios_det[3]_i_3_n_0 ),
-        .I1(\reg_state_eios_det[4]_i_3_n_0 ),
-        .O(\reg_state_eios_det[3]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFEFFFFFFF)) 
-    \reg_state_eios_det[3]_i_3 
-       (.I0(\reg_state_eios_det[2]_i_5_n_0 ),
-        .I1(\gt_rxdata_q_reg[15]_0 [8]),
-        .I2(\gt_rxdata_q_reg[15]_0 [11]),
-        .I3(\gt_rxdata_q_reg[15]_0 [10]),
-        .I4(\gt_rxdata_q_reg[15]_0 [14]),
-        .I5(\gt_rxdata_q_reg[15]_0 [15]),
-        .O(\reg_state_eios_det[3]_i_3_n_0 ));
-  LUT5 #(
-    .INIT(32'h00010116)) 
-    \reg_state_eios_det[4]_i_1 
-       (.I0(state_eios_det[2]),
-        .I1(state_eios_det[4]),
-        .I2(state_eios_det[3]),
-        .I3(state_eios_det[0]),
-        .I4(state_eios_det[1]),
-        .O(\reg_state_eios_det[4]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair2" *) 
-  LUT3 #(
-    .INIT(8'hA8)) 
-    \reg_state_eios_det[4]_i_2 
-       (.I0(\reg_state_eios_det[4]_i_3_n_0 ),
-        .I1(state_eios_det[3]),
-        .I2(state_eios_det[1]),
-        .O(p_1_in__0[4]));
-  LUT6 #(
-    .INIT(64'h0000001000000000)) 
-    \reg_state_eios_det[4]_i_3 
-       (.I0(\reg_state_eios_det[4]_i_4_n_0 ),
-        .I1(\gt_rxdata_q_reg[15]_0 [7]),
-        .I2(\gt_rxdata_q_reg[15]_0 [6]),
-        .I3(\gt_rxdata_q_reg[15]_0 [1]),
-        .I4(\gt_rxdata_q_reg[15]_0 [0]),
-        .I5(\gt_rxcharisk_q_reg_n_0_[0] ),
-        .O(\reg_state_eios_det[4]_i_3_n_0 ));
-  LUT4 #(
-    .INIT(16'h7FFF)) 
-    \reg_state_eios_det[4]_i_4 
-       (.I0(\gt_rxdata_q_reg[15]_0 [3]),
-        .I1(\gt_rxdata_q_reg[15]_0 [5]),
-        .I2(\gt_rxdata_q_reg[15]_0 [2]),
-        .I3(\gt_rxdata_q_reg[15]_0 [4]),
-        .O(\reg_state_eios_det[4]_i_4_n_0 ));
-  (* FSM_ENCODED_STATES = "EIOS_DET_NO_STR0:00010,EIOS_DET_STR0:00100,EIOS_DET_STR1:01000,EIOS_DET_IDL:00001,EIOS_DET_DONE:10000" *) 
-  FDSE \reg_state_eios_det_reg[0] 
-       (.C(pipe_pclk_in),
-        .CE(\reg_state_eios_det[4]_i_1_n_0 ),
-        .D(p_1_in__0[0]),
-        .Q(state_eios_det[0]),
-        .S(SR));
-  (* FSM_ENCODED_STATES = "EIOS_DET_NO_STR0:00010,EIOS_DET_STR0:00100,EIOS_DET_STR1:01000,EIOS_DET_IDL:00001,EIOS_DET_DONE:10000" *) 
-  FDRE \reg_state_eios_det_reg[1] 
-       (.C(pipe_pclk_in),
-        .CE(\reg_state_eios_det[4]_i_1_n_0 ),
-        .D(p_1_in__0[1]),
-        .Q(state_eios_det[1]),
-        .R(SR));
-  (* FSM_ENCODED_STATES = "EIOS_DET_NO_STR0:00010,EIOS_DET_STR0:00100,EIOS_DET_STR1:01000,EIOS_DET_IDL:00001,EIOS_DET_DONE:10000" *) 
-  FDRE \reg_state_eios_det_reg[2] 
-       (.C(pipe_pclk_in),
-        .CE(\reg_state_eios_det[4]_i_1_n_0 ),
-        .D(p_1_in__0[2]),
-        .Q(state_eios_det[2]),
-        .R(SR));
-  (* FSM_ENCODED_STATES = "EIOS_DET_NO_STR0:00010,EIOS_DET_STR0:00100,EIOS_DET_STR1:01000,EIOS_DET_IDL:00001,EIOS_DET_DONE:10000" *) 
-  FDRE \reg_state_eios_det_reg[3] 
-       (.C(pipe_pclk_in),
-        .CE(\reg_state_eios_det[4]_i_1_n_0 ),
-        .D(p_1_in__0[3]),
-        .Q(state_eios_det[3]),
-        .R(SR));
-  (* FSM_ENCODED_STATES = "EIOS_DET_NO_STR0:00010,EIOS_DET_STR0:00100,EIOS_DET_STR1:01000,EIOS_DET_IDL:00001,EIOS_DET_DONE:10000" *) 
-  FDRE \reg_state_eios_det_reg[4] 
-       (.C(pipe_pclk_in),
-        .CE(\reg_state_eios_det[4]_i_1_n_0 ),
-        .D(p_1_in__0[4]),
-        .Q(state_eios_det[4]),
-        .R(SR));
-  LUT6 #(
-    .INIT(64'h0000000000000002)) 
+    .INIT(8'h20)) 
     reg_symbol_after_eios_i_1
-       (.I0(state_eios_det[2]),
-        .I1(\reg_state_eios_det[3]_i_2_n_0 ),
-        .I2(state_eios_det[3]),
-        .I3(state_eios_det[4]),
-        .I4(state_eios_det[0]),
-        .I5(state_eios_det[1]),
-        .O(reg_symbol_after_eios));
-  FDRE reg_symbol_after_eios_reg
+       (.I0(reg_symbol_after_eios_i_2_n_0),
+        .I1(\FSM_onehot_reg_state_eios_det[5]_i_2_n_0 ),
+        .I2(\FSM_onehot_reg_state_eios_det_reg_n_0_[3] ),
+        .O(reg_symbol_after_eios_i_1_n_0));
+  LUT6 #(
+    .INIT(64'h0004000000000000)) 
+    reg_symbol_after_eios_i_2
+       (.I0(Q[15]),
+        .I1(Q[14]),
+        .I2(\FSM_onehot_reg_state_eios_det[3]_i_5_n_0 ),
+        .I3(Q[8]),
+        .I4(Q[11]),
+        .I5(Q[10]),
+        .O(reg_symbol_after_eios_i_2_n_0));
+  FDRE #(
+    .INIT(1'b0)) 
+    reg_symbol_after_eios_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(reg_symbol_after_eios),
+        .D(reg_symbol_after_eios_i_1_n_0),
         .Q(symbol_after_eios),
         .R(SR));
 endmodule
@@ -6907,7 +7473,7 @@ module pcie_7x_0_gt_top
     pipe_rx0_valid_gt,
     pipe_rx0_elec_idle,
     pipe_rx0_phy_status,
-    phy_rdy_n_int_reg_0,
+    sys_rst_n,
     Q,
     \gt_rx_status_q_reg[2] ,
     pipe_rx0_char_is_k,
@@ -6928,7 +7494,7 @@ module pcie_7x_0_gt_top
     pipe_tx0_data,
     pipe_tx0_char_is_k,
     pipe_oobclk_in,
-    sys_rst_n,
+    reset_n_reg2_reg,
     pipe_tx_rate,
     pl_ltssm_state);
   output QPLL_DRP_GEN3;
@@ -6942,7 +7508,7 @@ module pcie_7x_0_gt_top
   output pipe_rx0_valid_gt;
   output pipe_rx0_elec_idle;
   output pipe_rx0_phy_status;
-  output phy_rdy_n_int_reg_0;
+  output sys_rst_n;
   output [15:0]Q;
   output [2:0]\gt_rx_status_q_reg[2] ;
   output [1:0]pipe_rx0_char_is_k;
@@ -6963,16 +7529,16 @@ module pcie_7x_0_gt_top
   input [15:0]pipe_tx0_data;
   input [1:0]pipe_tx0_char_is_k;
   input pipe_oobclk_in;
-  input sys_rst_n;
+  input reset_n_reg2_reg;
   input pipe_tx_rate;
   input [5:0]pl_ltssm_state;
 
+  wire PIPE_PHYSTATUS;
+  wire [15:0]PIPE_RXDATA;
+  wire [1:0]PIPE_RXDATAK;
+  wire PIPE_RXELECIDLE;
   wire [15:0]Q;
   wire QPLL_DRP_GEN3;
-  wire [1:0]gt_rx_data_k_wire_filter;
-  wire [15:0]gt_rx_data_wire_filter;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
-  wire [0:0]gt_rx_phy_status_wire_filter;
   wire [2:0]\gt_rx_status_q_reg[2] ;
   wire \gt_rx_valid_filter[0].GT_RX_VALID_FILTER_7x_inst_n_3 ;
   wire [0:0]pci_exp_rxn;
@@ -6980,7 +7546,6 @@ module pcie_7x_0_gt_top
   wire [0:0]pci_exp_txn;
   wire [0:0]pci_exp_txp;
   wire phy_rdy_n;
-  wire phy_rdy_n_int_reg_0;
   wire pipe_dclk_in;
   wire pipe_mmcm_lock_in;
   wire pipe_oobclk_in;
@@ -7013,22 +7578,23 @@ module pcie_7x_0_gt_top
   wire [5:0]pl_ltssm_state_q;
   wire reg_clock_locked;
   wire reg_clock_locked_i_1_n_0;
+  wire reset_n_reg2_reg;
   wire sys_clk;
   wire sys_rst_n;
   wire sys_rst_n_0;
 
   pcie_7x_0_gt_rx_valid_filter_7x \gt_rx_valid_filter[0].GT_RX_VALID_FILTER_7x_inst 
-       (.D(gt_rx_data_k_wire_filter),
-        .Q(pl_ltssm_state_q),
+       (.D(PIPE_RXDATA),
+        .PIPE_PHYSTATUS(PIPE_PHYSTATUS),
+        .PIPE_RXELECIDLE(PIPE_RXELECIDLE),
+        .Q(Q),
         .SR(phy_rdy_n),
-        .gt_rx_elec_idle_wire_filter(gt_rx_elec_idle_wire_filter),
-        .gt_rx_phy_status_wire_filter(gt_rx_phy_status_wire_filter),
         .\gt_rx_status_q_reg[2]_0 (\gt_rx_status_q_reg[2] ),
-        .\gt_rx_status_q_reg[2]_1 ({pipe_wrapper_i_n_28,pipe_wrapper_i_n_29,pipe_wrapper_i_n_30}),
-        .\gt_rxdata_q_reg[15]_0 (Q),
-        .\gt_rxdata_q_reg[15]_1 (gt_rx_data_wire_filter),
+        .\gt_rx_status_q_reg[2]_1 ({pipe_wrapper_i_n_29,pipe_wrapper_i_n_30,pipe_wrapper_i_n_31}),
+        .\gt_rxcharisk_q_reg[1]_0 (PIPE_RXDATAK),
         .gt_rxvalid_q_reg_0(pipe_rx0_valid_gt),
         .gt_rxvalid_q_reg_1(pipe_wrapper_i_n_27),
+        .gt_rxvalid_q_reg_2(pl_ltssm_state_q),
         .pipe_pclk_in(pipe_pclk_in),
         .pipe_rx0_char_is_k(pipe_rx0_char_is_k),
         .pipe_rx0_elec_idle(pipe_rx0_elec_idle),
@@ -7038,23 +7604,24 @@ module pcie_7x_0_gt_top
     .INIT(2'h1)) 
     pcie_block_i_i_29
        (.I0(phy_rdy_n),
-        .O(phy_rdy_n_int_reg_0));
-  FDRE phy_rdy_n_int_reg
+        .O(sys_rst_n));
+  FDRE #(
+    .INIT(1'b0)) 
+    phy_rdy_n_int_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(pipe_wrapper_i_n_31),
+        .D(pipe_wrapper_i_n_28),
         .Q(phy_rdy_n),
         .R(1'b0));
   pcie_7x_0_pipe_wrapper pipe_wrapper_i
-       (.D(gt_rx_data_k_wire_filter),
+       (.D(PIPE_RXDATA),
+        .PIPE_PHYSTATUS(PIPE_PHYSTATUS),
+        .PIPE_RXELECIDLE(PIPE_RXELECIDLE),
         .gen3_reg(QPLL_DRP_GEN3),
-        .gt_rx_elec_idle_wire_filter(gt_rx_elec_idle_wire_filter),
-        .gt_rx_phy_status_wire_filter(gt_rx_phy_status_wire_filter),
         .\gt_rx_status_q_reg[0] (pipe_rx0_valid_gt),
         .\gt_rx_status_q_reg[2] (\gt_rx_valid_filter[0].GT_RX_VALID_FILTER_7x_inst_n_3 ),
-        .\gtx_channel.gtxe2_channel_i (gt_rx_data_wire_filter),
-        .\gtx_channel.gtxe2_channel_i_0 (pipe_wrapper_i_n_27),
-        .\gtx_channel.gtxe2_channel_i_1 ({pipe_wrapper_i_n_28,pipe_wrapper_i_n_29,pipe_wrapper_i_n_30}),
+        .\gtx_channel.gtxe2_channel_i (PIPE_RXDATAK),
+        .\gtx_channel.gtxe2_channel_i_0 ({pipe_wrapper_i_n_29,pipe_wrapper_i_n_30,pipe_wrapper_i_n_31}),
         .pci_exp_rxn(pci_exp_rxn),
         .pci_exp_rxp(pci_exp_rxp),
         .pci_exp_txn(pci_exp_txn),
@@ -7078,42 +7645,55 @@ module pcie_7x_0_gt_top
         .pipe_tx_rate(pipe_tx_rate),
         .pipe_tx_rcvr_det(pipe_tx_rcvr_det),
         .pipe_txoutclk_out(pipe_txoutclk_out),
+        .rate_idle_reg2_reg(pipe_wrapper_i_n_27),
         .reg_clock_locked(reg_clock_locked),
-        .reg_clock_locked_reg(pipe_wrapper_i_n_31),
+        .reg_clock_locked_reg(pipe_wrapper_i_n_28),
+        .reset_n_reg2_reg_0(reset_n_reg2_reg),
         .sys_clk(sys_clk),
-        .sys_rst_n(sys_rst_n),
-        .sys_rst_n_0(sys_rst_n_0));
-  FDCE \pl_ltssm_state_q_reg[0] 
+        .sys_rst_n(sys_rst_n_0));
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[0] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
         .D(pl_ltssm_state[0]),
         .Q(pl_ltssm_state_q[0]));
-  FDCE \pl_ltssm_state_q_reg[1] 
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[1] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
         .D(pl_ltssm_state[1]),
         .Q(pl_ltssm_state_q[1]));
-  FDCE \pl_ltssm_state_q_reg[2] 
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[2] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
         .D(pl_ltssm_state[2]),
         .Q(pl_ltssm_state_q[2]));
-  FDCE \pl_ltssm_state_q_reg[3] 
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[3] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
         .D(pl_ltssm_state[3]),
         .Q(pl_ltssm_state_q[3]));
-  FDCE \pl_ltssm_state_q_reg[4] 
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[4] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
         .D(pl_ltssm_state[4]),
         .Q(pl_ltssm_state_q[4]));
-  FDCE \pl_ltssm_state_q_reg[5] 
+  FDCE #(
+    .INIT(1'b0)) 
+    \pl_ltssm_state_q_reg[5] 
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
@@ -7124,7 +7704,9 @@ module pcie_7x_0_gt_top
     reg_clock_locked_i_1
        (.I0(pipe_mmcm_lock_in),
         .O(reg_clock_locked_i_1_n_0));
-  FDCE reg_clock_locked_reg
+  FDCE #(
+    .INIT(1'b0)) 
+    reg_clock_locked_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
         .CLR(reg_clock_locked_i_1_n_0),
@@ -7142,7 +7724,7 @@ module pcie_7x_0_gt_wrapper
     gt_rxcdrlock,
     pipe_rx0_chanisaligned,
     \gtx_channel.gtxe2_channel_i_1 ,
-    gt_rx_elec_idle_wire_filter,
+    PIPE_RXELECIDLE,
     pipe_rxoutclk_out,
     \gtx_channel.gtxe2_channel_i_2 ,
     gt_rxratedone,
@@ -7196,8 +7778,8 @@ module pcie_7x_0_gt_wrapper
     pipe_tx0_char_is_k,
     DRPADDR,
     rate_cpllpd,
-    \gt_rx_status_q_reg[0] ,
-    \gt_rx_status_q_reg[2] );
+    \gt_rx_status_q_reg[2] ,
+    \gt_rx_status_q_reg[0] );
   output cpllrst;
   output [0:0]QRST_CPLLLOCK;
   output \gtx_channel.gtxe2_channel_i_0 ;
@@ -7207,7 +7789,7 @@ module pcie_7x_0_gt_wrapper
   output gt_rxcdrlock;
   output pipe_rx0_chanisaligned;
   output \gtx_channel.gtxe2_channel_i_1 ;
-  output [0:0]gt_rx_elec_idle_wire_filter;
+  output PIPE_RXELECIDLE;
   output [0:0]pipe_rxoutclk_out;
   output \gtx_channel.gtxe2_channel_i_2 ;
   output gt_rxratedone;
@@ -7261,8 +7843,8 @@ module pcie_7x_0_gt_wrapper
   input [1:0]pipe_tx0_char_is_k;
   input [7:0]DRPADDR;
   input rate_cpllpd;
-  input \gt_rx_status_q_reg[0] ;
   input \gt_rx_status_q_reg[2] ;
+  input \gt_rx_status_q_reg[0] ;
 
   wire [0:0]CLKRSVD;
   wire CPLLPD0;
@@ -7270,6 +7852,7 @@ module pcie_7x_0_gt_wrapper
   wire [15:0]D;
   wire [7:0]DRPADDR;
   wire [15:0]DRPDI;
+  wire PIPE_RXELECIDLE;
   wire [2:0]Q;
   wire QPLL_QPLLOUTCLK;
   wire QPLL_QPLLOUTREFCLK;
@@ -7284,7 +7867,6 @@ module pcie_7x_0_gt_wrapper
   wire cpllrst;
   wire gt_cpllpdrefclk;
   wire gt_phystatus;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
   wire \gt_rx_status_q_reg[0] ;
   wire \gt_rx_status_q_reg[2] ;
   wire gt_rxcdrlock;
@@ -7429,30 +8011,30 @@ module pcie_7x_0_gt_wrapper
         .cpllrst(cpllrst),
         .gt_cpllpdrefclk(gt_cpllpdrefclk),
         .rate_cpllpd(rate_cpllpd));
-  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
   LUT3 #(
-    .INIT(8'h8A)) 
+    .INIT(8'hA8)) 
     \gt_rx_status_q[0]_i_1 
        (.I0(\gtx_channel.gtxe2_channel_i_n_90 ),
-        .I1(\gt_rx_status_q_reg[0] ),
-        .I2(\gt_rx_status_q_reg[2] ),
+        .I1(\gt_rx_status_q_reg[2] ),
+        .I2(\gt_rx_status_q_reg[0] ),
         .O(\gtx_channel.gtxe2_channel_i_8 [0]));
-  (* SOFT_HLUTNM = "soft_lutpair3" *) 
+  (* SOFT_HLUTNM = "soft_lutpair4" *) 
   LUT3 #(
-    .INIT(8'h8A)) 
+    .INIT(8'hA8)) 
     \gt_rx_status_q[1]_i_1 
        (.I0(\gtx_channel.gtxe2_channel_i_n_89 ),
-        .I1(\gt_rx_status_q_reg[0] ),
-        .I2(\gt_rx_status_q_reg[2] ),
+        .I1(\gt_rx_status_q_reg[2] ),
+        .I2(\gt_rx_status_q_reg[0] ),
         .O(\gtx_channel.gtxe2_channel_i_8 [1]));
   LUT3 #(
-    .INIT(8'h8A)) 
+    .INIT(8'hA8)) 
     \gt_rx_status_q[2]_i_1 
        (.I0(RXSTATUS),
-        .I1(\gt_rx_status_q_reg[0] ),
-        .I2(\gt_rx_status_q_reg[2] ),
+        .I1(\gt_rx_status_q_reg[2] ),
+        .I2(\gt_rx_status_q_reg[0] ),
         .O(\gtx_channel.gtxe2_channel_i_8 [2]));
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   GTXE2_CHANNEL #(
     .ALIGN_COMMA_DOUBLE("FALSE"),
     .ALIGN_COMMA_ENABLE(10'b1111111111),
@@ -7769,7 +8351,7 @@ module pcie_7x_0_gt_wrapper
         .RXDLYOVRDEN(1'b0),
         .RXDLYSRESET(1'b0),
         .RXDLYSRESETDONE(\gtx_channel.gtxe2_channel_i_1 ),
-        .RXELECIDLE(gt_rx_elec_idle_wire_filter),
+        .RXELECIDLE(PIPE_RXELECIDLE),
         .RXELECIDLEMODE({1'b0,1'b0}),
         .RXGEARBOXSLIP(1'b0),
         .RXHEADER(\NLW_gtx_channel.gtxe2_channel_i_RXHEADER_UNCONNECTED [2:0]),
@@ -7924,8 +8506,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
   wire \NLW_cpllreset_wait_reg[63]_srl32_Q_UNCONNECTED ;
   wire \NLW_cpllreset_wait_reg[95]_srl32_Q_UNCONNECTED ;
 
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[31]_srl32 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[31]_srl32 " *) 
   SRLC32E #(
     .INIT(32'hFFFFFFFF)) 
     \cpllpd_wait_reg[31]_srl32 
@@ -7935,8 +8517,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(1'b0),
         .Q(\NLW_cpllpd_wait_reg[31]_srl32_Q_UNCONNECTED ),
         .Q31(\cpllpd_wait_reg[31]_srl32_n_1 ));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[63]_srl32 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[63]_srl32 " *) 
   SRLC32E #(
     .INIT(32'hFFFFFFFF)) 
     \cpllpd_wait_reg[63]_srl32 
@@ -7946,8 +8528,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(\cpllpd_wait_reg[31]_srl32_n_1 ),
         .Q(\NLW_cpllpd_wait_reg[63]_srl32_Q_UNCONNECTED ),
         .Q31(\cpllpd_wait_reg[63]_srl32_n_1 ));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[94]_srl31 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllpd_wait_reg[94]_srl31 " *) 
   SRLC32E #(
     .INIT(32'h7FFFFFFF)) 
     \cpllpd_wait_reg[94]_srl31 
@@ -7966,8 +8548,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(\cpllpd_wait_reg[94]_srl31_n_0 ),
         .Q(cpllpd),
         .R(1'b0));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[126]_srl31 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[126]_srl31 " *) 
   SRLC32E #(
     .INIT(32'h00000000)) 
     \cpllreset_wait_reg[126]_srl31 
@@ -7986,8 +8568,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(\cpllreset_wait_reg[126]_srl31_n_0 ),
         .Q(cpllrst),
         .R(1'b0));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[31]_srl32 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[31]_srl32 " *) 
   SRLC32E #(
     .INIT(32'h000000FF)) 
     \cpllreset_wait_reg[31]_srl32 
@@ -7997,8 +8579,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(1'b0),
         .Q(\NLW_cpllreset_wait_reg[31]_srl32_Q_UNCONNECTED ),
         .Q31(\cpllreset_wait_reg[31]_srl32_n_1 ));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[63]_srl32 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[63]_srl32 " *) 
   SRLC32E #(
     .INIT(32'h00000000)) 
     \cpllreset_wait_reg[63]_srl32 
@@ -8008,8 +8590,8 @@ module pcie_7x_0_gtx_cpllpd_ovrd
         .D(\cpllreset_wait_reg[31]_srl32_n_1 ),
         .Q(\NLW_cpllreset_wait_reg[63]_srl32_Q_UNCONNECTED ),
         .Q31(\cpllreset_wait_reg[63]_srl32_n_1 ));
-  (* srl_bus_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
-  (* srl_name = "inst/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[95]_srl32 " *) 
+  (* srl_bus_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg " *) 
+  (* srl_name = "U0/\inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/cpllPDInst/cpllreset_wait_reg[95]_srl32 " *) 
   SRLC32E #(
     .INIT(32'h00000000)) 
     \cpllreset_wait_reg[95]_srl32 
@@ -8028,69 +8610,69 @@ module pcie_7x_0_gtx_cpllpd_ovrd
 endmodule
 
 (* CFG_CTL_IF = "TRUE" *) (* CFG_FC_IF = "TRUE" *) (* CFG_MGMT_IF = "TRUE" *) 
-(* CFG_STATUS_IF = "TRUE" *) (* C_DATA_WIDTH = "64" *) (* DowngradeIPIdentifiedWarnings = "yes" *) 
-(* ENABLE_JTAG_DBG = "FALSE" *) (* ERR_REPORTING_IF = "TRUE" *) (* EXT_CH_GT_DRP = "FALSE" *) 
-(* EXT_PIPE_INTERFACE = "FALSE" *) (* EXT_STARTUP_PRIMITIVE = "FALSE" *) (* KEEP_WIDTH = "8" *) 
-(* LINK_CAP_MAX_LINK_WIDTH = "1" *) (* PCIE_ASYNC_EN = "FALSE" *) (* PCIE_EXT_CLK = "TRUE" *) 
-(* PCIE_EXT_GT_COMMON = "FALSE" *) (* PCIE_ID_IF = "FALSE" *) (* PIPE_SIM = "FALSE" *) 
-(* PL_INTERFACE = "TRUE" *) (* RCV_MSG_IF = "TRUE" *) (* REDUCE_OOB_FREQ = "FALSE" *) 
-(* SHARED_LOGIC_IN_CORE = "FALSE" *) (* TRANSCEIVER_CTRL_STATUS_PORTS = "FALSE" *) (* bar_0 = "FFFFF800" *) 
-(* bar_1 = "00000000" *) (* bar_2 = "00000000" *) (* bar_3 = "00000000" *) 
-(* bar_4 = "00000000" *) (* bar_5 = "00000000" *) (* bram_lat = "0" *) 
-(* c_aer_base_ptr = "000" *) (* c_aer_cap_ecrc_check_capable = "FALSE" *) (* c_aer_cap_ecrc_gen_capable = "FALSE" *) 
-(* c_aer_cap_multiheader = "FALSE" *) (* c_aer_cap_nextptr = "000" *) (* c_aer_cap_on = "FALSE" *) 
-(* c_aer_cap_optional_err_support = "000000" *) (* c_aer_cap_permit_rooterr_update = "FALSE" *) (* c_buf_opt_bma = "TRUE" *) 
-(* c_component_name = "pcie_7x_0" *) (* c_cpl_inf = "TRUE" *) (* c_cpl_infinite = "TRUE" *) 
-(* c_cpl_timeout_disable_sup = "FALSE" *) (* c_cpl_timeout_range = "0010" *) (* c_cpl_timeout_ranges_sup = "2" *) 
-(* c_d1_support = "FALSE" *) (* c_d2_support = "FALSE" *) (* c_de_emph = "FALSE" *) 
-(* c_dev_cap2_ari_forwarding_supported = "FALSE" *) (* c_dev_cap2_atomicop32_completer_supported = "FALSE" *) (* c_dev_cap2_atomicop64_completer_supported = "FALSE" *) 
-(* c_dev_cap2_atomicop_routing_supported = "FALSE" *) (* c_dev_cap2_cas128_completer_supported = "FALSE" *) (* c_dev_cap2_tph_completer_supported = "00" *) 
-(* c_dev_control_ext_tag_default = "FALSE" *) (* c_dev_port_type = "0" *) (* c_dis_lane_reverse = "TRUE" *) 
-(* c_disable_rx_poisoned_resp = "FALSE" *) (* c_disable_scrambling = "FALSE" *) (* c_disable_tx_aspm_l0s = "FALSE" *) 
-(* c_dll_lnk_actv_cap = "FALSE" *) (* c_dsi_bool = "FALSE" *) (* c_dsn_base_ptr = "100" *) 
-(* c_dsn_cap_enabled = "TRUE" *) (* c_dsn_next_ptr = "000" *) (* c_enable_msg_route = "00000000000" *) 
-(* c_ep_l0s_accpt_lat = "0" *) (* c_ep_l1_accpt_lat = "7" *) (* c_ext_pci_cfg_space_addr = "3FF" *) 
-(* c_external_clocking = "TRUE" *) (* c_fc_cpld = "461" *) (* c_fc_cplh = "36" *) 
-(* c_fc_npd = "24" *) (* c_fc_nph = "12" *) (* c_fc_pd = "437" *) 
-(* c_fc_ph = "32" *) (* c_gen1 = "1'b0" *) (* c_header_type = "00" *) 
-(* c_hw_auton_spd_disable = "FALSE" *) (* c_int_width = "64" *) (* c_last_cfg_dw = "10C" *) 
-(* c_link_cap_aspm_optionality = "FALSE" *) (* c_ll_ack_timeout = "0000" *) (* c_ll_ack_timeout_enable = "FALSE" *) 
-(* c_ll_ack_timeout_function = "0" *) (* c_ll_replay_timeout = "0000" *) (* c_ll_replay_timeout_enable = "FALSE" *) 
-(* c_ll_replay_timeout_func = "1" *) (* c_lnk_bndwdt_notif = "FALSE" *) (* c_msi = "0" *) 
-(* c_msi_64b_addr = "TRUE" *) (* c_msi_cap_on = "TRUE" *) (* c_msi_mult_msg_extn = "0" *) 
-(* c_msi_per_vctr_mask_cap = "FALSE" *) (* c_msix_cap_on = "FALSE" *) (* c_msix_next_ptr = "00" *) 
-(* c_msix_pba_bir = "0" *) (* c_msix_pba_offset = "0" *) (* c_msix_table_bir = "0" *) 
-(* c_msix_table_offset = "0" *) (* c_msix_table_size = "000" *) (* c_pci_cfg_space_addr = "3F" *) 
-(* c_pcie_blk_locn = "0" *) (* c_pcie_cap_next_ptr = "00" *) (* c_pcie_cap_slot_implemented = "FALSE" *) 
-(* c_pcie_dbg_ports = "TRUE" *) (* c_pcie_fast_config = "0" *) (* c_perf_level_high = "TRUE" *) 
-(* c_phantom_functions = "0" *) (* c_pm_cap_next_ptr = "48" *) (* c_pme_support = "0F" *) 
-(* c_rbar_base_ptr = "000" *) (* c_rbar_cap_control_encodedbar0 = "00" *) (* c_rbar_cap_control_encodedbar1 = "00" *) 
-(* c_rbar_cap_control_encodedbar2 = "00" *) (* c_rbar_cap_control_encodedbar3 = "00" *) (* c_rbar_cap_control_encodedbar4 = "00" *) 
-(* c_rbar_cap_control_encodedbar5 = "00" *) (* c_rbar_cap_index0 = "0" *) (* c_rbar_cap_index1 = "0" *) 
-(* c_rbar_cap_index2 = "0" *) (* c_rbar_cap_index3 = "0" *) (* c_rbar_cap_index4 = "0" *) 
-(* c_rbar_cap_index5 = "0" *) (* c_rbar_cap_nextptr = "000" *) (* c_rbar_cap_on = "FALSE" *) 
-(* c_rbar_cap_sup0 = "00001" *) (* c_rbar_cap_sup1 = "00001" *) (* c_rbar_cap_sup2 = "00001" *) 
-(* c_rbar_cap_sup3 = "00001" *) (* c_rbar_cap_sup4 = "00001" *) (* c_rbar_cap_sup5 = "00001" *) 
-(* c_rbar_num = "0" *) (* c_rcb = "0" *) (* c_recrc_check = "0" *) 
-(* c_recrc_check_trim = "FALSE" *) (* c_rev_gt_order = "FALSE" *) (* c_root_cap_crs = "FALSE" *) 
-(* c_rx_raddr_lat = "0" *) (* c_rx_ram_limit = "7FF" *) (* c_rx_rdata_lat = "2" *) 
-(* c_rx_write_lat = "0" *) (* c_silicon_rev = "2" *) (* c_slot_cap_attn_butn = "FALSE" *) 
-(* c_slot_cap_attn_ind = "FALSE" *) (* c_slot_cap_elec_interlock = "FALSE" *) (* c_slot_cap_hotplug_cap = "FALSE" *) 
-(* c_slot_cap_hotplug_surprise = "FALSE" *) (* c_slot_cap_mrl = "FALSE" *) (* c_slot_cap_no_cmd_comp_sup = "FALSE" *) 
-(* c_slot_cap_physical_slot_num = "0" *) (* c_slot_cap_pwr_ctrl = "FALSE" *) (* c_slot_cap_pwr_ind = "FALSE" *) 
-(* c_slot_cap_pwr_limit_scale = "0" *) (* c_slot_cap_pwr_limit_value = "0" *) (* c_surprise_dn_err_cap = "FALSE" *) 
-(* c_trgt_lnk_spd = "0" *) (* c_trn_np_fc = "TRUE" *) (* c_tx_last_tlp = "29" *) 
-(* c_tx_raddr_lat = "0" *) (* c_tx_rdata_lat = "2" *) (* c_tx_write_lat = "0" *) 
-(* c_upconfig_capable = "TRUE" *) (* c_upstream_facing = "TRUE" *) (* c_ur_atomic = "FALSE" *) 
-(* c_ur_inv_req = "TRUE" *) (* c_ur_prs_response = "TRUE" *) (* c_vc_base_ptr = "000" *) 
-(* c_vc_cap_enabled = "FALSE" *) (* c_vc_cap_reject_snoop = "FALSE" *) (* c_vc_next_ptr = "000" *) 
-(* c_vsec_base_ptr = "000" *) (* c_vsec_cap_enabled = "FALSE" *) (* c_vsec_next_ptr = "000" *) 
-(* c_xlnx_ref_board = "NONE" *) (* cap_ver = "2" *) (* cardbus_cis_ptr = "00000000" *) 
-(* class_code = "058000" *) (* cmps = "2" *) (* con_scl_fctr_d0_state = "0" *) 
-(* con_scl_fctr_d1_state = "0" *) (* con_scl_fctr_d2_state = "0" *) (* con_scl_fctr_d3_state = "0" *) 
-(* cost_table = "1" *) (* d1_sup = "0" *) (* d2_sup = "0" *) 
-(* dev_id = "7011" *) (* dev_port_type = "0000" *) (* dis_scl_fctr_d0_state = "0" *) 
-(* dis_scl_fctr_d1_state = "0" *) (* dis_scl_fctr_d2_state = "0" *) (* dis_scl_fctr_d3_state = "0" *) 
+(* CFG_STATUS_IF = "TRUE" *) (* C_DATA_WIDTH = "64" *) (* ENABLE_JTAG_DBG = "FALSE" *) 
+(* ERR_REPORTING_IF = "TRUE" *) (* EXT_CH_GT_DRP = "FALSE" *) (* EXT_PIPE_INTERFACE = "FALSE" *) 
+(* EXT_STARTUP_PRIMITIVE = "FALSE" *) (* KEEP_WIDTH = "8" *) (* LINK_CAP_MAX_LINK_WIDTH = "1" *) 
+(* PCIE_ASYNC_EN = "FALSE" *) (* PCIE_EXT_CLK = "TRUE" *) (* PCIE_EXT_GT_COMMON = "FALSE" *) 
+(* PCIE_ID_IF = "FALSE" *) (* PIPE_SIM = "FALSE" *) (* PL_INTERFACE = "TRUE" *) 
+(* RCV_MSG_IF = "TRUE" *) (* REDUCE_OOB_FREQ = "FALSE" *) (* SHARED_LOGIC_IN_CORE = "FALSE" *) 
+(* TRANSCEIVER_CTRL_STATUS_PORTS = "FALSE" *) (* bar_0 = "FFFFF800" *) (* bar_1 = "00000000" *) 
+(* bar_2 = "00000000" *) (* bar_3 = "00000000" *) (* bar_4 = "00000000" *) 
+(* bar_5 = "00000000" *) (* bram_lat = "0" *) (* c_aer_base_ptr = "000" *) 
+(* c_aer_cap_ecrc_check_capable = "FALSE" *) (* c_aer_cap_ecrc_gen_capable = "FALSE" *) (* c_aer_cap_multiheader = "FALSE" *) 
+(* c_aer_cap_nextptr = "000" *) (* c_aer_cap_on = "FALSE" *) (* c_aer_cap_optional_err_support = "000000" *) 
+(* c_aer_cap_permit_rooterr_update = "FALSE" *) (* c_buf_opt_bma = "TRUE" *) (* c_component_name = "pcie_7x_0" *) 
+(* c_cpl_inf = "TRUE" *) (* c_cpl_infinite = "TRUE" *) (* c_cpl_timeout_disable_sup = "FALSE" *) 
+(* c_cpl_timeout_range = "0010" *) (* c_cpl_timeout_ranges_sup = "2" *) (* c_d1_support = "FALSE" *) 
+(* c_d2_support = "FALSE" *) (* c_de_emph = "FALSE" *) (* c_dev_cap2_ari_forwarding_supported = "FALSE" *) 
+(* c_dev_cap2_atomicop32_completer_supported = "FALSE" *) (* c_dev_cap2_atomicop64_completer_supported = "FALSE" *) (* c_dev_cap2_atomicop_routing_supported = "FALSE" *) 
+(* c_dev_cap2_cas128_completer_supported = "FALSE" *) (* c_dev_cap2_tph_completer_supported = "00" *) (* c_dev_control_ext_tag_default = "FALSE" *) 
+(* c_dev_port_type = "0" *) (* c_dis_lane_reverse = "TRUE" *) (* c_disable_rx_poisoned_resp = "FALSE" *) 
+(* c_disable_scrambling = "FALSE" *) (* c_disable_tx_aspm_l0s = "FALSE" *) (* c_dll_lnk_actv_cap = "FALSE" *) 
+(* c_dsi_bool = "FALSE" *) (* c_dsn_base_ptr = "100" *) (* c_dsn_cap_enabled = "TRUE" *) 
+(* c_dsn_next_ptr = "000" *) (* c_enable_msg_route = "00000000000" *) (* c_ep_l0s_accpt_lat = "0" *) 
+(* c_ep_l1_accpt_lat = "7" *) (* c_ext_pci_cfg_space_addr = "3FF" *) (* c_external_clocking = "TRUE" *) 
+(* c_fc_cpld = "461" *) (* c_fc_cplh = "36" *) (* c_fc_npd = "24" *) 
+(* c_fc_nph = "12" *) (* c_fc_pd = "437" *) (* c_fc_ph = "32" *) 
+(* c_gen1 = "FALSE" *) (* c_header_type = "00" *) (* c_hw_auton_spd_disable = "FALSE" *) 
+(* c_int_width = "64" *) (* c_last_cfg_dw = "10C" *) (* c_link_cap_aspm_optionality = "FALSE" *) 
+(* c_ll_ack_timeout = "0000" *) (* c_ll_ack_timeout_enable = "FALSE" *) (* c_ll_ack_timeout_function = "0" *) 
+(* c_ll_replay_timeout = "0000" *) (* c_ll_replay_timeout_enable = "FALSE" *) (* c_ll_replay_timeout_func = "1" *) 
+(* c_lnk_bndwdt_notif = "FALSE" *) (* c_msi = "0" *) (* c_msi_64b_addr = "TRUE" *) 
+(* c_msi_cap_on = "TRUE" *) (* c_msi_mult_msg_extn = "0" *) (* c_msi_per_vctr_mask_cap = "FALSE" *) 
+(* c_msix_cap_on = "FALSE" *) (* c_msix_next_ptr = "00" *) (* c_msix_pba_bir = "0" *) 
+(* c_msix_pba_offset = "0" *) (* c_msix_table_bir = "0" *) (* c_msix_table_offset = "0" *) 
+(* c_msix_table_size = "000" *) (* c_pci_cfg_space_addr = "3F" *) (* c_pcie_blk_locn = "0" *) 
+(* c_pcie_cap_next_ptr = "00" *) (* c_pcie_cap_slot_implemented = "FALSE" *) (* c_pcie_dbg_ports = "TRUE" *) 
+(* c_pcie_fast_config = "0" *) (* c_perf_level_high = "TRUE" *) (* c_phantom_functions = "0" *) 
+(* c_pm_cap_next_ptr = "48" *) (* c_pme_support = "0F" *) (* c_rbar_base_ptr = "000" *) 
+(* c_rbar_cap_control_encodedbar0 = "00" *) (* c_rbar_cap_control_encodedbar1 = "00" *) (* c_rbar_cap_control_encodedbar2 = "00" *) 
+(* c_rbar_cap_control_encodedbar3 = "00" *) (* c_rbar_cap_control_encodedbar4 = "00" *) (* c_rbar_cap_control_encodedbar5 = "00" *) 
+(* c_rbar_cap_index0 = "0" *) (* c_rbar_cap_index1 = "0" *) (* c_rbar_cap_index2 = "0" *) 
+(* c_rbar_cap_index3 = "0" *) (* c_rbar_cap_index4 = "0" *) (* c_rbar_cap_index5 = "0" *) 
+(* c_rbar_cap_nextptr = "000" *) (* c_rbar_cap_on = "FALSE" *) (* c_rbar_cap_sup0 = "00001" *) 
+(* c_rbar_cap_sup1 = "00001" *) (* c_rbar_cap_sup2 = "00001" *) (* c_rbar_cap_sup3 = "00001" *) 
+(* c_rbar_cap_sup4 = "00001" *) (* c_rbar_cap_sup5 = "00001" *) (* c_rbar_num = "0" *) 
+(* c_rcb = "0" *) (* c_recrc_check = "0" *) (* c_recrc_check_trim = "FALSE" *) 
+(* c_rev_gt_order = "FALSE" *) (* c_root_cap_crs = "FALSE" *) (* c_rx_raddr_lat = "0" *) 
+(* c_rx_ram_limit = "7FF" *) (* c_rx_rdata_lat = "2" *) (* c_rx_write_lat = "0" *) 
+(* c_silicon_rev = "2" *) (* c_slot_cap_attn_butn = "FALSE" *) (* c_slot_cap_attn_ind = "FALSE" *) 
+(* c_slot_cap_elec_interlock = "FALSE" *) (* c_slot_cap_hotplug_cap = "FALSE" *) (* c_slot_cap_hotplug_surprise = "FALSE" *) 
+(* c_slot_cap_mrl = "FALSE" *) (* c_slot_cap_no_cmd_comp_sup = "FALSE" *) (* c_slot_cap_physical_slot_num = "0" *) 
+(* c_slot_cap_pwr_ctrl = "FALSE" *) (* c_slot_cap_pwr_ind = "FALSE" *) (* c_slot_cap_pwr_limit_scale = "0" *) 
+(* c_slot_cap_pwr_limit_value = "0" *) (* c_surprise_dn_err_cap = "FALSE" *) (* c_trgt_lnk_spd = "0" *) 
+(* c_trn_np_fc = "TRUE" *) (* c_tx_last_tlp = "29" *) (* c_tx_raddr_lat = "0" *) 
+(* c_tx_rdata_lat = "2" *) (* c_tx_write_lat = "0" *) (* c_upconfig_capable = "TRUE" *) 
+(* c_upstream_facing = "TRUE" *) (* c_ur_atomic = "FALSE" *) (* c_ur_inv_req = "TRUE" *) 
+(* c_ur_prs_response = "TRUE" *) (* c_vc_base_ptr = "000" *) (* c_vc_cap_enabled = "FALSE" *) 
+(* c_vc_cap_reject_snoop = "FALSE" *) (* c_vc_next_ptr = "000" *) (* c_vsec_base_ptr = "000" *) 
+(* c_vsec_cap_enabled = "FALSE" *) (* c_vsec_next_ptr = "000" *) (* c_xlnx_ref_board = "NONE" *) 
+(* cap_ver = "2" *) (* cardbus_cis_ptr = "00000000" *) (* class_code = "058000" *) 
+(* cmps = "2" *) (* con_scl_fctr_d0_state = "0" *) (* con_scl_fctr_d1_state = "0" *) 
+(* con_scl_fctr_d2_state = "0" *) (* con_scl_fctr_d3_state = "0" *) (* cost_table = "1" *) 
+(* d1_sup = "0" *) (* d2_sup = "0" *) (* dev_id = "7011" *) 
+(* dev_port_type = "0000" *) (* dis_scl_fctr_d0_state = "0" *) (* dis_scl_fctr_d1_state = "0" *) 
+(* dis_scl_fctr_d2_state = "0" *) (* dis_scl_fctr_d3_state = "0" *) (* downgradeipidentifiedwarnings = "yes" *) 
 (* dsi = "0" *) (* ep_l0s_accpt_lat = "000" *) (* ep_l1_accpt_lat = "111" *) 
 (* ext_tag_fld_sup = "FALSE" *) (* int_pin = "1" *) (* intx = "TRUE" *) 
 (* max_lnk_spd = "1" *) (* max_lnk_wdt = "000001" *) (* mps = "010" *) 
@@ -8102,10 +8684,10 @@ endmodule
 (* subsys_id = "0007" *) (* subsys_ven_id = "10EE" *) (* ven_id = "10EE" *) 
 (* xrom_bar = "00000000" *) 
 module pcie_7x_0_pcie2_top
-   (pci_exp_txn,
-    pci_exp_txp,
-    pci_exp_rxn,
+   (pci_exp_txp,
+    pci_exp_txn,
     pci_exp_rxp,
+    pci_exp_rxn,
     int_pclk_out_slave,
     int_pipe_rxusrclk_out,
     int_rxoutclk_out,
@@ -8130,39 +8712,25 @@ module pcie_7x_0_pcie2_top
     pipe_rxoutclk_out,
     pipe_pclk_sel_out,
     pipe_gen3_out,
-    qpll_drp_crscode,
-    qpll_drp_fsm,
-    qpll_drp_done,
-    qpll_drp_reset,
-    qpll_qplllock,
-    qpll_qplloutclk,
-    qpll_qplloutrefclk,
-    qpll_qplld,
-    qpll_qpllreset,
-    qpll_drp_clk,
-    qpll_drp_rst_n,
-    qpll_drp_ovrd,
-    qpll_drp_gen3,
-    qpll_drp_start,
     user_clk_out,
     user_reset_out,
     user_lnk_up,
     user_app_rdy,
     tx_buf_av,
-    tx_err_drop,
     tx_cfg_req,
-    s_axis_tx_tdata,
-    s_axis_tx_tvalid,
+    tx_err_drop,
     s_axis_tx_tready,
+    s_axis_tx_tdata,
     s_axis_tx_tkeep,
     s_axis_tx_tlast,
+    s_axis_tx_tvalid,
     s_axis_tx_tuser,
     tx_cfg_gnt,
     m_axis_rx_tdata,
-    m_axis_rx_tvalid,
-    m_axis_rx_tready,
     m_axis_rx_tkeep,
     m_axis_rx_tlast,
+    m_axis_rx_tvalid,
+    m_axis_rx_tready,
     m_axis_rx_tuser,
     rx_np_ok,
     rx_np_req,
@@ -8217,8 +8785,6 @@ module pcie_7x_0_pcie2_top
     cfg_pm_force_state_en,
     cfg_pm_force_state,
     cfg_dsn,
-    cfg_msg_received,
-    cfg_msg_data,
     cfg_interrupt,
     cfg_interrupt_rdy,
     cfg_interrupt_assert,
@@ -8236,13 +8802,13 @@ module pcie_7x_0_pcie2_top
     cfg_device_number,
     cfg_function_number,
     cfg_pm_wake,
-    cfg_msg_received_pm_as_nak,
-    cfg_msg_received_setslotpowerlimit,
     cfg_pm_send_pme_to,
     cfg_ds_bus_number,
     cfg_ds_device_number,
     cfg_ds_function_number,
     cfg_mgmt_wr_rw1c_as_rw,
+    cfg_msg_received,
+    cfg_msg_data,
     cfg_bridge_serr_en,
     cfg_slot_control_electromech_il_ctl_pulse,
     cfg_root_control_syserr_corr_err_en,
@@ -8258,6 +8824,7 @@ module pcie_7x_0_pcie2_top
     cfg_msg_received_err_cor,
     cfg_msg_received_err_non_fatal,
     cfg_msg_received_err_fatal,
+    cfg_msg_received_pm_as_nak,
     cfg_msg_received_pm_pme,
     cfg_msg_received_pme_to_ack,
     cfg_msg_received_assert_int_a,
@@ -8268,6 +8835,7 @@ module pcie_7x_0_pcie2_top
     cfg_msg_received_deassert_int_b,
     cfg_msg_received_deassert_int_c,
     cfg_msg_received_deassert_int_d,
+    cfg_msg_received_setslotpowerlimit,
     pl_directed_link_change,
     pl_directed_link_width,
     pl_directed_link_speed,
@@ -8294,13 +8862,32 @@ module pcie_7x_0_pcie2_top
     cfg_aer_ecrc_check_en,
     cfg_aer_ecrc_gen_en,
     cfg_vc_tcvc_map,
-    pcie_drp_clk,
-    pcie_drp_en,
-    pcie_drp_we,
-    pcie_drp_addr,
-    pcie_drp_di,
-    pcie_drp_rdy,
-    pcie_drp_do,
+    sys_clk,
+    sys_rst_n,
+    pipe_mmcm_rst_n,
+    common_commands_in,
+    pipe_rx_0_sigs,
+    pipe_rx_1_sigs,
+    pipe_rx_2_sigs,
+    pipe_rx_3_sigs,
+    pipe_rx_4_sigs,
+    pipe_rx_5_sigs,
+    pipe_rx_6_sigs,
+    pipe_rx_7_sigs,
+    common_commands_out,
+    pipe_tx_0_sigs,
+    pipe_tx_1_sigs,
+    pipe_tx_2_sigs,
+    pipe_tx_3_sigs,
+    pipe_tx_4_sigs,
+    pipe_tx_5_sigs,
+    pipe_tx_6_sigs,
+    pipe_tx_7_sigs,
+    cfg_dev_id_pf0,
+    cfg_ven_id,
+    cfg_rev_id_pf0,
+    cfg_subsys_id_pf0,
+    cfg_subsys_ven_id,
     startup_eos_in,
     startup_cfgclk,
     startup_cfgmclk,
@@ -8320,6 +8907,20 @@ module pcie_7x_0_pcie2_top
     icap_rdwrb,
     icap_i,
     icap_o,
+    qpll_drp_crscode,
+    qpll_drp_fsm,
+    qpll_drp_done,
+    qpll_drp_reset,
+    qpll_qplllock,
+    qpll_qplloutclk,
+    qpll_qplloutrefclk,
+    qpll_qplld,
+    qpll_qpllreset,
+    qpll_drp_clk,
+    qpll_drp_rst_n,
+    qpll_drp_ovrd,
+    qpll_drp_gen3,
+    qpll_drp_start,
     pipe_txprbssel,
     pipe_rxprbssel,
     pipe_txprbsforceerr,
@@ -8371,36 +8972,17 @@ module pcie_7x_0_pcie2_top
     ext_ch_gt_drpwe,
     ext_ch_gt_drpdo,
     ext_ch_gt_drprdy,
-    common_commands_in,
-    pipe_rx_0_sigs,
-    pipe_rx_1_sigs,
-    pipe_rx_2_sigs,
-    pipe_rx_3_sigs,
-    pipe_rx_4_sigs,
-    pipe_rx_5_sigs,
-    pipe_rx_6_sigs,
-    pipe_rx_7_sigs,
-    common_commands_out,
-    pipe_tx_0_sigs,
-    pipe_tx_1_sigs,
-    pipe_tx_2_sigs,
-    pipe_tx_3_sigs,
-    pipe_tx_4_sigs,
-    pipe_tx_5_sigs,
-    pipe_tx_6_sigs,
-    pipe_tx_7_sigs,
-    cfg_dev_id_pf0,
-    cfg_ven_id,
-    cfg_rev_id_pf0,
-    cfg_subsys_id_pf0,
-    cfg_subsys_ven_id,
-    pipe_mmcm_rst_n,
-    sys_clk,
-    sys_rst_n);
-  output [0:0]pci_exp_txn;
+    pcie_drp_clk,
+    pcie_drp_en,
+    pcie_drp_we,
+    pcie_drp_addr,
+    pcie_drp_di,
+    pcie_drp_do,
+    pcie_drp_rdy);
   output [0:0]pci_exp_txp;
-  input [0:0]pci_exp_rxn;
+  output [0:0]pci_exp_txn;
   input [0:0]pci_exp_rxp;
+  input [0:0]pci_exp_rxn;
   output int_pclk_out_slave;
   output int_pipe_rxusrclk_out;
   output [0:0]int_rxoutclk_out;
@@ -8425,39 +9007,25 @@ module pcie_7x_0_pcie2_top
   output [0:0]pipe_rxoutclk_out;
   output [0:0]pipe_pclk_sel_out;
   output pipe_gen3_out;
-  input [11:0]qpll_drp_crscode;
-  input [17:0]qpll_drp_fsm;
-  input [1:0]qpll_drp_done;
-  input [1:0]qpll_drp_reset;
-  input [1:0]qpll_qplllock;
-  input [1:0]qpll_qplloutclk;
-  input [1:0]qpll_qplloutrefclk;
-  output qpll_qplld;
-  output [1:0]qpll_qpllreset;
-  output qpll_drp_clk;
-  output qpll_drp_rst_n;
-  output qpll_drp_ovrd;
-  output qpll_drp_gen3;
-  output qpll_drp_start;
   output user_clk_out;
   output user_reset_out;
   output user_lnk_up;
   output user_app_rdy;
   output [5:0]tx_buf_av;
-  output tx_err_drop;
   output tx_cfg_req;
-  input [63:0]s_axis_tx_tdata;
-  input s_axis_tx_tvalid;
+  output tx_err_drop;
   output s_axis_tx_tready;
+  input [63:0]s_axis_tx_tdata;
   input [7:0]s_axis_tx_tkeep;
   input s_axis_tx_tlast;
+  input s_axis_tx_tvalid;
   input [3:0]s_axis_tx_tuser;
   input tx_cfg_gnt;
   output [63:0]m_axis_rx_tdata;
-  output m_axis_rx_tvalid;
-  input m_axis_rx_tready;
   output [7:0]m_axis_rx_tkeep;
   output m_axis_rx_tlast;
+  output m_axis_rx_tvalid;
+  input m_axis_rx_tready;
   output [21:0]m_axis_rx_tuser;
   input rx_np_ok;
   input rx_np_req;
@@ -8512,8 +9080,6 @@ module pcie_7x_0_pcie2_top
   input cfg_pm_force_state_en;
   input [1:0]cfg_pm_force_state;
   input [63:0]cfg_dsn;
-  output cfg_msg_received;
-  output [15:0]cfg_msg_data;
   input cfg_interrupt;
   output cfg_interrupt_rdy;
   input cfg_interrupt_assert;
@@ -8531,13 +9097,13 @@ module pcie_7x_0_pcie2_top
   output [4:0]cfg_device_number;
   output [2:0]cfg_function_number;
   input cfg_pm_wake;
-  output cfg_msg_received_pm_as_nak;
-  output cfg_msg_received_setslotpowerlimit;
   input cfg_pm_send_pme_to;
   input [7:0]cfg_ds_bus_number;
   input [4:0]cfg_ds_device_number;
   input [2:0]cfg_ds_function_number;
   input cfg_mgmt_wr_rw1c_as_rw;
+  output cfg_msg_received;
+  output [15:0]cfg_msg_data;
   output cfg_bridge_serr_en;
   output cfg_slot_control_electromech_il_ctl_pulse;
   output cfg_root_control_syserr_corr_err_en;
@@ -8553,6 +9119,7 @@ module pcie_7x_0_pcie2_top
   output cfg_msg_received_err_cor;
   output cfg_msg_received_err_non_fatal;
   output cfg_msg_received_err_fatal;
+  output cfg_msg_received_pm_as_nak;
   output cfg_msg_received_pm_pme;
   output cfg_msg_received_pme_to_ack;
   output cfg_msg_received_assert_int_a;
@@ -8563,6 +9130,7 @@ module pcie_7x_0_pcie2_top
   output cfg_msg_received_deassert_int_b;
   output cfg_msg_received_deassert_int_c;
   output cfg_msg_received_deassert_int_d;
+  output cfg_msg_received_setslotpowerlimit;
   input [1:0]pl_directed_link_change;
   input [1:0]pl_directed_link_width;
   input pl_directed_link_speed;
@@ -8589,13 +9157,32 @@ module pcie_7x_0_pcie2_top
   output cfg_aer_ecrc_check_en;
   output cfg_aer_ecrc_gen_en;
   output [6:0]cfg_vc_tcvc_map;
-  input pcie_drp_clk;
-  input pcie_drp_en;
-  input pcie_drp_we;
-  input [8:0]pcie_drp_addr;
-  input [15:0]pcie_drp_di;
-  output pcie_drp_rdy;
-  output [15:0]pcie_drp_do;
+  input sys_clk;
+  input sys_rst_n;
+  input pipe_mmcm_rst_n;
+  input [11:0]common_commands_in;
+  input [24:0]pipe_rx_0_sigs;
+  input [24:0]pipe_rx_1_sigs;
+  input [24:0]pipe_rx_2_sigs;
+  input [24:0]pipe_rx_3_sigs;
+  input [24:0]pipe_rx_4_sigs;
+  input [24:0]pipe_rx_5_sigs;
+  input [24:0]pipe_rx_6_sigs;
+  input [24:0]pipe_rx_7_sigs;
+  output [11:0]common_commands_out;
+  output [24:0]pipe_tx_0_sigs;
+  output [24:0]pipe_tx_1_sigs;
+  output [24:0]pipe_tx_2_sigs;
+  output [24:0]pipe_tx_3_sigs;
+  output [24:0]pipe_tx_4_sigs;
+  output [24:0]pipe_tx_5_sigs;
+  output [24:0]pipe_tx_6_sigs;
+  output [24:0]pipe_tx_7_sigs;
+  input [15:0]cfg_dev_id_pf0;
+  input [15:0]cfg_ven_id;
+  input [7:0]cfg_rev_id_pf0;
+  input [15:0]cfg_subsys_id_pf0;
+  input [15:0]cfg_subsys_ven_id;
   input startup_eos_in;
   output startup_cfgclk;
   output startup_cfgmclk;
@@ -8615,6 +9202,20 @@ module pcie_7x_0_pcie2_top
   input icap_rdwrb;
   input [31:0]icap_i;
   output [31:0]icap_o;
+  input [11:0]qpll_drp_crscode;
+  input [17:0]qpll_drp_fsm;
+  input [1:0]qpll_drp_done;
+  input [1:0]qpll_drp_reset;
+  input [1:0]qpll_qplllock;
+  input [1:0]qpll_qplloutclk;
+  input [1:0]qpll_qplloutrefclk;
+  output qpll_qplld;
+  output [1:0]qpll_qpllreset;
+  output qpll_drp_clk;
+  output qpll_drp_rst_n;
+  output qpll_drp_ovrd;
+  output qpll_drp_gen3;
+  output qpll_drp_start;
   input [2:0]pipe_txprbssel;
   input [2:0]pipe_rxprbssel;
   input pipe_txprbsforceerr;
@@ -8666,32 +9267,13 @@ module pcie_7x_0_pcie2_top
   input [0:0]ext_ch_gt_drpwe;
   output [15:0]ext_ch_gt_drpdo;
   output [0:0]ext_ch_gt_drprdy;
-  input [11:0]common_commands_in;
-  input [24:0]pipe_rx_0_sigs;
-  input [24:0]pipe_rx_1_sigs;
-  input [24:0]pipe_rx_2_sigs;
-  input [24:0]pipe_rx_3_sigs;
-  input [24:0]pipe_rx_4_sigs;
-  input [24:0]pipe_rx_5_sigs;
-  input [24:0]pipe_rx_6_sigs;
-  input [24:0]pipe_rx_7_sigs;
-  output [11:0]common_commands_out;
-  output [24:0]pipe_tx_0_sigs;
-  output [24:0]pipe_tx_1_sigs;
-  output [24:0]pipe_tx_2_sigs;
-  output [24:0]pipe_tx_3_sigs;
-  output [24:0]pipe_tx_4_sigs;
-  output [24:0]pipe_tx_5_sigs;
-  output [24:0]pipe_tx_6_sigs;
-  output [24:0]pipe_tx_7_sigs;
-  input [15:0]cfg_dev_id_pf0;
-  input [15:0]cfg_ven_id;
-  input [7:0]cfg_rev_id_pf0;
-  input [15:0]cfg_subsys_id_pf0;
-  input [15:0]cfg_subsys_ven_id;
-  input pipe_mmcm_rst_n;
-  input sys_clk;
-  input sys_rst_n;
+  input pcie_drp_clk;
+  input pcie_drp_en;
+  input pcie_drp_we;
+  input [8:0]pcie_drp_addr;
+  input [15:0]pcie_drp_di;
+  output [15:0]pcie_drp_do;
+  output pcie_drp_rdy;
 
   wire \<const0> ;
   wire cfg_aer_ecrc_check_en;
@@ -8800,7 +9382,7 @@ module pcie_7x_0_pcie2_top
   wire [7:0]fc_ph;
   wire [2:0]fc_sel;
   wire [63:0]m_axis_rx_tdata;
-  wire [6:6]\^m_axis_rx_tkeep ;
+  wire [6:2]\^m_axis_rx_tkeep ;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [21:0]\^m_axis_rx_tuser ;
@@ -9012,10 +9594,10 @@ module pcie_7x_0_pcie2_top
   assign m_axis_rx_tkeep[6] = \^m_axis_rx_tkeep [6];
   assign m_axis_rx_tkeep[5] = \^m_axis_rx_tkeep [6];
   assign m_axis_rx_tkeep[4] = \^m_axis_rx_tkeep [6];
-  assign m_axis_rx_tkeep[3] = \<const0> ;
-  assign m_axis_rx_tkeep[2] = \<const0> ;
-  assign m_axis_rx_tkeep[1] = \<const0> ;
-  assign m_axis_rx_tkeep[0] = \<const0> ;
+  assign m_axis_rx_tkeep[3] = \^m_axis_rx_tkeep [2];
+  assign m_axis_rx_tkeep[2] = \^m_axis_rx_tkeep [2];
+  assign m_axis_rx_tkeep[1] = \^m_axis_rx_tkeep [2];
+  assign m_axis_rx_tkeep[0] = \^m_axis_rx_tkeep [2];
   assign m_axis_rx_tuser[21] = \^m_axis_rx_tuser [21];
   assign m_axis_rx_tuser[20] = \<const0> ;
   assign m_axis_rx_tuser[19] = \^m_axis_rx_tuser [19];
@@ -9490,7 +10072,7 @@ module pcie_7x_0_pcie2_top
         .fc_sel(fc_sel),
         .gen3_reg(pipe_gen3_out),
         .m_axis_rx_tdata(m_axis_rx_tdata),
-        .m_axis_rx_tkeep(\^m_axis_rx_tkeep ),
+        .m_axis_rx_tkeep({\^m_axis_rx_tkeep [6],\^m_axis_rx_tkeep [2]}),
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser({\^m_axis_rx_tuser [21],\^m_axis_rx_tuser [19],\^m_axis_rx_tuser [17],\^m_axis_rx_tuser [14],\^m_axis_rx_tuser [8:0]}),
@@ -9571,7 +10153,7 @@ module pcie_7x_0_pcie_7x
     pcie_block_i_0,
     cfg_pcie_link_state,
     dsc_detect,
-    rsrc_rdy_filtered,
+    rsrc_rdy_filtered6_out,
     trn_rsrc_dsc_prev0,
     tcfg_req_trig,
     trn_tcfg_req,
@@ -9641,7 +10223,7 @@ module pcie_7x_0_pcie_7x
     fc_cpld,
     fc_npd,
     fc_pd,
-    pcie_block_i_3,
+    trn_rd,
     cfg_msg_data,
     pcie_drp_do,
     pipe_tx0_data,
@@ -9651,7 +10233,7 @@ module pcie_7x_0_pcie_7x
     pl_lane_reversal_mode,
     pl_rx_pm_state,
     pl_sel_lnk_width,
-    pcie_block_i_4,
+    trn_rrem,
     cfg_interrupt_mmenable,
     pipe_tx_margin,
     pl_initial_link_width,
@@ -9721,7 +10303,7 @@ module pcie_7x_0_pcie_7x
     rx_np_ok,
     rx_np_req,
     trn_tcfg_gnt,
-    pcie_block_i_5,
+    pcie_block_i_3,
     trn_teof,
     trn_tsof,
     trn_tsrc_rdy,
@@ -9765,7 +10347,7 @@ module pcie_7x_0_pcie_7x
   output pcie_block_i_0;
   output [2:0]cfg_pcie_link_state;
   output dsc_detect;
-  output rsrc_rdy_filtered;
+  output rsrc_rdy_filtered6_out;
   output trn_rsrc_dsc_prev0;
   output tcfg_req_trig;
   output trn_tcfg_req;
@@ -9835,7 +10417,7 @@ module pcie_7x_0_pcie_7x
   output [11:0]fc_cpld;
   output [11:0]fc_npd;
   output [11:0]fc_pd;
-  output [63:0]pcie_block_i_3;
+  output [63:0]trn_rd;
   output [15:0]cfg_msg_data;
   output [15:0]pcie_drp_do;
   output [15:0]pipe_tx0_data;
@@ -9845,7 +10427,7 @@ module pcie_7x_0_pcie_7x
   output [1:0]pl_lane_reversal_mode;
   output [1:0]pl_rx_pm_state;
   output [1:0]pl_sel_lnk_width;
-  output [0:0]pcie_block_i_4;
+  output [0:0]trn_rrem;
   output [2:0]cfg_interrupt_mmenable;
   output [2:0]pipe_tx_margin;
   output [2:0]pl_initial_link_width;
@@ -9915,7 +10497,7 @@ module pcie_7x_0_pcie_7x
   input rx_np_ok;
   input rx_np_req;
   input trn_tcfg_gnt;
-  input [3:0]pcie_block_i_5;
+  input [3:0]pcie_block_i_3;
   input trn_teof;
   input trn_tsof;
   input trn_tsrc_rdy;
@@ -9968,34 +10550,52 @@ module pcie_7x_0_pcie_7x
   wire cfg_err_aer_headerlog_set;
   wire cfg_err_aer_headerlog_set_n;
   wire cfg_err_atomic_egress_blocked;
+  wire cfg_err_atomic_egress_blocked_n;
   wire cfg_err_cor;
+  wire cfg_err_cor_n;
   wire cfg_err_cpl_abort;
+  wire cfg_err_cpl_abort_n;
   wire cfg_err_cpl_rdy;
   wire cfg_err_cpl_rdy_n;
   wire cfg_err_cpl_timeout;
+  wire cfg_err_cpl_timeout_n;
   wire cfg_err_cpl_unexpect;
+  wire cfg_err_cpl_unexpect_n;
   wire cfg_err_ecrc;
+  wire cfg_err_ecrc_n;
   wire cfg_err_internal_cor;
+  wire cfg_err_internal_cor_n;
   wire cfg_err_internal_uncor;
+  wire cfg_err_internal_uncor_n;
   wire cfg_err_locked;
+  wire cfg_err_locked_n;
   wire cfg_err_malformed;
+  wire cfg_err_malformed_n;
   wire cfg_err_mc_blocked;
+  wire cfg_err_mc_blocked_n;
   wire cfg_err_norecovery;
+  wire cfg_err_norecovery_n;
   wire cfg_err_poisoned;
+  wire cfg_err_poisoned_n;
   wire cfg_err_posted;
+  wire cfg_err_posted_n;
   wire [47:0]cfg_err_tlp_cpl_header;
   wire cfg_err_ur;
+  wire cfg_err_ur_n;
   wire cfg_interrupt;
   wire cfg_interrupt_assert;
+  wire cfg_interrupt_assert_n;
   wire [7:0]cfg_interrupt_di;
   wire [7:0]cfg_interrupt_do;
   wire [2:0]cfg_interrupt_mmenable;
   wire cfg_interrupt_msienable;
   wire cfg_interrupt_msixenable;
   wire cfg_interrupt_msixfm;
+  wire cfg_interrupt_n;
   wire cfg_interrupt_rdy;
   wire cfg_interrupt_rdy_n;
   wire cfg_interrupt_stat;
+  wire cfg_interrupt_stat_n;
   wire [10:0]cfg_lcommand;
   wire [9:0]cfg_lstatus;
   wire [3:0]cfg_mgmt_byte_en_n;
@@ -10003,11 +10603,15 @@ module pcie_7x_0_pcie_7x
   wire [31:0]cfg_mgmt_do;
   wire [9:0]cfg_mgmt_dwaddr;
   wire cfg_mgmt_rd_en;
+  wire cfg_mgmt_rd_en_n;
   wire cfg_mgmt_rd_wr_done;
   wire cfg_mgmt_rd_wr_done_n;
   wire cfg_mgmt_wr_en;
+  wire cfg_mgmt_wr_en_n;
   wire cfg_mgmt_wr_readonly;
+  wire cfg_mgmt_wr_readonly_n;
   wire cfg_mgmt_wr_rw1c_as_rw;
+  wire cfg_mgmt_wr_rw1c_as_rw_n;
   wire [15:0]cfg_msg_data;
   wire cfg_msg_received;
   wire cfg_msg_received_assert_int_a;
@@ -10029,15 +10633,18 @@ module pcie_7x_0_pcie_7x
   wire [4:0]cfg_pciecap_interrupt_msgnum;
   wire [1:0]cfg_pm_force_state;
   wire cfg_pm_force_state_en;
+  wire cfg_pm_force_state_en_n;
   wire cfg_pm_halt_aspm_l0s;
+  wire cfg_pm_halt_aspm_l0s_n;
   wire cfg_pm_halt_aspm_l1;
+  wire cfg_pm_halt_aspm_l1_n;
   wire cfg_pm_turnoff_ok_n;
   wire cfg_pm_wake;
+  wire cfg_pm_wake_n;
   wire cfg_pmcsr_pme_en;
   wire cfg_pmcsr_pme_status;
   wire [1:0]cfg_pmcsr_powerstate;
   wire cfg_received_func_lvl_rst;
-  wire cfg_received_func_lvl_rst_n;
   wire cfg_root_control_pme_int_en;
   wire cfg_root_control_syserr_corr_err_en;
   wire cfg_root_control_syserr_fatal_err_en;
@@ -10045,6 +10652,7 @@ module pcie_7x_0_pcie_7x
   wire cfg_slot_control_electromech_il_ctl_pulse;
   wire cfg_to_turnoff;
   wire cfg_trn_pending;
+  wire cfg_trn_pending_n;
   wire [6:0]cfg_vc_tcvc_map;
   wire dsc_detect;
   wire [11:0]fc_cpld;
@@ -10056,13 +10664,13 @@ module pcie_7x_0_pcie_7x
   wire [2:0]fc_sel;
   wire lnk_up_thrtl;
   wire [12:0]mim_rx_raddr;
-  wire [67:0]mim_rx_rdata;
+  wire [67:0]mim_rx_rdata_int;
   wire mim_rx_ren;
   wire [12:0]mim_rx_waddr;
   wire [67:0]mim_rx_wdata;
   wire mim_rx_wen;
   wire [12:0]mim_tx_raddr;
-  wire [68:0]mim_tx_rdata;
+  wire [68:0]mim_tx_rdata_int;
   wire mim_tx_ren;
   wire [12:0]mim_tx_waddr;
   wire [68:0]mim_tx_wdata;
@@ -10071,36 +10679,7 @@ module pcie_7x_0_pcie_7x
   wire pcie_block_i_0;
   wire pcie_block_i_1;
   wire pcie_block_i_2;
-  wire [63:0]pcie_block_i_3;
-  wire [0:0]pcie_block_i_4;
-  wire [3:0]pcie_block_i_5;
-  wire pcie_block_i_i_10_n_0;
-  wire pcie_block_i_i_11_n_0;
-  wire pcie_block_i_i_12_n_0;
-  wire pcie_block_i_i_13_n_0;
-  wire pcie_block_i_i_14_n_0;
-  wire pcie_block_i_i_15_n_0;
-  wire pcie_block_i_i_16_n_0;
-  wire pcie_block_i_i_17_n_0;
-  wire pcie_block_i_i_18_n_0;
-  wire pcie_block_i_i_19_n_0;
-  wire pcie_block_i_i_1_n_0;
-  wire pcie_block_i_i_20_n_0;
-  wire pcie_block_i_i_21_n_0;
-  wire pcie_block_i_i_22_n_0;
-  wire pcie_block_i_i_23_n_0;
-  wire pcie_block_i_i_24_n_0;
-  wire pcie_block_i_i_25_n_0;
-  wire pcie_block_i_i_27_n_0;
-  wire pcie_block_i_i_28_n_0;
-  wire pcie_block_i_i_2_n_0;
-  wire pcie_block_i_i_3_n_0;
-  wire pcie_block_i_i_4_n_0;
-  wire pcie_block_i_i_5_n_0;
-  wire pcie_block_i_i_6_n_0;
-  wire pcie_block_i_i_7_n_0;
-  wire pcie_block_i_i_8_n_0;
-  wire pcie_block_i_i_9_n_0;
+  wire [3:0]pcie_block_i_3;
   wire pcie_block_i_n_100;
   wire pcie_block_i_n_101;
   wire pcie_block_i_n_102;
@@ -10533,9 +11112,10 @@ module pcie_7x_0_pcie_7x
   wire pl_upstream_prefer_deemph;
   wire ppm_L1_thrtl;
   wire ppm_L1_trig;
+  wire received_func_lvl_rst_n;
   wire reg_dsc_detect;
   wire reg_tcfg_gnt;
-  wire rsrc_rdy_filtered;
+  wire rsrc_rdy_filtered6_out;
   wire rx_np_ok;
   wire rx_np_req;
   wire src_in;
@@ -10546,12 +11126,12 @@ module pcie_7x_0_pcie_7x
   wire trn_in_packet_reg;
   wire trn_lnk_up;
   wire [6:0]trn_rbar_hit;
-  wire [127:64]trn_rd;
+  wire [63:0]trn_rd;
   wire trn_rdst_rdy;
   wire trn_recrc_err;
   wire trn_reof;
   wire trn_rerrfwd;
-  wire [1:1]trn_rrem;
+  wire [0:0]trn_rrem;
   wire trn_rsof;
   wire trn_rsrc_dsc;
   wire trn_rsrc_dsc_d;
@@ -10569,6 +11149,8 @@ module pcie_7x_0_pcie_7x
   wire tx_err_drop;
   wire user_reset_int_reg;
   wire user_rst_n;
+  wire [127:64]NLW_pcie_block_i_TRNRD_UNCONNECTED;
+  wire [1:1]NLW_pcie_block_i_TRNRREM_UNCONNECTED;
   wire [3:1]NLW_pcie_block_i_TRNTDSTRDY_UNCONNECTED;
 
   LUT1 #(
@@ -10599,7 +11181,7 @@ module pcie_7x_0_pcie_7x
   LUT1 #(
     .INIT(2'h1)) 
     cfg_received_func_lvl_rst_INST_0
-       (.I0(cfg_received_func_lvl_rst_n),
+       (.I0(received_func_lvl_rst_n),
         .O(cfg_received_func_lvl_rst));
   LUT3 #(
     .INIT(8'h4F)) 
@@ -10610,7 +11192,7 @@ module pcie_7x_0_pcie_7x
         .O(pcie_block_i_2));
   LUT6 #(
     .INIT(64'h0000000027000000)) 
-    m_axis_rx_tvalid_i_2
+    m_axis_rx_tvalid_xhdl2_i_2
        (.I0(trn_reof),
         .I1(trn_rdst_rdy),
         .I2(trn_rsof),
@@ -10618,7 +11200,7 @@ module pcie_7x_0_pcie_7x
         .I4(trn_in_packet),
         .I5(trn_rsrc_dsc_d),
         .O(dsc_detect));
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   PCIE_2_1 #(
     .AER_BASE_PTR(12'h000),
     .AER_CAP_ECRC_CHECK_CAPABLE("FALSE"),
@@ -10952,36 +11534,36 @@ module pcie_7x_0_pcie_7x
         .CFGERRACSN(1'b1),
         .CFGERRAERHEADERLOG(cfg_err_aer_headerlog),
         .CFGERRAERHEADERLOGSETN(cfg_err_aer_headerlog_set_n),
-        .CFGERRATOMICEGRESSBLOCKEDN(pcie_block_i_i_1_n_0),
-        .CFGERRCORN(pcie_block_i_i_2_n_0),
-        .CFGERRCPLABORTN(pcie_block_i_i_3_n_0),
+        .CFGERRATOMICEGRESSBLOCKEDN(cfg_err_atomic_egress_blocked_n),
+        .CFGERRCORN(cfg_err_cor_n),
+        .CFGERRCPLABORTN(cfg_err_cpl_abort_n),
         .CFGERRCPLRDYN(cfg_err_cpl_rdy_n),
-        .CFGERRCPLTIMEOUTN(pcie_block_i_i_4_n_0),
-        .CFGERRCPLUNEXPECTN(pcie_block_i_i_5_n_0),
-        .CFGERRECRCN(pcie_block_i_i_6_n_0),
-        .CFGERRINTERNALCORN(pcie_block_i_i_7_n_0),
-        .CFGERRINTERNALUNCORN(pcie_block_i_i_8_n_0),
-        .CFGERRLOCKEDN(pcie_block_i_i_9_n_0),
-        .CFGERRMALFORMEDN(pcie_block_i_i_10_n_0),
-        .CFGERRMCBLOCKEDN(pcie_block_i_i_11_n_0),
-        .CFGERRNORECOVERYN(pcie_block_i_i_12_n_0),
-        .CFGERRPOISONEDN(pcie_block_i_i_13_n_0),
-        .CFGERRPOSTEDN(pcie_block_i_i_14_n_0),
+        .CFGERRCPLTIMEOUTN(cfg_err_cpl_timeout_n),
+        .CFGERRCPLUNEXPECTN(cfg_err_cpl_unexpect_n),
+        .CFGERRECRCN(cfg_err_ecrc_n),
+        .CFGERRINTERNALCORN(cfg_err_internal_cor_n),
+        .CFGERRINTERNALUNCORN(cfg_err_internal_uncor_n),
+        .CFGERRLOCKEDN(cfg_err_locked_n),
+        .CFGERRMALFORMEDN(cfg_err_malformed_n),
+        .CFGERRMCBLOCKEDN(cfg_err_mc_blocked_n),
+        .CFGERRNORECOVERYN(cfg_err_norecovery_n),
+        .CFGERRPOISONEDN(cfg_err_poisoned_n),
+        .CFGERRPOSTEDN(cfg_err_posted_n),
         .CFGERRTLPCPLHEADER(cfg_err_tlp_cpl_header),
-        .CFGERRURN(pcie_block_i_i_15_n_0),
+        .CFGERRURN(cfg_err_ur_n),
         .CFGFORCECOMMONCLOCKOFF(1'b0),
         .CFGFORCEEXTENDEDSYNCON(1'b0),
         .CFGFORCEMPS({1'b0,1'b0,1'b0}),
-        .CFGINTERRUPTASSERTN(pcie_block_i_i_16_n_0),
+        .CFGINTERRUPTASSERTN(cfg_interrupt_assert_n),
         .CFGINTERRUPTDI(cfg_interrupt_di),
         .CFGINTERRUPTDO(cfg_interrupt_do),
         .CFGINTERRUPTMMENABLE(cfg_interrupt_mmenable),
         .CFGINTERRUPTMSIENABLE(cfg_interrupt_msienable),
         .CFGINTERRUPTMSIXENABLE(cfg_interrupt_msixenable),
         .CFGINTERRUPTMSIXFM(cfg_interrupt_msixfm),
-        .CFGINTERRUPTN(pcie_block_i_i_17_n_0),
+        .CFGINTERRUPTN(cfg_interrupt_n),
         .CFGINTERRUPTRDYN(cfg_interrupt_rdy_n),
-        .CFGINTERRUPTSTATN(pcie_block_i_i_18_n_0),
+        .CFGINTERRUPTSTATN(cfg_interrupt_stat_n),
         .CFGLINKCONTROLASPMCONTROL(cfg_lcommand[1:0]),
         .CFGLINKCONTROLAUTOBANDWIDTHINTEN(cfg_lcommand[10]),
         .CFGLINKCONTROLBANDWIDTHINTEN(cfg_lcommand[9]),
@@ -11002,11 +11584,11 @@ module pcie_7x_0_pcie_7x
         .CFGMGMTDI(cfg_mgmt_di),
         .CFGMGMTDO(cfg_mgmt_do),
         .CFGMGMTDWADDR(cfg_mgmt_dwaddr),
-        .CFGMGMTRDENN(pcie_block_i_i_19_n_0),
+        .CFGMGMTRDENN(cfg_mgmt_rd_en_n),
         .CFGMGMTRDWRDONEN(cfg_mgmt_rd_wr_done_n),
-        .CFGMGMTWRENN(pcie_block_i_i_20_n_0),
-        .CFGMGMTWRREADONLYN(pcie_block_i_i_21_n_0),
-        .CFGMGMTWRRW1CASRWN(pcie_block_i_i_22_n_0),
+        .CFGMGMTWRENN(cfg_mgmt_wr_en_n),
+        .CFGMGMTWRREADONLYN(cfg_mgmt_wr_readonly_n),
+        .CFGMGMTWRRW1CASRWN(cfg_mgmt_wr_rw1c_as_rw_n),
         .CFGMSGDATA(cfg_msg_data),
         .CFGMSGRECEIVED(cfg_msg_received),
         .CFGMSGRECEIVEDASSERTINTA(cfg_msg_received_assert_int_a),
@@ -11032,16 +11614,16 @@ module pcie_7x_0_pcie_7x
         .CFGPMCSRPMESTATUS(cfg_pmcsr_pme_status),
         .CFGPMCSRPOWERSTATE(cfg_pmcsr_powerstate),
         .CFGPMFORCESTATE(cfg_pm_force_state),
-        .CFGPMFORCESTATEENN(pcie_block_i_i_23_n_0),
-        .CFGPMHALTASPML0SN(pcie_block_i_i_24_n_0),
-        .CFGPMHALTASPML1N(pcie_block_i_i_25_n_0),
+        .CFGPMFORCESTATEENN(cfg_pm_force_state_en_n),
+        .CFGPMHALTASPML0SN(cfg_pm_halt_aspm_l0s_n),
+        .CFGPMHALTASPML1N(cfg_pm_halt_aspm_l1_n),
         .CFGPMRCVASREQL1N(pcie_block_i_n_75),
         .CFGPMRCVENTERL1N(pcie_block_i_n_76),
         .CFGPMRCVENTERL23N(pcie_block_i_n_77),
         .CFGPMRCVREQACKN(pcie_block_i_n_78),
         .CFGPMSENDPMETON(1'b1),
         .CFGPMTURNOFFOKN(cfg_pm_turnoff_ok_n),
-        .CFGPMWAKEN(pcie_block_i_i_27_n_0),
+        .CFGPMWAKEN(cfg_pm_wake_n),
         .CFGPORTNUMBER({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .CFGREVID({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .CFGROOTCONTROLPMEINTEN(cfg_root_control_pme_int_en),
@@ -11054,7 +11636,7 @@ module pcie_7x_0_pcie_7x
         .CFGTRANSACTION(pcie_block_i_n_84),
         .CFGTRANSACTIONADDR({pcie_block_i_n_1097,pcie_block_i_n_1098,pcie_block_i_n_1099,pcie_block_i_n_1100,pcie_block_i_n_1101,pcie_block_i_n_1102,pcie_block_i_n_1103}),
         .CFGTRANSACTIONTYPE(pcie_block_i_n_85),
-        .CFGTRNPENDINGN(pcie_block_i_i_28_n_0),
+        .CFGTRNPENDINGN(cfg_trn_pending_n),
         .CFGVCTCVCMAP(cfg_vc_tcvc_map),
         .CFGVENDID({1'b0,1'b0,1'b0,1'b1,1'b0,1'b0,1'b0,1'b0,1'b1,1'b1,1'b1,1'b0,1'b1,1'b1,1'b1,1'b0}),
         .CMRSTN(1'b1),
@@ -11103,13 +11685,13 @@ module pcie_7x_0_pcie_7x
         .LL2TXIDLE(pcie_block_i_n_107),
         .LNKCLKEN(pcie_block_i_n_108),
         .MIMRXRADDR(mim_rx_raddr),
-        .MIMRXRDATA(mim_rx_rdata),
+        .MIMRXRDATA(mim_rx_rdata_int),
         .MIMRXREN(mim_rx_ren),
         .MIMRXWADDR(mim_rx_waddr),
         .MIMRXWDATA(mim_rx_wdata),
         .MIMRXWEN(mim_rx_wen),
         .MIMTXRADDR(mim_tx_raddr),
-        .MIMTXRDATA(mim_tx_rdata),
+        .MIMTXRDATA(mim_tx_rdata_int),
         .MIMTXREN(mim_tx_ren),
         .MIMTXWADDR(mim_tx_waddr),
         .MIMTXWDATA(mim_tx_wdata),
@@ -11258,7 +11840,7 @@ module pcie_7x_0_pcie_7x
         .PLTRANSMITHOTRST(pl_transmit_hot_rst),
         .PLTXPMSTATE(pl_tx_pm_state),
         .PLUPSTREAMPREFERDEEMPH(pl_upstream_prefer_deemph),
-        .RECEIVEDFUNCLVLRSTN(cfg_received_func_lvl_rst_n),
+        .RECEIVEDFUNCLVLRSTN(received_func_lvl_rst_n),
         .SYSRSTN(sys_rst_n),
         .TL2ASPMSUSPENDCREDITCHECK(1'b0),
         .TL2ASPMSUSPENDCREDITCHECKOK(pcie_block_i_n_155),
@@ -11279,7 +11861,7 @@ module pcie_7x_0_pcie_7x
         .TRNFCSEL(fc_sel),
         .TRNLNKUP(trn_lnk_up),
         .TRNRBARHIT({pcie_block_i_n_1143,trn_rbar_hit}),
-        .TRNRD({trn_rd,pcie_block_i_3}),
+        .TRNRD({NLW_pcie_block_i_TRNRD_UNCONNECTED[127:64],trn_rd}),
         .TRNRDLLPDATA({pcie_block_i_n_896,pcie_block_i_n_897,pcie_block_i_n_898,pcie_block_i_n_899,pcie_block_i_n_900,pcie_block_i_n_901,pcie_block_i_n_902,pcie_block_i_n_903,pcie_block_i_n_904,pcie_block_i_n_905,pcie_block_i_n_906,pcie_block_i_n_907,pcie_block_i_n_908,pcie_block_i_n_909,pcie_block_i_n_910,pcie_block_i_n_911,pcie_block_i_n_912,pcie_block_i_n_913,pcie_block_i_n_914,pcie_block_i_n_915,pcie_block_i_n_916,pcie_block_i_n_917,pcie_block_i_n_918,pcie_block_i_n_919,pcie_block_i_n_920,pcie_block_i_n_921,pcie_block_i_n_922,pcie_block_i_n_923,pcie_block_i_n_924,pcie_block_i_n_925,pcie_block_i_n_926,pcie_block_i_n_927,pcie_block_i_n_928,pcie_block_i_n_929,pcie_block_i_n_930,pcie_block_i_n_931,pcie_block_i_n_932,pcie_block_i_n_933,pcie_block_i_n_934,pcie_block_i_n_935,pcie_block_i_n_936,pcie_block_i_n_937,pcie_block_i_n_938,pcie_block_i_n_939,pcie_block_i_n_940,pcie_block_i_n_941,pcie_block_i_n_942,pcie_block_i_n_943,pcie_block_i_n_944,pcie_block_i_n_945,pcie_block_i_n_946,pcie_block_i_n_947,pcie_block_i_n_948,pcie_block_i_n_949,pcie_block_i_n_950,pcie_block_i_n_951,pcie_block_i_n_952,pcie_block_i_n_953,pcie_block_i_n_954,pcie_block_i_n_955,pcie_block_i_n_956,pcie_block_i_n_957,pcie_block_i_n_958,pcie_block_i_n_959}),
         .TRNRDLLPSRCRDY({pcie_block_i_n_618,pcie_block_i_n_619}),
         .TRNRDSTRDY(trn_rdst_rdy),
@@ -11289,7 +11871,7 @@ module pcie_7x_0_pcie_7x
         .TRNRFCPRET(1'b1),
         .TRNRNPOK(rx_np_ok),
         .TRNRNPREQ(rx_np_req),
-        .TRNRREM({trn_rrem,pcie_block_i_4}),
+        .TRNRREM({NLW_pcie_block_i_TRNRREM_UNCONNECTED[1],trn_rrem}),
         .TRNRSOF(trn_rsof),
         .TRNRSRCDSC(trn_rsrc_dsc),
         .TRNRSRCRDY(trn_rsrc_rdy),
@@ -11301,15 +11883,15 @@ module pcie_7x_0_pcie_7x
         .TRNTDLLPDSTRDY(pcie_block_i_n_169),
         .TRNTDLLPSRCRDY(1'b0),
         .TRNTDSTRDY({NLW_pcie_block_i_TRNTDSTRDY_UNCONNECTED[3:1],trn_tdst_rdy}),
-        .TRNTECRCGEN(pcie_block_i_5[0]),
+        .TRNTECRCGEN(pcie_block_i_3[0]),
         .TRNTEOF(trn_teof),
         .TRNTERRDROP(tx_err_drop),
-        .TRNTERRFWD(pcie_block_i_5[1]),
+        .TRNTERRFWD(pcie_block_i_3[1]),
         .TRNTREM({1'b0,trn_trem}),
         .TRNTSOF(trn_tsof),
-        .TRNTSRCDSC(pcie_block_i_5[3]),
+        .TRNTSRCDSC(pcie_block_i_3[3]),
         .TRNTSRCRDY(trn_tsrc_rdy),
-        .TRNTSTR(pcie_block_i_5[2]),
+        .TRNTSTR(pcie_block_i_3[2]),
         .USERCLK(pipe_userclk1_in),
         .USERCLK2(pipe_userclk2_in),
         .USERRSTN(user_rst_n));
@@ -11317,154 +11899,154 @@ module pcie_7x_0_pcie_7x
     .INIT(2'h1)) 
     pcie_block_i_i_1
        (.I0(cfg_err_atomic_egress_blocked),
-        .O(pcie_block_i_i_1_n_0));
+        .O(cfg_err_atomic_egress_blocked_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_10
        (.I0(cfg_err_malformed),
-        .O(pcie_block_i_i_10_n_0));
+        .O(cfg_err_malformed_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_11
        (.I0(cfg_err_mc_blocked),
-        .O(pcie_block_i_i_11_n_0));
+        .O(cfg_err_mc_blocked_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_12
        (.I0(cfg_err_norecovery),
-        .O(pcie_block_i_i_12_n_0));
+        .O(cfg_err_norecovery_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_13
        (.I0(cfg_err_poisoned),
-        .O(pcie_block_i_i_13_n_0));
+        .O(cfg_err_poisoned_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_14
        (.I0(cfg_err_posted),
-        .O(pcie_block_i_i_14_n_0));
+        .O(cfg_err_posted_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_15
        (.I0(cfg_err_ur),
-        .O(pcie_block_i_i_15_n_0));
+        .O(cfg_err_ur_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_16
        (.I0(cfg_interrupt_assert),
-        .O(pcie_block_i_i_16_n_0));
+        .O(cfg_interrupt_assert_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_17
        (.I0(cfg_interrupt),
-        .O(pcie_block_i_i_17_n_0));
+        .O(cfg_interrupt_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_18
        (.I0(cfg_interrupt_stat),
-        .O(pcie_block_i_i_18_n_0));
+        .O(cfg_interrupt_stat_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_19
        (.I0(cfg_mgmt_rd_en),
-        .O(pcie_block_i_i_19_n_0));
+        .O(cfg_mgmt_rd_en_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_2
        (.I0(cfg_err_cor),
-        .O(pcie_block_i_i_2_n_0));
+        .O(cfg_err_cor_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_20
        (.I0(cfg_mgmt_wr_en),
-        .O(pcie_block_i_i_20_n_0));
+        .O(cfg_mgmt_wr_en_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_21
        (.I0(cfg_mgmt_wr_readonly),
-        .O(pcie_block_i_i_21_n_0));
+        .O(cfg_mgmt_wr_readonly_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_22
        (.I0(cfg_mgmt_wr_rw1c_as_rw),
-        .O(pcie_block_i_i_22_n_0));
+        .O(cfg_mgmt_wr_rw1c_as_rw_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_23
        (.I0(cfg_pm_force_state_en),
-        .O(pcie_block_i_i_23_n_0));
+        .O(cfg_pm_force_state_en_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_24
        (.I0(cfg_pm_halt_aspm_l0s),
-        .O(pcie_block_i_i_24_n_0));
+        .O(cfg_pm_halt_aspm_l0s_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_25
        (.I0(cfg_pm_halt_aspm_l1),
-        .O(pcie_block_i_i_25_n_0));
+        .O(cfg_pm_halt_aspm_l1_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_27
        (.I0(cfg_pm_wake),
-        .O(pcie_block_i_i_27_n_0));
+        .O(cfg_pm_wake_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_28
        (.I0(cfg_trn_pending),
-        .O(pcie_block_i_i_28_n_0));
+        .O(cfg_trn_pending_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_3
        (.I0(cfg_err_cpl_abort),
-        .O(pcie_block_i_i_3_n_0));
+        .O(cfg_err_cpl_abort_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_4
        (.I0(cfg_err_cpl_timeout),
-        .O(pcie_block_i_i_4_n_0));
+        .O(cfg_err_cpl_timeout_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_5
        (.I0(cfg_err_cpl_unexpect),
-        .O(pcie_block_i_i_5_n_0));
+        .O(cfg_err_cpl_unexpect_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_6
        (.I0(cfg_err_ecrc),
-        .O(pcie_block_i_i_6_n_0));
+        .O(cfg_err_ecrc_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_7
        (.I0(cfg_err_internal_cor),
-        .O(pcie_block_i_i_7_n_0));
+        .O(cfg_err_internal_cor_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_8
        (.I0(cfg_err_internal_uncor),
-        .O(pcie_block_i_i_8_n_0));
+        .O(cfg_err_internal_uncor_n));
   LUT1 #(
     .INIT(2'h1)) 
     pcie_block_i_i_9
        (.I0(cfg_err_locked),
-        .O(pcie_block_i_i_9_n_0));
+        .O(cfg_err_locked_n));
   pcie_7x_0_pcie_bram_top_7x pcie_bram_top
        (.MIMRXRADDR(mim_rx_raddr[10:0]),
         .MIMRXWADDR(mim_rx_waddr[10:0]),
         .MIMTXRADDR(mim_tx_raddr[10:0]),
         .MIMTXWADDR(mim_tx_waddr[10:0]),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (mim_rx_rdata),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (mim_rx_wdata),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
         .mim_tx_ren(mim_tx_ren),
         .mim_tx_wen(mim_tx_wen),
         .pipe_userclk1_in(pipe_userclk1_in),
-        .rdata(mim_tx_rdata),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (mim_rx_rdata_int),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (mim_rx_wdata),
+        .rdata(mim_tx_rdata_int),
         .wdata(mim_tx_wdata));
   LUT1 #(
     .INIT(2'h1)) 
-    phy_lnk_up_cdc_i_1
+    pl_phy_lnk_up_cdc_i_1
        (.I0(pl_phy_lnk_up_n),
         .O(src_in));
   LUT5 #(
@@ -11479,25 +12061,25 @@ module pcie_7x_0_pcie_7x
   LUT5 #(
     .INIT(32'h00000001)) 
     tbuf_av_min_thrtl_i_1
-       (.I0(trn_tbuf_av[5]),
-        .I1(trn_tbuf_av[4]),
-        .I2(trn_tbuf_av[3]),
-        .I3(trn_tbuf_av[2]),
-        .I4(trn_tbuf_av[1]),
+       (.I0(trn_tbuf_av[1]),
+        .I1(trn_tbuf_av[3]),
+        .I2(trn_tbuf_av[2]),
+        .I3(trn_tbuf_av[5]),
+        .I4(trn_tbuf_av[4]),
         .O(tbuf_av_min_trig));
   LUT6 #(
-    .INIT(64'h0000000100010001)) 
-    tready_thrtl_i_11
-       (.I0(trn_tbuf_av[5]),
+    .INIT(64'h0000000100000003)) 
+    tready_thrtl_xhdl1_i_11
+       (.I0(trn_tbuf_av[1]),
         .I1(trn_tbuf_av[4]),
-        .I2(trn_tbuf_av[3]),
+        .I2(trn_tbuf_av[5]),
         .I3(trn_tbuf_av[2]),
-        .I4(trn_tbuf_av[0]),
-        .I5(trn_tbuf_av[1]),
+        .I4(trn_tbuf_av[3]),
+        .I5(trn_tbuf_av[0]),
         .O(pcie_block_i_1));
   LUT2 #(
     .INIT(4'h8)) 
-    tready_thrtl_i_9
+    tready_thrtl_xhdl1_i_8
        (.I0(trn_tcfg_req),
         .I1(reg_tcfg_gnt),
         .O(tcfg_req_trig));
@@ -11511,14 +12093,14 @@ module pcie_7x_0_pcie_7x
         .I4(trn_rsof),
         .I5(trn_rsrc_dsc),
         .O(trn_in_packet_reg));
-  (* SOFT_HLUTNM = "soft_lutpair115" *) 
+  (* SOFT_HLUTNM = "soft_lutpair110" *) 
   LUT2 #(
     .INIT(4'hE)) 
     trn_rsrc_dsc_prev_i_1
        (.I0(trn_rsrc_dsc),
         .I1(reg_dsc_detect),
         .O(trn_rsrc_dsc_prev0));
-  (* SOFT_HLUTNM = "soft_lutpair115" *) 
+  (* SOFT_HLUTNM = "soft_lutpair110" *) 
   LUT4 #(
     .INIT(16'hAA08)) 
     trn_rsrc_rdy_prev_i_1
@@ -11526,7 +12108,7 @@ module pcie_7x_0_pcie_7x
         .I1(trn_rsof),
         .I2(trn_rsrc_dsc),
         .I3(trn_in_packet),
-        .O(rsrc_rdy_filtered));
+        .O(rsrc_rdy_filtered6_out));
   LUT3 #(
     .INIT(8'h2A)) 
     user_reset_int_i_1
@@ -11560,7 +12142,7 @@ module pcie_7x_0_pcie_bram_7x
   wire [17:0]rdata;
   wire [17:0]wdata;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_6 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_6 \use_tdp.ramb36 
        (.MIMTXRADDR(MIMTXRADDR),
         .MIMTXWADDR(MIMTXWADDR),
         .mim_tx_ren(mim_tx_ren),
@@ -11595,7 +12177,7 @@ module pcie_7x_0_pcie_bram_7x_1
   wire [17:0]rdata;
   wire [17:0]wdata;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_5 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_5 \use_tdp.ramb36 
        (.MIMTXRADDR(MIMTXRADDR),
         .MIMTXWADDR(MIMTXWADDR),
         .mim_tx_ren(mim_tx_ren),
@@ -11607,37 +12189,37 @@ endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_bram_7x" *) 
 module pcie_7x_0_pcie_bram_7x_10
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+   (\ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
-  output [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
+  output [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
+  wire [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_11 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_11 \use_tdp.ramb36 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl ),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_1 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ));
 endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_bram_7x" *) 
@@ -11665,7 +12247,7 @@ module pcie_7x_0_pcie_bram_7x_2
   wire [17:0]rdata;
   wire [17:0]wdata;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_4 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_4 \use_tdp.ramb36 
        (.MIMTXRADDR(MIMTXRADDR),
         .MIMTXWADDR(MIMTXWADDR),
         .mim_tx_ren(mim_tx_ren),
@@ -11700,7 +12282,7 @@ module pcie_7x_0_pcie_bram_7x_3
   wire [14:0]rdata;
   wire [14:0]wdata;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO \use_tdp.ramb36 
        (.MIMTXRADDR(MIMTXRADDR),
         .MIMTXWADDR(MIMTXWADDR),
         .mim_tx_ren(mim_tx_ren),
@@ -11712,112 +12294,112 @@ endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_bram_7x" *) 
 module pcie_7x_0_pcie_bram_7x_7
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+   (\ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_14 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_14 \use_tdp.ramb36 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl ),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_1 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ));
 endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_bram_7x" *) 
 module pcie_7x_0_pcie_bram_7x_8
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+   (\ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_13 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_13 \use_tdp.ramb36 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl ),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_1 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ));
 endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_bram_7x" *) 
 module pcie_7x_0_pcie_bram_7x_9
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+   (\ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
-  pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_12 \use_tdp.ramb36 
+  pcie_7x_0_unimacro_BRAM_TDP_MACRO_12 \use_tdp.ramb36 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl ),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_1 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ));
 endmodule
 
 module pcie_7x_0_pcie_bram_top_7x
    (rdata,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+    \ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_tx_wen,
     mim_tx_ren,
@@ -11828,9 +12410,9 @@ module pcie_7x_0_pcie_bram_top_7x
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
   output [68:0]rdata;
-  output [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+  output [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_tx_wen;
   input mim_tx_ren;
@@ -11841,30 +12423,30 @@ module pcie_7x_0_pcie_bram_top_7x
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
   wire [10:0]MIMTXRADDR;
   wire [10:0]MIMTXWADDR;
-  wire [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire mim_tx_ren;
   wire mim_tx_wen;
   wire pipe_userclk1_in;
+  wire [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
   wire [68:0]rdata;
   wire [68:0]wdata;
 
   pcie_7x_0_pcie_brams_7x pcie_brams_rx
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (\ramb_bl.ramb36_dp_bl.ram36_bl ),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ));
   pcie_7x_0_pcie_brams_7x_0 pcie_brams_tx
        (.MIMTXRADDR(MIMTXRADDR),
         .MIMTXWADDR(MIMTXWADDR),
@@ -11876,61 +12458,61 @@ module pcie_7x_0_pcie_bram_top_7x
 endmodule
 
 module pcie_7x_0_pcie_brams_7x
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ,
+   (\ramb_bl.ramb36_dp_bl.ram36_bl ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 );
-  output [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_0 );
+  output [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+  input [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl ;
-  wire [67:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
+  wire [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl ;
+  wire [67:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
 
   pcie_7x_0_pcie_bram_7x_7 \brams[0].ram 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl [17:0]),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [17:0]),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (\ramb_bl.ramb36_dp_bl.ram36_bl [17:0]),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 [17:0]));
   pcie_7x_0_pcie_bram_7x_8 \brams[1].ram 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl [35:18]),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [35:18]),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (\ramb_bl.ramb36_dp_bl.ram36_bl [35:18]),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 [35:18]));
   pcie_7x_0_pcie_bram_7x_9 \brams[2].ram 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl [53:36]),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [53:36]),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (\ramb_bl.ramb36_dp_bl.ram36_bl [53:36]),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 [53:36]));
   pcie_7x_0_pcie_bram_7x_10 \brams[3].ram 
        (.MIMRXRADDR(MIMRXRADDR),
         .MIMRXWADDR(MIMRXWADDR),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl [67:54]),
-        .\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [67:54]),
         .mim_rx_ren(mim_rx_ren),
         .mim_rx_wen(mim_rx_wen),
-        .pipe_userclk1_in(pipe_userclk1_in));
+        .pipe_userclk1_in(pipe_userclk1_in),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl (\ramb_bl.ramb36_dp_bl.ram36_bl [67:54]),
+        .\ramb_bl.ramb36_dp_bl.ram36_bl_0 (\ramb_bl.ramb36_dp_bl.ram36_bl_0 [67:54]));
 endmodule
 
 (* ORIG_REF_NAME = "pcie_7x_0_pcie_brams_7x" *) 
@@ -11993,11 +12575,10 @@ module pcie_7x_0_pcie_brams_7x_0
 endmodule
 
 module pcie_7x_0_pcie_top
-   (m_axis_rx_tvalid_reg,
-    m_axis_rx_tkeep,
+   (m_axis_rx_tvalid_xhdl2_reg,
     m_axis_rx_tlast,
     trn_tcfg_req,
-    tready_thrtl_reg,
+    tready_thrtl_xhdl1_reg,
     user_reset_int_reg,
     src_in,
     cfg_mgmt_rd_wr_done,
@@ -12008,6 +12589,7 @@ module pcie_7x_0_pcie_top
     cfg_received_func_lvl_rst,
     cfg_pcie_link_state,
     m_axis_rx_tdata,
+    m_axis_rx_tkeep,
     m_axis_rx_tuser,
     trn_tbuf_av,
     cfg_to_turnoff,
@@ -12092,13 +12674,13 @@ module pcie_7x_0_pcie_top
     fc_cplh,
     fc_nph,
     fc_ph,
-    \throttle_ctl_pipeline.reg_tkeep_reg[7] ,
+    \tbuf_gap_cnt_reg[0] ,
     pipe_userclk2_in,
-    tx_cfg_gnt,
-    cfg_turnoff_ok,
     s_axis_tx_tlast,
     s_axis_tx_tvalid,
     s_axis_tx_tkeep,
+    tx_cfg_gnt,
+    cfg_turnoff_ok,
     bridge_reset_int,
     pl_phy_lnk_up,
     m_axis_rx_tready,
@@ -12170,11 +12752,10 @@ module pcie_7x_0_pcie_top
     cfg_interrupt_di,
     pcie_drp_addr,
     cfg_mgmt_dwaddr);
-  output m_axis_rx_tvalid_reg;
-  output [0:0]m_axis_rx_tkeep;
+  output m_axis_rx_tvalid_xhdl2_reg;
   output m_axis_rx_tlast;
   output trn_tcfg_req;
-  output tready_thrtl_reg;
+  output tready_thrtl_xhdl1_reg;
   output user_reset_int_reg;
   output src_in;
   output cfg_mgmt_rd_wr_done;
@@ -12185,6 +12766,7 @@ module pcie_7x_0_pcie_top
   output cfg_received_func_lvl_rst;
   output [2:0]cfg_pcie_link_state;
   output [63:0]m_axis_rx_tdata;
+  output [1:0]m_axis_rx_tkeep;
   output [12:0]m_axis_rx_tuser;
   output [5:0]trn_tbuf_av;
   output cfg_to_turnoff;
@@ -12269,13 +12851,13 @@ module pcie_7x_0_pcie_top
   output [7:0]fc_cplh;
   output [7:0]fc_nph;
   output [7:0]fc_ph;
-  input \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
+  input \tbuf_gap_cnt_reg[0] ;
   input pipe_userclk2_in;
-  input tx_cfg_gnt;
-  input cfg_turnoff_ok;
   input s_axis_tx_tlast;
   input s_axis_tx_tvalid;
   input [0:0]s_axis_tx_tkeep;
+  input tx_cfg_gnt;
+  input cfg_turnoff_ok;
   input bridge_reset_int;
   input pl_phy_lnk_up;
   input m_axis_rx_tready;
@@ -12433,6 +13015,7 @@ module pcie_7x_0_pcie_top
   wire cfg_pm_force_state_en;
   wire cfg_pm_halt_aspm_l0s;
   wire cfg_pm_halt_aspm_l1;
+  wire cfg_pm_turnoff_ok_n;
   wire cfg_pm_wake;
   wire cfg_pmcsr_pme_en;
   wire cfg_pmcsr_pme_status;
@@ -12446,7 +13029,6 @@ module pcie_7x_0_pcie_top
   wire cfg_to_turnoff;
   wire cfg_trn_pending;
   wire cfg_turnoff_ok;
-  wire cfg_turnoff_ok_w;
   wire [6:0]cfg_vc_tcvc_map;
   wire [11:0]fc_cpld;
   wire [7:0]fc_cplh;
@@ -12456,11 +13038,11 @@ module pcie_7x_0_pcie_top
   wire [7:0]fc_ph;
   wire [2:0]fc_sel;
   wire [63:0]m_axis_rx_tdata;
-  wire [0:0]m_axis_rx_tkeep;
+  wire [1:0]m_axis_rx_tkeep;
   wire m_axis_rx_tlast;
   wire m_axis_rx_tready;
   wire [12:0]m_axis_rx_tuser;
-  wire m_axis_rx_tvalid_reg;
+  wire m_axis_rx_tvalid_xhdl2_reg;
   wire out;
   wire pcie_7x_i_n_13;
   wire pcie_7x_i_n_22;
@@ -12516,7 +13098,7 @@ module pcie_7x_0_pcie_top
   wire pl_upstream_prefer_deemph;
   wire \rx_inst/rx_pipeline_inst/dsc_detect ;
   wire \rx_inst/rx_pipeline_inst/reg_dsc_detect ;
-  wire \rx_inst/rx_pipeline_inst/rsrc_rdy_filtered ;
+  wire \rx_inst/rx_pipeline_inst/rsrc_rdy_filtered6_out ;
   wire \rx_inst/rx_pipeline_inst/trn_in_packet ;
   wire \rx_inst/rx_pipeline_inst/trn_rsrc_dsc_d ;
   wire \rx_inst/rx_pipeline_inst/trn_rsrc_dsc_prev0 ;
@@ -12529,8 +13111,8 @@ module pcie_7x_0_pcie_top
   wire s_axis_tx_tvalid;
   wire src_in;
   wire sys_rst_n;
-  wire \throttle_ctl_pipeline.reg_tkeep_reg[7] ;
-  wire tready_thrtl_reg;
+  wire \tbuf_gap_cnt_reg[0] ;
+  wire tready_thrtl_xhdl1_reg;
   wire trn_lnk_up;
   wire [6:0]trn_rbar_hit;
   wire [63:0]trn_rd;
@@ -12538,7 +13120,7 @@ module pcie_7x_0_pcie_top
   wire trn_recrc_err;
   wire trn_reof;
   wire trn_rerrfwd;
-  wire [0:0]trn_rrem;
+  wire trn_rrem;
   wire trn_rsof;
   wire trn_rsrc_dsc;
   wire [5:0]trn_tbuf_av;
@@ -12556,50 +13138,49 @@ module pcie_7x_0_pcie_top
   wire trn_tstr;
   wire tx_cfg_gnt;
   wire tx_err_drop;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/lnk_up_thrtl ;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_thrtl ;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_trig ;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/reg_tcfg_gnt ;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tbuf_av_min_trig ;
-  wire \tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tcfg_req_trig ;
-  wire \tx_inst/tx_pipeline_inst/reg_disable_trn2 ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_thrtl ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_thrtl ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_trig ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/reg_tcfg_gnt ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/tbuf_av_min_trig ;
+  wire \tx_inst/xhdl12.tx_thrl_ctl_inst/tcfg_req_trig ;
   wire user_reset_int_reg;
 
-  pcie_7x_0_axi_basic_top axi_basic_top
+  pcie_7x_0_axi_basic_top axi_basic_top_i
        (.E(trn_rdst_rdy),
-        .Q(m_axis_rx_tdata),
+        .Q({trn_td[31:0],trn_td[63:32]}),
         .cfg_pcie_link_state(cfg_pcie_link_state),
-        .cfg_pm_turnoff_ok_n(cfg_turnoff_ok_w),
+        .cfg_pm_turnoff_ok_n(cfg_pm_turnoff_ok_n),
         .cfg_to_turnoff(cfg_to_turnoff),
         .cfg_turnoff_ok(cfg_turnoff_ok),
         .dsc_detect(\rx_inst/rx_pipeline_inst/dsc_detect ),
-        .lnk_up_thrtl(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/lnk_up_thrtl ),
+        .lnk_up_thrtl(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_thrtl ),
         .lnk_up_thrtl_reg(pcie_7x_i_n_30),
+        .m_axis_rx_tdata(m_axis_rx_tdata),
         .m_axis_rx_tkeep(m_axis_rx_tkeep),
         .m_axis_rx_tlast(m_axis_rx_tlast),
         .m_axis_rx_tready(m_axis_rx_tready),
         .m_axis_rx_tuser(m_axis_rx_tuser),
-        .m_axis_rx_tvalid_reg(m_axis_rx_tvalid_reg),
+        .m_axis_rx_tvalid_xhdl2_reg(m_axis_rx_tvalid_xhdl2_reg),
         .out(out),
         .pipe_userclk2_in(pipe_userclk2_in),
-        .ppm_L1_thrtl(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_thrtl ),
+        .ppm_L1_thrtl(\tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_thrtl ),
         .ppm_L1_thrtl_reg(pcie_7x_i_n_13),
-        .ppm_L1_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_trig ),
+        .ppm_L1_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_trig ),
         .reg_dsc_detect(\rx_inst/rx_pipeline_inst/reg_dsc_detect ),
-        .reg_tcfg_gnt(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/reg_tcfg_gnt ),
-        .rsrc_rdy_filtered(\rx_inst/rx_pipeline_inst/rsrc_rdy_filtered ),
+        .reg_tcfg_gnt(\tx_inst/xhdl12.tx_thrl_ctl_inst/reg_tcfg_gnt ),
+        .rsrc_rdy_filtered6_out(\rx_inst/rx_pipeline_inst/rsrc_rdy_filtered6_out ),
         .s_axis_tx_tdata(s_axis_tx_tdata),
         .s_axis_tx_tkeep(s_axis_tx_tkeep),
         .s_axis_tx_tlast(s_axis_tx_tlast),
         .s_axis_tx_tuser(s_axis_tx_tuser),
         .s_axis_tx_tvalid(s_axis_tx_tvalid),
-        .tbuf_av_min_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tbuf_av_min_trig ),
-        .tcfg_req_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tcfg_req_trig ),
-        .\throttle_ctl_pipeline.reg_tdata_reg[63] ({trn_td[31:0],trn_td[63:32]}),
-        .\throttle_ctl_pipeline.reg_tkeep_reg[7] (\throttle_ctl_pipeline.reg_tkeep_reg[7] ),
-        .\throttle_ctl_pipeline.reg_tuser_reg[3] ({trn_tsrc_dsc,trn_tstr,trn_terrfwd,trn_tecrc_gen}),
-        .tready_thrtl_i_5(pcie_7x_i_n_22),
-        .tready_thrtl_reg(tready_thrtl_reg),
+        .tbuf_av_min_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/tbuf_av_min_trig ),
+        .\tbuf_gap_cnt_reg[0] (\tbuf_gap_cnt_reg[0] ),
+        .tcfg_req_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/tcfg_req_trig ),
+        .tready_thrtl_xhdl1_i_5(pcie_7x_i_n_22),
+        .tready_thrtl_xhdl1_reg(tready_thrtl_xhdl1_reg),
         .trn_in_packet(\rx_inst/rx_pipeline_inst/trn_in_packet ),
         .trn_in_packet_reg(pcie_7x_i_n_9),
         .trn_rbar_hit(trn_rbar_hit),
@@ -12620,108 +13201,109 @@ module pcie_7x_0_pcie_top
         .trn_trem(trn_trem),
         .trn_tsof(trn_tsof),
         .trn_tsrc_rdy(trn_tsrc_rdy),
-        .tx_cfg_gnt(tx_cfg_gnt));
+        .tx_cfg_gnt(tx_cfg_gnt),
+        .\xhdl12.reg_tuser_reg[3] ({trn_tsrc_dsc,trn_tstr,trn_terrfwd,trn_tecrc_gen}));
   LUT1 #(
     .INIT(2'h1)) 
     \cfg_bus_number_d[7]_i_1 
        (.I0(out),
-        .O(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .O(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[8]),
         .Q(cfg_bus_number[0]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[9]),
         .Q(cfg_bus_number[1]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[10]),
         .Q(cfg_bus_number[2]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[11]),
         .Q(cfg_bus_number[3]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[12]),
         .Q(cfg_bus_number[4]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[5] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[13]),
         .Q(cfg_bus_number[5]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[6] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[14]),
         .Q(cfg_bus_number[6]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_bus_number_d_reg[7] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[15]),
         .Q(cfg_bus_number[7]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_device_number_d_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[3]),
         .Q(cfg_device_number[0]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_device_number_d_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[4]),
         .Q(cfg_device_number[1]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_device_number_d_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[5]),
         .Q(cfg_device_number[2]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_device_number_d_reg[3] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[6]),
         .Q(cfg_device_number[3]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_device_number_d_reg[4] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[7]),
         .Q(cfg_device_number[4]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_function_number_d_reg[0] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[0]),
         .Q(cfg_function_number[0]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_function_number_d_reg[1] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[1]),
         .Q(cfg_function_number[1]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   FDRE \cfg_function_number_d_reg[2] 
        (.C(pipe_userclk2_in),
         .CE(pcie_7x_i_n_6),
         .D(cfg_msg_data[2]),
         .Q(cfg_function_number[2]),
-        .R(\tx_inst/tx_pipeline_inst/reg_disable_trn2 ));
+        .R(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_trig ));
   pcie_7x_0_pcie_7x pcie_7x_i
        (.E(pcie_7x_i_n_6),
         .bridge_reset_int(bridge_reset_int),
@@ -12806,7 +13388,7 @@ module pcie_7x_0_pcie_top
         .cfg_pm_force_state_en(cfg_pm_force_state_en),
         .cfg_pm_halt_aspm_l0s(cfg_pm_halt_aspm_l0s),
         .cfg_pm_halt_aspm_l1(cfg_pm_halt_aspm_l1),
-        .cfg_pm_turnoff_ok_n(cfg_turnoff_ok_w),
+        .cfg_pm_turnoff_ok_n(cfg_pm_turnoff_ok_n),
         .cfg_pm_wake(cfg_pm_wake),
         .cfg_pmcsr_pme_en(cfg_pmcsr_pme_en),
         .cfg_pmcsr_pme_status(cfg_pmcsr_pme_status),
@@ -12828,14 +13410,12 @@ module pcie_7x_0_pcie_top
         .fc_pd(fc_pd),
         .fc_ph(fc_ph),
         .fc_sel(fc_sel),
-        .lnk_up_thrtl(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/lnk_up_thrtl ),
+        .lnk_up_thrtl(\tx_inst/xhdl12.tx_thrl_ctl_inst/lnk_up_thrtl ),
         .out(out),
         .pcie_block_i_0(pcie_7x_i_n_13),
         .pcie_block_i_1(pcie_7x_i_n_22),
         .pcie_block_i_2(pcie_7x_i_n_30),
-        .pcie_block_i_3(trn_rd),
-        .pcie_block_i_4(trn_rrem),
-        .pcie_block_i_5({trn_tsrc_dsc,trn_tstr,trn_terrfwd,trn_tecrc_gen}),
+        .pcie_block_i_3({trn_tsrc_dsc,trn_tstr,trn_terrfwd,trn_tecrc_gen}),
         .pcie_drp_addr(pcie_drp_addr),
         .pcie_drp_clk(pcie_drp_clk),
         .pcie_drp_di(pcie_drp_di),
@@ -12883,25 +13463,27 @@ module pcie_7x_0_pcie_top
         .pl_transmit_hot_rst(pl_transmit_hot_rst),
         .pl_tx_pm_state(pl_tx_pm_state),
         .pl_upstream_prefer_deemph(pl_upstream_prefer_deemph),
-        .ppm_L1_thrtl(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_thrtl ),
-        .ppm_L1_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/ppm_L1_trig ),
+        .ppm_L1_thrtl(\tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_thrtl ),
+        .ppm_L1_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/ppm_L1_trig ),
         .reg_dsc_detect(\rx_inst/rx_pipeline_inst/reg_dsc_detect ),
-        .reg_tcfg_gnt(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/reg_tcfg_gnt ),
-        .rsrc_rdy_filtered(\rx_inst/rx_pipeline_inst/rsrc_rdy_filtered ),
+        .reg_tcfg_gnt(\tx_inst/xhdl12.tx_thrl_ctl_inst/reg_tcfg_gnt ),
+        .rsrc_rdy_filtered6_out(\rx_inst/rx_pipeline_inst/rsrc_rdy_filtered6_out ),
         .rx_np_ok(rx_np_ok),
         .rx_np_req(rx_np_req),
         .src_in(src_in),
         .sys_rst_n(sys_rst_n),
-        .tbuf_av_min_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tbuf_av_min_trig ),
-        .tcfg_req_trig(\tx_inst/thrtl_ctl_enabled.tx_thrl_ctl_inst/tcfg_req_trig ),
+        .tbuf_av_min_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/tbuf_av_min_trig ),
+        .tcfg_req_trig(\tx_inst/xhdl12.tx_thrl_ctl_inst/tcfg_req_trig ),
         .trn_in_packet(\rx_inst/rx_pipeline_inst/trn_in_packet ),
         .trn_in_packet_reg(pcie_7x_i_n_9),
         .trn_lnk_up(trn_lnk_up),
         .trn_rbar_hit(trn_rbar_hit),
+        .trn_rd(trn_rd),
         .trn_rdst_rdy(trn_rdst_rdy),
         .trn_recrc_err(trn_recrc_err),
         .trn_reof(trn_reof),
         .trn_rerrfwd(trn_rerrfwd),
+        .trn_rrem(trn_rrem),
         .trn_rsof(trn_rsof),
         .trn_rsrc_dsc(trn_rsrc_dsc),
         .trn_rsrc_dsc_d(\rx_inst/rx_pipeline_inst/trn_rsrc_dsc_d ),
@@ -13055,7 +13637,7 @@ module pcie_7x_0_pipe_drp
         .I4(index[0]),
         .I5(x16x20_mode_reg2),
         .O(addr_reg[0]));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
   LUT5 #(
     .INIT(32'h40500F00)) 
     \addr_reg[1]_i_1 
@@ -13065,7 +13647,7 @@ module pcie_7x_0_pipe_drp
         .I3(index[1]),
         .I4(index[2]),
         .O(addr_reg[1]));
-  (* SOFT_HLUTNM = "soft_lutpair6" *) 
+  (* SOFT_HLUTNM = "soft_lutpair7" *) 
   LUT5 #(
     .INIT(32'h05105A00)) 
     \addr_reg[2]_i_1 
@@ -13095,7 +13677,7 @@ module pcie_7x_0_pipe_drp
         .I4(index[3]),
         .I5(index[4]),
         .O(\addr_reg[4]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
   LUT5 #(
     .INIT(32'h001A0F0A)) 
     \addr_reg[5]_i_1 
@@ -13105,7 +13687,7 @@ module pcie_7x_0_pipe_drp
         .I3(index[1]),
         .I4(index[2]),
         .O(addr_reg[5]));
-  (* SOFT_HLUTNM = "soft_lutpair5" *) 
+  (* SOFT_HLUTNM = "soft_lutpair6" *) 
   LUT5 #(
     .INIT(32'h00001454)) 
     \addr_reg[6]_i_1 
@@ -14054,7 +14636,7 @@ module pcie_7x_0_pipe_drp
         .D(fsm[2]),
         .Q(\fsm_reg_n_0_[2] ),
         .R(SR));
-  (* SOFT_HLUTNM = "soft_lutpair13" *) 
+  (* SOFT_HLUTNM = "soft_lutpair14" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_10 
@@ -14063,7 +14645,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[12]));
-  (* SOFT_HLUTNM = "soft_lutpair13" *) 
+  (* SOFT_HLUTNM = "soft_lutpair14" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_11 
@@ -14072,7 +14654,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[11]));
-  (* SOFT_HLUTNM = "soft_lutpair12" *) 
+  (* SOFT_HLUTNM = "soft_lutpair13" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_12 
@@ -14081,7 +14663,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[10]));
-  (* SOFT_HLUTNM = "soft_lutpair12" *) 
+  (* SOFT_HLUTNM = "soft_lutpair13" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_13 
@@ -14090,7 +14672,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[9]));
-  (* SOFT_HLUTNM = "soft_lutpair11" *) 
+  (* SOFT_HLUTNM = "soft_lutpair12" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_14 
@@ -14099,7 +14681,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[8]));
-  (* SOFT_HLUTNM = "soft_lutpair11" *) 
+  (* SOFT_HLUTNM = "soft_lutpair12" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_15 
@@ -14108,7 +14690,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[7]));
-  (* SOFT_HLUTNM = "soft_lutpair10" *) 
+  (* SOFT_HLUTNM = "soft_lutpair11" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_16 
@@ -14117,7 +14699,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[6]));
-  (* SOFT_HLUTNM = "soft_lutpair10" *) 
+  (* SOFT_HLUTNM = "soft_lutpair11" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_17 
@@ -14126,7 +14708,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[5]));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  (* SOFT_HLUTNM = "soft_lutpair10" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_18 
@@ -14135,7 +14717,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[4]));
-  (* SOFT_HLUTNM = "soft_lutpair9" *) 
+  (* SOFT_HLUTNM = "soft_lutpair10" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_19 
@@ -14144,7 +14726,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[3]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_20 
@@ -14153,7 +14735,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[2]));
-  (* SOFT_HLUTNM = "soft_lutpair8" *) 
+  (* SOFT_HLUTNM = "soft_lutpair9" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_21 
@@ -14162,7 +14744,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[1]));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_22 
@@ -14171,7 +14753,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[0]));
-  (* SOFT_HLUTNM = "soft_lutpair7" *) 
+  (* SOFT_HLUTNM = "soft_lutpair8" *) 
   LUT3 #(
     .INIT(8'h12)) 
     \gtx_channel.gtxe2_channel_i_i_3 
@@ -14179,7 +14761,7 @@ module pcie_7x_0_pipe_drp
         .I1(\fsm_reg_n_0_[0] ),
         .I2(\fsm_reg_n_0_[2] ),
         .O(\fsm_reg[1]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair19" *) 
+  (* SOFT_HLUTNM = "soft_lutpair20" *) 
   LUT3 #(
     .INIT(8'h10)) 
     \gtx_channel.gtxe2_channel_i_i_4 
@@ -14187,7 +14769,7 @@ module pcie_7x_0_pipe_drp
         .I1(\fsm_reg_n_0_[0] ),
         .I2(\fsm_reg_n_0_[2] ),
         .O(\fsm_reg[1]_1 ));
-  (* SOFT_HLUTNM = "soft_lutpair19" *) 
+  (* SOFT_HLUTNM = "soft_lutpair20" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_40 
@@ -14196,7 +14778,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[7]));
-  (* SOFT_HLUTNM = "soft_lutpair18" *) 
+  (* SOFT_HLUTNM = "soft_lutpair19" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_41 
@@ -14205,7 +14787,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[6]));
-  (* SOFT_HLUTNM = "soft_lutpair18" *) 
+  (* SOFT_HLUTNM = "soft_lutpair19" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_42 
@@ -14214,7 +14796,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[5]));
-  (* SOFT_HLUTNM = "soft_lutpair17" *) 
+  (* SOFT_HLUTNM = "soft_lutpair18" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_43 
@@ -14223,7 +14805,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[4]));
-  (* SOFT_HLUTNM = "soft_lutpair17" *) 
+  (* SOFT_HLUTNM = "soft_lutpair18" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_44 
@@ -14232,7 +14814,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[3]));
-  (* SOFT_HLUTNM = "soft_lutpair16" *) 
+  (* SOFT_HLUTNM = "soft_lutpair17" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_45 
@@ -14241,7 +14823,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[2]));
-  (* SOFT_HLUTNM = "soft_lutpair16" *) 
+  (* SOFT_HLUTNM = "soft_lutpair17" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_46 
@@ -14250,7 +14832,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[1]));
-  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+  (* SOFT_HLUTNM = "soft_lutpair16" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_47 
@@ -14259,7 +14841,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPADDR[0]));
-  (* SOFT_HLUTNM = "soft_lutpair15" *) 
+  (* SOFT_HLUTNM = "soft_lutpair16" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_7 
@@ -14268,7 +14850,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[15]));
-  (* SOFT_HLUTNM = "soft_lutpair14" *) 
+  (* SOFT_HLUTNM = "soft_lutpair15" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_8 
@@ -14277,7 +14859,7 @@ module pcie_7x_0_pipe_drp
         .I2(\fsm_reg_n_0_[0] ),
         .I3(\fsm_reg_n_0_[2] ),
         .O(DRPDI[14]));
-  (* SOFT_HLUTNM = "soft_lutpair14" *) 
+  (* SOFT_HLUTNM = "soft_lutpair15" *) 
   LUT4 #(
     .INIT(16'hAAA8)) 
     \gtx_channel.gtxe2_channel_i_i_9 
@@ -14304,7 +14886,7 @@ module pcie_7x_0_pipe_drp
         .D(gtxreset_reg1),
         .Q(gtxreset_reg2),
         .R(SR));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT4 #(
     .INIT(16'h0100)) 
     \index[0]_i_1 
@@ -14313,7 +14895,7 @@ module pcie_7x_0_pipe_drp
         .I2(index[0]),
         .I3(\fsm_reg_n_0_[2] ),
         .O(\index[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair4" *) 
+  (* SOFT_HLUTNM = "soft_lutpair5" *) 
   LUT5 #(
     .INIT(32'h00140000)) 
     \index[1]_i_1 
@@ -14343,7 +14925,7 @@ module pcie_7x_0_pipe_drp
         .I4(fsm1__8),
         .I5(\fsm_reg_n_0_[2] ),
         .O(\index[3]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair20" *) 
+  (* SOFT_HLUTNM = "soft_lutpair21" *) 
   LUT2 #(
     .INIT(4'h8)) 
     \index[3]_i_2 
@@ -14367,7 +14949,7 @@ module pcie_7x_0_pipe_drp
         .I4(fsm1__8),
         .I5(\fsm_reg_n_0_[2] ),
         .O(\index[4]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair20" *) 
+  (* SOFT_HLUTNM = "soft_lutpair21" *) 
   LUT3 #(
     .INIT(8'h80)) 
     \index[4]_i_3 
@@ -14778,7 +15360,7 @@ module pcie_7x_0_pipe_eq
         .I4(\rxeq_cnt_reg_n_0_[2] ),
         .I5(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .O(\FSM_onehot_fsm_rx[3]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair27" *) 
+  (* SOFT_HLUTNM = "soft_lutpair26" *) 
   LUT5 #(
     .INIT(32'h2ABA2AAA)) 
     \FSM_onehot_fsm_rx[4]_i_1 
@@ -14896,7 +15478,7 @@ module pcie_7x_0_pipe_eq
         .I3(fsm_tx[0]),
         .I4(txeq_preset_done),
         .O(\FSM_sequential_fsm_tx[2]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair25" *) 
+  (* SOFT_HLUTNM = "soft_lutpair24" *) 
   LUT2 #(
     .INIT(4'h7)) 
     \FSM_sequential_fsm_tx[2]_i_4 
@@ -15092,7 +15674,7 @@ module pcie_7x_0_pipe_eq
         .I3(\FSM_onehot_fsm_rx_reg_n_0_[4] ),
         .I4(\rxeq_cnt_reg_n_0_[0] ),
         .O(rxeq_cnt[0]));
-  (* SOFT_HLUTNM = "soft_lutpair28" *) 
+  (* SOFT_HLUTNM = "soft_lutpair27" *) 
   LUT4 #(
     .INIT(16'h6660)) 
     \rxeq_cnt[1]_i_1 
@@ -15101,7 +15683,7 @@ module pcie_7x_0_pipe_eq
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[4] ),
         .I3(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .O(rxeq_cnt[1]));
-  (* SOFT_HLUTNM = "soft_lutpair27" *) 
+  (* SOFT_HLUTNM = "soft_lutpair26" *) 
   LUT5 #(
     .INIT(32'h78787800)) 
     \rxeq_cnt[2]_i_1 
@@ -15508,7 +16090,7 @@ module pcie_7x_0_pipe_eq
         .I4(rxeq_adapt_done_reg_i_2_n_0),
         .I5(\FSM_onehot_fsm_rx_reg_n_0_[2] ),
         .O(\rxeq_preset[2]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair28" *) 
+  (* SOFT_HLUTNM = "soft_lutpair27" *) 
   LUT2 #(
     .INIT(4'h1)) 
     \rxeq_preset[2]_i_3 
@@ -15623,7 +16205,7 @@ module pcie_7x_0_pipe_eq
         .rxeq_preset_valid(rxeq_preset_valid),
         .\txcoeff_reg1_reg[17]_0 ({in10,\rxeq_txcoeff_reg_n_0_[5] ,\rxeq_txcoeff_reg_n_0_[4] ,\rxeq_txcoeff_reg_n_0_[3] ,\rxeq_txcoeff_reg_n_0_[2] ,\rxeq_txcoeff_reg_n_0_[1] ,\rxeq_txcoeff_reg_n_0_[0] }),
         .\txpreset_reg1_reg[3]_0 ({\rxeq_txpreset_reg_n_0_[3] ,\rxeq_txpreset_reg_n_0_[2] ,\rxeq_txpreset_reg_n_0_[1] ,\rxeq_txpreset_reg_n_0_[0] }));
-  (* SOFT_HLUTNM = "soft_lutpair29" *) 
+  (* SOFT_HLUTNM = "soft_lutpair28" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[0]_i_1 
@@ -15631,7 +16213,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[0]));
-  (* SOFT_HLUTNM = "soft_lutpair34" *) 
+  (* SOFT_HLUTNM = "soft_lutpair33" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[10]_i_1 
@@ -15639,7 +16221,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[10]));
-  (* SOFT_HLUTNM = "soft_lutpair34" *) 
+  (* SOFT_HLUTNM = "soft_lutpair33" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[11]_i_1 
@@ -15689,7 +16271,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[17]));
-  (* SOFT_HLUTNM = "soft_lutpair29" *) 
+  (* SOFT_HLUTNM = "soft_lutpair28" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[1]_i_1 
@@ -15697,7 +16279,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[1]));
-  (* SOFT_HLUTNM = "soft_lutpair30" *) 
+  (* SOFT_HLUTNM = "soft_lutpair29" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[2]_i_1 
@@ -15705,7 +16287,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[2]));
-  (* SOFT_HLUTNM = "soft_lutpair30" *) 
+  (* SOFT_HLUTNM = "soft_lutpair29" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[3]_i_1 
@@ -15713,7 +16295,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[3]));
-  (* SOFT_HLUTNM = "soft_lutpair31" *) 
+  (* SOFT_HLUTNM = "soft_lutpair30" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[4]_i_1 
@@ -15721,7 +16303,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[4]));
-  (* SOFT_HLUTNM = "soft_lutpair31" *) 
+  (* SOFT_HLUTNM = "soft_lutpair30" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[5]_i_1 
@@ -15729,7 +16311,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[5]));
-  (* SOFT_HLUTNM = "soft_lutpair32" *) 
+  (* SOFT_HLUTNM = "soft_lutpair31" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[6]_i_1 
@@ -15737,7 +16319,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[6]));
-  (* SOFT_HLUTNM = "soft_lutpair32" *) 
+  (* SOFT_HLUTNM = "soft_lutpair31" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[7]_i_1 
@@ -15745,7 +16327,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[7]));
-  (* SOFT_HLUTNM = "soft_lutpair33" *) 
+  (* SOFT_HLUTNM = "soft_lutpair32" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[8]_i_1 
@@ -15753,7 +16335,7 @@ module pcie_7x_0_pipe_eq
         .I1(\FSM_onehot_fsm_rx_reg_n_0_[3] ),
         .I2(\FSM_onehot_fsm_rx_reg_n_0_[1] ),
         .O(rxeq_txcoeff[8]));
-  (* SOFT_HLUTNM = "soft_lutpair33" *) 
+  (* SOFT_HLUTNM = "soft_lutpair32" *) 
   LUT3 #(
     .INIT(8'hA8)) 
     \rxeq_txcoeff[9]_i_1 
@@ -16911,7 +17493,7 @@ module pcie_7x_0_pipe_eq
         .D(p_0_out[9]),
         .Q(\txeq_preset_reg_n_0_[9] ),
         .R(1'b0));
-  (* SOFT_HLUTNM = "soft_lutpair25" *) 
+  (* SOFT_HLUTNM = "soft_lutpair24" *) 
   LUT5 #(
     .INIT(32'h45404040)) 
     \txeq_txcoeff[0]_i_1 
@@ -17110,7 +17692,7 @@ module pcie_7x_0_pipe_eq
         .I4(txeq_deemph_reg2[5]),
         .I5(fsm_tx[0]),
         .O(\txeq_txcoeff[18]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair26" *) 
+  (* SOFT_HLUTNM = "soft_lutpair25" *) 
   LUT3 #(
     .INIT(8'h08)) 
     \txeq_txcoeff[18]_i_3 
@@ -17223,14 +17805,14 @@ module pcie_7x_0_pipe_eq
         .I3(\txeq_txcoeff[6]_i_2_n_0 ),
         .O(\txeq_txcoeff[6]_i_1_n_0 ));
   LUT6 #(
-    .INIT(64'hA0E0A0A0A020A0A0)) 
+    .INIT(64'hCACCCCCC00000000)) 
     \txeq_txcoeff[6]_i_2 
-       (.I0(\txeq_txcoeff_reg_n_0_[12] ),
-        .I1(fsm_tx[1]),
-        .I2(fsm_tx[0]),
-        .I3(\txeq_txcoeff_cnt_reg_n_0_[1] ),
+       (.I0(\txeq_txcoeff_reg_n_0_[13] ),
+        .I1(\txeq_txcoeff_reg_n_0_[12] ),
+        .I2(\txeq_txcoeff_cnt_reg_n_0_[1] ),
+        .I3(fsm_tx[1]),
         .I4(\txeq_txcoeff_cnt_reg_n_0_[0] ),
-        .I5(\txeq_txcoeff_reg_n_0_[13] ),
+        .I5(fsm_tx[0]),
         .O(\txeq_txcoeff[6]_i_2_n_0 ));
   LUT6 #(
     .INIT(64'h30BB308830883088)) 
@@ -17302,7 +17884,7 @@ module pcie_7x_0_pipe_eq
         .I4(fsm_tx[1]),
         .I5(\txeq_txcoeff_cnt_reg_n_0_[0] ),
         .O(txeq_txcoeff_cnt[0]));
-  (* SOFT_HLUTNM = "soft_lutpair26" *) 
+  (* SOFT_HLUTNM = "soft_lutpair25" *) 
   LUT5 #(
     .INIT(32'h00006000)) 
     \txeq_txcoeff_cnt[1]_i_1 
@@ -17498,8 +18080,8 @@ module pcie_7x_0_pipe_rate
     \fsm_reg[2]_0 ,
     \fsm_reg[2]_1 ,
     \fsm_reg[2]_2 ,
-    \fsm_reg[2]_3 ,
-    \fsm_reg[3]_0 ,
+    \fsm_reg[4]_0 ,
+    \fsm_reg[0]_0 ,
     RX8B10BEN0,
     SYNC_TXSYNC_START0,
     out,
@@ -17515,9 +18097,9 @@ module pcie_7x_0_pipe_rate
     gt_txratedone,
     gt_rxratedone,
     sync_txsync_done,
-    \fsm_reg[3]_1 ,
-    \fsm[0]_i_3_0 ,
-    \fsm[0]_i_3_1 ,
+    \fsm[3]_i_5_0 ,
+    \fsm[0]_i_5_0 ,
+    \fsm[0]_i_5_1 ,
     pipe_tx_rate);
   output rate_drp_start;
   output rate_drp_x16x20_mode;
@@ -17534,8 +18116,8 @@ module pcie_7x_0_pipe_rate
   output \fsm_reg[2]_0 ;
   output \fsm_reg[2]_1 ;
   output \fsm_reg[2]_2 ;
-  output \fsm_reg[2]_3 ;
-  output \fsm_reg[3]_0 ;
+  output \fsm_reg[4]_0 ;
+  output \fsm_reg[0]_0 ;
   output RX8B10BEN0;
   output SYNC_TXSYNC_START0;
   input out;
@@ -17551,9 +18133,9 @@ module pcie_7x_0_pipe_rate
   input gt_txratedone;
   input gt_rxratedone;
   input sync_txsync_done;
-  input \fsm_reg[3]_1 ;
-  input \fsm[0]_i_3_0 ;
-  input \fsm[0]_i_3_1 ;
+  input \fsm[3]_i_5_0 ;
+  input \fsm[0]_i_5_0 ;
+  input \fsm[0]_i_5_1 ;
   input pipe_tx_rate;
 
   wire [1:0]Q;
@@ -17581,14 +18163,11 @@ module pcie_7x_0_pipe_rate
   wire \fsm[0]_i_11_n_0 ;
   wire \fsm[0]_i_12_n_0 ;
   wire \fsm[0]_i_13_n_0 ;
-  wire \fsm[0]_i_14_n_0 ;
-  wire \fsm[0]_i_15_n_0 ;
-  wire \fsm[0]_i_16_n_0 ;
   wire \fsm[0]_i_2__0_n_0 ;
-  wire \fsm[0]_i_3_0 ;
-  wire \fsm[0]_i_3_1 ;
   wire \fsm[0]_i_3_n_0 ;
   wire \fsm[0]_i_4_n_0 ;
+  wire \fsm[0]_i_5_0 ;
+  wire \fsm[0]_i_5_1 ;
   wire \fsm[0]_i_5_n_0 ;
   wire \fsm[0]_i_6_n_0 ;
   wire \fsm[0]_i_7_n_0 ;
@@ -17603,6 +18182,9 @@ module pcie_7x_0_pipe_rate
   wire \fsm[1]_i_7_n_0 ;
   wire \fsm[1]_i_8_n_0 ;
   wire \fsm[1]_i_9_n_0 ;
+  wire \fsm[2]_i_10_n_0 ;
+  wire \fsm[2]_i_11_n_0 ;
+  wire \fsm[2]_i_12_n_0 ;
   wire \fsm[2]_i_2_n_0 ;
   wire \fsm[2]_i_3_n_0 ;
   wire \fsm[2]_i_4_n_0 ;
@@ -17614,17 +18196,16 @@ module pcie_7x_0_pipe_rate
   wire \fsm[3]_i_2_n_0 ;
   wire \fsm[3]_i_3_n_0 ;
   wire \fsm[3]_i_4_n_0 ;
+  wire \fsm[3]_i_5_0 ;
   wire \fsm[3]_i_5_n_0 ;
   wire \fsm[3]_i_6_n_0 ;
-  wire \fsm[3]_i_7_n_0 ;
   wire \fsm[4]_i_2_n_0 ;
   wire \fsm[4]_i_3_n_0 ;
+  wire \fsm_reg[0]_0 ;
   wire \fsm_reg[2]_0 ;
   wire \fsm_reg[2]_1 ;
   wire \fsm_reg[2]_2 ;
-  wire \fsm_reg[2]_3 ;
-  wire \fsm_reg[3]_0 ;
-  wire \fsm_reg[3]_1 ;
+  wire \fsm_reg[4]_0 ;
   wire \fsm_reg_n_0_[0] ;
   wire \fsm_reg_n_0_[1] ;
   wire \fsm_reg_n_0_[2] ;
@@ -17670,6 +18251,7 @@ module pcie_7x_0_pipe_rate
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire [1:0]rate_in_reg2;
   wire \rate_out[0]_i_1_n_0 ;
   wire \rate_out[0]_i_2_n_0 ;
+  wire \rate_out[0]_i_3_n_0 ;
   wire rate_rxpmareset;
   wire ratedone;
   wire ratedone_i_1_n_0;
@@ -17760,13 +18342,13 @@ module pcie_7x_0_pipe_rate
         .I4(qpllreset),
         .I5(rate_cpllreset),
         .O(cpllreset_i_1__0_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair51" *) 
+  (* SOFT_HLUTNM = "soft_lutpair48" *) 
   LUT5 #(
-    .INIT(32'h81000004)) 
-    cpllreset_i_2__0
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[1] ),
-        .I2(\fsm_reg_n_0_[0] ),
+    .INIT(32'h81000010)) 
+    cpllreset_i_2
+       (.I0(\fsm_reg_n_0_[0] ),
+        .I1(\fsm_reg_n_0_[2] ),
+        .I2(\fsm_reg_n_0_[1] ),
         .I3(\fsm_reg_n_0_[3] ),
         .I4(\fsm_reg_n_0_[4] ),
         .O(qpllreset));
@@ -17796,15 +18378,15 @@ module pcie_7x_0_pipe_rate
         .D(drp_done_reg1),
         .Q(drp_done_reg2),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair54" *) 
+  (* SOFT_HLUTNM = "soft_lutpair53" *) 
   LUT5 #(
-    .INIT(32'h08200108)) 
+    .INIT(32'h40012400)) 
     drp_start_i_1
-       (.I0(\fsm_reg_n_0_[0] ),
+       (.I0(\fsm_reg_n_0_[4] ),
         .I1(\fsm_reg_n_0_[3] ),
-        .I2(\fsm_reg_n_0_[4] ),
-        .I3(\fsm_reg_n_0_[2] ),
-        .I4(\fsm_reg_n_0_[1] ),
+        .I2(\fsm_reg_n_0_[1] ),
+        .I3(\fsm_reg_n_0_[0] ),
+        .I4(\fsm_reg_n_0_[2] ),
         .O(drp_start_i_1_n_0));
   FDRE #(
     .INIT(1'b0)) 
@@ -17832,15 +18414,15 @@ module pcie_7x_0_pipe_rate
         .D(drp_x16_i_1_n_0),
         .Q(rate_drp_x16),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair55" *) 
+  (* SOFT_HLUTNM = "soft_lutpair53" *) 
   LUT5 #(
-    .INIT(32'h0800403A)) 
+    .INIT(32'h40080072)) 
     drp_x16x20_mode_i_1
-       (.I0(\fsm_reg_n_0_[2] ),
+       (.I0(\fsm_reg_n_0_[4] ),
         .I1(\fsm_reg_n_0_[0] ),
-        .I2(\fsm_reg_n_0_[4] ),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm_reg_n_0_[3] ),
+        .I2(\fsm_reg_n_0_[2] ),
+        .I3(\fsm_reg_n_0_[3] ),
+        .I4(\fsm_reg_n_0_[1] ),
         .O(drp_x16x20_mode_i_1_n_0));
   FDRE #(
     .INIT(1'b0)) 
@@ -17851,153 +18433,128 @@ module pcie_7x_0_pipe_rate
         .Q(rate_drp_x16x20_mode),
         .R(out));
   LUT6 #(
-    .INIT(64'hFFFFFFFFEEEEAAAE)) 
+    .INIT(64'hAABAAAAAAABABABA)) 
     \fsm[0]_i_10 
-       (.I0(\fsm[0]_i_12_n_0 ),
+       (.I0(\fsm[0]_i_13_n_0 ),
         .I1(\fsm[2]_i_5_n_0 ),
-        .I2(drp_done_reg2),
-        .I3(\fsm[0]_i_13_n_0 ),
-        .I4(\fsm[0]_i_14_n_0 ),
-        .I5(\fsm[0]_i_15_n_0 ),
+        .I2(\fsm_reg_n_0_[2] ),
+        .I3(\fsm_reg_n_0_[0] ),
+        .I4(\fsm_reg_n_0_[1] ),
+        .I5(drp_done_reg2),
         .O(\fsm[0]_i_10_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFFFFF9009)) 
+    .INIT(64'hBABAAAAABBBAABAA)) 
     \fsm[0]_i_11 
+       (.I0(\fsm_reg_n_0_[2] ),
+        .I1(\fsm_reg_n_0_[1] ),
+        .I2(\fsm_reg_n_0_[0] ),
+        .I3(mmcm_lock_reg2),
+        .I4(drp_done_reg2),
+        .I5(rxpmaresetdone_reg2),
+        .O(\fsm[0]_i_11_n_0 ));
+  LUT5 #(
+    .INIT(32'h00DFDFDF)) 
+    \fsm[0]_i_12 
+       (.I0(rxresetdone_reg2),
+        .I1(phystatus_reg2),
+        .I2(txresetdone_reg2),
+        .I3(\fsm[0]_i_5_0 ),
+        .I4(\fsm[0]_i_5_1 ),
+        .O(\fsm[0]_i_12_n_0 ));
+  LUT6 #(
+    .INIT(64'h080802A2000002A2)) 
+    \fsm[0]_i_13 
+       (.I0(\fsm[1]_i_9_n_0 ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(\fsm_reg_n_0_[1] ),
+        .I3(txsync_done_reg2),
+        .I4(\fsm_reg_n_0_[2] ),
+        .I5(rxsync_done_reg2),
+        .O(\fsm[0]_i_13_n_0 ));
+  LUT6 #(
+    .INIT(64'hCCDDCCCCCCDDFCCC)) 
+    \fsm[0]_i_1__0 
+       (.I0(\fsm[0]_i_2__0_n_0 ),
+        .I1(\fsm[0]_i_3_n_0 ),
+        .I2(\fsm[0]_i_4_n_0 ),
+        .I3(\fsm_reg_n_0_[3] ),
+        .I4(\fsm_reg_n_0_[4] ),
+        .I5(\fsm[0]_i_5_n_0 ),
+        .O(fsm[0]));
+  LUT6 #(
+    .INIT(64'h00000000FF11FF1F)) 
+    \fsm[0]_i_2__0 
+       (.I0(\fsm[0]_i_6_n_0 ),
+        .I1(\fsm[3]_i_6_n_0 ),
+        .I2(\fsm_reg_n_0_[0] ),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(drp_done_reg2),
+        .I5(\fsm[0]_i_7_n_0 ),
+        .O(\fsm[0]_i_2__0_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFF7F550000)) 
+    \fsm[0]_i_3 
+       (.I0(\fsm[0]_i_8_n_0 ),
+        .I1(\fsm[2]_i_4_n_0 ),
+        .I2(\fsm_reg_n_0_[0] ),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(\fsm[0]_i_9_n_0 ),
+        .I5(\fsm[0]_i_10_n_0 ),
+        .O(\fsm[0]_i_3_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFF00008000)) 
+    \fsm[0]_i_4 
+       (.I0(drp_done_reg2),
+        .I1(\fsm[2]_i_4_n_0 ),
+        .I2(rst_idle_reg2),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(\fsm_reg_n_0_[0] ),
+        .I5(\fsm[0]_i_11_n_0 ),
+        .O(\fsm[0]_i_4_n_0 ));
+  LUT6 #(
+    .INIT(64'h0CEE00000C220000)) 
+    \fsm[0]_i_5 
+       (.I0(\fsm[0]_i_12_n_0 ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(drp_done_reg2),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(\fsm_reg_n_0_[2] ),
+        .I5(\fsm[1]_i_7_n_0 ),
+        .O(\fsm[0]_i_5_n_0 ));
+  LUT3 #(
+    .INIT(8'h4F)) 
+    \fsm[0]_i_6 
+       (.I0(resetovrd_done_reg2),
+        .I1(\fsm_reg_n_0_[1] ),
+        .I2(\fsm_reg_n_0_[2] ),
+        .O(\fsm[0]_i_6_n_0 ));
+  LUT6 #(
+    .INIT(64'h2023ECEF00000000)) 
+    \fsm[0]_i_7 
+       (.I0(drp_done_reg2),
+        .I1(\fsm_reg_n_0_[2] ),
+        .I2(\fsm_reg_n_0_[0] ),
+        .I3(rxpmaresetdone_reg2),
+        .I4(resetovrd_done_reg2),
+        .I5(\fsm_reg_n_0_[1] ),
+        .O(\fsm[0]_i_7_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFFFFFF9009)) 
+    \fsm[0]_i_8 
        (.I0(rate_in_reg2[0]),
         .I1(rate_in_reg1[0]),
         .I2(rate_in_reg2[1]),
         .I3(rate_in_reg1[1]),
         .I4(\fsm_reg_n_0_[0] ),
         .I5(\fsm_reg_n_0_[1] ),
-        .O(\fsm[0]_i_11_n_0 ));
-  LUT6 #(
-    .INIT(64'h008A008AAA8A008A)) 
-    \fsm[0]_i_12 
-       (.I0(\fsm[0]_i_16_n_0 ),
-        .I1(\fsm_reg_n_0_[0] ),
-        .I2(rxpmaresetdone_reg2),
-        .I3(\fsm_reg_n_0_[2] ),
-        .I4(\fsm_reg_n_0_[1] ),
-        .I5(resetovrd_done_reg2),
-        .O(\fsm[0]_i_12_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair58" *) 
-  LUT2 #(
-    .INIT(4'hB)) 
-    \fsm[0]_i_13 
-       (.I0(\fsm_reg_n_0_[1] ),
-        .I1(\fsm_reg_n_0_[2] ),
-        .O(\fsm[0]_i_13_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair58" *) 
-  LUT2 #(
-    .INIT(4'h2)) 
-    \fsm[0]_i_14 
-       (.I0(\fsm_reg_n_0_[1] ),
-        .I1(\fsm_reg_n_0_[0] ),
-        .O(\fsm[0]_i_14_n_0 ));
-  LUT6 #(
-    .INIT(64'h000C8800000C00CC)) 
-    \fsm[0]_i_15 
-       (.I0(rxsync_done_reg2),
-        .I1(\fsm[1]_i_9_n_0 ),
-        .I2(txsync_done_reg2),
-        .I3(\fsm_reg_n_0_[2] ),
-        .I4(\fsm_reg_n_0_[1] ),
-        .I5(\fsm_reg_n_0_[0] ),
-        .O(\fsm[0]_i_15_n_0 ));
-  LUT6 #(
-    .INIT(64'h4444444440004040)) 
-    \fsm[0]_i_16 
-       (.I0(\fsm_reg_n_0_[3] ),
-        .I1(\fsm_reg_n_0_[4] ),
-        .I2(\fsm_reg_n_0_[1] ),
-        .I3(drp_done_reg2),
-        .I4(\fsm_reg_n_0_[0] ),
-        .I5(\fsm_reg_n_0_[2] ),
-        .O(\fsm[0]_i_16_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFFFFF084C)) 
-    \fsm[0]_i_1__0 
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm[0]_i_2__0_n_0 ),
-        .I2(\fsm[0]_i_3_n_0 ),
-        .I3(\fsm[0]_i_4_n_0 ),
-        .I4(\fsm[0]_i_5_n_0 ),
-        .I5(\fsm[0]_i_6_n_0 ),
-        .O(fsm[0]));
-  (* SOFT_HLUTNM = "soft_lutpair59" *) 
-  LUT2 #(
-    .INIT(4'h2)) 
-    \fsm[0]_i_2__0 
-       (.I0(\fsm_reg_n_0_[3] ),
-        .I1(\fsm_reg_n_0_[4] ),
-        .O(\fsm[0]_i_2__0_n_0 ));
-  LUT5 #(
-    .INIT(32'h2202A282)) 
-    \fsm[0]_i_3 
-       (.I0(\fsm[0]_i_7_n_0 ),
-        .I1(\fsm_reg_n_0_[1] ),
-        .I2(\fsm_reg_n_0_[0] ),
-        .I3(\fsm[1]_i_7_n_0 ),
-        .I4(drp_done_reg2),
-        .O(\fsm[0]_i_3_n_0 ));
-  LUT6 #(
-    .INIT(64'h00000000DFFFFFFF)) 
-    \fsm[0]_i_4 
-       (.I0(rst_idle_reg2),
-        .I1(\fsm_reg_n_0_[0] ),
-        .I2(\fsm_reg_n_0_[1] ),
-        .I3(drp_done_reg2),
-        .I4(\fsm[2]_i_4_n_0 ),
-        .I5(\fsm[0]_i_8_n_0 ),
-        .O(\fsm[0]_i_4_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFF32000000)) 
-    \fsm[0]_i_5 
-       (.I0(\fsm_reg_n_0_[0] ),
-        .I1(\fsm_reg_n_0_[1] ),
-        .I2(drp_done_reg2),
-        .I3(\fsm[1]_i_8_n_0 ),
-        .I4(\fsm[0]_i_9_n_0 ),
-        .I5(\fsm[0]_i_10_n_0 ),
-        .O(\fsm[0]_i_5_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000010001010101)) 
-    \fsm[0]_i_6 
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[4] ),
-        .I2(\fsm_reg_n_0_[3] ),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm[2]_i_4_n_0 ),
-        .I5(\fsm[0]_i_11_n_0 ),
-        .O(\fsm[0]_i_6_n_0 ));
-  LUT6 #(
-    .INIT(64'hBFBFAABFBFBFBFBF)) 
-    \fsm[0]_i_7 
-       (.I0(\fsm_reg_n_0_[0] ),
-        .I1(\fsm[0]_i_3_0 ),
-        .I2(\fsm[0]_i_3_1 ),
-        .I3(txresetdone_reg2),
-        .I4(phystatus_reg2),
-        .I5(rxresetdone_reg2),
-        .O(\fsm[0]_i_7_n_0 ));
-  LUT5 #(
-    .INIT(32'h55040004)) 
-    \fsm[0]_i_8 
-       (.I0(\fsm_reg_n_0_[1] ),
-        .I1(mmcm_lock_reg2),
-        .I2(rxpmaresetdone_reg2),
-        .I3(\fsm_reg_n_0_[0] ),
-        .I4(drp_done_reg2),
         .O(\fsm[0]_i_8_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFF0001FFFF)) 
+  (* SOFT_HLUTNM = "soft_lutpair54" *) 
+  LUT3 #(
+    .INIT(8'h01)) 
     \fsm[0]_i_9 
-       (.I0(ratedone),
-        .I1(\fsm_reg[3]_1 ),
-        .I2(gen3_exit),
-        .I3(\sysclksel[0]_i_2_n_0 ),
-        .I4(\fsm_reg_n_0_[0] ),
-        .I5(\fsm[3]_i_7_n_0 ),
+       (.I0(\fsm_reg_n_0_[2] ),
+        .I1(\fsm_reg_n_0_[3] ),
+        .I2(\fsm_reg_n_0_[4] ),
         .O(\fsm[0]_i_9_n_0 ));
   LUT6 #(
     .INIT(64'h00000000A0CA0000)) 
@@ -18009,64 +18566,64 @@ module pcie_7x_0_pipe_rate
         .I4(rst_idle_reg2),
         .I5(\fsm[2]_i_3_n_0 ),
         .O(\fsm[1]_i_10_n_0 ));
-  LUT6 #(
-    .INIT(64'hFCFCFDFCFCFCFDFF)) 
+  LUT5 #(
+    .INIT(32'hFFFFFFF4)) 
     \fsm[1]_i_1__0 
        (.I0(\fsm[1]_i_2__0_n_0 ),
         .I1(\fsm[1]_i_3_n_0 ),
         .I2(\fsm[1]_i_4_n_0 ),
-        .I3(\fsm_reg_n_0_[3] ),
-        .I4(\fsm_reg_n_0_[4] ),
-        .I5(\fsm[1]_i_5_n_0 ),
+        .I3(\fsm[1]_i_5_n_0 ),
+        .I4(\fsm[1]_i_6_n_0 ),
         .O(fsm[1]));
   LUT6 #(
-    .INIT(64'h3EFE3F0F3EFEFFCF)) 
+    .INIT(64'h3B007F00FFFFFFFF)) 
     \fsm[1]_i_2__0 
-       (.I0(\fsm[1]_i_6_n_0 ),
-        .I1(\fsm_reg_n_0_[2] ),
-        .I2(\fsm_reg_n_0_[0] ),
-        .I3(drp_done_reg2),
-        .I4(\fsm_reg_n_0_[1] ),
-        .I5(\fsm[1]_i_7_n_0 ),
+       (.I0(\fsm_reg_n_0_[1] ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(drp_done_reg2),
+        .I3(\fsm_reg_n_0_[2] ),
+        .I4(\fsm[1]_i_7_n_0 ),
+        .I5(\fsm[1]_i_8_n_0 ),
         .O(\fsm[1]_i_2__0_n_0 ));
   LUT6 #(
-    .INIT(64'h0800C800CC00CC00)) 
+    .INIT(64'hFFFFFFFF00BF0F00)) 
     \fsm[1]_i_3 
+       (.I0(rst_idle_reg2),
+        .I1(\fsm[2]_i_4_n_0 ),
+        .I2(drp_done_reg2),
+        .I3(\fsm_reg_n_0_[0] ),
+        .I4(\fsm_reg_n_0_[1] ),
+        .I5(\fsm_reg_n_0_[2] ),
+        .O(\fsm[1]_i_3_n_0 ));
+  LUT6 #(
+    .INIT(64'h000000003B00FB00)) 
+    \fsm[1]_i_4 
        (.I0(drp_done_reg2),
-        .I1(\fsm[1]_i_8_n_0 ),
+        .I1(\fsm_reg_n_0_[0] ),
         .I2(\fsm_reg_n_0_[2] ),
         .I3(\fsm_reg_n_0_[1] ),
         .I4(resetovrd_done_reg2),
-        .I5(\fsm_reg_n_0_[0] ),
-        .O(\fsm[1]_i_3_n_0 ));
+        .I5(\fsm[2]_i_8_n_0 ),
+        .O(\fsm[1]_i_4_n_0 ));
   LUT6 #(
     .INIT(64'h0300770077000000)) 
-    \fsm[1]_i_4 
+    \fsm[1]_i_5 
        (.I0(rxsync_done_reg2),
         .I1(\fsm_reg_n_0_[2] ),
         .I2(txsync_done_reg2),
         .I3(\fsm[1]_i_9_n_0 ),
         .I4(\fsm_reg_n_0_[1] ),
         .I5(\fsm_reg_n_0_[0] ),
-        .O(\fsm[1]_i_4_n_0 ));
-  LUT5 #(
-    .INIT(32'hCC3FAABB)) 
-    \fsm[1]_i_5 
-       (.I0(\fsm[1]_i_10_n_0 ),
-        .I1(\fsm_reg_n_0_[0] ),
-        .I2(drp_done_reg2),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm_reg_n_0_[2] ),
         .O(\fsm[1]_i_5_n_0 ));
   LUT6 #(
-    .INIT(64'h5545004000000000)) 
+    .INIT(64'h0400404015115050)) 
     \fsm[1]_i_6 
-       (.I0(rst_idle_reg2),
-        .I1(qplllock_reg2),
-        .I2(rate_in_reg2[1]),
-        .I3(rate_in_reg2[0]),
-        .I4(cplllock_reg2),
-        .I5(drp_done_reg2),
+       (.I0(\fsm[2]_i_5_n_0 ),
+        .I1(\fsm_reg_n_0_[2] ),
+        .I2(\fsm_reg_n_0_[1] ),
+        .I3(drp_done_reg2),
+        .I4(\fsm_reg_n_0_[0] ),
+        .I5(\fsm[1]_i_10_n_0 ),
         .O(\fsm[1]_i_6_n_0 ));
   LUT4 #(
     .INIT(16'h8000)) 
@@ -18076,22 +18633,45 @@ module pcie_7x_0_pipe_rate
         .I2(txdata_wait_cnt_reg[0]),
         .I3(txdata_wait_cnt_reg[1]),
         .O(\fsm[1]_i_7_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair59" *) 
+  (* SOFT_HLUTNM = "soft_lutpair57" *) 
   LUT2 #(
     .INIT(4'h2)) 
     \fsm[1]_i_8 
-       (.I0(\fsm_reg_n_0_[4] ),
-        .I1(\fsm_reg_n_0_[3] ),
+       (.I0(\fsm_reg_n_0_[3] ),
+        .I1(\fsm_reg_n_0_[4] ),
         .O(\fsm[1]_i_8_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair56" *) 
+  (* SOFT_HLUTNM = "soft_lutpair55" *) 
   LUT2 #(
     .INIT(4'h8)) 
     \fsm[1]_i_9 
        (.I0(\fsm_reg_n_0_[4] ),
         .I1(\fsm_reg_n_0_[3] ),
         .O(\fsm[1]_i_9_n_0 ));
+  LUT2 #(
+    .INIT(4'h2)) 
+    \fsm[2]_i_10 
+       (.I0(\fsm_reg_n_0_[0] ),
+        .I1(drp_done_reg2),
+        .O(\fsm[2]_i_10_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFD7D50000)) 
+    .INIT(64'hF0FFF0FC404C404C)) 
+    \fsm[2]_i_11 
+       (.I0(\fsm[2]_i_12_n_0 ),
+        .I1(\fsm[1]_i_8_n_0 ),
+        .I2(\fsm_reg_n_0_[2] ),
+        .I3(\fsm[2]_i_3_n_0 ),
+        .I4(txsync_done_reg2),
+        .I5(\fsm[3]_i_4_n_0 ),
+        .O(\fsm[2]_i_11_n_0 ));
+  LUT3 #(
+    .INIT(8'h2A)) 
+    \fsm[2]_i_12 
+       (.I0(\fsm_reg_n_0_[1] ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(drp_done_reg2),
+        .O(\fsm[2]_i_12_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFF0000D7D5)) 
     \fsm[2]_i_1__0 
        (.I0(\fsm[2]_i_2_n_0 ),
         .I1(\fsm_reg_n_0_[2] ),
@@ -18110,7 +18690,7 @@ module pcie_7x_0_pipe_rate
         .I4(rate_in_reg1[1]),
         .I5(\fsm_reg_n_0_[2] ),
         .O(\fsm[2]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair57" *) 
+  (* SOFT_HLUTNM = "soft_lutpair56" *) 
   LUT2 #(
     .INIT(4'h7)) 
     \fsm[2]_i_3 
@@ -18125,52 +18705,44 @@ module pcie_7x_0_pipe_rate
         .I2(rate_in_reg2[0]),
         .I3(cplllock_reg2),
         .O(\fsm[2]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair56" *) 
+  (* SOFT_HLUTNM = "soft_lutpair57" *) 
   LUT2 #(
-    .INIT(4'h1)) 
+    .INIT(4'hE)) 
     \fsm[2]_i_5 
        (.I0(\fsm_reg_n_0_[4] ),
         .I1(\fsm_reg_n_0_[3] ),
         .O(\fsm[2]_i_5_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFEEEEAAEA)) 
+    .INIT(64'hFFFFFFFF55540000)) 
     \fsm[2]_i_6 
        (.I0(\fsm[2]_i_8_n_0 ),
-        .I1(\fsm[3]_i_5_n_0 ),
-        .I2(txsync_done_reg2),
-        .I3(\fsm[2]_i_3_n_0 ),
-        .I4(\fsm_reg_n_0_[2] ),
-        .I5(\fsm[2]_i_9_n_0 ),
+        .I1(\fsm[2]_i_9_n_0 ),
+        .I2(\fsm[2]_i_10_n_0 ),
+        .I3(\fsm_reg_n_0_[2] ),
+        .I4(\fsm[3]_i_5_n_0 ),
+        .I5(\fsm[2]_i_11_n_0 ),
         .O(\fsm[2]_i_6_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair57" *) 
+  (* SOFT_HLUTNM = "soft_lutpair56" *) 
   LUT2 #(
     .INIT(4'h1)) 
     \fsm[2]_i_7 
        (.I0(\fsm_reg_n_0_[1] ),
         .I1(\fsm_reg_n_0_[0] ),
         .O(\fsm[2]_i_7_n_0 ));
-  LUT6 #(
-    .INIT(64'h8080888088808880)) 
+  LUT2 #(
+    .INIT(4'hB)) 
     \fsm[2]_i_8 
-       (.I0(\fsm[3]_i_4_n_0 ),
-        .I1(\fsm[1]_i_8_n_0 ),
-        .I2(\fsm_reg_n_0_[2] ),
-        .I3(\fsm_reg_n_0_[0] ),
-        .I4(drp_done_reg2),
-        .I5(\fsm_reg_n_0_[1] ),
+       (.I0(\fsm_reg_n_0_[3] ),
+        .I1(\fsm_reg_n_0_[4] ),
         .O(\fsm[2]_i_8_n_0 ));
-  LUT6 #(
-    .INIT(64'h4044400000444000)) 
+  LUT2 #(
+    .INIT(4'h2)) 
     \fsm[2]_i_9 
-       (.I0(\fsm_reg_n_0_[4] ),
-        .I1(\fsm_reg_n_0_[3] ),
-        .I2(\fsm_reg_n_0_[0] ),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm_reg_n_0_[2] ),
-        .I5(drp_done_reg2),
+       (.I0(\fsm_reg_n_0_[0] ),
+        .I1(\fsm_reg_n_0_[1] ),
         .O(\fsm[2]_i_9_n_0 ));
   LUT6 #(
-    .INIT(64'hFFFFFFFFCCDDCFCC)) 
+    .INIT(64'hFCFDFCFCFCFDFFFC)) 
     \fsm[3]_i_1__0 
        (.I0(\fsm[3]_i_2_n_0 ),
         .I1(\fsm[3]_i_3_n_0 ),
@@ -18180,14 +18752,14 @@ module pcie_7x_0_pipe_rate
         .I5(\fsm[3]_i_5_n_0 ),
         .O(fsm[3]));
   LUT6 #(
-    .INIT(64'h2222AAEA00000000)) 
+    .INIT(64'h22220000AAEA0000)) 
     \fsm[3]_i_2 
        (.I0(\fsm_reg_n_0_[2] ),
         .I1(drp_done_reg2),
         .I2(\fsm[2]_i_4_n_0 ),
         .I3(rst_idle_reg2),
-        .I4(\fsm_reg_n_0_[0] ),
-        .I5(\fsm_reg_n_0_[1] ),
+        .I4(\fsm_reg_n_0_[1] ),
+        .I5(\fsm_reg_n_0_[0] ),
         .O(\fsm[3]_i_2_n_0 ));
   LUT6 #(
     .INIT(64'h1101010101010101)) 
@@ -18200,39 +18772,34 @@ module pcie_7x_0_pipe_rate
         .I5(\fsm_reg_n_0_[2] ),
         .O(\fsm[3]_i_3_n_0 ));
   LUT6 #(
-    .INIT(64'hFF00FF02FFFFFFFF)) 
+    .INIT(64'h0088080088888888)) 
     \fsm[3]_i_4 
-       (.I0(\fsm[3]_i_6_n_0 ),
-        .I1(\fsm_reg[3]_1 ),
-        .I2(ratedone),
-        .I3(\fsm[3]_i_7_n_0 ),
-        .I4(\fsm_reg_n_0_[1] ),
-        .I5(\fsm_reg_n_0_[0] ),
-        .O(\fsm[3]_i_4_n_0 ));
-  LUT6 #(
-    .INIT(64'h0800888808808888)) 
-    \fsm[3]_i_5 
        (.I0(\fsm_reg_n_0_[3] ),
         .I1(\fsm_reg_n_0_[4] ),
-        .I2(\fsm_reg_n_0_[1] ),
-        .I3(\fsm_reg_n_0_[0] ),
-        .I4(\fsm_reg_n_0_[2] ),
-        .I5(rxsync_done_reg2),
-        .O(\fsm[3]_i_5_n_0 ));
-  LUT3 #(
-    .INIT(8'h45)) 
-    \fsm[3]_i_6 
-       (.I0(gen3_exit),
-        .I1(rate_in_reg2[0]),
-        .I2(rate_in_reg2[1]),
-        .O(\fsm[3]_i_6_n_0 ));
-  LUT3 #(
-    .INIT(8'h5D)) 
-    \fsm[3]_i_7 
+        .I2(rxsync_done_reg2),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(\fsm_reg_n_0_[0] ),
+        .I5(\fsm_reg_n_0_[2] ),
+        .O(\fsm[3]_i_4_n_0 ));
+  LUT5 #(
+    .INIT(32'h77F5F7F5)) 
+    \fsm[3]_i_5 
        (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[1] ),
-        .I2(resetovrd_done_reg2),
-        .O(\fsm[3]_i_7_n_0 ));
+        .I1(resetovrd_done_reg2),
+        .I2(\fsm[3]_i_6_n_0 ),
+        .I3(\fsm_reg_n_0_[1] ),
+        .I4(\fsm_reg_n_0_[0] ),
+        .O(\fsm[3]_i_5_n_0 ));
+  LUT6 #(
+    .INIT(64'h01000101FFFFFFFF)) 
+    \fsm[3]_i_6 
+       (.I0(ratedone),
+        .I1(\fsm[3]_i_5_0 ),
+        .I2(gen3_exit),
+        .I3(rate_in_reg2[0]),
+        .I4(rate_in_reg2[1]),
+        .I5(\fsm_reg_n_0_[0] ),
+        .O(\fsm[3]_i_6_n_0 ));
   LUT6 #(
     .INIT(64'h002AFF2AFF2AFF2A)) 
     \fsm[4]_i_1__0 
@@ -18252,12 +18819,12 @@ module pcie_7x_0_pipe_rate
         .I2(\fsm_reg_n_0_[1] ),
         .O(\fsm[4]_i_2_n_0 ));
   LUT4 #(
-    .INIT(16'hC80C)) 
+    .INIT(16'hA282)) 
     \fsm[4]_i_3 
-       (.I0(rxsync_done_reg2),
-        .I1(\fsm_reg_n_0_[2] ),
-        .I2(\fsm_reg_n_0_[0] ),
-        .I3(\fsm_reg_n_0_[1] ),
+       (.I0(\fsm_reg_n_0_[2] ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(\fsm_reg_n_0_[1] ),
+        .I3(rxsync_done_reg2),
         .O(\fsm[4]_i_3_n_0 ));
   FDSE #(
     .INIT(1'b0)) 
@@ -18345,13 +18912,13 @@ module pcie_7x_0_pipe_rate
         .O(gen3_i_1_n_0));
   (* SOFT_HLUTNM = "soft_lutpair49" *) 
   LUT5 #(
-    .INIT(32'h81000000)) 
+    .INIT(32'h80000040)) 
     gen3_i_2
        (.I0(\fsm_reg_n_0_[4] ),
-        .I1(\fsm_reg_n_0_[1] ),
-        .I2(\fsm_reg_n_0_[2] ),
-        .I3(\fsm_reg_n_0_[3] ),
-        .I4(\fsm_reg_n_0_[0] ),
+        .I1(\fsm_reg_n_0_[3] ),
+        .I2(\fsm_reg_n_0_[0] ),
+        .I3(\fsm_reg_n_0_[2] ),
+        .I4(\fsm_reg_n_0_[1] ),
         .O(gen3_i_2_n_0));
   FDRE #(
     .INIT(1'b0)) 
@@ -18393,15 +18960,15 @@ module pcie_7x_0_pipe_rate
         .I3(pclk_sel_i_2_n_0),
         .I4(pipe_pclk_sel_out),
         .O(pclk_sel_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair49" *) 
+  (* SOFT_HLUTNM = "soft_lutpair47" *) 
   LUT5 #(
-    .INIT(32'h82000400)) 
+    .INIT(32'h80201000)) 
     pclk_sel_i_2
-       (.I0(\fsm_reg_n_0_[1] ),
-        .I1(\fsm_reg_n_0_[0] ),
-        .I2(\fsm_reg_n_0_[4] ),
-        .I3(\fsm_reg_n_0_[3] ),
-        .I4(\fsm_reg_n_0_[2] ),
+       (.I0(\fsm_reg_n_0_[2] ),
+        .I1(\fsm_reg_n_0_[4] ),
+        .I2(\fsm_reg_n_0_[3] ),
+        .I3(\fsm_reg_n_0_[0] ),
+        .I4(\fsm_reg_n_0_[1] ),
         .O(pclk_sel_i_2_n_0));
   FDRE #(
     .INIT(1'b0)) 
@@ -18507,17 +19074,17 @@ module pcie_7x_0_pipe_rate
         .I2(\fsm_reg_n_0_[3] ),
         .I3(\fsm_reg_n_0_[0] ),
         .I4(\fsm_reg_n_0_[1] ),
-        .O(\fsm_reg[2]_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair53" *) 
+        .O(\fsm_reg[2]_1 ));
+  (* SOFT_HLUTNM = "soft_lutpair52" *) 
   LUT5 #(
     .INIT(32'h00000001)) 
     \rate_idle_reg1[0]_i_1 
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[4] ),
-        .I2(\fsm_reg_n_0_[3] ),
+       (.I0(\fsm_reg_n_0_[4] ),
+        .I1(\fsm_reg_n_0_[3] ),
+        .I2(\fsm_reg_n_0_[2] ),
         .I3(\fsm_reg_n_0_[0] ),
         .I4(\fsm_reg_n_0_[1] ),
-        .O(\fsm_reg[2]_3 ));
+        .O(\fsm_reg[4]_0 ));
   (* ASYNC_REG *) 
   (* KEEP = "yes" *) 
   (* SHIFT_EXTRACT = "NO" *) 
@@ -18572,8 +19139,15 @@ module pcie_7x_0_pipe_rate
         .I2(\fsm_reg_n_0_[2] ),
         .I3(\fsm_reg_n_0_[0] ),
         .I4(\fsm_reg_n_0_[1] ),
-        .I5(\fsm[3]_i_6_n_0 ),
+        .I5(\rate_out[0]_i_3_n_0 ),
         .O(\rate_out[0]_i_2_n_0 ));
+  LUT3 #(
+    .INIT(8'h45)) 
+    \rate_out[0]_i_3 
+       (.I0(gen3_exit),
+        .I1(rate_in_reg2[0]),
+        .I2(rate_in_reg2[1]),
+        .O(\rate_out[0]_i_3_n_0 ));
   FDRE #(
     .INIT(1'b0)) 
     \rate_out_reg[0] 
@@ -18582,7 +19156,7 @@ module pcie_7x_0_pipe_rate
         .D(\rate_out[0]_i_1_n_0 ),
         .Q(RXRATE),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair52" *) 
+  (* SOFT_HLUTNM = "soft_lutpair51" *) 
   LUT5 #(
     .INIT(32'h28000000)) 
     rate_rxsync_reg1_i_1
@@ -18627,16 +19201,16 @@ module pcie_7x_0_pipe_rate
         .D(resetovrd_done_reg1),
         .Q(resetovrd_done_reg2),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair53" *) 
+  (* SOFT_HLUTNM = "soft_lutpair52" *) 
   LUT5 #(
     .INIT(32'h00400000)) 
     resetovrd_start_reg1_i_1
-       (.I0(\fsm_reg_n_0_[3] ),
-        .I1(\fsm_reg_n_0_[2] ),
-        .I2(\fsm_reg_n_0_[1] ),
-        .I3(\fsm_reg_n_0_[0] ),
+       (.I0(\fsm_reg_n_0_[0] ),
+        .I1(\fsm_reg_n_0_[1] ),
+        .I2(\fsm_reg_n_0_[2] ),
+        .I3(\fsm_reg_n_0_[3] ),
         .I4(\fsm_reg_n_0_[4] ),
-        .O(\fsm_reg[3]_0 ));
+        .O(\fsm_reg[0]_0 ));
   (* ASYNC_REG *) 
   (* KEEP = "yes" *) 
   (* SHIFT_EXTRACT = "NO" *) 
@@ -18742,7 +19316,7 @@ module pcie_7x_0_pipe_rate
         .D(rxsync_done_reg1),
         .Q(rxsync_done_reg2),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair52" *) 
+  (* SOFT_HLUTNM = "soft_lutpair50" *) 
   LUT5 #(
     .INIT(32'h00800000)) 
     rxsync_start_reg1_i_1
@@ -18751,7 +19325,7 @@ module pcie_7x_0_pipe_rate
         .I2(\fsm_reg_n_0_[3] ),
         .I3(\fsm_reg_n_0_[1] ),
         .I4(\fsm_reg_n_0_[0] ),
-        .O(\fsm_reg[2]_1 ));
+        .O(\fsm_reg[2]_0 ));
   LUT6 #(
     .INIT(64'hF3FFFFFB00000008)) 
     \sysclksel[0]_i_1 
@@ -18776,7 +19350,7 @@ module pcie_7x_0_pipe_rate
         .D(\sysclksel[0]_i_1_n_0 ),
         .Q(RXSYSCLKSEL),
         .R(out));
-  (* SOFT_HLUTNM = "soft_lutpair48" *) 
+  (* SOFT_HLUTNM = "soft_lutpair45" *) 
   LUT5 #(
     .INIT(32'h80AA00AA)) 
     \txdata_wait_cnt[0]_i_1 
@@ -18786,7 +19360,7 @@ module pcie_7x_0_pipe_rate
         .I3(txdata_wait_cnt_reg[0]),
         .I4(txdata_wait_cnt_reg[1]),
         .O(p_0_in__0[0]));
-  (* SOFT_HLUTNM = "soft_lutpair48" *) 
+  (* SOFT_HLUTNM = "soft_lutpair45" *) 
   LUT5 #(
     .INIT(32'hA8282828)) 
     \txdata_wait_cnt[1]_i_1 
@@ -18796,7 +19370,7 @@ module pcie_7x_0_pipe_rate
         .I3(txdata_wait_cnt_reg[3]),
         .I4(txdata_wait_cnt_reg[2]),
         .O(p_0_in__0[1]));
-  (* SOFT_HLUTNM = "soft_lutpair47" *) 
+  (* SOFT_HLUTNM = "soft_lutpair46" *) 
   LUT5 #(
     .INIT(32'h8AA0A0A0)) 
     \txdata_wait_cnt[2]_i_1 
@@ -18806,7 +19380,7 @@ module pcie_7x_0_pipe_rate
         .I3(txdata_wait_cnt_reg[0]),
         .I4(txdata_wait_cnt_reg[1]),
         .O(p_0_in__0[2]));
-  (* SOFT_HLUTNM = "soft_lutpair47" *) 
+  (* SOFT_HLUTNM = "soft_lutpair46" *) 
   LUT5 #(
     .INIT(32'hA8888888)) 
     \txdata_wait_cnt[3]_i_1 
@@ -18816,15 +19390,15 @@ module pcie_7x_0_pipe_rate
         .I3(txdata_wait_cnt_reg[0]),
         .I4(txdata_wait_cnt_reg[2]),
         .O(p_0_in__0[3]));
-  (* SOFT_HLUTNM = "soft_lutpair46" *) 
+  (* SOFT_HLUTNM = "soft_lutpair47" *) 
   LUT5 #(
-    .INIT(32'h00080000)) 
+    .INIT(32'h00400000)) 
     \txdata_wait_cnt[3]_i_2 
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[3] ),
-        .I2(\fsm_reg_n_0_[4] ),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm_reg_n_0_[0] ),
+       (.I0(\fsm_reg_n_0_[1] ),
+        .I1(\fsm_reg_n_0_[0] ),
+        .I2(\fsm_reg_n_0_[3] ),
+        .I3(\fsm_reg_n_0_[4] ),
+        .I4(\fsm_reg_n_0_[2] ),
         .O(\txdata_wait_cnt[3]_i_2_n_0 ));
   FDRE #(
     .INIT(1'b0)) 
@@ -18868,12 +19442,12 @@ module pcie_7x_0_pipe_rate
         .I4(txpmareset_i_2_n_0),
         .I5(rate_rxpmareset),
         .O(txpmareset_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair46" *) 
+  (* SOFT_HLUTNM = "soft_lutpair48" *) 
   LUT5 #(
-    .INIT(32'h80080400)) 
+    .INIT(32'h80080200)) 
     txpmareset_i_2
-       (.I0(\fsm_reg_n_0_[0] ),
-        .I1(\fsm_reg_n_0_[1] ),
+       (.I0(\fsm_reg_n_0_[1] ),
+        .I1(\fsm_reg_n_0_[0] ),
         .I2(\fsm_reg_n_0_[4] ),
         .I3(\fsm_reg_n_0_[2] ),
         .I4(\fsm_reg_n_0_[3] ),
@@ -18893,12 +19467,12 @@ module pcie_7x_0_pipe_rate
         .I1(txratedone_i_2_n_0),
         .I2(txratedone),
         .O(txratedone_i_1_n_0));
-  (* SOFT_HLUTNM = "soft_lutpair50" *) 
+  (* SOFT_HLUTNM = "soft_lutpair49" *) 
   LUT5 #(
-    .INIT(32'h00002000)) 
+    .INIT(32'h00004000)) 
     txratedone_i_2
-       (.I0(\fsm_reg_n_0_[2] ),
-        .I1(\fsm_reg_n_0_[1] ),
+       (.I0(\fsm_reg_n_0_[1] ),
+        .I1(\fsm_reg_n_0_[2] ),
         .I2(\fsm_reg_n_0_[4] ),
         .I3(\fsm_reg_n_0_[0] ),
         .I4(\fsm_reg_n_0_[3] ),
@@ -18966,14 +19540,14 @@ module pcie_7x_0_pipe_rate
         .Q(txsync_done_reg2),
         .R(out));
   LUT6 #(
-    .INIT(64'hABAAAAAAAAAAAAAA)) 
+    .INIT(64'hAAAAAAAAAAAAEAAA)) 
     txsync_start_reg1_i_1
        (.I0(Q[0]),
-        .I1(\fsm_reg_n_0_[2] ),
-        .I2(\fsm_reg_n_0_[0] ),
-        .I3(\fsm_reg_n_0_[1] ),
-        .I4(\fsm_reg_n_0_[4] ),
-        .I5(\fsm_reg_n_0_[3] ),
+        .I1(\fsm_reg_n_0_[1] ),
+        .I2(\fsm_reg_n_0_[3] ),
+        .I3(\fsm_reg_n_0_[4] ),
+        .I4(\fsm_reg_n_0_[2] ),
+        .I5(\fsm_reg_n_0_[0] ),
         .O(SYNC_TXSYNC_START0));
 endmodule
 
@@ -19056,7 +19630,7 @@ module pcie_7x_0_pipe_reset
   wire cpllpd;
   wire cpllreset;
   wire cpllreset_i_1_n_0;
-  wire cpllreset_i_2_n_0;
+  wire cpllreset_i_2__0_n_0;
   wire cpllrst;
   wire dclk_rst;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire dclk_rst_reg1;
@@ -19298,7 +19872,7 @@ module pcie_7x_0_pipe_reset
         .D(\FSM_onehot_fsm[9]_i_1_n_0 ),
         .Q(\FSM_onehot_fsm_reg_n_0_[9] ),
         .R(reset_n_reg2_reg));
-  (* SOFT_HLUTNM = "soft_lutpair65" *) 
+  (* SOFT_HLUTNM = "soft_lutpair63" *) 
   LUT3 #(
     .INIT(8'h2A)) 
     \cfg_wait_cnt[0]_i_1 
@@ -19306,7 +19880,7 @@ module pcie_7x_0_pipe_reset
         .I1(\FSM_onehot_fsm[1]_i_2_n_0 ),
         .I2(cfg_wait_cnt_reg[0]),
         .O(p_0_in[0]));
-  (* SOFT_HLUTNM = "soft_lutpair63" *) 
+  (* SOFT_HLUTNM = "soft_lutpair61" *) 
   LUT4 #(
     .INIT(16'h28AA)) 
     \cfg_wait_cnt[1]_i_1 
@@ -19315,7 +19889,7 @@ module pcie_7x_0_pipe_reset
         .I2(cfg_wait_cnt_reg[1]),
         .I3(\FSM_onehot_fsm[1]_i_2_n_0 ),
         .O(p_0_in[1]));
-  (* SOFT_HLUTNM = "soft_lutpair63" *) 
+  (* SOFT_HLUTNM = "soft_lutpair61" *) 
   LUT5 #(
     .INIT(32'h2888AAAA)) 
     \cfg_wait_cnt[2]_i_1 
@@ -19335,7 +19909,7 @@ module pcie_7x_0_pipe_reset
         .I4(cfg_wait_cnt_reg[1]),
         .I5(\FSM_onehot_fsm[1]_i_2_n_0 ),
         .O(p_0_in[3]));
-  (* SOFT_HLUTNM = "soft_lutpair64" *) 
+  (* SOFT_HLUTNM = "soft_lutpair62" *) 
   LUT5 #(
     .INIT(32'hAE00A600)) 
     \cfg_wait_cnt[4]_i_1 
@@ -19345,7 +19919,7 @@ module pcie_7x_0_pipe_reset
         .I3(\FSM_onehot_fsm_reg_n_0_[1] ),
         .I4(cfg_wait_cnt_reg[5]),
         .O(p_0_in[4]));
-  (* SOFT_HLUTNM = "soft_lutpair64" *) 
+  (* SOFT_HLUTNM = "soft_lutpair62" *) 
   LUT5 #(
     .INIT(32'h88A88888)) 
     \cfg_wait_cnt[5]_i_1 
@@ -19355,7 +19929,7 @@ module pcie_7x_0_pipe_reset
         .I3(\cfg_wait_cnt[5]_i_2_n_0 ),
         .I4(cfg_wait_cnt_reg[4]),
         .O(p_0_in[5]));
-  (* SOFT_HLUTNM = "soft_lutpair65" *) 
+  (* SOFT_HLUTNM = "soft_lutpair63" *) 
   LUT3 #(
     .INIT(8'h7F)) 
     \cfg_wait_cnt[5]_i_2 
@@ -19436,19 +20010,19 @@ module pcie_7x_0_pipe_reset
         .I1(userrdy),
         .I2(\FSM_onehot_fsm_reg_n_0_[4] ),
         .I3(\FSM_onehot_fsm_reg_n_0_[14] ),
-        .I4(cpllreset_i_2_n_0),
+        .I4(cpllreset_i_2__0_n_0),
         .I5(cpllreset),
         .O(cpllreset_i_1_n_0));
   LUT6 #(
     .INIT(64'hFFFFFFFFFFFFFFFE)) 
-    cpllreset_i_2
+    cpllreset_i_2__0
        (.I0(\FSM_onehot_fsm_reg_n_0_[9] ),
         .I1(Q[0]),
         .I2(\FSM_onehot_fsm_reg_n_0_[1] ),
         .I3(Q[1]),
         .I4(\FSM_onehot_fsm_reg_n_0_[13] ),
         .I5(cpllpd),
-        .O(cpllreset_i_2_n_0));
+        .O(cpllreset_i_2__0_n_0));
   FDRE #(
     .INIT(1'b0)) 
     cpllreset_reg
@@ -19727,7 +20301,7 @@ module pcie_7x_0_pipe_sync
     SYNC_TXPHINITDONE1,
     QPLL_DRP_GEN3,
     rate_idle_reg1_reg_0,
-    gt_rx_elec_idle_wire_filter,
+    PIPE_RXELECIDLE,
     user_rxcdrlock,
     rxsync_start_reg1_reg_0,
     rxdlysresetdone_reg1_reg_0,
@@ -19753,7 +20327,7 @@ module pcie_7x_0_pipe_sync
   input SYNC_TXPHINITDONE1;
   input QPLL_DRP_GEN3;
   input rate_idle_reg1_reg_0;
-  input [0:0]gt_rx_elec_idle_wire_filter;
+  input PIPE_RXELECIDLE;
   input user_rxcdrlock;
   input rxsync_start_reg1_reg_0;
   input rxdlysresetdone_reg1_reg_0;
@@ -19779,13 +20353,13 @@ module pcie_7x_0_pipe_sync
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg_n_0_[1] ;
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg_n_0_[2] ;
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg_n_0_[6] ;
+  wire PIPE_RXELECIDLE;
   wire [2:0]Q;
   wire QPLL_DRP_GEN3;
   wire SYNC_TXPHINITDONE1;
   wire SYNC_TXSYNC_START0;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire gen3_reg1;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire gen3_reg2;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire mmcm_lock_reg1;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire mmcm_lock_reg2;
   wire pipe_mmcm_lock_in;
@@ -20054,7 +20628,7 @@ module pcie_7x_0_pipe_sync
   FDRE rxelecidle_reg1_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .D(gt_rx_elec_idle_wire_filter),
+        .D(PIPE_RXELECIDLE),
         .Q(rxelecidle_reg1),
         .R(rxphaligndone_s_reg2_reg_0));
   (* ASYNC_REG *) 
@@ -20333,15 +20907,15 @@ module pcie_7x_0_pipe_user
     txcompliance_reg2_reg_0,
     CLKRSVD,
     user_resetdone,
-    \gtx_channel.gtxe2_channel_i ,
     user_rxcdrlock,
+    rate_idle_reg2_reg_0,
     txcompliance_reg2_reg_1,
     txcompliance_reg2_reg_2,
     SYNC_TXPHINITDONE1,
     txphaligndone0,
     txelecidle_reg2_reg_0,
     reg_clock_locked_reg,
-    gt_rx_phy_status_wire_filter,
+    PIPE_PHYSTATUS,
     user_rx_converge,
     resetovrd_start_reg2_reg_0,
     pipe_pclk_sel_out,
@@ -20363,7 +20937,7 @@ module pcie_7x_0_pipe_user
     rxeq_adapt_done_reg1_reg_0,
     resetovrd_start_reg1_reg_0,
     pipe_oobclk_in,
-    gt_rx_elec_idle_wire_filter,
+    PIPE_RXELECIDLE,
     gt_rxvalid_q_reg,
     \FSM_onehot_txsync_fsm.fsm_tx_reg[4] ,
     \FSM_onehot_txsync_fsm.fsm_tx_reg[4]_0 ,
@@ -20377,15 +20951,15 @@ module pcie_7x_0_pipe_user
   output txcompliance_reg2_reg_0;
   output [0:0]CLKRSVD;
   output user_resetdone;
-  output \gtx_channel.gtxe2_channel_i ;
   output user_rxcdrlock;
+  output rate_idle_reg2_reg_0;
   output txcompliance_reg2_reg_1;
   output txcompliance_reg2_reg_2;
   output SYNC_TXPHINITDONE1;
   output txphaligndone0;
   output txelecidle_reg2_reg_0;
   output reg_clock_locked_reg;
-  output [0:0]gt_rx_phy_status_wire_filter;
+  output PIPE_PHYSTATUS;
   output user_rx_converge;
   input resetovrd_start_reg2_reg_0;
   input [0:0]pipe_pclk_sel_out;
@@ -20407,7 +20981,7 @@ module pcie_7x_0_pipe_user
   input rxeq_adapt_done_reg1_reg_0;
   input resetovrd_start_reg1_reg_0;
   input pipe_oobclk_in;
-  input [0:0]gt_rx_elec_idle_wire_filter;
+  input PIPE_RXELECIDLE;
   input gt_rxvalid_q_reg;
   input \FSM_onehot_txsync_fsm.fsm_tx_reg[4] ;
   input \FSM_onehot_txsync_fsm.fsm_tx_reg[4]_0 ;
@@ -20423,6 +20997,8 @@ module pcie_7x_0_pipe_user
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg[4]_0 ;
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg[5] ;
   wire \FSM_onehot_txsync_fsm.fsm_tx_reg[5]_0 ;
+  wire PIPE_PHYSTATUS;
+  wire PIPE_RXELECIDLE;
   wire [0:0]Q;
   wire QPLL_DRP_GEN3;
   wire [0:0]RXSTATUS;
@@ -20480,15 +21056,12 @@ module pcie_7x_0_pipe_user
   wire converge_gen3_i_1_n_0;
   wire converge_gen3_reg_n_0;
   wire gt_phystatus;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
-  wire [0:0]gt_rx_phy_status_wire_filter;
   wire gt_rxcdrlock;
   wire gt_rxresetdone_0;
   wire gt_rxvalid;
-  wire gt_rxvalid_q_i_4_n_0;
+  wire gt_rxvalid_q_i_6_n_0;
   wire gt_rxvalid_q_reg;
   wire gt_txresetdone_0;
-  wire \gtx_channel.gtxe2_channel_i ;
   wire \gtx_channel.gtxe2_channel_i_i_48_n_0 ;
   wire \gtx_channel.gtxe2_channel_i_i_49_n_0 ;
   wire \gtx_channel.gtxe2_channel_i_i_50_n_0 ;
@@ -20517,6 +21090,7 @@ module pcie_7x_0_pipe_user
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire rate_idle_reg1;
   wire rate_idle_reg1_reg_0;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire rate_idle_reg2;
+  wire rate_idle_reg2_reg_0;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire rate_rxsync_reg1;
   wire rate_rxsync_reg1_reg_0;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire rate_rxsync_reg2;
@@ -20612,7 +21186,7 @@ module pcie_7x_0_pipe_user
         .I4(converge_cnt_reg[11]),
         .I5(converge_cnt_reg[12]),
         .O(\converge_cnt[0]_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair61" *) 
+  (* SOFT_HLUTNM = "soft_lutpair59" *) 
   LUT5 #(
     .INIT(32'h7FFFFFFF)) 
     \converge_cnt[0]_i_5 
@@ -20627,7 +21201,7 @@ module pcie_7x_0_pipe_user
     \converge_cnt[0]_i_6 
        (.I0(converge_cnt_reg[0]),
         .O(\converge_cnt[0]_i_6_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair60" *) 
+  (* SOFT_HLUTNM = "soft_lutpair58" *) 
   LUT5 #(
     .INIT(32'hFFFFFFFE)) 
     \converge_cnt[0]_i_7 
@@ -20884,42 +21458,42 @@ module pcie_7x_0_pipe_user
         .I2(gt_phystatus),
         .I3(rst_idle_reg2),
         .I4(rate_done_reg2),
-        .O(gt_rx_phy_status_wire_filter));
+        .O(PIPE_PHYSTATUS));
   LUT6 #(
-    .INIT(64'hBBFBFFFFFFFFFFFF)) 
+    .INIT(64'hBFFFBFFFFFFFBFFF)) 
     gt_rxvalid_q_i_2
-       (.I0(gt_rxvalid_q_i_4_n_0),
-        .I1(gt_rxvalid),
-        .I2(gt_rx_elec_idle_wire_filter),
-        .I3(gt_rxvalid_q_reg),
-        .I4(rst_idle_reg2),
-        .I5(rate_idle_reg2),
-        .O(\gtx_channel.gtxe2_channel_i ));
+       (.I0(gt_rxvalid_q_i_6_n_0),
+        .I1(rate_idle_reg2),
+        .I2(rst_idle_reg2),
+        .I3(gt_rxvalid),
+        .I4(PIPE_RXELECIDLE),
+        .I5(gt_rxvalid_q_reg),
+        .O(rate_idle_reg2_reg_0));
   LUT4 #(
     .INIT(16'h7FFF)) 
-    gt_rxvalid_q_i_4
+    gt_rxvalid_q_i_6
        (.I0(rxvalid_cnt_reg[2]),
         .I1(rxvalid_cnt_reg[0]),
         .I2(rxvalid_cnt_reg[1]),
         .I3(rxvalid_cnt_reg[3]),
-        .O(gt_rxvalid_q_i_4_n_0));
+        .O(gt_rxvalid_q_i_6_n_0));
   LUT6 #(
-    .INIT(64'hFFFFFFFFFFFFFEFF)) 
+    .INIT(64'hFFFFFFFFFFFFFFEF)) 
     \gtx_channel.gtxe2_channel_i_i_48 
        (.I0(\gtx_channel.gtxe2_channel_i_i_51_n_0 ),
-        .I1(converge_cnt_reg[1]),
-        .I2(converge_cnt_reg[20]),
-        .I3(converge_cnt_reg[17]),
+        .I1(converge_cnt_reg[0]),
+        .I2(converge_cnt_reg[10]),
+        .I3(converge_cnt_reg[20]),
         .I4(\gtx_channel.gtxe2_channel_i_i_52_n_0 ),
         .I5(\gtx_channel.gtxe2_channel_i_i_53_n_0 ),
         .O(\gtx_channel.gtxe2_channel_i_i_48_n_0 ));
   LUT4 #(
-    .INIT(16'h0008)) 
+    .INIT(16'h1000)) 
     \gtx_channel.gtxe2_channel_i_i_49 
-       (.I0(converge_cnt_reg[21]),
-        .I1(converge_cnt_reg[10]),
-        .I2(converge_cnt_reg[12]),
-        .I3(converge_cnt_reg[0]),
+       (.I0(converge_cnt_reg[14]),
+        .I1(converge_cnt_reg[1]),
+        .I2(converge_cnt_reg[21]),
+        .I3(converge_cnt_reg[3]),
         .O(\gtx_channel.gtxe2_channel_i_i_49_n_0 ));
   LUT2 #(
     .INIT(4'h7)) 
@@ -20928,14 +21502,14 @@ module pcie_7x_0_pipe_user
         .I1(converge_cnt_reg[9]),
         .O(\gtx_channel.gtxe2_channel_i_i_50_n_0 ));
   LUT4 #(
-    .INIT(16'hFFFD)) 
+    .INIT(16'hFFEF)) 
     \gtx_channel.gtxe2_channel_i_i_51 
-       (.I0(converge_cnt_reg[3]),
-        .I1(converge_cnt_reg[2]),
-        .I2(converge_cnt_reg[6]),
-        .I3(converge_cnt_reg[14]),
+       (.I0(converge_cnt_reg[6]),
+        .I1(converge_cnt_reg[12]),
+        .I2(converge_cnt_reg[17]),
+        .I3(converge_cnt_reg[2]),
         .O(\gtx_channel.gtxe2_channel_i_i_51_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair60" *) 
+  (* SOFT_HLUTNM = "soft_lutpair58" *) 
   LUT3 #(
     .INIT(8'hFE)) 
     \gtx_channel.gtxe2_channel_i_i_52 
@@ -20943,7 +21517,7 @@ module pcie_7x_0_pipe_user
         .I1(converge_cnt_reg[5]),
         .I2(converge_cnt_reg[4]),
         .O(\gtx_channel.gtxe2_channel_i_i_52_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair61" *) 
+  (* SOFT_HLUTNM = "soft_lutpair59" *) 
   LUT4 #(
     .INIT(16'h7FFF)) 
     \gtx_channel.gtxe2_channel_i_i_53 
@@ -20962,14 +21536,14 @@ module pcie_7x_0_pipe_user
         .I4(converge_cnt_reg[11]),
         .I5(\gtx_channel.gtxe2_channel_i_i_50_n_0 ),
         .O(user_rx_converge));
-  (* SOFT_HLUTNM = "soft_lutpair62" *) 
+  (* SOFT_HLUTNM = "soft_lutpair60" *) 
   LUT2 #(
     .INIT(4'h1)) 
     \oobclk_div.oobclk_cnt[0]_i_1 
        (.I0(oobclk_cnt[0]),
         .I1(resetovrd_start_reg2_reg_0),
         .O(\oobclk_div.oobclk_cnt[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair62" *) 
+  (* SOFT_HLUTNM = "soft_lutpair60" *) 
   LUT3 #(
     .INIT(8'h06)) 
     \oobclk_div.oobclk_cnt[1]_i_1 
@@ -21459,19 +22033,19 @@ endmodule
 module pcie_7x_0_pipe_wrapper
    (gen3_reg,
     pipe_pclk_sel_out,
-    gt_rx_elec_idle_wire_filter,
+    PIPE_RXELECIDLE,
     pci_exp_txn,
     pci_exp_txp,
     pipe_rx0_chanisaligned,
     pipe_rxoutclk_out,
     pipe_txoutclk_out,
-    \gtx_channel.gtxe2_channel_i ,
     D,
-    sys_rst_n_0,
-    \gtx_channel.gtxe2_channel_i_0 ,
-    \gtx_channel.gtxe2_channel_i_1 ,
+    \gtx_channel.gtxe2_channel_i ,
+    sys_rst_n,
+    rate_idle_reg2_reg,
     reg_clock_locked_reg,
-    gt_rx_phy_status_wire_filter,
+    \gtx_channel.gtxe2_channel_i_0 ,
+    PIPE_PHYSTATUS,
     pipe_mmcm_lock_in,
     pipe_pclk_in,
     pipe_rxusrclk_in,
@@ -21489,26 +22063,26 @@ module pcie_7x_0_pipe_wrapper
     pipe_tx0_data,
     pipe_tx0_char_is_k,
     pipe_oobclk_in,
-    sys_rst_n,
+    reset_n_reg2_reg_0,
     \gt_rx_status_q_reg[0] ,
-    \gt_rx_status_q_reg[2] ,
     reg_clock_locked,
+    \gt_rx_status_q_reg[2] ,
     pipe_tx_rate);
   output gen3_reg;
   output [0:0]pipe_pclk_sel_out;
-  output [0:0]gt_rx_elec_idle_wire_filter;
+  output PIPE_RXELECIDLE;
   output [0:0]pci_exp_txn;
   output [0:0]pci_exp_txp;
   output pipe_rx0_chanisaligned;
   output [0:0]pipe_rxoutclk_out;
   output pipe_txoutclk_out;
-  output [15:0]\gtx_channel.gtxe2_channel_i ;
-  output [1:0]D;
-  output sys_rst_n_0;
-  output \gtx_channel.gtxe2_channel_i_0 ;
-  output [2:0]\gtx_channel.gtxe2_channel_i_1 ;
+  output [15:0]D;
+  output [1:0]\gtx_channel.gtxe2_channel_i ;
+  output sys_rst_n;
+  output rate_idle_reg2_reg;
   output reg_clock_locked_reg;
-  output [0:0]gt_rx_phy_status_wire_filter;
+  output [2:0]\gtx_channel.gtxe2_channel_i_0 ;
+  output PIPE_PHYSTATUS;
   input pipe_mmcm_lock_in;
   input pipe_pclk_in;
   input pipe_rxusrclk_in;
@@ -21526,14 +22100,16 @@ module pcie_7x_0_pipe_wrapper
   input [15:0]pipe_tx0_data;
   input [1:0]pipe_tx0_char_is_k;
   input pipe_oobclk_in;
-  input sys_rst_n;
+  input reset_n_reg2_reg_0;
   input \gt_rx_status_q_reg[0] ;
-  input \gt_rx_status_q_reg[2] ;
   input reg_clock_locked;
+  input \gt_rx_status_q_reg[2] ;
   input pipe_tx_rate;
 
   wire CPLLRESET0;
-  wire [1:0]D;
+  wire [15:0]D;
+  wire PIPE_PHYSTATUS;
+  wire PIPE_RXELECIDLE;
   wire RX8B10BEN0;
   wire SYNC_TXPHINITDONE1;
   wire SYNC_TXSYNC_START0;
@@ -21545,8 +22121,6 @@ module pcie_7x_0_pipe_wrapper
   wire gen3_reg;
   wire gt_cpllpdrefclk;
   wire gt_phystatus;
-  wire [0:0]gt_rx_elec_idle_wire_filter;
-  wire [0:0]gt_rx_phy_status_wire_filter;
   wire \gt_rx_status_q_reg[0] ;
   wire \gt_rx_status_q_reg[2] ;
   wire gt_rxcdrlock;
@@ -21555,9 +22129,8 @@ module pcie_7x_0_pipe_wrapper
   wire gt_rxvalid;
   wire gt_txratedone;
   wire gt_txresetdone_0;
-  wire [15:0]\gtx_channel.gtxe2_channel_i ;
-  wire \gtx_channel.gtxe2_channel_i_0 ;
-  wire [2:0]\gtx_channel.gtxe2_channel_i_1 ;
+  wire [1:0]\gtx_channel.gtxe2_channel_i ;
+  wire [2:0]\gtx_channel.gtxe2_channel_i_0 ;
   wire p_0_in1_in;
   wire p_1_in;
   wire p_1_in0_in;
@@ -21664,6 +22237,7 @@ module pcie_7x_0_pipe_wrapper
   wire rate_drp_start;
   wire rate_drp_x16;
   wire rate_drp_x16x20_mode;
+  wire rate_idle_reg2_reg;
   wire rate_qpllpd;
   wire rate_qpllreset;
   wire [0:0]rate_rate_0;
@@ -21673,6 +22247,7 @@ module pcie_7x_0_pipe_wrapper
   wire reg_clock_locked_reg;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire reset_n_reg1;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire reset_n_reg2;
+  wire reset_n_reg2_reg_0;
   wire rst_cpllreset;
   wire rst_dclk_reset;
   wire rst_gtreset;
@@ -21683,14 +22258,13 @@ module pcie_7x_0_pipe_wrapper
   wire sync_txsync_done;
   wire sys_clk;
   wire sys_rst_n;
-  wire sys_rst_n_0;
   wire txphaligndone0;
   wire user_oobclk;
   wire user_resetdone;
   wire user_rx_converge;
   wire user_rxcdrlock;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   BUFG cpllpd_refclk_inst
        (.I(sys_clk),
         .O(gt_cpllpdrefclk));
@@ -21700,6 +22274,7 @@ module pcie_7x_0_pipe_wrapper
         .D({\pipe_lane[0].gt_wrapper_i_n_21 ,\pipe_lane[0].gt_wrapper_i_n_22 ,\pipe_lane[0].gt_wrapper_i_n_23 ,\pipe_lane[0].gt_wrapper_i_n_24 ,\pipe_lane[0].gt_wrapper_i_n_25 ,\pipe_lane[0].gt_wrapper_i_n_26 ,\pipe_lane[0].gt_wrapper_i_n_27 ,\pipe_lane[0].gt_wrapper_i_n_28 ,\pipe_lane[0].gt_wrapper_i_n_29 ,\pipe_lane[0].gt_wrapper_i_n_30 ,\pipe_lane[0].gt_wrapper_i_n_31 ,\pipe_lane[0].gt_wrapper_i_n_32 ,\pipe_lane[0].gt_wrapper_i_n_33 ,\pipe_lane[0].gt_wrapper_i_n_34 ,\pipe_lane[0].gt_wrapper_i_n_35 ,\pipe_lane[0].gt_wrapper_i_n_36 }),
         .DRPADDR({\pipe_lane[0].pipe_drp.pipe_drp_i_n_18 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_19 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_20 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_21 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_22 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_23 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_24 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_25 }),
         .DRPDI({\pipe_lane[0].pipe_drp.pipe_drp_i_n_2 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_3 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_4 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_5 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_6 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_7 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_8 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_9 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_10 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_11 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_12 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_13 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_14 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_15 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_16 ,\pipe_lane[0].pipe_drp.pipe_drp_i_n_17 }),
+        .PIPE_RXELECIDLE(PIPE_RXELECIDLE),
         .Q({\pipe_lane[0].pipe_sync_i_n_6 ,\pipe_lane[0].pipe_sync_i_n_7 ,\pipe_lane[0].pipe_sync_i_n_8 }),
         .QPLL_QPLLOUTCLK(\pipe_lane[0].pipe_quad.gt_common_enabled.gt_common_int.gt_common_i_n_1 ),
         .QPLL_QPLLOUTREFCLK(\pipe_lane[0].pipe_quad.gt_common_enabled.gt_common_int.gt_common_i_n_2 ),
@@ -21714,7 +22289,6 @@ module pcie_7x_0_pipe_wrapper
         .cpllrst(cpllrst),
         .gt_cpllpdrefclk(gt_cpllpdrefclk),
         .gt_phystatus(gt_phystatus),
-        .gt_rx_elec_idle_wire_filter(gt_rx_elec_idle_wire_filter),
         .\gt_rx_status_q_reg[0] (\gt_rx_status_q_reg[0] ),
         .\gt_rx_status_q_reg[2] (\gt_rx_status_q_reg[2] ),
         .gt_rxcdrlock(gt_rxcdrlock),
@@ -21730,9 +22304,9 @@ module pcie_7x_0_pipe_wrapper
         .\gtx_channel.gtxe2_channel_i_3 (\pipe_lane[0].gt_wrapper_i_n_15 ),
         .\gtx_channel.gtxe2_channel_i_4 (\pipe_lane[0].gt_wrapper_i_n_17 ),
         .\gtx_channel.gtxe2_channel_i_5 (\pipe_lane[0].gt_wrapper_i_n_18 ),
-        .\gtx_channel.gtxe2_channel_i_6 (\gtx_channel.gtxe2_channel_i ),
-        .\gtx_channel.gtxe2_channel_i_7 (D),
-        .\gtx_channel.gtxe2_channel_i_8 (\gtx_channel.gtxe2_channel_i_1 ),
+        .\gtx_channel.gtxe2_channel_i_6 (D),
+        .\gtx_channel.gtxe2_channel_i_7 (\gtx_channel.gtxe2_channel_i ),
+        .\gtx_channel.gtxe2_channel_i_8 (\gtx_channel.gtxe2_channel_i_0 ),
         .\gtx_channel.gtxe2_channel_i_9 (\pipe_lane[0].pipe_drp.pipe_drp_i_n_1 ),
         .pci_exp_rxn(pci_exp_rxn),
         .pci_exp_rxp(pci_exp_rxp),
@@ -21807,14 +22381,14 @@ module pcie_7x_0_pipe_wrapper
         .RXSYSCLKSEL(rate_sysclksel_0),
         .SYNC_TXSYNC_START0(SYNC_TXSYNC_START0),
         .drp_done(drp_done),
-        .\fsm[0]_i_3_0 (p_1_in2_in),
-        .\fsm[0]_i_3_1 (p_0_in1_in),
+        .\fsm[0]_i_5_0 (p_0_in1_in),
+        .\fsm[0]_i_5_1 (p_1_in2_in),
+        .\fsm[3]_i_5_0 (\pipe_lane[0].pipe_user_i_n_10 ),
+        .\fsm_reg[0]_0 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_16 ),
         .\fsm_reg[2]_0 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_12 ),
         .\fsm_reg[2]_1 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_13 ),
         .\fsm_reg[2]_2 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_14 ),
-        .\fsm_reg[2]_3 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_15 ),
-        .\fsm_reg[3]_0 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_16 ),
-        .\fsm_reg[3]_1 (\pipe_lane[0].pipe_user_i_n_10 ),
+        .\fsm_reg[4]_0 (\pipe_lane[0].pipe_rate.pipe_rate_i_n_15 ),
         .gt_phystatus(gt_phystatus),
         .gt_rxratedone(gt_rxratedone),
         .gt_rxresetdone_0(gt_rxresetdone_0),
@@ -21838,11 +22412,11 @@ module pcie_7x_0_pipe_wrapper
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[5]_1 (\pipe_lane[0].pipe_user_i_n_10 ),
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[6]_0 (p_0_in1_in),
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[6]_1 (p_1_in2_in),
+        .PIPE_RXELECIDLE(PIPE_RXELECIDLE),
         .Q({\pipe_lane[0].pipe_sync_i_n_6 ,\pipe_lane[0].pipe_sync_i_n_7 ,\pipe_lane[0].pipe_sync_i_n_8 }),
         .QPLL_DRP_GEN3(gen3_reg),
         .SYNC_TXPHINITDONE1(SYNC_TXPHINITDONE1),
         .SYNC_TXSYNC_START0(SYNC_TXSYNC_START0),
-        .gt_rx_elec_idle_wire_filter(gt_rx_elec_idle_wire_filter),
         .out(p_1_in),
         .pipe_mmcm_lock_in(pipe_mmcm_lock_in),
         .pipe_pclk_in(pipe_pclk_in),
@@ -21850,7 +22424,7 @@ module pcie_7x_0_pipe_wrapper
         .rxdlysresetdone_reg1_reg_0(\pipe_lane[0].gt_wrapper_i_n_8 ),
         .rxphaligndone_m_reg1_reg_0(\pipe_lane[0].gt_wrapper_i_n_11 ),
         .rxphaligndone_s_reg2_reg_0(rst_cpllreset),
-        .rxsync_start_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_13 ),
+        .rxsync_start_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_12 ),
         .sync_txdlyen(sync_txdlyen),
         .sync_txsync_done(sync_txsync_done),
         .txdlysresetdone_reg1_reg_0(\pipe_lane[0].gt_wrapper_i_n_15 ),
@@ -21865,20 +22439,19 @@ module pcie_7x_0_pipe_wrapper
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[4]_0 (p_1_in0_in),
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[5] (\pipe_lane[0].pipe_sync_i_n_1 ),
         .\FSM_onehot_txsync_fsm.fsm_tx_reg[5]_0 (p_1_in),
+        .PIPE_PHYSTATUS(PIPE_PHYSTATUS),
+        .PIPE_RXELECIDLE(PIPE_RXELECIDLE),
         .Q(\pipe_reset.pipe_reset_i_n_7 ),
         .QPLL_DRP_GEN3(gen3_reg),
         .RXSTATUS(\pipe_lane[0].gt_wrapper_i_n_37 ),
         .SR(rst_rxusrclk_reset),
         .SYNC_TXPHINITDONE1(SYNC_TXPHINITDONE1),
         .gt_phystatus(gt_phystatus),
-        .gt_rx_elec_idle_wire_filter(gt_rx_elec_idle_wire_filter),
-        .gt_rx_phy_status_wire_filter(gt_rx_phy_status_wire_filter),
         .gt_rxcdrlock(gt_rxcdrlock),
         .gt_rxresetdone_0(gt_rxresetdone_0),
         .gt_rxvalid(gt_rxvalid),
         .gt_rxvalid_q_reg(\gt_rx_status_q_reg[0] ),
         .gt_txresetdone_0(gt_txresetdone_0),
-        .\gtx_channel.gtxe2_channel_i (\gtx_channel.gtxe2_channel_i_0 ),
         .out(p_1_in2_in),
         .pipe_oobclk_in(pipe_oobclk_in),
         .pipe_pclk_in(pipe_pclk_in),
@@ -21886,8 +22459,9 @@ module pcie_7x_0_pipe_wrapper
         .pipe_rxusrclk_in(pipe_rxusrclk_in),
         .pipe_tx0_compliance(pipe_tx0_compliance),
         .pipe_tx0_elec_idle(pipe_tx0_elec_idle),
-        .rate_done_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_12 ),
+        .rate_done_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_13 ),
         .rate_idle_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_15 ),
+        .rate_idle_reg2_reg_0(rate_idle_reg2_reg),
         .rate_rxsync_reg1_reg_0(\pipe_lane[0].pipe_rate.pipe_rate_i_n_14 ),
         .reg_clock_locked(reg_clock_locked),
         .reg_clock_locked_reg(reg_clock_locked_reg),
@@ -21931,8 +22505,8 @@ module pcie_7x_0_pipe_wrapper
   LUT1 #(
     .INIT(2'h1)) 
     pl_phy_lnk_up_q_i_1
-       (.I0(sys_rst_n),
-        .O(sys_rst_n_0));
+       (.I0(reset_n_reg2_reg_0),
+        .O(sys_rst_n));
   pcie_7x_0_qpll_reset \qpll_reset.qpll_reset_i 
        (.Q({\qpll_reset.qpll_reset_i_n_0 ,qrst_drp_start}),
         .QPLL_QPLLPD(qpllpd),
@@ -21952,7 +22526,7 @@ module pcie_7x_0_pipe_wrapper
   FDCE reset_n_reg1_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .CLR(sys_rst_n_0),
+        .CLR(sys_rst_n),
         .D(1'b1),
         .Q(reset_n_reg1));
   (* ASYNC_REG *) 
@@ -21961,7 +22535,7 @@ module pcie_7x_0_pipe_wrapper
   FDCE reset_n_reg2_reg
        (.C(pipe_pclk_in),
         .CE(1'b1),
-        .CLR(sys_rst_n_0),
+        .CLR(sys_rst_n),
         .D(reset_n_reg1),
         .Q(reset_n_reg2));
 endmodule
@@ -22065,7 +22639,7 @@ module pcie_7x_0_qpll_drp
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire start_reg1;
   (* SHIFT_EXTRACT = "NO" *) (* async_reg = "true" *) wire start_reg2;
 
-  (* SOFT_HLUTNM = "soft_lutpair38" *) 
+  (* SOFT_HLUTNM = "soft_lutpair37" *) 
   LUT3 #(
     .INIT(8'h12)) 
     \addr[0]_i_1 
@@ -22073,7 +22647,7 @@ module pcie_7x_0_qpll_drp
         .I1(\index_reg_n_0_[0] ),
         .I2(\index_reg_n_0_[2] ),
         .O(\addr[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair44" *) 
+  (* SOFT_HLUTNM = "soft_lutpair43" *) 
   LUT3 #(
     .INIT(8'h0D)) 
     \addr[1]_i_1 
@@ -22081,7 +22655,7 @@ module pcie_7x_0_qpll_drp
         .I1(\index_reg_n_0_[0] ),
         .I2(\index_reg_n_0_[1] ),
         .O(\addr[1]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair44" *) 
+  (* SOFT_HLUTNM = "soft_lutpair43" *) 
   LUT3 #(
     .INIT(8'h4D)) 
     \addr[2]_i_1 
@@ -22089,14 +22663,14 @@ module pcie_7x_0_qpll_drp
         .I1(\index_reg_n_0_[2] ),
         .I2(\index_reg_n_0_[0] ),
         .O(\addr[2]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair45" *) 
+  (* SOFT_HLUTNM = "soft_lutpair44" *) 
   LUT2 #(
     .INIT(4'h7)) 
     \addr[5]_i_1 
        (.I0(\index_reg_n_0_[1] ),
         .I1(\index_reg_n_0_[0] ),
         .O(\addr[5]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair45" *) 
+  (* SOFT_HLUTNM = "soft_lutpair44" *) 
   LUT3 #(
     .INIT(8'h08)) 
     \addr[7]_i_1 
@@ -22282,7 +22856,7 @@ module pcie_7x_0_qpll_drp
         .I4(\index_reg_n_0_[0] ),
         .I5(\index_reg_n_0_[1] ),
         .O(di[12]));
-  (* SOFT_HLUTNM = "soft_lutpair43" *) 
+  (* SOFT_HLUTNM = "soft_lutpair42" *) 
   LUT2 #(
     .INIT(4'hE)) 
     \di[12]_i_2 
@@ -22299,7 +22873,7 @@ module pcie_7x_0_qpll_drp
         .I4(\index_reg_n_0_[0] ),
         .I5(\index_reg_n_0_[2] ),
         .O(di[13]));
-  (* SOFT_HLUTNM = "soft_lutpair43" *) 
+  (* SOFT_HLUTNM = "soft_lutpair42" *) 
   LUT3 #(
     .INIT(8'hFE)) 
     \di[13]_i_2 
@@ -22317,7 +22891,7 @@ module pcie_7x_0_qpll_drp
         .I4(\index_reg_n_0_[0] ),
         .I5(\index_reg_n_0_[2] ),
         .O(di[14]));
-  (* SOFT_HLUTNM = "soft_lutpair41" *) 
+  (* SOFT_HLUTNM = "soft_lutpair40" *) 
   LUT4 #(
     .INIT(16'hFFFE)) 
     \di[14]_i_2 
@@ -22336,7 +22910,7 @@ module pcie_7x_0_qpll_drp
         .I4(\index_reg_n_0_[2] ),
         .I5(\crscode_reg_n_0_[5] ),
         .O(di[15]));
-  (* SOFT_HLUTNM = "soft_lutpair41" *) 
+  (* SOFT_HLUTNM = "soft_lutpair40" *) 
   LUT5 #(
     .INIT(32'hFFFFFFFE)) 
     \di[15]_i_2 
@@ -22868,7 +23442,7 @@ module pcie_7x_0_qpll_drp
        (.I0(\index_reg_n_0_[0] ),
         .I1(\index_reg_n_0_[2] ),
         .O(\fsm[0]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair36" *) 
+  (* SOFT_HLUTNM = "soft_lutpair35" *) 
   LUT5 #(
     .INIT(32'hFFFF7000)) 
     \fsm[1]_i_1 
@@ -22888,7 +23462,7 @@ module pcie_7x_0_qpll_drp
         .I4(\fsm_reg_n_0_[0] ),
         .I5(start_reg2),
         .O(\fsm[1]_i_2_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair36" *) 
+  (* SOFT_HLUTNM = "soft_lutpair35" *) 
   LUT4 #(
     .INIT(16'h8000)) 
     \fsm[2]_i_1 
@@ -22927,7 +23501,7 @@ module pcie_7x_0_qpll_drp
         .I1(\fsm_reg_n_0_[5] ),
         .I2(\fsm_inferred__1/i___1_n_0 ),
         .O(p_0_in__0[6]));
-  (* SOFT_HLUTNM = "soft_lutpair42" *) 
+  (* SOFT_HLUTNM = "soft_lutpair41" *) 
   LUT4 #(
     .INIT(16'h0116)) 
     \fsm_inferred__1/i_ 
@@ -22936,7 +23510,7 @@ module pcie_7x_0_qpll_drp
         .I2(\fsm_reg_n_0_[2] ),
         .I3(\fsm_reg_n_0_[3] ),
         .O(\fsm_inferred__1/i__n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair42" *) 
+  (* SOFT_HLUTNM = "soft_lutpair41" *) 
   LUT4 #(
     .INIT(16'hFEE8)) 
     \fsm_inferred__1/i___0 
@@ -23045,7 +23619,7 @@ module pcie_7x_0_qpll_drp
         .I4(\fsm_reg_n_0_[2] ),
         .I5(\gtx_common.gtxe2_common_i_i_3_n_0 ),
         .O(qpll_drp_en));
-  (* SOFT_HLUTNM = "soft_lutpair35" *) 
+  (* SOFT_HLUTNM = "soft_lutpair34" *) 
   LUT5 #(
     .INIT(32'h00000010)) 
     \gtx_common.gtxe2_common_i_i_2 
@@ -23061,7 +23635,7 @@ module pcie_7x_0_qpll_drp
        (.I0(\fsm_reg_n_0_[3] ),
         .I1(\fsm_reg_n_0_[5] ),
         .O(\gtx_common.gtxe2_common_i_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair40" *) 
+  (* SOFT_HLUTNM = "soft_lutpair39" *) 
   LUT3 #(
     .INIT(8'hFE)) 
     \gtx_common.gtxe2_common_i_i_4 
@@ -23069,7 +23643,7 @@ module pcie_7x_0_qpll_drp
         .I1(\fsm_reg_n_0_[3] ),
         .I2(\fsm_reg_n_0_[2] ),
         .O(\gtx_common.gtxe2_common_i_i_4_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair38" *) 
+  (* SOFT_HLUTNM = "soft_lutpair37" *) 
   LUT5 #(
     .INIT(32'h00FF7000)) 
     \index[0]_i_1 
@@ -23079,7 +23653,7 @@ module pcie_7x_0_qpll_drp
         .I3(index),
         .I4(\index_reg_n_0_[0] ),
         .O(\index[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair37" *) 
+  (* SOFT_HLUTNM = "soft_lutpair36" *) 
   LUT5 #(
     .INIT(32'h10FFC000)) 
     \index[1]_i_1 
@@ -23089,7 +23663,7 @@ module pcie_7x_0_qpll_drp
         .I3(index),
         .I4(\index_reg_n_0_[1] ),
         .O(\index[1]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair37" *) 
+  (* SOFT_HLUTNM = "soft_lutpair36" *) 
   LUT5 #(
     .INIT(32'h22FF8000)) 
     \index[2]_i_1 
@@ -23099,7 +23673,7 @@ module pcie_7x_0_qpll_drp
         .I3(index),
         .I4(\index_reg_n_0_[2] ),
         .O(\index[2]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair35" *) 
+  (* SOFT_HLUTNM = "soft_lutpair34" *) 
   LUT5 #(
     .INIT(32'h00000004)) 
     \index[2]_i_2 
@@ -23149,7 +23723,7 @@ module pcie_7x_0_qpll_drp
         .D(\index[2]_i_1_n_0 ),
         .Q(\index_reg_n_0_[2] ),
         .R(SR));
-  (* SOFT_HLUTNM = "soft_lutpair39" *) 
+  (* SOFT_HLUTNM = "soft_lutpair38" *) 
   LUT5 #(
     .INIT(32'h00B00000)) 
     \load_cnt[0]_i_1 
@@ -23159,7 +23733,7 @@ module pcie_7x_0_qpll_drp
         .I3(\fsm_reg_n_0_[6] ),
         .I4(\load_cnt[1]_i_2_n_0 ),
         .O(\load_cnt[0]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair39" *) 
+  (* SOFT_HLUTNM = "soft_lutpair38" *) 
   LUT5 #(
     .INIT(32'h00E00000)) 
     \load_cnt[1]_i_1 
@@ -23169,7 +23743,7 @@ module pcie_7x_0_qpll_drp
         .I3(\fsm_reg_n_0_[6] ),
         .I4(\load_cnt[1]_i_2_n_0 ),
         .O(\load_cnt[1]_i_1_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair40" *) 
+  (* SOFT_HLUTNM = "soft_lutpair39" *) 
   LUT5 #(
     .INIT(32'h00000001)) 
     \load_cnt[1]_i_2 
@@ -23696,7 +24270,7 @@ module pcie_7x_0_qpll_wrapper
   wire \NLW_gtx_common.gtxe2_common_i_REFCLKOUTMONITOR_UNCONNECTED ;
   wire [7:0]\NLW_gtx_common.gtxe2_common_i_QPLLDMONITOR_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   GTXE2_COMMON #(
     .BIAS_CFG(64'h0000040000001000),
     .COMMON_CFG(32'h00000000),
@@ -23807,12 +24381,7 @@ module pcie_7x_0_rxeq_scan
   wire \FSM_onehot_fsm[2]_i_1__0_n_0 ;
   wire \FSM_onehot_fsm[3]_i_1__0_n_0 ;
   wire \FSM_onehot_fsm[3]_i_2_n_0 ;
-  wire \FSM_onehot_fsm[3]_i_3_n_0 ;
   wire \FSM_onehot_fsm[4]_i_10_n_0 ;
-  wire \FSM_onehot_fsm[4]_i_11_n_0 ;
-  wire \FSM_onehot_fsm[4]_i_12_n_0 ;
-  wire \FSM_onehot_fsm[4]_i_13_n_0 ;
-  wire \FSM_onehot_fsm[4]_i_14_n_0 ;
   wire \FSM_onehot_fsm[4]_i_1__0_n_0 ;
   wire \FSM_onehot_fsm[4]_i_2_n_0 ;
   wire \FSM_onehot_fsm[4]_i_3_n_0 ;
@@ -23934,155 +24503,115 @@ module pcie_7x_0_rxeq_scan
         .I1(\FSM_onehot_fsm_reg_n_0_[2] ),
         .I2(\FSM_onehot_fsm_reg_n_0_[1] ),
         .O(\FSM_onehot_fsm[2]_i_1__0_n_0 ));
-  LUT6 #(
-    .INIT(64'h10FF101010101010)) 
+  LUT5 #(
+    .INIT(32'h4F444444)) 
     \FSM_onehot_fsm[3]_i_1__0 
        (.I0(\FSM_onehot_fsm[3]_i_2_n_0 ),
-        .I1(\FSM_onehot_fsm[3]_i_3_n_0 ),
-        .I2(\FSM_onehot_fsm[4]_i_2_n_0 ),
-        .I3(preset_valid_reg2),
+        .I1(\FSM_onehot_fsm[4]_i_2_n_0 ),
+        .I2(preset_valid_reg2),
+        .I3(new_txcoeff_req_reg2),
         .I4(\FSM_onehot_fsm_reg_n_0_[1] ),
-        .I5(new_txcoeff_req_reg2),
         .O(\FSM_onehot_fsm[3]_i_1__0_n_0 ));
   (* SOFT_HLUTNM = "soft_lutpair22" *) 
   LUT4 #(
     .INIT(16'h04FF)) 
     \FSM_onehot_fsm[3]_i_2 
-       (.I0(adapt_done_cnt_reg_n_0),
-        .I1(adapt_done_cnt_reg_0[1]),
-        .I2(adapt_done_cnt_reg_0[0]),
-        .I3(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .O(\FSM_onehot_fsm[3]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000040)) 
-    \FSM_onehot_fsm[3]_i_3 
-       (.I0(\FSM_onehot_fsm[4]_i_12_n_0 ),
-        .I1(\converge_cnt_reg_n_0_[19] ),
-        .I2(\converge_cnt_reg_n_0_[18] ),
-        .I3(\FSM_onehot_fsm[4]_i_9_n_0 ),
-        .I4(\FSM_onehot_fsm[4]_i_10_n_0 ),
-        .I5(\FSM_onehot_fsm[4]_i_11_n_0 ),
-        .O(\FSM_onehot_fsm[3]_i_3_n_0 ));
-  LUT4 #(
-    .INIT(16'hDFFF)) 
-    \FSM_onehot_fsm[4]_i_10 
-       (.I0(\converge_cnt_reg_n_0_[13] ),
-        .I1(\converge_cnt_reg_n_0_[12] ),
-        .I2(\converge_cnt_reg_n_0_[11] ),
-        .I3(\converge_cnt_reg_n_0_[8] ),
-        .O(\FSM_onehot_fsm[4]_i_10_n_0 ));
-  LUT5 #(
-    .INIT(32'hFFFFFFFB)) 
-    \FSM_onehot_fsm[4]_i_11 
-       (.I0(\converge_cnt_reg_n_0_[2] ),
-        .I1(\converge_cnt_reg_n_0_[10] ),
-        .I2(\converge_cnt_reg_n_0_[14] ),
-        .I3(\converge_cnt_reg_n_0_[20] ),
-        .I4(\FSM_onehot_fsm[4]_i_14_n_0 ),
-        .O(\FSM_onehot_fsm[4]_i_11_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFFFFFEFFF)) 
-    \FSM_onehot_fsm[4]_i_12 
-       (.I0(\converge_cnt_reg_n_0_[5] ),
-        .I1(\converge_cnt_reg_n_0_[4] ),
-        .I2(\converge_cnt_reg_n_0_[17] ),
-        .I3(\converge_cnt_reg_n_0_[16] ),
-        .I4(\converge_cnt_reg_n_0_[7] ),
-        .I5(\converge_cnt_reg_n_0_[6] ),
-        .O(\FSM_onehot_fsm[4]_i_12_n_0 ));
-  LUT4 #(
-    .INIT(16'hFF7F)) 
-    \FSM_onehot_fsm[4]_i_13 
-       (.I0(\converge_cnt_reg_n_0_[14] ),
-        .I1(\converge_cnt_reg_n_0_[15] ),
-        .I2(\converge_cnt_reg_n_0_[2] ),
-        .I3(\converge_cnt_reg_n_0_[1] ),
-        .O(\FSM_onehot_fsm[4]_i_13_n_0 ));
-  LUT4 #(
-    .INIT(16'hBFFF)) 
-    \FSM_onehot_fsm[4]_i_14 
        (.I0(adapt_done_cnt_reg_0[0]),
         .I1(adapt_done_cnt_reg_0[1]),
-        .I2(\converge_cnt_reg_n_0_[15] ),
-        .I3(\converge_cnt_reg_n_0_[3] ),
-        .O(\FSM_onehot_fsm[4]_i_14_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFD0FFD0FFD0)) 
-    \FSM_onehot_fsm[4]_i_1__0 
-       (.I0(\FSM_onehot_fsm[4]_i_2_n_0 ),
-        .I1(\FSM_onehot_fsm[4]_i_3_n_0 ),
-        .I2(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I3(\FSM_onehot_fsm[4]_i_4_n_0 ),
-        .I4(\FSM_onehot_fsm_reg_n_0_[4] ),
-        .I5(new_txcoeff_req_reg2),
-        .O(\FSM_onehot_fsm[4]_i_1__0_n_0 ));
-  LUT6 #(
-    .INIT(64'hFFFFFFFFFFFDFFFF)) 
-    \FSM_onehot_fsm[4]_i_2 
-       (.I0(\FSM_onehot_fsm[4]_i_5_n_0 ),
-        .I1(\FSM_onehot_fsm[4]_i_6_n_0 ),
-        .I2(\FSM_onehot_fsm[4]_i_7_n_0 ),
-        .I3(\converge_cnt_reg_n_0_[13] ),
-        .I4(\converge_cnt_reg_n_0_[0] ),
-        .I5(\FSM_onehot_fsm[4]_i_8_n_0 ),
-        .O(\FSM_onehot_fsm[4]_i_2_n_0 ));
-  LUT6 #(
-    .INIT(64'h0000000000000040)) 
-    \FSM_onehot_fsm[4]_i_3 
-       (.I0(\FSM_onehot_fsm[4]_i_9_n_0 ),
-        .I1(\converge_cnt_reg_n_0_[18] ),
-        .I2(\converge_cnt_reg_n_0_[19] ),
-        .I3(\FSM_onehot_fsm[4]_i_10_n_0 ),
-        .I4(\FSM_onehot_fsm[4]_i_11_n_0 ),
-        .I5(\FSM_onehot_fsm[4]_i_12_n_0 ),
-        .O(\FSM_onehot_fsm[4]_i_3_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair21" *) 
-  LUT4 #(
-    .INIT(16'h0400)) 
-    \FSM_onehot_fsm[4]_i_4 
-       (.I0(adapt_done_cnt_reg_n_0),
-        .I1(adapt_done_cnt_reg_0[1]),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .O(\FSM_onehot_fsm[4]_i_4_n_0 ));
-  LUT3 #(
-    .INIT(8'h08)) 
-    \FSM_onehot_fsm[4]_i_5 
-       (.I0(\converge_cnt_reg_n_0_[18] ),
-        .I1(\converge_cnt_reg_n_0_[19] ),
-        .I2(\FSM_onehot_fsm[4]_i_12_n_0 ),
-        .O(\FSM_onehot_fsm[4]_i_5_n_0 ));
-  LUT5 #(
-    .INIT(32'hFFFFF7FF)) 
-    \FSM_onehot_fsm[4]_i_6 
-       (.I0(\converge_cnt_reg_n_0_[11] ),
-        .I1(\converge_cnt_reg_n_0_[20] ),
-        .I2(\converge_cnt_reg_n_0_[8] ),
-        .I3(\converge_cnt_reg_n_0_[9] ),
-        .I4(\FSM_onehot_fsm[4]_i_13_n_0 ),
-        .O(\FSM_onehot_fsm[4]_i_6_n_0 ));
-  LUT4 #(
-    .INIT(16'hFFFE)) 
-    \FSM_onehot_fsm[4]_i_7 
-       (.I0(\converge_cnt_reg_n_0_[3] ),
-        .I1(\converge_cnt_reg_n_0_[12] ),
-        .I2(\converge_cnt_reg_n_0_[21] ),
-        .I3(\converge_cnt_reg_n_0_[10] ),
-        .O(\FSM_onehot_fsm[4]_i_7_n_0 ));
-  (* SOFT_HLUTNM = "soft_lutpair23" *) 
-  LUT2 #(
-    .INIT(4'h2)) 
-    \FSM_onehot_fsm[4]_i_8 
-       (.I0(adapt_done_cnt_reg_0[1]),
-        .I1(adapt_done_cnt_reg_0[0]),
-        .O(\FSM_onehot_fsm[4]_i_8_n_0 ));
+        .O(\FSM_onehot_fsm[3]_i_2_n_0 ));
   LUT4 #(
     .INIT(16'hFFDF)) 
-    \FSM_onehot_fsm[4]_i_9 
-       (.I0(\converge_cnt_reg_n_0_[9] ),
+    \FSM_onehot_fsm[4]_i_10 
+       (.I0(\converge_cnt_reg_n_0_[13] ),
         .I1(\converge_cnt_reg_n_0_[1] ),
         .I2(\converge_cnt_reg_n_0_[21] ),
+        .I3(\converge_cnt_reg_n_0_[2] ),
+        .O(\FSM_onehot_fsm[4]_i_10_n_0 ));
+  LUT6 #(
+    .INIT(64'hAAAAAEAAEEEEEEEE)) 
+    \FSM_onehot_fsm[4]_i_1__0 
+       (.I0(new_txcoeff_done),
+        .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
+        .I2(adapt_done_cnt_reg_0[0]),
+        .I3(adapt_done_cnt_reg_0[1]),
+        .I4(adapt_done_cnt_reg_n_0),
+        .I5(\FSM_onehot_fsm[4]_i_2_n_0 ),
+        .O(\FSM_onehot_fsm[4]_i_1__0_n_0 ));
+  LUT5 #(
+    .INIT(32'hFFBAFF8A)) 
+    \FSM_onehot_fsm[4]_i_2 
+       (.I0(\FSM_onehot_fsm[4]_i_3_n_0 ),
+        .I1(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_0[1]),
+        .I3(\FSM_onehot_fsm[4]_i_4_n_0 ),
+        .I4(\FSM_onehot_fsm[4]_i_5_n_0 ),
+        .O(\FSM_onehot_fsm[4]_i_2_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFFFFFFFFFE)) 
+    \FSM_onehot_fsm[4]_i_3 
+       (.I0(\FSM_onehot_fsm[4]_i_6_n_0 ),
+        .I1(\FSM_onehot_fsm[4]_i_7_n_0 ),
+        .I2(\converge_cnt_reg_n_0_[3] ),
+        .I3(\converge_cnt_reg_n_0_[1] ),
+        .I4(\converge_cnt_reg_n_0_[10] ),
+        .I5(\converge_cnt_reg_n_0_[13] ),
+        .O(\FSM_onehot_fsm[4]_i_3_n_0 ));
+  LUT5 #(
+    .INIT(32'hFFFFFBFF)) 
+    \FSM_onehot_fsm[4]_i_4 
+       (.I0(\converge_cnt_reg_n_0_[5] ),
+        .I1(\converge_cnt_reg_n_0_[19] ),
+        .I2(\converge_cnt_reg_n_0_[7] ),
+        .I3(\converge_cnt_reg_n_0_[16] ),
+        .I4(\FSM_onehot_fsm[4]_i_8_n_0 ),
+        .O(\FSM_onehot_fsm[4]_i_4_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFFFFFFEFFFF)) 
+    \FSM_onehot_fsm[4]_i_5 
+       (.I0(\FSM_onehot_fsm[4]_i_9_n_0 ),
+        .I1(\FSM_onehot_fsm[4]_i_10_n_0 ),
+        .I2(\converge_cnt_reg_n_0_[14] ),
         .I3(\converge_cnt_reg_n_0_[0] ),
+        .I4(\converge_cnt_reg_n_0_[10] ),
+        .I5(\converge_cnt_reg_n_0_[20] ),
+        .O(\FSM_onehot_fsm[4]_i_5_n_0 ));
+  LUT6 #(
+    .INIT(64'hFFFFFFF7FFFFFFFF)) 
+    \FSM_onehot_fsm[4]_i_6 
+       (.I0(\converge_cnt_reg_n_0_[9] ),
+        .I1(\converge_cnt_reg_n_0_[15] ),
+        .I2(\converge_cnt_reg_n_0_[12] ),
+        .I3(\converge_cnt_reg_n_0_[8] ),
+        .I4(\converge_cnt_reg_n_0_[21] ),
+        .I5(\converge_cnt_reg_n_0_[0] ),
+        .O(\FSM_onehot_fsm[4]_i_6_n_0 ));
+  LUT4 #(
+    .INIT(16'h7FFF)) 
+    \FSM_onehot_fsm[4]_i_7 
+       (.I0(\converge_cnt_reg_n_0_[20] ),
+        .I1(\converge_cnt_reg_n_0_[14] ),
+        .I2(\converge_cnt_reg_n_0_[11] ),
+        .I3(\converge_cnt_reg_n_0_[2] ),
+        .O(\FSM_onehot_fsm[4]_i_7_n_0 ));
+  LUT4 #(
+    .INIT(16'hFFDF)) 
+    \FSM_onehot_fsm[4]_i_8 
+       (.I0(\converge_cnt_reg_n_0_[17] ),
+        .I1(\converge_cnt_reg_n_0_[6] ),
+        .I2(\converge_cnt_reg_n_0_[18] ),
+        .I3(\converge_cnt_reg_n_0_[4] ),
+        .O(\FSM_onehot_fsm[4]_i_8_n_0 ));
+  LUT6 #(
+    .INIT(64'hF7FFFFFFFFFFFFFF)) 
+    \FSM_onehot_fsm[4]_i_9 
+       (.I0(\converge_cnt_reg_n_0_[9] ),
+        .I1(\converge_cnt_reg_n_0_[15] ),
+        .I2(\converge_cnt_reg_n_0_[12] ),
+        .I3(\converge_cnt_reg_n_0_[11] ),
+        .I4(\converge_cnt_reg_n_0_[3] ),
+        .I5(\converge_cnt_reg_n_0_[8] ),
         .O(\FSM_onehot_fsm[4]_i_9_n_0 ));
   (* FSM_ENCODED_STATES = "FSM_PRESET:00100,FSM_CONVERGE:01000,FSM_NEW_TXCOEFF_REQ:10000,FSM_IDLE:00010,iSTATE:00001" *) 
   FDSE #(
@@ -24149,7 +24678,7 @@ module pcie_7x_0_rxeq_scan
         .I4(rxeqscan_preset_done),
         .I5(\FSM_onehot_fsm_rx[6]_i_2_n_0 ),
         .O(D[2]));
-  (* SOFT_HLUTNM = "soft_lutpair24" *) 
+  (* SOFT_HLUTNM = "soft_lutpair23" *) 
   LUT2 #(
     .INIT(4'h8)) 
     \FSM_onehot_fsm_rx[6]_i_2 
@@ -24157,13 +24686,13 @@ module pcie_7x_0_rxeq_scan
         .I1(Q[3]),
         .O(\FSM_onehot_fsm_rx[6]_i_2_n_0 ));
   LUT6 #(
-    .INIT(64'h00000AAAFFFF0800)) 
+    .INIT(64'h000A0A0AF0F0F8F0)) 
     adapt_done_cnt_i_1
        (.I0(\FSM_onehot_fsm_reg_n_0_[4] ),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .I5(adapt_done_cnt_i_2_n_0),
         .O(adapt_done_cnt_i_1_n_0));
   LUT5 #(
@@ -24253,201 +24782,199 @@ module pcie_7x_0_rxeq_scan
     \converge_cnt[0]_i_1__0 
        (.I0(\converge_cnt_reg_n_0_[0] ),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[0]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[10]_i_1 
        (.I0(converge_cnt0[10]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[10]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[11]_i_1 
        (.I0(converge_cnt0[11]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[11]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[12]_i_1 
        (.I0(converge_cnt0[12]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[12]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[13]_i_1 
        (.I0(converge_cnt0[13]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[13]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[14]_i_1 
        (.I0(converge_cnt0[14]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[14]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[15]_i_1 
        (.I0(converge_cnt0[15]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[15]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[16]_i_1 
        (.I0(converge_cnt0[16]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[16]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[17]_i_1 
        (.I0(converge_cnt0[17]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[17]));
-  (* SOFT_HLUTNM = "soft_lutpair21" *) 
+  (* SOFT_HLUTNM = "soft_lutpair22" *) 
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[18]_i_1 
        (.I0(converge_cnt0[18]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[18]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[19]_i_1 
        (.I0(converge_cnt0[19]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[19]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[1]_i_1 
        (.I0(converge_cnt0[1]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[1]));
-  (* SOFT_HLUTNM = "soft_lutpair23" *) 
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[20]_i_1 
        (.I0(converge_cnt0[20]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[20]));
-  (* SOFT_HLUTNM = "soft_lutpair22" *) 
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[21]_i_1 
        (.I0(converge_cnt0[21]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[21]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[2]_i_1 
        (.I0(converge_cnt0[2]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[2]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[3]_i_1 
        (.I0(converge_cnt0[3]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[3]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[4]_i_1 
        (.I0(converge_cnt0[4]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[4]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[5]_i_1 
        (.I0(converge_cnt0[5]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[5]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[6]_i_1 
        (.I0(converge_cnt0[6]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[6]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[7]_i_1 
        (.I0(converge_cnt0[7]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[7]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[8]_i_1 
        (.I0(converge_cnt0[8]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[8]));
   LUT5 #(
     .INIT(32'h88888088)) 
     \converge_cnt[9]_i_1 
        (.I0(converge_cnt0[9]),
         .I1(\FSM_onehot_fsm_reg_n_0_[3] ),
-        .I2(adapt_done_cnt_reg_0[0]),
+        .I2(adapt_done_cnt_reg_n_0),
         .I3(adapt_done_cnt_reg_0[1]),
-        .I4(adapt_done_cnt_reg_n_0),
+        .I4(adapt_done_cnt_reg_0[0]),
         .O(converge_cnt[9]));
   FDRE #(
     .INIT(1'b0)) 
@@ -24980,7 +25507,7 @@ module pcie_7x_0_rxeq_scan
         .I4(rxeq_adapt_done_reg_reg_0),
         .I5(rxeq_adapt_done_reg_reg_1),
         .O(adapt_done_reg_0));
-  (* SOFT_HLUTNM = "soft_lutpair24" *) 
+  (* SOFT_HLUTNM = "soft_lutpair23" *) 
   LUT2 #(
     .INIT(4'h2)) 
     rxeq_new_txcoeff_req_i_1
@@ -25385,8 +25912,8 @@ module pcie_7x_0_rxeq_scan
         .R(out));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO
    (rdata,
     pipe_userclk1_in,
     mim_tx_wen,
@@ -25404,46 +25931,44 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO
 
   wire [10:0]MIMTXRADDR;
   wire [10:0]MIMTXWADDR;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_52 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_53 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_74 ;
   wire mim_tx_ren;
   wire mim_tx_wen;
   wire pipe_userclk1_in;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_52 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_53 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_74 ;
   wire [14:0]rdata;
   wire [14:0]wdata;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -25620,101 +26145,99 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMTXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMTXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],1'b0,1'b0,wdata[14:9],wdata[7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,wdata[14:9],wdata[7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .DIPADIP({1'b0,1'b0,1'b0,wdata[8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_52 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_53 ,rdata[14:9],rdata[7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_74 ,rdata[8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_52 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_53 ,rdata[14:9],rdata[7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_74 ,rdata[8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_tx_wen),
         .ENBWREN(mim_tx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_11
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ,
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_11
+   (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 );
-  output [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_1 );
+  output [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
+  input [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
-  wire [13:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_52 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_53 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_54 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_74 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
+  wire [13:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_52 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_53 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_54 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_74 ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -25891,97 +26414,95 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_11
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMRXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMRXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [13:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DIPADIP({1'b0,1'b0,1'b0,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [8]}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [13:9],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DIPADIP({1'b0,1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_52 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_53 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_54 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [13:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_74 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_52 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_53 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_54 ,\ramb_bl.ramb36_dp_bl.ram36_bl_0 [13:9],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_74 ,\ramb_bl.ramb36_dp_bl.ram36_bl_0 [8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_rx_wen),
         .ENBWREN(mim_rx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_12
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ,
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_12
+   (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_1 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -26158,97 +26679,95 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_12
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMRXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMRXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DIPADIP({1'b0,1'b0,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [8]}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DIPADIP({1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_rx_wen),
         .ENBWREN(mim_rx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_13
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ,
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_13
+   (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_1 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -26425,97 +26944,95 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_13
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMRXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMRXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DIPADIP({1'b0,1'b0,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [8]}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DIPADIP({1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_rx_wen),
         .ENBWREN(mim_rx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_14
-   (\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ,
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_14
+   (\ramb_bl.ramb36_dp_bl.ram36_bl_0 ,
     pipe_userclk1_in,
     mim_rx_wen,
     mim_rx_ren,
     MIMRXWADDR,
     MIMRXRADDR,
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 );
-  output [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
+    \ramb_bl.ramb36_dp_bl.ram36_bl_1 );
+  output [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
   input pipe_userclk1_in;
   input mim_rx_wen;
   input mim_rx_ren;
   input [10:0]MIMRXWADDR;
   input [10:0]MIMRXRADDR;
-  input [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
+  input [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
 
   wire [10:0]MIMRXRADDR;
   wire [10:0]MIMRXWADDR;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 ;
-  wire [17:0]\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_rx_ren;
   wire mim_rx_wen;
   wire pipe_userclk1_in;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_0 ;
+  wire [17:0]\ramb_bl.ramb36_dp_bl.ram36_bl_1 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -26692,43 +27209,43 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_14
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMRXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMRXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
-        .DIPADIP({1'b0,1'b0,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_1 [8]}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DIPADIP({1'b0,1'b0,\ramb_bl.ramb36_dp_bl.ram36_bl_1 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_1 [8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [16:9],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [17],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_0 [8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [16:9],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [17],\ramb_bl.ramb36_dp_bl.ram36_bl_0 [8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_rx_wen),
         .ENBWREN(mim_rx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_4
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_4
    (rdata,
     pipe_userclk1_in,
     mim_tx_wen,
@@ -26746,43 +27263,41 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_4
 
   wire [10:0]MIMTXRADDR;
   wire [10:0]MIMTXWADDR;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_tx_ren;
   wire mim_tx_wen;
   wire pipe_userclk1_in;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
   wire [17:0]rdata;
   wire [17:0]wdata;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -26959,43 +27474,43 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_4
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMTXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMTXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],wdata[16:9],wdata[7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,wdata[16:9],wdata[7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .DIPADIP({1'b0,1'b0,wdata[17],wdata[8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_tx_wen),
         .ENBWREN(mim_tx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_5
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_5
    (rdata,
     pipe_userclk1_in,
     mim_tx_wen,
@@ -27013,43 +27528,41 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_5
 
   wire [10:0]MIMTXRADDR;
   wire [10:0]MIMTXWADDR;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_tx_ren;
   wire mim_tx_wen;
   wire pipe_userclk1_in;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
   wire [17:0]rdata;
   wire [17:0]wdata;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -27226,43 +27739,43 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_5
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMTXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMTXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],wdata[16:9],wdata[7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,wdata[16:9],wdata[7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .DIPADIP({1'b0,1'b0,wdata[17],wdata[8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_tx_wen),
         .ENBWREN(mim_tx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule
 
-(* ORIG_REF_NAME = "xil_internal_svlib_BRAM_TDP_MACRO" *) 
-module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_6
+(* ORIG_REF_NAME = "unimacro_BRAM_TDP_MACRO" *) 
+module pcie_7x_0_unimacro_BRAM_TDP_MACRO_6
    (rdata,
     pipe_userclk1_in,
     mim_tx_wen,
@@ -27280,43 +27793,41 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_6
 
   wire [10:0]MIMTXRADDR;
   wire [10:0]MIMTXWADDR;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ;
-  wire \genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 ;
   wire mim_tx_ren;
   wire mim_tx_wen;
   wire pipe_userclk1_in;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_35 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ;
+  wire \ramb_bl.ramb36_dp_bl.ram36_bl_n_71 ;
   wire [17:0]rdata;
   wire [17:0]wdata;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ;
-  wire \NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED ;
-  wire [31:16]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED ;
-  wire [3:2]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED ;
-  wire [7:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED ;
-  wire [8:0]\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ;
+  wire \NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED ;
+  wire [31:16]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED ;
+  wire [3:2]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED ;
+  wire [7:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED ;
+  wire [8:0]\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED ;
 
-  (* BOX_TYPE = "PRIMITIVE" *) 
+  (* box_type = "PRIMITIVE" *) 
   RAMB36E1 #(
     .DOA_REG(0),
     .DOB_REG(1),
@@ -27493,37 +28004,37 @@ module pcie_7x_0_xil_internal_svlib_BRAM_TDP_MACRO_6
     .WRITE_MODE_B("WRITE_FIRST"),
     .WRITE_WIDTH_A(18),
     .WRITE_WIDTH_B(18)) 
-    \genblk5_0.bram36_tdp_bl.bram36_tdp_bl 
+    \ramb_bl.ramb36_dp_bl.ram36_bl 
        (.ADDRARDADDR({1'b1,MIMTXWADDR,1'b1,1'b1,1'b1,1'b1}),
         .ADDRBWRADDR({1'b1,MIMTXRADDR,1'b1,1'b1,1'b1,1'b1}),
         .CASCADEINA(1'b0),
         .CASCADEINB(1'b0),
-        .CASCADEOUTA(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTA_UNCONNECTED ),
-        .CASCADEOUTB(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_CASCADEOUTB_UNCONNECTED ),
+        .CASCADEOUTA(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTA_UNCONNECTED ),
+        .CASCADEOUTB(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_CASCADEOUTB_UNCONNECTED ),
         .CLKARDCLK(pipe_userclk1_in),
         .CLKBWRCLK(pipe_userclk1_in),
-        .DBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DBITERR_UNCONNECTED ),
-        .DIADI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIADI_UNCONNECTED [31:16],wdata[16:9],wdata[7:0]}),
-        .DIBDI({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DIBDI_UNCONNECTED [31:16],1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
+        .DBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DBITERR_UNCONNECTED ),
+        .DIADI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,wdata[16:9],wdata[7:0]}),
+        .DIBDI({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}),
         .DIPADIP({1'b0,1'b0,wdata[17],wdata[8]}),
         .DIPBDIP({1'b0,1'b0,1'b0,1'b0}),
-        .DOADO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOADO_UNCONNECTED [31:16],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_20 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_21 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_22 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_23 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_24 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_25 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_26 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_27 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_28 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_29 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_30 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_31 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_32 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_33 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_34 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_35 }),
-        .DOBDO({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
-        .DOPADOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPADOP_UNCONNECTED [3:2],\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_70 ,\genblk5_0.bram36_tdp_bl.bram36_tdp_bl_n_71 }),
-        .DOPBDOP({\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
-        .ECCPARITY(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_ECCPARITY_UNCONNECTED [7:0]),
+        .DOADO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOADO_UNCONNECTED [31:16],\ramb_bl.ramb36_dp_bl.ram36_bl_n_20 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_21 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_22 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_23 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_24 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_25 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_26 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_27 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_28 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_29 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_30 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_31 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_32 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_33 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_34 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_35 }),
+        .DOBDO({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOBDO_UNCONNECTED [31:16],rdata[16:9],rdata[7:0]}),
+        .DOPADOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPADOP_UNCONNECTED [3:2],\ramb_bl.ramb36_dp_bl.ram36_bl_n_70 ,\ramb_bl.ramb36_dp_bl.ram36_bl_n_71 }),
+        .DOPBDOP({\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_DOPBDOP_UNCONNECTED [3:2],rdata[17],rdata[8]}),
+        .ECCPARITY(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_ECCPARITY_UNCONNECTED [7:0]),
         .ENARDEN(mim_tx_wen),
         .ENBWREN(mim_tx_ren),
         .INJECTDBITERR(1'b0),
         .INJECTSBITERR(1'b0),
-        .RDADDRECC(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_RDADDRECC_UNCONNECTED [8:0]),
+        .RDADDRECC(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_RDADDRECC_UNCONNECTED [8:0]),
         .REGCEAREGCE(1'b0),
         .REGCEB(1'b1),
         .RSTRAMARSTRAM(1'b0),
         .RSTRAMB(1'b0),
         .RSTREGARSTREG(1'b0),
         .RSTREGB(1'b0),
-        .SBITERR(\NLW_genblk5_0.bram36_tdp_bl.bram36_tdp_bl_SBITERR_UNCONNECTED ),
+        .SBITERR(\NLW_ramb_bl.ramb36_dp_bl.ram36_bl_SBITERR_UNCONNECTED ),
         .WEA({1'b1,1'b1,1'b1,1'b1}),
         .WEBWE({1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0,1'b0}));
 endmodule

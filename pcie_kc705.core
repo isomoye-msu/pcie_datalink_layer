@@ -29,72 +29,39 @@ filesets:
     depend:
       - fusesoc:pcie:gtex2
       - fusesoc:pcie:verilator_xilinx
+
+  glbl:
+    files:
+     - example/imports/pcie_7x_0_pipe_clock.v
+     - tb/vivado_sim/glbl.v 
+    file_type: systemVerilogSource
+     
       
   xsim_tb:
     files:
-      - tb/vivado_sim/glbl.v
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_expect_tasks.vh:
-          is_include_file: true
-      - tb/vivado_sim/imports/simulation/tests/tests.vh:
-          is_include_file: true
-      - tb/vivado_sim/imports/simulation/tests/sample_tests1.vh:
-          is_include_file: true
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_cfg.v
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_com.v
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_pl.v
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_rx.v
-      - tb/vivado_sim/imports/simulation/dsport/pci_exp_usrapp_tx.v
-      - tb/vivado_sim/imports/simulation/dsport/pcie_2_1_rport_7x.v
-      - tb/vivado_sim/imports/simulation/dsport/pcie_axi_trn_bridge.v
-      - tb/vivado_sim/imports/simulation/dsport/xilinx_pcie_2_1_rport_7x.v
-      - tb/vivado_sim/imports/simulation/functional/board_common.vh:
-          is_include_file: true
-      - tb/vivado_sim/imports/simulation/functional/sys_clk_gen.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/sim/kc705_pcie_x8_gen2.v
-      - tb/vivado_sim/imports/simulation/functional/sys_clk_gen_ds.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx_null_gen.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx_pipeline.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_rx.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_top.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx_pipeline.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx_thrtl_ctl.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_axi_basic_tx.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_core_top.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_common.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_rx_valid_filter_7x.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_top.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gt_wrapper.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_cpllpd_ovrd.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_drp.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_rate.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtp_pipe_reset.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_gtx_cpllpd_ovrd.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/synth/kc705_pcie_x8_gen2.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_funcsim.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_stub.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/kc705_pcie_x8_gen2_pipe_clock.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_7x.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_bram_7x.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_bram_top_7x.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_brams_7x.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_lane.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_misc.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_pipe_pipeline.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie_top.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pcie2_top.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_drp.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_eq.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_rate.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_reset.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_sync.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_user.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_pipe_wrapper.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_drp.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_reset.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_qpll_wrapper.v
-      - tb/vivado_sim/kc705_pcie_x8_gen2/source/kc705_pcie_x8_gen2_rxeq_scan.v
-      - tb/vivado_sim/imports/simulation/functional/board.v
-    file_type: systemVerilogSource
+      - example/imports/board.vhd
+      - example/imports/EP_MEM.vhd
+      - example/imports/pci_exp_usrapp_cfg.vhd
+      - example/imports/pci_exp_usrapp_pl.vhd
+      - example/imports/pci_exp_usrapp_rx.vhd
+      - example/imports/pci_exp_usrapp_tx.vhd
+      - example/imports/pcie_2_1_rport_7x.vhd
+      - example/imports/pcie_7x_0_support.vhd
+      - example/imports/pcie_app_7x.vhd
+      - example/imports/pcie_axi_trn_bridge.vhd
+      - example/imports/PIO_EP_MEM_ACCESS.vhd
+      - example/imports/PIO_EP.vhd
+      - example/imports/PIO_RX_ENGINE.vhd
+      - example/imports/PIO_TO_CTRL.vhd
+      - example/imports/PIO_TX_ENGINE.vhd
+      - example/imports/PIO.vhd
+      - example/imports/sys_clk_gen_ds.vhd
+      - example/imports/sys_clk_gen.vhd
+      - example/imports/test_interface.vhd
+      - example/imports/tests.vhd
+      - example/imports/xilinx_pcie_2_1_ep_7x.vhd
+      - example/imports/xilinx_pcie_2_1_rport_7x.vhd
+    file_type: vhdlSource
 
 
   synth:
@@ -164,7 +131,7 @@ targets:
 
   xsim_v:
     default_tool: xsim
-    filesets : [rtl,xsim_tb]
+    filesets : [rtl,xsim_tb,glbl]
     tools:
       modelsim:
         vlog_options: [-timescale=1ns/1ns]

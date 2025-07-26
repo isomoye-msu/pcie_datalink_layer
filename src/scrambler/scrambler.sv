@@ -60,23 +60,23 @@ module scrambler
     if (rst_i) begin
       sync_header_o <= '0;
       data_valid_o  <= '0;
-      data_k_out_o  <= '0;
+      // data_k_out_o  <= '0;
       block_start_o <= '0;
     end else begin
       sync_header_o <= sync_header_i;
       data_valid_o  <= data_valid_i;
-      data_k_out_o  <= data_k_in_i;
+      // data_k_out_o  <= data_k_in_i;
       block_start_o <= block_start_i;
     end
   end
 
   always_comb begin
     if (curr_data_rate_i < gen3) begin
-      // data_k_out_o = gen1_data_k;
+      data_k_out_o = gen1_data_k;
       data_out_o = gen1_data;
       // data_valid_o = gen1_valid;
     end else begin
-      // data_k_out_o = gen3_data_k;
+      data_k_out_o = gen3_data_k;
       data_out_o = gen3_data;
       // data_valid_o = gen3_valid;
     end

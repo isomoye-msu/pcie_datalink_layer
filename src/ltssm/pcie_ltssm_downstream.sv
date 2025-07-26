@@ -256,8 +256,6 @@ module pcie_ltssm_downstream
   equal_t                                     equal_status_r;
 
   assign active_lanes_o         = lane_active_r;
-
-
   assign ltssm_state_o          = curr_state[3:0];
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
 
@@ -554,7 +552,7 @@ module pcie_ltssm_downstream
         gen_os_ctrl_c.valid    = '1;
         gen_os_ctrl_c.gen_ts1  = '1;
         transmit_ordered_set   = '1;
-        ordered_set_c = gen_tsos( gen1, TS1);
+        ordered_set_c = gen_ts_os( gen1, TS1);
       end
       //*********************************************************
       // Polling.Active
@@ -579,8 +577,8 @@ module pcie_ltssm_downstream
               //build ts2 ordered set
               gen_os_ctrl_c.gen_ts1 = '0;
               gen_os_ctrl_c.gen_ts2 = '1;
-              // ordered_set_c = gen_tsos( gen1, TS1,PAD_,PAD_,'1);
-              ordered_set_c = gen_tsos( gen1, TS2);
+              // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+              ordered_set_c = gen_ts_os( gen1, TS2);
               transmit_ordered_set = '1;
               //goto cofig
               next_state = ST_POLLING_CONFIGURATION;
@@ -616,7 +614,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts1 = '1;
             gen_os_ctrl_c.gen_ts2 = '0;
             transmit_ordered_set = '1;
-            ordered_set_c = gen_tsos( gen1, TS1);
+            ordered_set_c = gen_ts_os( gen1, TS1);
             //goto wait low
             next_state = ST_CONFIGURATION;
           end  //check timeout count
@@ -649,7 +647,7 @@ module pcie_ltssm_downstream
       ST_CONFIGURATION_LINKWIDTH_START: begin
         // if (ordered_set_sent_cnt_r) begin
         //   transmit_ordered_set = '1;
-        //   ordered_set_c = gen_tsos( gen1, TS1, train_seq_e'(LINK_NUM));
+        //   ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(LINK_NUM));
         // end
         // gen_os_ctrl_c.valid = '1;
         // gen_os_ctrl_c.gen_ts1 = '1;
@@ -661,7 +659,7 @@ module pcie_ltssm_downstream
             ordered_set_sent_cnt_c = '0;
             transmit_ordered_set   = '1;
             //build next ordered set
-            ordered_set_c = gen_tsos( gen1, TS1, train_seq_e'(link_number_selected));
+            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
             //goto next pcie ltssm state
             next_state = ST_CONFIGURATION_LINKWIDTH_ACCEPT;
           end  //check timeout counter
@@ -693,7 +691,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts1  = '1;
             gen_os_ctrl_c.gen_ts2  = '0;
             transmit_ordered_set   = '1;
-            ordered_set_c = gen_tsos( gen1, TS1, train_seq_e'(link_number_selected));
+            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
             next_state = ST_CONFIGURATION_LANENUM_WAIT;
           end  //check timeout counter
           else if (timer_r >= TwoMsTimeOut)
@@ -716,7 +714,7 @@ module pcie_ltssm_downstream
             transmit_ordered_set  = '1;
             gen_os_ctrl_c.gen_ts1 = '0;
             gen_os_ctrl_c.gen_ts2 = '1;
-            ordered_set_c = gen_tsos( gen1, TS2, train_seq_e'(link_number_selected), train_seq_e'(0));
+            ordered_set_c = gen_ts_os( gen1, TS2, train_seq_e'(link_number_selected), train_seq_e'(0));
             ordered_set_sent_cnt_c = '0;
             //goto config complete
             next_state = ST_CONFIGURATION_COMPLETE;
@@ -749,7 +747,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts2  = '1;
             transmit_ordered_set   = '1;
             gen_os_ctrl_c.set_lane = '1;
-            ordered_set_c = gen_tsos( gen1, TS1, train_seq_e'(link_number_selected));
+            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
             //goto lanenum accept
             next_state = ST_CONFIGURATION_LANENUM_ACCEPT;
           end  //check timeout counter
@@ -776,7 +774,7 @@ module pcie_ltssm_downstream
             // timer_c                = '0;
             //build idle ordered set
             transmit_ordered_set   = '1;
-            ordered_set_c = gen_idle();
+            ordered_set_c = gen_zeros();
             gen_os_ctrl_c.gen_ts2  = '0;
             gen_os_ctrl_c.gen_ts1  = '0;
             gen_os_ctrl_c.gen_idle = '1;
@@ -857,7 +855,7 @@ module pcie_ltssm_downstream
             temp_rate_id.speed_change = '1;
           end
           transmit_ordered_set = '1;
-          ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                    train_seq_e'(0), last_data_rate_c);
           ordered_set_sent_cnt_c = '0;
           // if (recovery_i && !is_timeout_i) begin
@@ -878,7 +876,7 @@ module pcie_ltssm_downstream
         if (|speed_change_bit_set && !changed_speed_recovery_r) begin
           last_data_rate_c.speed_change = '1;
           transmit_ordered_set = '1;
-          ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                    train_seq_e'(0), last_data_rate_c);
         end
         if (&(ts1_cnt_satisfied | ts2_cnt_satisfied)) begin
@@ -896,7 +894,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts1 = '0;
             gen_os_ctrl_c.gen_ts2 = '1;
             transmit_ordered_set  = '1;
-            ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS2, train_seq_e'(link_number_selected),
+            ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS2, train_seq_e'(link_number_selected),
                      train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
             //goto next pcie ltssm state
             next_state = ST_RECOVERY_RCVR_CFG;
@@ -922,14 +920,14 @@ module pcie_ltssm_downstream
             // ts2_symbol6.req_equal = '1;
           end
           transmit_ordered_set = '1;
-          ordered_set_c = gen_tsos( rate_speed_e'(last_data_rate_r.rate), TS2, train_seq_e'(LINK_NUM),
+          ordered_set_c = gen_ts_os( rate_speed_e'(last_data_rate_r.rate), TS2, train_seq_e'(LINK_NUM),
                    train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
           //goto next pcie ltssm state
           next_state = ST_RECOVERY_RCVR_CFG;
         end else begin
           if (!changed_speed_recovery_r && curr_data_rate_r.rate != gen1) begin
             transmit_ordered_set = '1;
-            ordered_set_c = gen_tsos( rate_speed_e'(last_data_rate_r.rate), TS2,
+            ordered_set_c = gen_ts_os( rate_speed_e'(last_data_rate_r.rate), TS2,
                      train_seq_e'(LINK_NUM), train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
             //goto next pcie ltssm state
             next_state = ST_RECOVERY_SPEED;
@@ -962,7 +960,7 @@ module pcie_ltssm_downstream
         // last_data_rate_c.speed_change = '1;
         temp_ts6.ec            = 2'b01;
         transmit_ordered_set   = '1;
-        ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+        ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                  train_seq_e'(0), last_data_rate_c,, temp_ts6);
         next_state = ST_RECOVERY_EQUAL_PHASE_1;
       end
@@ -984,7 +982,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts1    = '1;
             temp_ts6.ec              = 2'b01;
             transmit_ordered_set     = '1;
-            ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+            ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                      train_seq_e'(0), last_data_rate_c,, temp_ts6);
           end
         end
@@ -1005,7 +1003,7 @@ module pcie_ltssm_downstream
           ts1_symbol6_t temp_ts6;
           temp_ts6.ec = 2'b11;
           transmit_ordered_set = '1;
-          ordered_set_c = gen_tsos( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                    train_seq_e'(0), last_data_rate_c,, temp_ts6);
           // next_state = ST_RECOVERY_EQUAL;
           // timer_c = '0;
@@ -1045,7 +1043,7 @@ module pcie_ltssm_downstream
           if (max_rate == gen3) begin
             ts2_symbol6.req_equal = '1;
           end
-          // ordered_set_c = gen_tsos( last_data_rate_r.rate, TS2, link_num_i, lane_num_i, last_data_rate_r, '0,
+          // ordered_set_c = gen_ts_os( last_data_rate_r.rate, TS2, link_num_i, lane_num_i, last_data_rate_r, '0,
           //          ts_symbol6_union_t);
           next_state = ST_RECOVERY_RCVR_CFG;
         end
@@ -1213,7 +1211,7 @@ module pcie_ltssm_downstream
             end else begin
               next_state = ST_RECOVERY_RCVR_LOCK;
               transmit_ordered_set = '1;
-              ordered_set_c = gen_tsos( last_data_rate_c.rate, TS1,
+              ordered_set_c = gen_ts_os( last_data_rate_c.rate, TS1,
                        train_seq_e'(link_number_selected), train_seq_e'(0), last_data_rate_c);
             end
           end
@@ -1222,7 +1220,7 @@ module pcie_ltssm_downstream
           curr_data_rate_c         = curr_data_rate_r;
           last_data_rate_c         = curr_data_rate_r.rate;
           transmit_ordered_set     = '1;
-          ordered_set_c = gen_tsos( last_data_rate_c.rate, TS1, train_seq_e'(link_number_selected),
+          ordered_set_c = gen_ts_os( last_data_rate_c.rate, TS1, train_seq_e'(link_number_selected),
                    train_seq_e'(0), last_data_rate_c);
           next_state = ST_RECOVERY_RCVR_LOCK;
         end
@@ -1240,7 +1238,7 @@ module pcie_ltssm_downstream
         if (ordered_set_sent_cnt_r >= 8'h8) begin
           next_state = ST_RECOVERY_RCVR_LOCK;
           transmit_ordered_set = '1;
-          ordered_set_c = gen_tsos( last_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+          ordered_set_c = gen_ts_os( last_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
                    train_seq_e'(0), last_data_rate_r);
         end
       end

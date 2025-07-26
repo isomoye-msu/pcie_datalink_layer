@@ -1,10 +1,10 @@
 // Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2022.1 (lin64) Build 3526262 Mon Apr 18 15:47:01 MDT 2022
-// Date        : Fri Jul 18 21:43:58 2025
+// Date        : Tue Jul  8 09:15:09 2025
 // Host        : capc-ub22-is running 64-bit Ubuntu 22.04.5 LTS
 // Command     : write_verilog -force -mode synth_stub
-//               /tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex.gen/sources_1/ip/pcie_7x_0/pcie_7x_0_stub.v
+//               /tools/C/research/pcie/KC705_pci_driver/KC705_pci_hardware/pcie_test/pcie_test.gen/sources_1/ip/pcie_7x_0/pcie_7x_0_stub.v
 // Design      : pcie_7x_0
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7k325tffg900-2
@@ -13,7 +13,7 @@
 // This empty module with port declaration file causes synthesis tools to infer a black box for IP.
 // The synthesis directives are for Synopsys Synplify support to prevent IO buffer insertion.
 // Please paste the declaration into a Verilog source file or add the file as an additional source.
-(* X_CORE_INFO = "pcie_7x_0_pcie2_top,Vivado 2022.1" *)
+(* x_core_info = "pcie_7x_0_pcie2_top,Vivado 2022.1" *)
 module pcie_7x_0(pci_exp_txp, pci_exp_txn, pci_exp_rxp, 
   pci_exp_rxn, pipe_pclk_in, pipe_rxusrclk_in, pipe_rxoutclk_in, pipe_dclk_in, 
   pipe_userclk1_in, pipe_userclk2_in, pipe_oobclk_in, pipe_mmcm_lock_in, pipe_txoutclk_out, 
