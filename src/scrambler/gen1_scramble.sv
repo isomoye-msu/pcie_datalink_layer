@@ -166,9 +166,6 @@ module gen1_scramble
                 D.stop_scrambling[idx]    = '0;
               end
             end
-            if(byte_idx == ((pipe_width_i >> 3)-1)) begin
-              D.lsfr = '1;
-            end
           end else if (Q.data[0][byte_idx*8+:8] == SKP) begin
             D.lfsr             = lfsr_out[byte_idx];
             D.skp_os[byte_idx] = '1;
@@ -180,8 +177,7 @@ module gen1_scramble
               end
             end
           end
-        end
-        else if ((Q.byte_cnt + (byte_idx)) >= 32'd16 ) begin
+        end else if ((Q.byte_cnt + (byte_idx + 1)) > 32'd16) begin
           logic flag;
           flag = '0;
 
@@ -203,12 +199,32 @@ module gen1_scramble
               D.stop_scrambling[idx] = '1;
             end
           end
-        end
+        end  //special case where we know that the very next byte is unscrambled
+        else if ((Q.byte_cnt + byte_idx) >= 32'd16) begin
+          logic flag;
+          flag = '0;
 
+          //check to see if previous special k is flag
+          for (int idx = 0; idx < 4; idx++) begin
+            if (((idx < byte_idx) && idx < (pipe_width_i >> 3)) &&
+            (Q.data_k[0][idx] && Q.data[0][idx*8+:8] == COM)) begin
+              flag = '1;
+            end
+          end
+
+
+          for (int idx = 0; idx < 4; idx++) begin
+            if (idx >= byte_idx && (idx < (pipe_width_i >> 3)) && (flag == '0)) begin
+              D.disable_scrambling[idx] = '0;
+              D.stop_scrambling[idx] = '1;
+            end
+          end
+
+
+        end
+        //---------------------------------------------------------------------
         //second stage
         //check if special symbol
-
-
         if (Q.data_k[1][byte_idx]) begin
           //default to scrambling on
           D.stop_scrambling = '0;
@@ -224,6 +240,9 @@ module gen1_scramble
           if (Q.data[1][byte_idx*8+:8] == COM) begin
             //reset lfsr
             // D.lfsr                     = '1;
+            if (byte_idx == ((pipe_width_i >> 3) - 1)) begin
+              D.lfsr = '1;
+            end
             for (int idx = 0; idx < 4; idx++) begin
               if (idx >= byte_idx) begin
                 // D.disable_scrambling[idx] = '1;
@@ -260,7 +279,7 @@ module gen1_scramble
         // end
 
         D.data[2][byte_idx*8+:8] = (Q.disable_scrambling[byte_idx] == '0 || (
-          Q.stop_scrambling[byte_idx])) && (Q.scramble_reset == '0) ? 
+          D.stop_scrambling[byte_idx])) && (Q.scramble_reset == '0) ? 
       ( Q.data[1][byte_idx*8+:8] ^ lfsr_swapped[byte_idx]): Q.data[1][byte_idx*8+:8];
       end
     end
