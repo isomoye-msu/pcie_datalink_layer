@@ -15,7 +15,7 @@ module gen1_scramble
 );
 
 
-  localparam int NumPipelines = 3;
+  localparam int NumPipelines = 4;
   //   logic [ 7:0] scrambled_data;
   // logic [15:0] lfsr_c;
   // logic [15:0] lfsr_r;
@@ -43,22 +43,23 @@ module gen1_scramble
   // logic [ 3:0] os_complete_r;
 
   typedef struct packed {
-    logic [15:0] lfsr;
-    logic [3:0] scramble_reset;
-    logic [3:0] disable_scrambling;
-    logic [3:0] stop_scrambling;
-    logic [3:0] skp_os;
-    logic [NumPipelines-1:0][31:0] data;
-    logic [NumPipelines-1:0][3:0] data_k;
+    logic [15:0]                        lfsr_in;
+    logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
+    logic [3:0]                         scramble_reset;
+    logic [3:0]                         disable_scrambling;
+    logic [3:0]                         stop_scrambling;
+    logic [3:0]                         skp_os;
+    logic [NumPipelines-1:0][31:0]      data;
+    logic [NumPipelines-1:0][3:0]       data_k;
     // logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
-    logic [31:0] byte_cnt;
+    logic [31:0]                        byte_cnt;
   } gen1_scambler_t;
 
 
   gen1_scambler_t D, Q;
 
 
-  assign lfsr_out[0] = Q.lfsr;
+  assign lfsr_out[0] = Q.lfsr_in;
   // assign data_k_out_o = '0;
   //   assign scrambled_data[0] = data_in_swapped[7:0];
 
@@ -80,8 +81,7 @@ module gen1_scramble
 
   always_ff @(posedge clk_i) begin : scramble_seq_block
     if (rst_i) begin
-      Q <= '{lfsr: '1, default: 'd0};
-
+      Q <= '{lfsr_in: '1, default: 'd0};
     end else begin
       Q <= D;
     end
@@ -94,7 +94,8 @@ module gen1_scramble
     D                 = Q;
     D.scramble_reset  = '0;
     D.stop_scrambling = '0;
-    D.lfsr            = lfsr_out[(pipe_width_i>>3)];
+    D.lfsr_in         = lfsr_out[(pipe_width_i>>3)];
+    D.skp_os          = '0;
 
     // if(Q.skp_os != '0) begin
     //   D.lfsr = Q.lfsr;
@@ -104,10 +105,15 @@ module gen1_scramble
         D.data[pipeline_idx]   = data_in_i;
         D.data_k[pipeline_idx] = data_k_in_i;
         // D.lfsr_out[pipeline_idx] = lfsr_out;
+        for (int lfsr_idx = 0; lfsr_idx < 5; lfsr_idx++) begin
+          D.lfsr_out[pipeline_idx][lfsr_idx] = lfsr_out[lfsr_idx];
+        end
+        // D.lfsr_out[pipeline_idx] = lfsr_out;
       end else begin
         // D.lfsr_out[pipeline_idx] = Q.lfsr_out[pipeline_idx-1];
-        D.data[pipeline_idx]   = Q.data[pipeline_idx-1];
-        D.data_k[pipeline_idx] = Q.data_k[pipeline_idx-1];
+        D.lfsr_out[pipeline_idx] = Q.lfsr_out[pipeline_idx-1];
+        D.data[pipeline_idx]     = Q.data[pipeline_idx-1];
+        D.data_k[pipeline_idx]   = Q.data_k[pipeline_idx-1];
       end
     end
 
@@ -118,74 +124,45 @@ module gen1_scramble
       D.disable_scrambling = '1;
     end
 
-    // if (Q.scramble_reset != '0) begin
-    //   for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
-    //     if (byte_idx < (pipe_width_i >> 3)) begin
-    //       if (Q.scramble_reset[byte_idx]) begin
-    //         D.lfsr = lfsr_out[byte_idx+1];
-    //       end
-    //     end
-    //   end
-    // end else begin
-    //   //select which lfsr advance to use based on pipewidth
-    //   D.lfsr = lfsr_out[(pipe_width_i>>3)];
-    // end
-
     //for each byte
     for (int byte_idx = 0; byte_idx < 4; byte_idx++) begin
       int pipe_idx;
       pipe_idx = ((pipe_width_i >> 3) - 1) - byte_idx;
+      lfsr_swapped[byte_idx] = '0;
 
       if (byte_idx < (pipe_width_i >> 3)) begin
-
         //---------------------------------------------------------------------
         //first stage...
 
-        if (Q.skp_os != '0 && (Q.data[1][byte_idx*8+:8] != SKP)) begin
-          D.skp_os   = '0;
-          D.byte_cnt = '0;
-          for (int idx = 0; idx < 4; idx++) begin
-            if (idx >= byte_idx && idx < (pipe_width_i >> 3)) begin
-              D.disable_scrambling[idx] = '0;
-              D.stop_scrambling[idx] = '1;
+
+        //handle case where lfsr out is reset needs to be reset at next
+        if ((Q.scramble_reset[byte_idx])
+         && (byte_idx == 8'd1)/*(pipe_width_i >> 3)-1)*/) begin
+          D.lfsr_in = lfsr_out[byte_idx];
+        end
+        if (Q.skp_os[byte_idx] != '0) begin
+          //skip scrambler advance
+          D.lfsr_out = Q.lfsr_out;
+          D.lfsr_in  = lfsr_out[byte_idx];
+          if ((Q.data[0][byte_idx*8+:8] != SKP)) begin
+            // D.skp_os   = '0;
+            D.byte_cnt = '0;
+            for (int idx = 0; idx < 4; idx++) begin
+              if (idx >= byte_idx && idx < (pipe_width_i >> 3)) begin
+                D.disable_scrambling[idx] = '0;
+                D.stop_scrambling[idx] = '1;
+              end
             end
           end
         end
 
-        if (Q.data_k[0][byte_idx]) begin
-          D.disable_scrambling[byte_idx] = '1;
-          // D.stop_scrambling[byte_idx] = '0;
-          //check if comma
-          if (Q.data[0][byte_idx*8+:8] == COM) begin
-            //reset lfsr
-            D.scramble_reset[byte_idx] = '1;
-            D.byte_cnt                 = (pipe_width_i >> 3) - byte_idx;
-            for (int idx = 0; idx < 4; idx++) begin
-              if (idx >= byte_idx) begin
-                D.disable_scrambling[idx] = '1;
-                D.stop_scrambling[idx]    = '0;
-              end
-            end
-          end else if (Q.data[0][byte_idx*8+:8] == SKP) begin
-            D.lfsr             = lfsr_out[byte_idx];
-            D.skp_os[byte_idx] = '1;
-            // D.scramble_reset = '1;
-            for (int idx = 0; idx < 4; idx++) begin
-              if (idx >= byte_idx && (Q.data[1][idx*8+:8] != SKP)) begin
-                D.disable_scrambling[idx] = '0;
-                // D.scramble_reset[idx] = '1;
-              end
-            end
-          end
-        end else if ((Q.byte_cnt + (byte_idx + 1)) > 32'd16) begin
+        if ((Q.byte_cnt + (byte_idx + 1)) > 32'd16) begin
           logic flag;
           flag = '0;
 
           //check to see if previous special k is flag
           for (int idx = 0; idx < 4; idx++) begin
-            if (idx < (pipe_width_i >> 3) && 
-            ((Q.data_k[1][idx] && Q.data[1][idx*8+:8] == COM)
-            || (Q.data_k[0][idx] && Q.data[0][idx*8+:8] == COM))) begin
+            if (idx < (pipe_width_i >> 3) && (Q.data_k[1][idx] && Q.data[1][idx*8+:8] == COM)) begin
               flag = '1;
             end
           end
@@ -200,28 +177,27 @@ module gen1_scramble
             end
           end
         end  //special case where we know that the very next byte is unscrambled
-        else if ((Q.byte_cnt + byte_idx) >= 32'd16) begin
-          logic flag;
-          flag = '0;
+        // else if ((Q.byte_cnt + byte_idx) >= 32'd16) begin
+        //   logic flag;
+        //   flag = '0;
 
-          //check to see if previous special k is flag
-          for (int idx = 0; idx < 4; idx++) begin
-            if (((idx < byte_idx) && idx < (pipe_width_i >> 3)) &&
-            (Q.data_k[0][idx] && Q.data[0][idx*8+:8] == COM)) begin
-              flag = '1;
-            end
-          end
-
-
-          for (int idx = 0; idx < 4; idx++) begin
-            if (idx >= byte_idx && (idx < (pipe_width_i >> 3)) && (flag == '0)) begin
-              D.disable_scrambling[idx] = '0;
-              D.stop_scrambling[idx] = '1;
-            end
-          end
+        //   //check to see if previous special k is flag
+        //   for (int idx = 0; idx < 4; idx++) begin
+        //     if (((idx < byte_idx) && idx < (pipe_width_i >> 3)) &&
+        //     (Q.data_k[0][idx] && Q.data[0][idx*8+:8] == COM)) begin
+        //       flag = '1;
+        //     end
+        //   end
 
 
-        end
+        //   for (int idx = 0; idx < 4; idx++) begin
+        //     if (idx >= byte_idx && (idx < (pipe_width_i >> 3)) && (flag == '0)) begin
+        //       D.disable_scrambling[idx] = '0;
+        //       D.stop_scrambling[idx] = '1;
+        //     end
+        //   end
+        // end
+
         //---------------------------------------------------------------------
         //second stage
         //check if special symbol
@@ -238,49 +214,36 @@ module gen1_scramble
           end
           //check if comma
           if (Q.data[1][byte_idx*8+:8] == COM) begin
-            //reset lfsr
-            // D.lfsr                     = '1;
-            if (byte_idx == ((pipe_width_i >> 3) - 1)) begin
-              D.lfsr = '1;
-            end
-            for (int idx = 0; idx < 4; idx++) begin
-              if (idx >= byte_idx) begin
-                // D.disable_scrambling[idx] = '1;
+            D.scramble_reset[byte_idx] = '1;
+            D.byte_cnt                 = (pipe_width_i >> 3) - byte_idx;
+            for (int d_idx = 0; d_idx < 4; d_idx++) begin
+              if (d_idx >= byte_idx) begin
+                D.disable_scrambling[d_idx] = '1;
                 // D.stop_scrambling[idx]    = '1;
               end
             end
             // D.scramble_reset[byte_idx] = '1;
             // D.byte_cnt                 = byte_idx;
-          end else if (Q.data[1][byte_idx*8+:8] == SKP) begin
-            // D.skp_os[byte_idx] = '1;
-            // // D.scramble_reset = '1;
-            // for (int idx = 0; idx < 4; idx++) begin
-            //   if (idx >= byte_idx && (Q.data[1][idx*8+:8] != SKP)) begin
-            //     D.disable_scrambling[idx] = '0;
-            //     // D.scramble_reset[idx] = '1;
-            //   end
-            // end
+          end
+          if (Q.data[1][byte_idx*8+:8] == SKP) begin
+            D.skp_os[byte_idx]             = '1;
+            D.disable_scrambling[byte_idx] = '1;
+            D.lfsr_in                      = lfsr_out[byte_idx];
           end  //special k that is not pad... disable scrambling for now
           else if (Q.data[1][byte_idx*8+:8] == PAD_) begin
-            // D.disable_scrambling[byte_idx] = '0;
-            // D.stop_scrambling              = '1;
           end
         end
-        //third stage
-        lfsr_swapped[byte_idx] = ({<<{lfsr_out[byte_idx]}});
-        // if (Q.disable_scrambling[byte_idx] == '0) begin
-        // end
-        // if (Q.data_k[2][byte_idx]) begin
-        //   //check if comma
-        //   if (Q.data[2][byte_idx*8+:8] == SKP) begin
-        //     //reset lfsr
-        //     D.scramble_reset[byte_idx] = '1;
-        //   end
-        // end
 
-        D.data[2][byte_idx*8+:8] = (Q.disable_scrambling[byte_idx] == '0 || (
-          D.stop_scrambling[byte_idx])) && (Q.scramble_reset == '0) ? 
-      ( Q.data[1][byte_idx*8+:8] ^ lfsr_swapped[byte_idx]): Q.data[1][byte_idx*8+:8];
+        //third stage
+        if (Q.skp_os == '0) begin
+          lfsr_swapped[byte_idx] = ({<<{lfsr_out[byte_idx]}});
+        end else begin
+          lfsr_swapped[byte_idx] = ({<<{Q.lfsr_out[0][byte_idx]}});
+        end
+
+        D.data[NumPipelines-1][byte_idx*8+:8] = (Q.disable_scrambling[byte_idx] == '0 || (
+          Q.stop_scrambling[byte_idx])) ? 
+      ( Q.data[NumPipelines-2][byte_idx*8+:8] ^ lfsr_swapped[byte_idx]): Q.data[NumPipelines-2][byte_idx*8+:8];
       end
     end
   end
