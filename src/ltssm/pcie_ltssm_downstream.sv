@@ -810,6 +810,7 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.gen_ts2        = '0;
             gen_os_ctrl_c.gen_idle       = '0;
             gen_os_ctrl_c.valid          = '0;
+            transmit_ordered_set         = '1;
             //increment idle_to_rlock_transitioned_c
             idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
             //goto wait for ena low
@@ -830,6 +831,7 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       ST_L0: begin
         link_up_o = '1;
+        transmit_ordered_set         = '1;
         if (|ts1_valid_i || |ts2_valid_i || (directed_speed_change_i && !changed_speed_recovery_r))
         begin
           next_state = ST_RECOVERY;

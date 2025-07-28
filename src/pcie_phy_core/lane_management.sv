@@ -337,7 +337,7 @@ module lane_management
             data_in_c[8*i+:8]  = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
             data_out_c[8*i+:8] = curr_data_rate_i >= gen3 ? 8'hf7 : '0;
           end
-        end else if (s_dllp_axis_tvalid && fifo_empty && !complete_r) begin
+        end else if (s_dllp_axis_tvalid) begin
           pkt_count_c              = '0;
           word_count_c             = '0;
           lane_start_index_c       = '0;
