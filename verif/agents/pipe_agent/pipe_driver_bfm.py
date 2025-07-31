@@ -49,6 +49,8 @@ class pipe_driver_bfm():
         
     async def start(self):
         cocotb.start_soon(Clock(self.dut.clk_i, 5, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_rx_usr_clk_i, 5, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_tx_usr_clk_i, 5, units="ns").start())
         # super().body()
         uvm_root().logger.info(self.name + " body initiated") 
         
@@ -190,6 +192,7 @@ class pipe_driver_bfm():
             #Symbol 1
             if (ts.use_link_number):
                 RxData_Q.put((ts.link_number & 0xFF))
+                # RxData_Q.put((0x00 & 0xFF))
                 RxDataK_Q.put(0b0 )
             else:
                 RxData_Q.put((0b11110111 & 0xFF)) #PAD character
@@ -198,6 +201,7 @@ class pipe_driver_bfm():
             #Symbol 2
             if (ts.use_lane_number):
                 RxData_Q.put((ts.lane_number & 0xFF))
+                # RxData_Q.put((0x00 & 0xFF))
                 RxDataK_Q.put(0b0 )
             else:
                 RxData_Q.put(0b11110111   )  #PAD character
@@ -205,36 +209,36 @@ class pipe_driver_bfm():
 
             #Symbol 3
             if (ts.use_n_fts):
-                RxData_Q.put( ((ts.n_fts & 0xFF)  ) )
+                RxData_Q.put( ( 0xFF ) )
                 RxDataK_Q.put(0b0 )
             else :
                 RxData_Q.put( 0x00  ) 
                 RxDataK_Q.put(0b0 )
             
             #Symbol 4
-            RxDataK_Q.put(0b0  ) 
+            RxDataK_Q.put(0x0  ) 
 
             # temp =  0xFF
-            temp = 0b0000000
-            if (ts.max_gen_supported == gen_t.GEN1):
-                temp = 0b11000010
-            elif (ts.max_gen_supported == gen_t.GEN2):
-                temp = 0b11000110
-            elif (ts.max_gen_supported == gen_t.GEN3):
-                temp = 0b11001110
-                # assert 1 == 0
-            elif (ts.max_gen_supported == gen_t.GEN4):
-                temp = 0b11011110
+            temp = 0x02
+            # if (ts.max_gen_supported == gen_t.GEN1):
+            #     temp = 0b11000010
+            # elif (ts.max_gen_supported == gen_t.GEN2):
+            #     temp = 0b11000110
+            # elif (ts.max_gen_supported == gen_t.GEN3):
+            #     temp = 0b11001110
+            #     # assert 1 == 0
+            # elif (ts.max_gen_supported == gen_t.GEN4):
+            #     temp = 0b11011110
 
-            if ts.auto_speed_change:
-                temp = set_bit(temp,6)
-            else:
-                temp = clear_bit(temp,6)
+            # if ts.auto_speed_change:
+            #     temp = set_bit(temp,6)
+            # else:
+            #     temp = clear_bit(temp,6)
 
-            if ts.speed_change:
-                temp = set_bit(temp,7)
-            else:
-                temp = clear_bit(temp,7)
+            # if ts.speed_change:
+            #     temp = set_bit(temp,7)
+            # else:
+            #     temp = clear_bit(temp,7)
 
             # temp   = (ts.auto_speed_change & 0x1) << 6
             # temp   = (ts.speed_change &  0x1) << 7
@@ -247,17 +251,17 @@ class pipe_driver_bfm():
 
             temp = 0x00
             #Symbol 6
-            if (ts.equalization_command):
-                # temp = 0xFF
-                temp |= ts.rx_preset_hint & 0b11
-                temp |= (ts.tx_preset & 0b111) << 3
-            if (ts.ts_type == ts_type_t.TS2 and  ts.equalization_command):
-                temp |= set_bit(temp, 7)
-            else :
-                if (ts.ts_type == ts_type_t.TS1):
-                    temp = 0x4A
-                else:
-                    temp = 0x45
+            # if (ts.equalization_command):
+            #     # temp = 0xFF
+            #     temp |= ts.rx_preset_hint & 0b11
+            #     temp |= (ts.tx_preset & 0b111) << 3
+            # if (ts.ts_type == ts_type_t.TS2 and  ts.equalization_command):
+            #     temp |= set_bit(temp, 7)
+            # else :
+            if (ts.ts_type == ts_type_t.TS1):
+                temp = 0x4A
+            else:
+                temp = 0x45
             
             RxData_Q.put(temp  ) 
             RxDataK_Q.put(0b0 )
@@ -317,34 +321,37 @@ class pipe_driver_bfm():
 
 
             #Symbol 6
-            temp = 0x00
-            if(True): #need flag
-                if (ts.ts_type == ts_type_t.TS1):
-                    if (True):  #need flag
-                        temp |= ts.ec & 0b11
+            temp = 0xFF
+            # if(True): #need flag
+            #     if (ts.ts_type == ts_type_t.TS1):
+            #         temp = 0x4A
+            #         # if (True):  #need flag
+            #         #     temp |= ts.ec & 0b11
 
-                    if (True):  #need flag
-                        temp |= (ts.tx_preset & 0b111 )<< 3
+            #         # if (True):  #need flag
+            #         #     temp |= (ts.tx_preset & 0b111 )<< 3
 
-                    temp |= (ts.use_preset & 0b1) << 7
-                elif (ts.ts_type == ts_type_t.TS2):
-                    ...
-                    #not supported yet
-                else:
-                    temp = 0x4A
+            #         # temp |= (ts.use_preset & 0b1) << 7
+            #     elif (ts.ts_type == ts_type_t.TS2):
+            #         temp = 0x45
+            #         ...
+            #         #not supported yet
+            #     else:
+            #         temp = 0x4A
 
-            RxData_Q.put(temp  ) 
+            RxData_Q.put(0x00  ) 
 
             #Symbol 7
             temp = 0x00
             if (ts.ts_type == ts_type_t.TS1):
-                if (ts.ec == 0b01):
-                    temp |= ts.fs_value & 0b11111
-                else:
-                    temp |= ts.pre_cursor & 0x1F
+                temp = 0x4A
+                # if (ts.ec == 0b01):
+                #     temp |= ts.fs_value & 0b11111
+                # else:
+                #     temp |= ts.pre_cursor & 0x1F
             else:
                 temp = 0x45
-            RxData_Q.put(temp  ) 
+            RxData_Q.put(0x00  ) 
 
 
             #Symbol 8
@@ -356,7 +363,7 @@ class pipe_driver_bfm():
                     temp = ts.cursor
             else:
                 temp = 0x45
-            RxData_Q.put( temp  ) 
+            RxData_Q.put( 0x00  ) 
 
             #Symbol 9
             temp = 0x00
@@ -368,7 +375,7 @@ class pipe_driver_bfm():
                 temp |= (temp & 0b00111111) ^ ((RxDataK_Q >> 6) & 0b1) ^ ((RxDataK_Q >> 7) & 0b1) ^ ((RxDataK_Q >> 8) & 0b1)
             else:
                 temp = 0x45
-            RxData_Q.put( temp  ) 
+            RxData_Q.put( 0x00  ) 
 
             #Symbol 10~15
             if (ts.ts_type == ts_type_t.TS1):
@@ -382,7 +389,7 @@ class pipe_driver_bfm():
 
 
     async def send_ts(self,ts, start_lane = 0,_lane=int(cocotb.top.MAX_NUM_LANES), replace_lane = 0):  # task
-        width = 8
+        width = 16
         # RxData_Q = deque()  #the actual symbols will be here (each symbol is a byte)
         # bit RxDataValid_Q[$]
         # RxDataK_Q = []
@@ -404,14 +411,18 @@ class pipe_driver_bfm():
                 self.dut.phy_rxdatak.value = 0
                 Data = 0x0
                 Character = 0x0
+                # print("\n")  
                 # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
                 for i in range(int(width/8)):
-                    Data = (Data << 8) | (RxData_Q.get())
-                    Character = (Character << 1) | (RxDataK_Q.get() & 0x1)
+                    temp_byte = RxData_Q.get()
+                    # print(hex(temp_byte))
+                    Data = (Data ) | ((temp_byte& 0xFF) << (8*i))
+                    Character = (Character) | ((RxDataK_Q.get() & 0x1)  << i)
                     #RxData_Q = RxData_Q[1:$]
-                    #RxDataK_Q = RxDataK_Q[1:$];  
-                # # print(hex(Data))
-                # # print(Character)
+                    #RxDataK_Q = RxDataK_Q[1:$];
+                # print("\n")  
+                # print(hex(Data))
+                # print(Character)
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
@@ -433,8 +444,9 @@ class pipe_driver_bfm():
                     # [i*pipe_max_width/8 : (i*pipe_max_width/8) + pipe_max_width/8] = RxDataK_Q
                     # RxData_Q = RxData_Q >> (8*i)
                     # RxDataK_Q = RxDataK_Q >> i
-
-                # # print(hex(temp_data))
+                
+                # print(hex(temp_data))
+                # assert 1 == 0
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
@@ -472,7 +484,9 @@ class pipe_driver_bfm():
         RxData_Q = [0] * len(ts)
         RxDataK_Q = [0] * len(ts)
         pipe_max_width = 32
-
+        # assert 1 == 0
+        # for thing in ts:
+        #     print(thing.ts_type)
         phy_rxdata_valid = 0x0
         for i in range(start_lane,_lane):
             phy_rxdata_valid |= 0x1 << i
@@ -483,7 +497,7 @@ class pipe_driver_bfm():
 
         uvm_root().logger.info(self.name + " " + "sending tses")
         if (self.current_gen.value <= gen_t.GEN2.value):
-            for i in range(len(ts)):
+            for i in range(start_lane,_lane):
                 RxData_Q[i],RxDataK_Q[i] = self.ts_symbols_maker(ts[i])
 
             while not RxData_Q[0].empty():
@@ -492,13 +506,15 @@ class pipe_driver_bfm():
                 Data = [0x0] * int(_lane - start_lane)
                 Character = [0x0] * int(_lane - start_lane)
                 # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
-                for i in range(start_lane,_lane):
-                    Data[i] = (Data[i] << 8) | (RxData_Q[i].get())
-                    Character[i] = (Character[i] << 1) | (RxDataK_Q[i].get() & 0x1)
+                for lane in range(start_lane,_lane):
+                    for i in range(int(width/8)):
+                        Data[lane] = (Data[lane] ) | (RxData_Q[lane].get() << (8*i))
+                        Character[lane] = (Character[lane]) | ((RxDataK_Q[lane].get() & 0x1) << i)
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
-                    # # print(Data[i])
+                    # print(hex(Data[i]))
+                    # print(width)
                     temp_data |= (Data[i] << (pipe_max_width*i))
                     temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
 
@@ -507,6 +523,7 @@ class pipe_driver_bfm():
                 self.dut.phy_rxdatak.value = temp_char
 
                 await RisingEdge(self.dut.clk_i)
+            # assert 1 == 0
 
             self.dut.phy_rxdata.value = 0
             self.dut.phy_rxdatak.value = 0
@@ -692,12 +709,13 @@ class pipe_driver_bfm():
     #  bit k_data[$]
 
     def get_width(self):
-        lane_width = 8
+        lane_width = 16
         match self.dut.pipe_width_o.value:
             case 0b00: lane_width = 8
             case 0b01: lane_width = 16
+            case 0x10: lane_width = 16
             case 0b11: lane_width = 32
-        return lane_width
+        return int(self.dut.pipe_width_o.value)
 
 #  temp
 #  temp_data

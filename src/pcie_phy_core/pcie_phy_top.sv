@@ -3,7 +3,7 @@ module pcie_phy_top
   import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100
-    parameter int MAX_NUM_LANES = 4,               //! Maximum number of lanes module can support
+    parameter int MAX_NUM_LANES = 1,               //! Maximum number of lanes module can support
     // TLP data width
     parameter int DATA_WIDTH    = 32,              //! AXIS data width
     // TLP strobe width

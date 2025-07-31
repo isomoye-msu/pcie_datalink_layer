@@ -1,5 +1,5 @@
 import cocotb
-from cocotb_vivado import run
+# from cocotb_vivado import run
 import subprocess
 import os
 import pathlib

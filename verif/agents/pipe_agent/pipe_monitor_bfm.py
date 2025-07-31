@@ -39,6 +39,7 @@ class pipe_monitor_bfm():
         self.bus_data_width_param = int(self.dut.MAX_NUM_LANES) * int(self.pipe_max_width)
         pipe_width = self.get_width()
         self.bus_data_width = int(self.dut.MAX_NUM_LANES) * pipe_width
+        self.linkup = 0
         self.tlp_done = 2
         self.dllp_done = 2
         self.start_tlp = 0
@@ -373,11 +374,15 @@ class pipe_monitor_bfm():
 
     async def receive_tses(self, start_lane = 0 , end_lane = int(cocotb.top.MAX_NUM_LANES)):
         ts = []
+        ts_bytearray = []
+        ts_karray = []
         # assert 1 == 0
         if end_lane is None:
             end_lane = self.dut.active_lanes
         for i in range(start_lane,end_lane):
             ts.append(ts_s())
+            ts_bytearray.append([])
+            ts_karray.append([])
         # # print(self.dut.pipe_width)
         # assert 1 == 0
         while self.dut.pipe_width_o== 0:
@@ -388,96 +393,122 @@ class pipe_monitor_bfm():
             data = self.dut.phy_txdata.value
             datak = self.dut.phy_txdatak.value
             dataValid = self.dut.phy_txdata_valid.value
+            comma_idx = 0
             # # print(bytes(data))
             # # print(data)
             # # print(data)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
-            while not all((LogicArray(data)[(32*i)+7: (32*i)].to_BinaryValue() == 0b101_11100 and LogicArray(datak)[4*i]._valid and LogicArray(dataValid)[i]._valid) for i in range(start_lane,end_lane)):
+            comma_detected = 0
+            while(comma_detected == 0):
                 data = self.dut.phy_txdata.value
                 datak = self.dut.phy_txdatak.value
                 dataValid = self.dut.phy_txdata_valid.value
+                for lane in (range(int(end_lane-start_lane))):
+                    for byte_ in range(int((int(self.dut.pipe_width_o)/8))):
+                        if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
+                        and LogicArray(datak)[(4*lane)+byte_] ):
+                            comma_detected = 1
+                            comma_idx = lane * byte_
                 await RisingEdge(self.dut.clk_i)
-                # # print(LogicArray(data)[(32*1)+7: (32*1)]._value)
-                # # print(LogicArray(0b101_11100)._value)
 
-                # if LogicArray(data)[(32*1)+7: (32*1)]._value == LogicArray(0b101_11100)._value:
-                #     ...
-                #     # assert 1 == 0
-                # # print(LogicArray(datak)[0])
-                # # print(LogicArray(dataValid)[0])
-                # # print(dataValid)
+            
+            if(comma_idx == 0):
+                for lane in (range(int(end_lane-start_lane))):
+                    ts_bytearray[lane].append(LogicArray(data)[(32*lane)+7:  (32*lane)+0].to_BinaryValue())
+                    ts_bytearray[lane].append(LogicArray(data)[(32*lane)+15: (32*lane)+8].to_BinaryValue())
+                    ts_karray[lane].append(LogicArray(datak)[(4*lane)+0])
+                    ts_karray[lane].append(LogicArray(datak)[(4*lane)+1])
+                # await RisingEdge(self.dut.clk_i)
+                # assert 1 == 0
+            else:
+                ts_bytearray.append(LogicArray(data)[(32*i)+15: (32*i)+8].to_BinaryValue())
+                # await RisingEdge(self.dut.clk_i)
+
+            
+            data = self.dut.phy_txdata.value
+            datak = self.dut.phy_txdatak.value
+            dataValid = self.dut.phy_txdata_valid.value 
+
             # assert 1 == 0 
+            while comma_idx < 16:
+                for lane in (range(int(end_lane-start_lane))):
+                    ts_bytearray[lane].append(LogicArray(data)[(32*lane)+7: (32*lane)+0].to_BinaryValue())
+                    ts_bytearray[lane].append(LogicArray(data)[(32*lane)+15: (32*lane)+8].to_BinaryValue())
+                    ts_karray[lane].append(LogicArray(datak)[(4*lane)+0])
+                    ts_karray[lane].append(LogicArray(datak)[(4*lane)+1])
+                await RisingEdge(self.dut.clk_i)
+                data = self.dut.phy_txdata.value
+                # print(comma_idx)
+                comma_idx += (end_lane-start_lane) * 2           
+
+
             for i in range(start_lane,end_lane):
-                assert LogicArray(self.dut.phy_rxstatus.value)[(i*3)+2 : (i*3)]._value== LogicArray(0b000,range = (2,'downto',0))._value
+                assert LogicArray(self.dut.phy_rxstatus.value)[(i*3)+2 : 
+                (i*3)]._value== LogicArray(0b000,range = (2,'downto',0))._value
 
             self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            # print(ts_bytearray[0])
+            # for b in ts_bytearray[0]:
+            #     print(hex(b))
+            # print(ts_bytearray[0])
+            # assert 1 == 0
 
             for i in range(start_lane,end_lane):
                 # print(hex(LogicArray(self.dut.phy_txdata.value).to_BinaryValue()))
-                ts[i].link_number = LogicArray(self.dut.phy_txdata.value)[((i*32)+8)+7:((i*32)+8)].to_BinaryValue()
-                # print(ts[i].link_number)
-                if ((ts[i].link_number==0b11110111 ) and (LogicArray(self.dut.phy_txdatak.value)[4*i+1].to_BinaryValue() == 1)):
+                ts[i].link_number = ts_bytearray[i][1]
+                # print(hex(ts[i].link_number))
+                # print(int(ts_karray[i][1]))
+                if ((ts[i].link_number==0xf7 ) and int(ts_karray[i][1]) == 1):
                     ts[i].use_link_number = 0
                 else:
                     ts[i].use_link_number = 1
 
-            await RisingEdge(self.dut.clk_i)
+                ts[i].lane_number = ts_bytearray[i][2]
+                # print(hex(ts[i].lane_number))
+                # print(int(ts_karray[i][0]))
+                if ((ts[i].lane_number == 0xf7) and int(ts_karray[i][0]) == 1):
+                    ts[i].use_lane_number = 0
+                else:
+                    ts[i].use_lane_number = 1
+                
+                ts[i].n_fts =   ts_bytearray[i][3]
 
-            for symbol_count in range(2,16,2):
-                # print(symbol_count)
-                await RisingEdge(self.dut.clk_i)
-                temp_byte =LogicArray(self.dut.phy_txdata.value)[(0*32+0)+7:(0*32+0)].to_BinaryValue()
-                # # print(hex(temp_byte))
-                # # print(bin(0x4A))
-                # # print(symbol_count)
-                # if(temp_byte == 0b01001010):
-                #     assert 1 == 0
-                if symbol_count == 2:
-                    for i in range(start_lane,end_lane):
-                        ts[i].lane_name = LogicArray(self.dut.phy_txdata.value)[(i*32+0)+8:(i*32+0)].to_BinaryValue()
-                        if ts[i].lane_number == 0b11110111 and LogicArray(self.dut.phy_txdata.value)[4*i+0].to_BinaryValue() == 0b1:
-                            ts[i].use_lane_number = 0
-                        else:
-                            ts[i].use_lane_number = 1
-                    for i in range(start_lane,end_lane):
-                        ts[i].n_fts = LogicArray(self.dut.phy_txdata.value)[(i*32+8)+7:(i*32+8)].to_BinaryValue()
 
-                if symbol_count == 4:
-                    for i in range(start_lane,end_lane):
-                        # print(repr(self.dut.phy_txdata.value)[(i*32): (i*32)+32])
-                        if(LogicArray(self.dut.phy_txdata.value)[i*32+5]._valid):
-                            ts[i].max_gen_supported= gen_t.GEN5
-                        elif(LogicArray(self.dut.phy_txdata.value)[i*32+4]._valid):
-                            ts[i].max_gen_supported= gen_t.GEN4
-                        elif(LogicArray(self.dut.phy_txdata.value)[i*32+3]._valid):
-                            ts[i].max_gen_supported= gen_t.GEN3
-                        elif(LogicArray(self.dut.phy_txdata.value)[i*32+2]._valid):
-                            ts[i].max_gen_supported= gen_t.GEN2
-                        else:
-                            ts[i].max_gen_supported= gen_t.GEN1	
+                byte_4 = LogicArray(ts_bytearray[i][4])
+                if(byte_4[5]._valid):
+                    ts[i].max_gen_supported= gen_t.GEN5
+                elif(byte_4[4]._valid):
+                    ts[i].max_gen_supported= gen_t.GEN4
+                elif(byte_4[3]._valid):
+                    ts[i].max_gen_supported= gen_t.GEN3
+                elif(byte_4[2]._valid):
+                    ts[i].max_gen_supported= gen_t.GEN2
+                else:
+                    ts[i].max_gen_supported= gen_t.GEN1
+                
+                if byte_4[6] == 0b1:
+                    ts[i].auto_speed_change = 1
+                if byte_4[7] == 0b1:
+                    ts[i].speed_change = 1
 
-                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+6] == 0b1:
-                            ts[i].auto_speed_change = 1
-                        if LogicArray(self.dut.phy_txdata.value)[(i*32)+7] == 0b1:
-                            ts[i].speed_change = 1
-                if symbol_count == 6:
-                    for i in range(start_lane,end_lane):
-                        if LogicArray(self.dut.phy_txdata.value)[(start_lane*32)+7] == 0b1:
-                            ts[i].rx_preset_hint=LogicArray(self.dut.phy_txdata.value)[(i*32+0)+2:(i*32+0)].to_BinaryValue()   
-                            ts[i].tx_preset=LogicArray(self.dut.phy_txdata.value)[(i*32+3)+3:(i*32+3)].to_BinaryValue() 
-                            ts[i].equalization_command=1  
-                # # print(hex(LogicArray(self.dut.phy_txdata.value).to_BinaryValue()))
-                if symbol_count == 10:
-                    for i in range(start_lane,end_lane):
-                        # # print(hex(LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue()))
-                        if LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() == 0b010_01010:
-                            ts[i].ts_type = ts_type_t.TS1
-                        elif(LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() ==0b010_00101):
-                            ts[i].ts_type = ts_type_t.TS2
-                        else:
-                            ...
-                            # assert 1 == 0
-                            return
+                byte_5 = LogicArray(ts_bytearray[i][5])
+
+
+                if byte_5[7] == 0b1:
+                            ts[i].rx_preset_hint = byte_5[2:0].to_BinaryValue()   
+                            ts[i].tx_preset      = byte_5[3+3:3].to_BinaryValue() 
+                            ts[i].equalization_command  =1 
+
+                byte_6 = ts_bytearray[i][6]
+                if byte_6 == 0b010_01010:
+                    ts[i].ts_type = ts_type_t.TS1
+                elif(byte_6 ==0b010_00101):
+                    ts[i].ts_type = ts_type_t.TS2
+                else:
+                    # print(hex(byte_6))
+                    ...
+                    # assert 1 == 0
+                    return
 
         elif self.dut.pipe_width_o== 32:
             # data = bytearray(self.dut.phy_txdata)
@@ -627,6 +658,8 @@ class pipe_monitor_bfm():
         # assert 1 == 0
         for i in range(start_lane, end_lane):
             ts[i].TS_gen = 0
+            # print(repr(ts[i]))
+        # print(ts)
         self.proxy.notify_tses_received(ts)
 
 
@@ -1100,6 +1133,7 @@ class pipe_monitor_bfm():
                             return
         for i in range(start_lane, end_lane):
             ts[i].TS_gen = 0
+            print(repr(ts[i]))
         self.proxy.notify_tses_received(ts)
 
     async def tx_elec_idle_and_rx_standby(self):
@@ -1163,7 +1197,7 @@ class pipe_monitor_bfm():
                 # # print("")
                 for i in range(int(128/8)-1):
                     await RisingEdge(self.dut.clk_i)
-            else:
+            elif self.linkup:
                 # # print("\n")
                 # # print("process tx data")
                 # # print(LogicArray(self.dut.phy_txdata_valid.value))
@@ -1173,11 +1207,6 @@ class pipe_monitor_bfm():
                 await self.process_tx_data_gen_1_2()
 
     async def process_tx_data_gen_1_2(self):
-        # uvm_root().logger.info(self.name + " " + "Recieving tx data")
-        # # print("Data Valid: " + str(LogicArray(self.dut.phy_txdata_valid.value)))
-        # # print("Data K: " +  str(LogicArray(self.dut.phy_txdatak.value)[0]))
-        # # print("Data : " +  str(LogicArray(self.dut.phy_txdata.value)[7:0]))
-        # assert 1 == 0 
         if  LogicArray(self.dut.phy_txdata_valid.value)[0]:
             num_idle_data = 0
             idle_descrambled = [0] * int(self.bus_data_kontrol_param + 1)
@@ -1289,8 +1318,9 @@ class pipe_monitor_bfm():
                 self.dllp_done = 1
                 end_dllp = j
                 break
-
-        for j in range(0, self.bus_data_width // (self.pipe_num_of_lanes * 8)):
+        if self.pipe_num_of_lanes() == 0:
+            return 
+        for j in range(0, self.bus_data_width // (self.pipe_num_of_lanes() * 8)):
             for i in range(j, (self.bus_data_width_param + 1) // 8, (self.bus_data_width_param + 1) // (self.pipe_num_of_lanes * 8)):
                 if i > end_dllp:
                     break
