@@ -58,6 +58,7 @@ class pipe_driver_bfm():
         fork2 = cocotb.start_soon(self.rst_i_signals())
         fork3 = cocotb.start_soon(self.detect())
         fork4 = cocotb.start_soon(self.polling())
+        # fork5 = cocotb.start_soon(self.send_data())
         await Combine(fork1,fork2,fork3,fork4)
             # self.driver_scrambler[i].lfsr_1_2 = 0x0000
 
@@ -510,6 +511,7 @@ class pipe_driver_bfm():
                     for i in range(int(width/8)):
                         Data[lane] = (Data[lane] ) | (RxData_Q[lane].get() << (8*i))
                         Character[lane] = (Character[lane]) | ((RxDataK_Q[lane].get() & 0x1) << i)
+                        self.driver_scrambler[lane],temp_scramble = scramble(self.driver_scrambler[lane], 0, lane, self.current_gen)
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
@@ -763,14 +765,16 @@ class pipe_driver_bfm():
                 for i in range(5):
                     self.data.put( dllp[i])
    
-    def send_idle_data(self):
+    async def send_idle_data(self):
+        # assert 1 == 0
         for i in range(int(self.dut.MAX_NUM_LANES.value)):
             self.data.append( 0b00000000)
             self.k_data.append(D_K_character.D)
+        await self.send_data()
 
 
     async def send_data(self):
-        while(LogicArray(self.dut.phy_powerdown.value).to_BinaryValue() != 0b00):
+        while(len(self.data) == 0):
             await RisingEdge(self.dut.clk_i)
 
     #else uvm_error("pipe_driver_bfm", "Unexpected PowerDown value at Normal Data Operation")
@@ -789,6 +793,7 @@ class pipe_driver_bfm():
         self.dut.phy_rxdata_valid.value = 0
 
     async def send_data_gen_1_2(self):  # task
+        # assert 1 == 0
         data_scrambled = Queue()
         pipe_width = 8
         pipe_max_width = 32
@@ -796,13 +801,19 @@ class pipe_driver_bfm():
         # for i in range(len(self.data)):
         #     lanenum = i
         #     lanenum = lanenum - NUM_OF_LANES
+        self.driver_scrambler = reset_lfsr(self.driver_scrambler,self.current_gen)
         for i in range(len(self.data)):
-            lanenum = i
-            lanenum = int(lanenum - int(self.dut.MAX_NUM_LANES.value) * ((lanenum / int(self.dut.MAX_NUM_LANES.value))))
+            lanenum = 0
+            # lanenum = int(lanenum - int(self.dut.MAX_NUM_LANES.value) * ((lanenum / int(self.dut.MAX_NUM_LANES.value))))
             if (self.k_data[i] == D_K_character.D):
                 temp = self.data.pop()
+                # 
                 self.driver_scrambler[lanenum],temp_scramble = scramble(self.driver_scrambler[lanenum], temp, lanenum, self.current_gen)
                 data_scrambled.put(temp_scramble)
+                print(temp_scramble)
+                print(temp)
+                print(self.driver_scrambler[lanenum].lfsr_1_2)
+                print(self.current_gen)
             elif (self.k_data[i] == D_K_character.K):
                 data_scrambled.put(self.data.pop())
 
@@ -825,16 +836,16 @@ class pipe_driver_bfm():
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char
 
-            await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
 
-        temp_data = 0x0
-        temp_char = 0x0
-        if (not (lanenum == int(self.dut.MAX_NUM_LANES.value))):
-            for j in range(int((bus_data_width) / 8)):
-                temp_data |= (temp_data << 8 ) | 0b11110111
-                temp_char |=  (temp_char  << 1) |  0b1
-        self.dut.phy_rxdata.value = temp_data
-        self.dut.phy_rxdatak.value = temp_char
+        # temp_data = 0x0
+        # temp_char = 0x0
+        # if (not (lanenum == int(self.dut.MAX_NUM_LANES.value))):
+        #     for j in range(int((bus_data_width) / 8)):
+        #         temp_data |= (temp_data << 8 ) | 0b11110111
+        #         temp_char |=  (temp_char  << 1) |  0b1
+        # self.dut.phy_rxdata.value = temp_data
+        # self.dut.phy_rxdatak.value = temp_char
 
     async def send_data_gen_3_4_5(self):  # task
         data_block_size: int = (128 * pipe_num_of_lanes) / 8

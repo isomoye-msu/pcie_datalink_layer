@@ -72,47 +72,48 @@ def descramble(scrambler, in_data, lane_num, current_gen):
 def scramble_gen_1_2 (scrambler, in_data, lane_num):
     lfsr_new = 0x00
     scrambled_data = 0x00
-    # print("input data " + str(in_data))
-    # scrambled_byte = 0
-    # print(scrambler)
-    # for bit in range(8):
-    #     lfsr_bit = (scrambler.lfsr_1_2 >> 14) ^ (scrambler.lfsr_1_2 >> 15) & 1
-    #     scrambled_bit = ((in_data >> bit) & 1) ^ lfsr_bit
-    #     scrambled_byte |= (scrambled_bit << bit)
+    print("input data " + str(in_data))
+    scrambled_byte = 0
+    print(scrambler)
+    for bit in range(8):
+        lfsr_bit = (scrambler.lfsr_1_2 >> 14) ^ (scrambler.lfsr_1_2 >> 15) & 1
+        scrambled_bit = ((in_data >> bit) & 1) ^ lfsr_bit
+        scrambled_byte |= (scrambled_bit << bit)
         
-    #     # Update the LFSR
-    #     scrambler.lfsr_1_2 = ((scrambler.lfsr_1_2 << 1) | lfsr_bit) & 0xFFFF
-    # print("output data " + str(scrambled_byte))
+        # Update the LFSR
+        scrambler.lfsr_1_2 = ((scrambler.lfsr_1_2 << 1) | lfsr_bit) & 0xFFFF
+    print("output data " + str(scrambled_byte))
 
-    # return scrambler, scrambled_byte
+    return scrambler, scrambled_byte
 
     # LFSR value after 8 serial clocks
-    for i in range(8):
-        lfsr_new |= (scrambler.lfsr_1_2 << 15) & 0b1
-        lfsr_new |= ((lfsr_new <<  1) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
-        lfsr_new |= ((lfsr_new <<  2) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
-        lfsr_new |= ((lfsr_new <<  3) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
-        lfsr_new |= ((lfsr_new <<  4) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
-        lfsr_new |= ((lfsr_new <<  5) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
-        lfsr_new |= ((lfsr_new <<  6) & 0b1) | ((scrambler.lfsr_1_2 << 5) & 0b1)
-        lfsr_new |= ((lfsr_new <<  7) & 0b1) | ((scrambler.lfsr_1_2 << 6) & 0b1)
-        lfsr_new |= ((lfsr_new <<  8) & 0b1) | ((scrambler.lfsr_1_2 << 7) & 0b1)
-        lfsr_new |= ((lfsr_new <<  9) & 0b1) | ((scrambler.lfsr_1_2 << 8) & 0b1)
-        lfsr_new |= ((lfsr_new << 10) & 0b1) | ((scrambler.lfsr_1_2 << 9) & 0b1)
-        lfsr_new |= ((lfsr_new << 11) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
-        lfsr_new |= ((lfsr_new << 12) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
-        lfsr_new |= ((lfsr_new << 13) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1)
-        lfsr_new |= ((lfsr_new << 14) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1)
-        lfsr_new |= ((lfsr_new << 15) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1)     
+    # for i in range(8):
+    #     lfsr_new |= (scrambler.lfsr_1_2 << 15) & 0b1
+    #     lfsr_new |= ((lfsr_new <<  1) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  2) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  3) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  4) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  5) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1) ^ ((scrambler.lfsr_1_2 << 15) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  6) & 0b1) | ((scrambler.lfsr_1_2 << 5) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  7) & 0b1) | ((scrambler.lfsr_1_2 << 6) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  8) & 0b1) | ((scrambler.lfsr_1_2 << 7) & 0b1)
+    #     lfsr_new |= ((lfsr_new <<  9) & 0b1) | ((scrambler.lfsr_1_2 << 8) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 10) & 0b1) | ((scrambler.lfsr_1_2 << 9) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 11) & 0b1) | ((scrambler.lfsr_1_2 << 0) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 12) & 0b1) | ((scrambler.lfsr_1_2 << 1) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 13) & 0b1) | ((scrambler.lfsr_1_2 << 2) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 14) & 0b1) | ((scrambler.lfsr_1_2 << 3) & 0b1)
+    #     lfsr_new |= ((lfsr_new << 15) & 0b1) | ((scrambler.lfsr_1_2 << 4) & 0b1)     
 
-        # Generation of Scrambled Data
-        scrambled_data = (scrambled_data << i) | (((scrambler.lfsr_1_2 << 15) & 0b1) ^ ((in_data >> i) & 0b1) )<< i
-        # print("scrambler")
-        # print(hex(in_data))
-        # print(hex(scrambled_data))
-        # assert 1 == 0
-    scrambler.lfsr_1_2  = lfsr_new
-    return scrambler,scrambled_data
+    #     # Generation of Scrambled Data
+    #     # scrambled_data = (scrambled_data << i) | (((scrambler.lfsr_1_2 << 15) & 0b1) ^ ((in_data >> i) & 0b1) )<< i
+    # scrambled_data = scrambler.lfsr_1_2 ^ in_data
+    #     # print("scrambler")
+    #     # print(hex(in_data))
+    #     # print(hex(scrambled_data))
+    #     # assert 1 == 0
+    # scrambler.lfsr_1_2  = lfsr_new
+    # return scrambler,scrambled_data
 
 def scramble_gen_3_4_5 (scrambler, unscrambled_data, lane_num):
     scrambled_data = scramble_data_gen_3(scrambler.lfsr_gen_3,unscrambled_data)

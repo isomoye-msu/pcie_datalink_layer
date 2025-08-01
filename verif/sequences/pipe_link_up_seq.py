@@ -449,7 +449,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
         pipe_seq_item_h.randomize()
         num_of_detected_ts1s_with_same_link_number = []
-        two_ts1s_with_same_link_number_detected = 0
         pipe_base_seq
         pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_TSES
         uvm_root().logger.info(self.name + " Started config_linkwidth_start_state_downstream")
@@ -465,16 +464,16 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             num_of_detected_ts1s_with_same_link_number.append(0)
         
         # S ts1s with the generated link number until two ts1s are received with the same link number
-        two_ts1s_with_same_link_number_detected = 0
+        two_ts1s_with_same_link_number_detected = Event()
 
         async def items():
-            while two_ts1s_with_same_link_number_detected == 0:
+            while not two_ts1s_with_same_link_number_detected.is_set():
                 await self.start_item(pipe_seq_item_h)
                 await self.finish_item(pipe_seq_item_h)
         
         async def count_ts1():
-            two_ts1s_with_same_link_number_detected = 0
-            while  two_ts1s_with_same_link_number_detected == 0:
+            # two_ts1s_with_same_link_number_detected = 0
+            while not two_ts1s_with_same_link_number_detected.is_set():
                 await self.pipe_agent_config.detected_tses_e.wait()
                 tses_received = self.pipe_agent_config.tses_received
                 self.pipe_agent_config.detected_tses_e.clear()
@@ -492,12 +491,12 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                 # Check if any lane detected 2 cosecutive ts1s with the same link number
                 for i in range(len(num_of_detected_ts1s_with_same_link_number)):
                     if(num_of_detected_ts1s_with_same_link_number[i] == 2):
-                        two_ts1s_with_same_link_number_detected = 1
+                        two_ts1s_with_same_link_number_detected.set()
                     #uvm_root().logger.info(self.name + "2 Consecutive TS1s with Link no. that matches transmitted Link number are Detected")
         # assert 1 == 0
         fork1 = cocotb.start_soon(items())
         fork2 = cocotb.start_soon(count_ts1())
-        await First(fork1 ,fork2)
+        await Combine(fork1 ,fork2)
         uvm_root().logger.info(self.name + " Finished config_linkwidth_start_state_downstream")
         
 
@@ -506,7 +505,6 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
         pipe_seq_item_h.randomize()
         num_of_detected_ts1s_with_same_link_number = []
-        two_ts1s_with_same_link_number_detected = 0
         pipe_base_seq
         pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_TSES
         uvm_root().logger.info(self.name + " Started config_linkwidth_start_state_downstream")
@@ -523,16 +521,15 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             num_of_detected_ts1s_with_same_link_number.append(0)
         
         # S ts1s with the generated link number until two ts1s are received with the same link number
-        two_ts1s_with_same_link_number_detected = 0
+        self.two_ts1s_with_same_link_number_detected = Event()
 
-        async def items():
-            while two_ts1s_with_same_link_number_detected == 0:
+        async def send_tses():
+            while  not self.two_ts1s_with_same_link_number_detected.is_set():
                 await self.start_item(pipe_seq_item_h)
                 await self.finish_item(pipe_seq_item_h)
         
         async def count_ts1():
-            two_ts1s_with_same_link_number_detected = 0
-            while  two_ts1s_with_same_link_number_detected == 0:
+            while  not self.two_ts1s_with_same_link_number_detected.is_set():
                 await self.pipe_agent_config.detected_tses_e.wait()
                 tses_received = self.pipe_agent_config.tses_received
                 self.pipe_agent_config.detected_tses_e.clear()
@@ -547,17 +544,18 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                         print(tses_received[i].ts_type)
                         print(f"self link number : {hex(self.link_number)}")
                         print(tses_received[i].use_link_number)
-                        print(tses_received[i].link_number)
+                        print(hex(tses_received[i].link_number))
 
                 # Check if any lane detected 2 cosecutive ts1s with the same link number
                 for i in range(len(num_of_detected_ts1s_with_same_link_number)):
                     if(num_of_detected_ts1s_with_same_link_number[i] == 2):
-                        two_ts1s_with_same_link_number_detected = 1
+                        self.two_ts1s_with_same_link_number_detected.set()
+                        # assert 1 == 0
                     #uvm_root().logger.info(self.name + "2 Consecutive TS1s with Link no. that matches transmitted Link number are Detected")
                 
-        fork1 = cocotb.start_soon(items())
+        fork1 = cocotb.start_soon(send_tses())
         fork2 = cocotb.start_soon(count_ts1())
-        await First(fork1 ,fork2)
+        await Combine(fork1 ,fork2)
         uvm_root().logger.info(self.name + " Finished config_linkwidth_accept_state_downstream")
 
     async def config_lanenum_start_state_downstream(self):
@@ -590,10 +588,13 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         # S ts1s with the generated link number until two ts1s are received with the same link number
         two_ts1s_with_same_link_number_detected = Event()
 
-        async def items():
-            while not two_ts1s_with_same_link_number_detected.is_set():
+        async def send_tses():
+            # for i in range(1):
+            while  not two_ts1s_with_same_link_number_detected.is_set():
                 await self.start_item(pipe_seq_item_h)
                 await self.finish_item(pipe_seq_item_h)
+                # await self.finish_item(pipe_seq_item_h)
+                # await self.get_response(pipe_seq_item_h)
         
         async def count_ts1():
             two_ts1s_with_same_link_number_detected.clear()
@@ -621,7 +622,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                         two_ts1s_with_same_link_number_detected.set()
                     #uvm_root().logger.info(self.name + "2 Consecutive TS1s with Link no. that matches transmitted Link number are Detected")
                 
-        fork1 = cocotb.start_soon(items())
+        fork1 = cocotb.start_soon(send_tses())
         fork2 = cocotb.start_soon(count_ts1())
         await Combine(fork1 ,fork2)
         # assert 1 == 0
@@ -648,10 +649,15 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         # Transmit 16 TS2s until 8 consecutive TS2s are received
         self.eight_consecutive_ts2s_detected = Event()
 
+        # for i in range(int(self.dut.MAX_NUM_LANES.value)):
+        #     self.tses_sent[i].ts_type = ts_type_t.TS2
+
+
         async def items():
-            while not self.eight_consecutive_ts2s_detected.is_set():
-                await self.start_item(pipe_seq_item_h)
-                await self.finish_item(pipe_seq_item_h)
+            for i in range(2):   
+                while (not self.eight_consecutive_ts2s_detected.is_set()):  
+                    await self.start_item(pipe_seq_item_h)
+                    await self.finish_item(pipe_seq_item_h)
                 if(flag.is_set()):
                     for i in range(int(self.dut.MAX_NUM_LANES.value)):
                         self.tses_sent[i].ts_type = ts_type_t.TS2
@@ -690,10 +696,12 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         await Combine(fork1 ,fork2)
         # for i in range(int(self.dut.MAX_NUM_LANES.value)):
         #     self.tses_sent[i].ts_type = ts_type_t.TS2
-        self.eight_consecutive_ts2s_detected.clear()
+        # self.eight_consecutive_ts2s_detected.clear()
         # fork1 = cocotb.start_soon(items())
-        # fork2 = cocotb.start_soon(count_ts2())
-        await Combine(fork1 ,fork2)
+        # fork2 = cocotb.start_soon(count_ts2()) 
+        # await Combine(fork1 ,fork2)
+        # for i in range(int(self.dut.MAX_NUM_LANES.value)):
+        #     self.tses_sent[i].ts_type = ts_type_t.TS1
         uvm_root().logger.info(self.name + "Finished config_complete_state_downstream")
         
 
@@ -710,7 +718,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         one_idle_data_received.clear()
 
         # Transmit 16 idle data until 8 consecutive idle data are received
-        eight_consecutive_idle_data_detected = 0
+        eight_consecutive_idle_data_detected = Event()
 
         async def idle_recieved():
             nonlocal one_idle_data_received
@@ -730,8 +738,10 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                 await self.finish_item(pipe_seq_item_h)
             
         async def idle_send():
-            await self.start_item(pipe_seq_item_h)
-            await self.finish_item(pipe_seq_item_h)
+            ...
+            while not eight_consecutive_idle_data_detected.is_set():
+                await self.start_item(pipe_seq_item_h)
+                await self.finish_item(pipe_seq_item_h)
             # nonlocal one_idle_data_received
             # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
             # await one_idle_data_received.wait()
@@ -751,9 +761,9 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         
 
         async def idle_count():
-            nonlocal eight_consecutive_idle_data_detected
+            # nonlocal eight_consecutive_idle_data_detected
             nonlocal num_of_idle_data_received
-            while eight_consecutive_idle_data_detected == 0:            
+            while not eight_consecutive_idle_data_detected.is_set():         
                 await self.pipe_agent_config.idle_data_detected_e.wait()
                 num_of_idle_data_received += 1
                 uvm_root().logger.info(self.name + " idle data received")
@@ -761,7 +771,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
 
                 # Check if 8 consecutive idle data detected
                 if(num_of_idle_data_received == 8):                
-                    eight_consecutive_idle_data_detected = 1
+                    eight_consecutive_idle_data_detected.set()
                     uvm_root().logger.info(self.name + " 8 Consecutive Idle Data are Detected")
             
         

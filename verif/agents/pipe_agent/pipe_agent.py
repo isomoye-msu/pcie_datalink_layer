@@ -482,7 +482,7 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                     # assert 1 == 0
                     await self.pipe_driver_bfm.send_data()
                 case pipe_operation_t.IDLE_DATA_TRANSFER: 
-                    self.pipe_driver_bfm.send_idle_data()
+                    await self.pipe_driver_bfm.send_idle_data()
                 case pipe_operation_t.TLP_TRANSFER: 
                     await self.pipe_driver_bfm.send_tlp(pipe_seq_item_h.tlp)
                 case pipe_operation_t.DLLP_TRANSFER: 
@@ -509,7 +509,7 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                     assert(self.pipe_driver_bfm.eval_feedback_was_asserted == 1)
                     # "Link eval feedback wasn't asserted"      
             self.seq_item_port.item_done()
-            # uvm_info(get_name(), "Exit pipe_driver run_phase", UVM_MEDIUM)
+            uvm_root().logger.info(f"Exit pipe_driver run_phase: {pipe_seq_item_h.pipe_operation}")
 
 
 class pipe_agent(uvm_agent):

@@ -1173,13 +1173,22 @@ class pipe_monitor_bfm():
     async def recieve_data(self):
         uvm_root().logger.info(self.name + " " + "Starting Data Recieve")
         width = 8
+        # flag = 0
         while True:
-            if LogicArray(self.dut.phy_txdata_valid.value)[0] == 0b1:
+            flag = 0
+            while flag == 0:
+                for lane in range(int(self.dut.MAX_NUM_LANES)):
+                    if LogicArray(self.dut.phy_txdata_valid.value)[lane]:
+                        flag = 1
                 await RisingEdge(self.dut.clk_i)
-            else:
-                while not all( LogicArray(self.dut.phy_txdata_valid.value)[i] for i in range(int(self.dut.MAX_NUM_LANES))):
-                    await RisingEdge(self.dut.clk_i)
-                await RisingEdge(self.dut.clk_i)
+
+
+            # if LogicArray(self.dut.phy_txdata_valid.value)[0] == 0b1:
+            #     await RisingEdge(self.dut.clk_i)
+            # else:
+            #     while not all( LogicArray(self.dut.phy_txdata_valid.value)[i] for i in range(int(self.dut.MAX_NUM_LANES))):
+            #         await RisingEdge(self.dut.clk_i)
+            #     await RisingEdge(self.dut.clk_i)
                     # for i in range(int(self.dut.MAX_NUM_LANES)):
                     #     # print(LogicArray(self.dut.phy_txdata_valid.value)[i])
                     # # print(LogicArray(self.dut.phy_txdata_valid.value))
@@ -1189,7 +1198,7 @@ class pipe_monitor_bfm():
             # # print(LogicArray(self.dut.phy_txdatak.value)[0])
             # # print(LogicArray(self.dut.phy_txdata.value)[7:0])
             # # print("\n")
-
+            
             if LogicArray(self.dut.phy_txdatak.value)[0] and  LogicArray(self.dut.phy_txdata.value)[7:0].to_BinaryValue() == COM:
                 # # print(LogicArray(self.dut.phy_txdata_valid.value))
                 # # print(LogicArray(self.dut.phy_txdatak.value)[0])
