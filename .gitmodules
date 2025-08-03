@@ -7,3 +7,6 @@
 [submodule "async_fifo"]
 	path = async_fifo
 	url = https://github.com/isomoye-msu/async_fifo.git
+[submodule "src/async_fifo"]
+	path = src/async_fifo
+	url = https://github.com/isomoye-msu/async_fifo.git
