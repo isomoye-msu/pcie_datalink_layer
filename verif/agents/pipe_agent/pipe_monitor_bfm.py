@@ -1174,88 +1174,76 @@ class pipe_monitor_bfm():
 
         self.proxy.DUT_polling_state_start()
 
-    async def recieve_data(self):
+    async def recieve_data(self, start_lane = 0 , end_lane = 1):
         uvm_root().logger.info(self.name + " " + "Starting Data Recieve")
         width = 8
         # flag = 0
-        while True:
-            flag = 0
-            while flag == 0:
-                for lane in range(int(self.dut.MAX_NUM_LANES)):
-                    if LogicArray(self.dut.phy_txdata_valid.value)[lane]:
-                        flag = 1
-                await RisingEdge(self.dut.clk_i)
+        bytes_stored = []
+        datak_stored = []
+        while (1):
+            data = self.dut.phy_txdata.value
+            datak = self.dut.phy_txdatak.value
+            dataValid = self.dut.phy_txdata_valid.value
+            comma_idx = 0
+            reset_next_byte = 0
+            # # print(bytes(data))
+            # # print(data)
+            # # print(data)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            data = self.dut.phy_txdata.value
+            # datak = self.dut.phy_txdatak.value
+            # dataValid = self.dut.phy_txdata_valid.value
+            if(dataValid):
+                for lane in (range(int(end_lane-start_lane))):
+                    for byte_ in range(int((int(self.dut.pipe_width_o)/8))):
+                        if(reset_next_byte):
+                            ...
+                            temp_scramble = self.driver_scrambler[0].scramble_byte(0x0)
+                            # self.driver_scrambler[lane].reset_lfsr(self.current_gen)
+                        else:
+                            temp_byte = LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue()
+                            temp_scramble = self.driver_scrambler[0].scramble_byte(temp_byte)
+                            print(f"monitor pure byte: {hex(temp_byte)} ")
+                            print(f"monitor descrambled byte: {hex(temp_scramble)} ")
+                            bytes_stored.append(temp_scramble)
+                            datak_stored.append(LogicArray(datak)[(4*lane)+byte_])
+                            # if(LogicArray(data).to_BinaryValue() == 0xBE8D):
+                            #     assert 1 == 0
+                        if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
+                        and LogicArray(datak)[(4*lane)+byte_] ):
+                            reset_next_byte = 1
+                            self.driver_scrambler[0].reset_lfsr(self.current_gen)
+                            bytes_stored = []
+                            datak_stored = []
 
 
-            # if LogicArray(self.dut.phy_txdata_valid.value)[0] == 0b1:
-            #     await RisingEdge(self.dut.clk_i)
-            # else:
-            #     while not all( LogicArray(self.dut.phy_txdata_valid.value)[i] for i in range(int(self.dut.MAX_NUM_LANES))):
-            #         await RisingEdge(self.dut.clk_i)
-            #     await RisingEdge(self.dut.clk_i)
-                    # for i in range(int(self.dut.MAX_NUM_LANES)):
-                    #     # print(LogicArray(self.dut.phy_txdata_valid.value)[i])
-                    # # print(LogicArray(self.dut.phy_txdata_valid.value))
-                    # # print(LogicArray(self.dut.phy_txdata.value)[7:0])
-            # assert 1 == 0
-            # # print(LogicArray(self.dut.phy_txdata_valid.value))
-            # # print(LogicArray(self.dut.phy_txdatak.value)[0])
-            # # print(LogicArray(self.dut.phy_txdata.value)[7:0])
-            # # print("\n")
-            
-            if LogicArray(self.dut.phy_txdatak.value)[0] and  LogicArray(self.dut.phy_txdata.value)[7:0].to_BinaryValue() == COM:
-                # # print(LogicArray(self.dut.phy_txdata_valid.value))
-                # # print(LogicArray(self.dut.phy_txdatak.value)[0])
-                # # print(LogicArray(self.dut.phy_txdata.value)[7:0])
-                # # print("")
-                for i in range(int(128/8)-1):
-                    await RisingEdge(self.dut.clk_i)
-            elif self.linkup:
-                # # print("\n")
-                # # print("process tx data")
-                # # print(LogicArray(self.dut.phy_txdata_valid.value))
-                # # print(LogicArray(self.dut.phy_txdatak.value)[0])
-                # # print(LogicArray(self.dut.phy_txdata.value)[7:0])
-                # # print("\n")
-                await self.process_tx_data_gen_1_2()
+            await RisingEdge(self.dut.clk_i)
+            if(len(bytes_stored)) >= 4:
+                await self.process_tx_data_gen_1_2(bytes_stored,datak_stored)
+                datak_stored = []
+                bytes_stored = []
 
-    async def process_tx_data_gen_1_2(self):
-        if  LogicArray(self.dut.phy_txdata_valid.value)[0]:
-            num_idle_data = 0
-            idle_descrambled = [0] * int(self.bus_data_kontrol_param + 1)
-            for i in range(int(self.bus_data_kontrol_param) + 1):
-                # # print(i)
-                if (( LogicArray(self.dut.phy_txdatak.value[i]) and LogicArray(self.dut.phy_txdata.value)[(8 * i) + 7:(8 * i)].to_BinaryValue() == STP_gen_1_2) or self.tlp_done == 0):
-                    self.start_tlp = i
-                    # print("is TLP")
-                    await self.receive_tlp_gen_1_2()
-                elif (( LogicArray(self.dut.phy_txdatak.value) and LogicArray(self.dut.phy_txdata.value)[(8 * i)+7:(8 * i)].to_BinaryValue() == SDP_gen_1_2) or self.dllp_done == 0):
-                    self.start_dllp = i
-                    # print("is DLLP")
-                    await self.receive_dllp_gen_1_2()
-                elif  not LogicArray(self.dut.phy_txdatak.value)[i]:
-                    # uvm_root().logger.info(self.name + " " + "Recieving non tlp - non dllp data")
-                    lanenum = int(i / (self.pipe_max_width / 8.0))
-                    temp_value = LogicArray(self.dut.phy_txdata.value)[(8 * i) + 7:(8 * i)].to_BinaryValue()
-                    if ((i - (int(self.get_width()) / 8) - 1) % 4) == 0:
-                        # # print(temp_value)
-                        # # print(lanenum)
-                        # # print(int(self.get_width()))
-                        self.driver_scrambler[lanenum],idle_descrambled[i] = scramble(self.driver_scrambler[lanenum], temp_value, lanenum, self.current_gen)
-                        # # print(hex(idle_descrambled[i]))
-                        # assert 1 == 0
-                        # idle_descrambled[i] = self.descramble(self.monitor_tx_scrambler, temp_value, lanenum, self.current_gen)
-                    else:
-                        idle_descrambled[i] = 0b11111111
-                    # # print("temp_value " + str(temp_value))
-                    # # print("idle descrambled " + str(idle_descrambled[i]))
-                    if idle_descrambled[i] == 0x00:
-                        num_idle_data += 1
-                        # assert 1 == 0
-                    if num_idle_data == (int(self.pipe_num_of_lanes()) * self.get_width()) / 8:
-                        self.proxy.notify_idle_data_received()
-                        # assert 1 == 0
-                        num_idle_data = 0
+    async def process_tx_data_gen_1_2(self,data,data_k):
+        num_idle_data = 0
+        for i in range(len(data)):
+            # # print(i)
+            # if ((data[i] == STP_gen_1_2) and self.tlp_done == 0):
+            #     self.start_tlp = i
+            #     # print("is TLP")
+            #     await self.receive_tlp_gen_1_2()
+            # elif ((data[i] == SDP_gen_1_2) and self.dllp_done == 0):
+            #     self.start_dllp = i
+            #     # print("is DLLP")
+            #     await self.receive_dllp_gen_1_2()
+            if  not data_k[i]:
+                if data[i] == 0x00:
+                    num_idle_data += 1
+
+                    # assert 1 == 0
+                if (num_idle_data >= 4):
+                    self.proxy.notify_idle_data_received()
+                    # assert 1 == 0
+                    num_idle_data = 0
 
     def pipe_num_of_lanes(self):
         return self.dut.num_active_lanes_i.value
