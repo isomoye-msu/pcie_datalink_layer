@@ -10,3 +10,6 @@
 [submodule "src/async_fifo"]
 	path = src/async_fifo
 	url = https://github.com/isomoye-msu/async_fifo.git
+[submodule "tb/gtxe2_gpl"]
+	path = tb/gtxe2_gpl
+	url = git@github.com:Elphel/gtxe2_gpl.git
