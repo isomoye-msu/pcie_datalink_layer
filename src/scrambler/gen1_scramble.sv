@@ -136,10 +136,10 @@ module gen1_scramble
 
 
         //handle case where lfsr out is reset needs to be reset at next
-        if ((Q.scramble_reset[byte_idx])
-         && (byte_idx == 8'd1)/*(pipe_width_i >> 3)-1)*/) begin
-          D.lfsr_in = lfsr_out[byte_idx];
-        end
+        // if ((Q.scramble_reset[byte_idx])
+        //  && (byte_idx == 8'd1)/*(pipe_width_i >> 3)-1)*/) begin
+        //   D.lfsr_in = lfsr_out[byte_idx];
+        // end
         if (Q.skp_os[byte_idx] != '0) begin
           //skip scrambler advance
           D.lfsr_out = Q.lfsr_out;
@@ -168,31 +168,29 @@ module gen1_scramble
           end
           // D.disable_scrambling[byte_idx] = '0;
           // D.stop_scrambling              = '1;
-          D.byte_cnt = '0;
           //check for end of ordered set
           for (int idx = 0; idx < 4; idx++) begin
             if (idx >= byte_idx && (idx < (pipe_width_i >> 3)) && (flag == '0)) begin
+              D.byte_cnt = '0;
               D.disable_scrambling[idx] = '0;
               D.stop_scrambling[idx] = '1;
             end
           end
         end  //special case where we know that the very next byte is unscrambled
-        // else if ((Q.byte_cnt + byte_idx) >= 32'd16) begin
+        // else if ((Q.byte_cnt + (byte_idx + 1)) > 32'd14) begin
         //   logic flag;
         //   flag = '0;
-
         //   //check to see if previous special k is flag
         //   for (int idx = 0; idx < 4; idx++) begin
-        //     if (((idx < byte_idx) && idx < (pipe_width_i >> 3)) &&
+        //     if (((idx <= byte_idx) && idx < (pipe_width_i >> 3)) &&
         //     (Q.data_k[0][idx] && Q.data[0][idx*8+:8] == COM)) begin
         //       flag = '1;
         //     end
         //   end
-
-
         //   for (int idx = 0; idx < 4; idx++) begin
         //     if (idx >= byte_idx && (idx < (pipe_width_i >> 3)) && (flag == '0)) begin
-        //       D.disable_scrambling[idx] = '0;
+        //       D.byte_cnt = '0;
+        //       // D.disable_scrambling[idx] = '0;
         //       D.stop_scrambling[idx] = '1;
         //     end
         //   end
@@ -214,8 +212,8 @@ module gen1_scramble
           end
           //check if comma
           if (Q.data[1][byte_idx*8+:8] == COM) begin
-            D.scramble_reset[byte_idx] = '1;
-            D.byte_cnt                 = (pipe_width_i >> 3) - byte_idx;
+            D.scramble_reset[byte_idx+1] = '1;
+            D.byte_cnt = (pipe_width_i >> 3) - (byte_idx);
             for (int d_idx = 0; d_idx < 4; d_idx++) begin
               if (d_idx >= byte_idx) begin
                 D.disable_scrambling[d_idx] = '1;

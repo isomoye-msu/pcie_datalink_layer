@@ -93,10 +93,8 @@ class pipe_monitor_bfm():
         cocotb.start_soon(self.tx_elec_idle_and_rx_standby())
         # cocotb.start_soon(self.receive_ts())
 
-        # for i in range(int(self.dut.MAX_NUM_LANES)):
-        #     self.driver_scrambler.append(scrambler_s())
-            
-        self.driver_scrambler = reset_lfsr(self.driver_scrambler, self.current_gen)
+        for i in range(int(self.dut.MAX_NUM_LANES)):
+            self.driver_scrambler[i].reset_lfsr(self.current_gen)
 
 
 
@@ -225,7 +223,8 @@ class pipe_monitor_bfm():
     async def receive_ts(self, ts, start_lane = 0 , end_lane = 0):
         if self.dut.pipe_width_o== 16:
             await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
-            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
 
             ts.link_number = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]
             for symbol_count in range(2,16,2):
@@ -254,7 +253,8 @@ class pipe_monitor_bfm():
 
         elif self.dut.pipe_width_o== 32:
             await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
-            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             ts.link_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]  #link number
             ts.lane_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0):(start_lane*32+0)+8]  # lane number
             ts.n_fts=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+24):(start_lane*32+24)+8]  # number of fast training sequnces
@@ -281,7 +281,8 @@ class pipe_monitor_bfm():
         else:
             # 8 bit pipe paralel interface
             await LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8] == 0b101_11100
-            reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             for symbol_count in range(1,16):
                 await RisingEdge(self.dut.clk_i)
                 if symbol_count == 1:
@@ -314,7 +315,8 @@ class pipe_monitor_bfm():
             await FallingEdge(self.dut.rst_i)
             await RisingEdge(self.dut.clk_i)
 
-            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             
             await RisingEdge(self.dut.rst_i)
             await RisingEdge(self.dut.clk_i)
@@ -446,7 +448,8 @@ class pipe_monitor_bfm():
                 assert LogicArray(self.dut.phy_rxstatus.value)[(i*3)+2 : 
                 (i*3)]._value== LogicArray(0b000,range = (2,'downto',0))._value
 
-            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             # print(ts_bytearray[0])
             # for b in ts_bytearray[0]:
             #     print(hex(b))
@@ -977,7 +980,8 @@ class pipe_monitor_bfm():
             for i in range(start_lane,end_lane):
                 assert self.dut.phy_rxstatus[(i*3) : (i*3)+3]==0b000
 
-            self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler,self.current_gen)
+            for i in range(int(self.dut.MAX_NUM_LANES)):
+                self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
 
             for i in range(start_lane,end_lane):
                 # print(LogicArray(self.dut.phy_txdata.value))

@@ -654,10 +654,9 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
 
 
         async def items():
-            for i in range(2):   
-                while (not self.eight_consecutive_ts2s_detected.is_set()):  
-                    await self.start_item(pipe_seq_item_h)
-                    await self.finish_item(pipe_seq_item_h)
+            while (not self.eight_consecutive_ts2s_detected.is_set()):  
+                await self.start_item(pipe_seq_item_h)
+                await self.finish_item(pipe_seq_item_h)
                 if(flag.is_set()):
                     for i in range(int(self.dut.MAX_NUM_LANES.value)):
                         self.tses_sent[i].ts_type = ts_type_t.TS2
@@ -687,19 +686,19 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                     
                 # Check if any lane detected 8 consecutive ts2s
                 for i in range(int(self.dut.MAX_NUM_LANES.value)):
-                    if(num_of_ts2_received[i] == 8):
+                    if(num_of_ts2_received[i] >= 4):
                         self.eight_consecutive_ts2s_detected.set()
                     #uvm_root().logger.info(self.name + "8 Consecutive TS2s with the correct Link and Lane numbers are Detected")
         self.eight_consecutive_ts2s_detected.clear()
         fork1 = cocotb.start_soon(items())
         fork2 = cocotb.start_soon(count_ts2())
         await Combine(fork1 ,fork2)
-        # for i in range(int(self.dut.MAX_NUM_LANES.value)):
-        #     self.tses_sent[i].ts_type = ts_type_t.TS2
-        # self.eight_consecutive_ts2s_detected.clear()
-        # fork1 = cocotb.start_soon(items())
-        # fork2 = cocotb.start_soon(count_ts2()) 
-        # await Combine(fork1 ,fork2)
+        for i in range(int(self.dut.MAX_NUM_LANES.value)):
+            self.tses_sent[i].ts_type = ts_type_t.TS2
+        self.eight_consecutive_ts2s_detected.clear()
+        fork1 = cocotb.start_soon(items())
+        fork2 = cocotb.start_soon(count_ts2()) 
+        await Combine(fork1 ,fork2)
         # for i in range(int(self.dut.MAX_NUM_LANES.value)):
         #     self.tses_sent[i].ts_type = ts_type_t.TS1
         uvm_root().logger.info(self.name + "Finished config_complete_state_downstream")

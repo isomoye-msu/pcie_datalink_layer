@@ -97,7 +97,9 @@ class pipe_driver_bfm():
             self.dut.phy_phystatus.value[i] = 0x0
         await RisingEdge(self.dut.clk_i)
         
-        self.driver_scrambler = reset_lfsr(self.driver_scrambler,self.current_gen)
+
+        for i in range(NUM_OF_LANES):
+            self.driver_scrambler[i].reset_lfsr(self.current_gen)
         
         # self.dut.rst_i_n.value = 0
         # self.dut.A.value = 0
@@ -403,7 +405,7 @@ class pipe_driver_bfm():
             phy_rxdata_valid |= 0x1 << i
         self.dut.phy_rxdata_valid.value = phy_rxdata_valid
         
-        self.driver_scrambler = reset_lfsr(self.driver_scrambler, self.current_gen)
+        self.driver_scrambler[0].reset_lfsr(self.current_gen)
 
         RxData_Q,RxDataK_Q = self.ts_symbols_maker(ts)
         if (self.current_gen.value <= gen_t.GEN2.value):
@@ -494,13 +496,18 @@ class pipe_driver_bfm():
             # RxValid[i] = 1
         self.dut.phy_rxdata_valid.value = phy_rxdata_valid
         
-        self.driver_scrambler = reset_lfsr(self.driver_scrambler, self.current_gen)
+        for i in range(self.dut.MAX_NUM_LANES.value):
+            self.driver_scrambler[i].reset_lfsr(self.current_gen)
 
         uvm_root().logger.info(self.name + " " + "sending tses")
         if (self.current_gen.value <= gen_t.GEN2.value):
             for i in range(start_lane,_lane):
                 RxData_Q[i],RxDataK_Q[i] = self.ts_symbols_maker(ts[i])
-
+            self.driver_scrambler[0].reset_lfsr(self.current_gen)
+            byte = 0
+            # for i in range(12):
+            #     temp_scramble = self.driver_scrambler[0].scramble_byte(0x00)
+            first = 1
             while not RxData_Q[0].empty():
                 self.dut.phy_rxdata.value = 0
                 self.dut.phy_rxdatak.value = 0
@@ -509,9 +516,15 @@ class pipe_driver_bfm():
                 # Stuffing the Data and characters deping on the number of Bytes sent per clock on each lane
                 for lane in range(start_lane,_lane):
                     for i in range(int(width/8)):
-                        Data[lane] = (Data[lane] ) | (RxData_Q[lane].get() << (8*i))
+                        temp_byte = RxData_Q[lane].get()
+                        Data[lane] = (Data[lane] ) | (temp_byte << (8*i))
                         Character[lane] = (Character[lane]) | ((RxDataK_Q[lane].get() & 0x1) << i)
-                        self.driver_scrambler[lane],temp_scramble = scramble(self.driver_scrambler[lane], 0, lane, self.current_gen)
+                        #reset scrambler means that the first output is FF so skip on sending COMMA
+                        # temp_scramble = self.driver_scrambler[lane].scramble_byte(temp_byte)
+                        if first ==1:
+                            first = 0
+                        else:
+                            temp_scramble = self.driver_scrambler[lane].scramble_byte(temp_byte)
                 temp_data = 0x0
                 temp_char = 0x0
                 for i in range(start_lane,_lane):
@@ -768,8 +781,9 @@ class pipe_driver_bfm():
     async def send_idle_data(self):
         # assert 1 == 0
         for i in range(int(self.dut.MAX_NUM_LANES.value)):
-            self.data.append( 0b00000000)
-            self.k_data.append(D_K_character.D)
+            for j in range(4):
+                self.data.append( 0x00)
+                self.k_data.append(D_K_character.D)
         await self.send_data()
 
 
@@ -792,34 +806,40 @@ class pipe_driver_bfm():
         # for i in range(NUM_OF_LANES):
         self.dut.phy_rxdata_valid.value = 0
 
-    async def send_data_gen_1_2(self):  # task
+    async def send_data_gen_1_2(self, start_lane = 0,  _lane = int(cocotb.top.MAX_NUM_LANES)):  # task
         # assert 1 == 0
-        data_scrambled = Queue()
-        pipe_width = 8
+        data_scrambled = []
+        pipe_width = self.get_width()
         pipe_max_width = 32
         bus_data_width = (int(self.dut.MAX_NUM_LANES.value) * pipe_width)
         # for i in range(len(self.data)):
         #     lanenum = i
         #     lanenum = lanenum - NUM_OF_LANES
-        self.driver_scrambler = reset_lfsr(self.driver_scrambler,self.current_gen)
+        # self.driver_scrambler[0].reset_lfsr(self.current_gen)
+        # input_data =  bytes([0x00, 0x00, 0x00, 0x00])
+        # out_data = self.driver_scrambler[0].scramble_data(input_data)
+        # print(f"output data : {out_data}")
+        # temp_scramble = self.driver_scrambler[0].scramble_data(self.data)
+        # for b in temp_scramble:
+        #     print(hex(b))
         for i in range(len(self.data)):
             lanenum = 0
             # lanenum = int(lanenum - int(self.dut.MAX_NUM_LANES.value) * ((lanenum / int(self.dut.MAX_NUM_LANES.value))))
             if (self.k_data[i] == D_K_character.D):
                 temp = self.data.pop()
-                # 
-                self.driver_scrambler[lanenum],temp_scramble = scramble(self.driver_scrambler[lanenum], temp, lanenum, self.current_gen)
-                data_scrambled.put(temp_scramble)
-                print(temp_scramble)
-                print(temp)
-                print(self.driver_scrambler[lanenum].lfsr_1_2)
-                print(self.current_gen)
+                print(f"scrambler state: {hex(self.driver_scrambler[lanenum].get_scrambler_state())}")
+                temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
+                data_scrambled.append(temp_scramble)
+                print(hex(temp_scramble))
+                # print(self.driver_scrambler[lanenum].lfsr_1_2)
+                # print(self.current_gen)
             elif (self.k_data[i] == D_K_character.K):
-                data_scrambled.put(self.data.pop())
-
+                data_scrambled.append[self.data.pop()]
+        # assert 1 == 0
         num_lanes = int(self.dut.num_active_lanes_i)
         
-        while not data_scrambled.empty():
+        bytes_read = 0
+        while bytes_read < len(data_scrambled):
             # self.dut.phy_rxdata.value = 0
             # self.dut.phy_rxdatak.value = 0
             Data = [0x0] 
@@ -827,16 +847,26 @@ class pipe_driver_bfm():
             temp_data = 0x0
             temp_char = 0x0
 
-            for i in range(int(num_lanes)):
-                # # print(Data[i])
-                temp_k = self.k_data[i] == D_K_character.K
-                temp_data |= (temp_data << 8) | (data_scrambled.get() << (pipe_max_width*i))
-                temp_char |=  (temp_char << 1) | (int(temp_k) & 0x1)
-
+            for lane in range(start_lane,_lane):
+                for i in range(int(pipe_width/8)):
+                    temp_byte = data_scrambled[bytes_read]
+                    Data[lane] = (Data[lane] ) | (temp_byte << (8*i))
+                    Character[lane] = 0
+                    bytes_read += 1
+        
+            temp_data = 0x0
+            temp_char = 0x0
+            for i in range(start_lane,_lane):
+                # print(hex(Data[i]))
+                # print(width)
+                temp_data |= (Data[i] << (pipe_max_width*i))
+                temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
+            print(hex(temp_data))
+            # assert 1 == 0
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char
 
-        await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.clk_i)
 
         # temp_data = 0x0
         # temp_char = 0x0
