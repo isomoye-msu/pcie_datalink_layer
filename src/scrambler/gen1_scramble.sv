@@ -51,6 +51,7 @@ module gen1_scramble
     logic [3:0]                         skp_os;
     logic [NumPipelines-1:0][31:0]      data;
     logic [NumPipelines-1:0][3:0]       data_k;
+    logic [NumPipelines-1:0]            data_valid;
     // logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
     logic [31:0]                        byte_cnt;
   } gen1_scambler_t;
@@ -102,8 +103,9 @@ module gen1_scramble
     // end
     for (int pipeline_idx = 0; pipeline_idx < NumPipelines; pipeline_idx++) begin
       if (pipeline_idx == 0) begin
-        D.data[pipeline_idx]   = data_in_i;
+        D.data[pipeline_idx] = data_in_i;
         D.data_k[pipeline_idx] = data_k_in_i;
+        D.data_valid[pipeline_idx] = data_valid_i;
         // D.lfsr_out[pipeline_idx] = lfsr_out;
         for (int lfsr_idx = 0; lfsr_idx < 5; lfsr_idx++) begin
           D.lfsr_out[pipeline_idx][lfsr_idx] = lfsr_out[lfsr_idx];
@@ -111,9 +113,10 @@ module gen1_scramble
         // D.lfsr_out[pipeline_idx] = lfsr_out;
       end else begin
         // D.lfsr_out[pipeline_idx] = Q.lfsr_out[pipeline_idx-1];
-        D.lfsr_out[pipeline_idx] = Q.lfsr_out[pipeline_idx-1];
-        D.data[pipeline_idx]     = Q.data[pipeline_idx-1];
-        D.data_k[pipeline_idx]   = Q.data_k[pipeline_idx-1];
+        D.data_valid[pipeline_idx] = Q.data_valid[pipeline_idx-1];
+        D.lfsr_out[pipeline_idx]   = Q.lfsr_out[pipeline_idx-1];
+        D.data[pipeline_idx]       = Q.data[pipeline_idx-1];
+        D.data_k[pipeline_idx]     = Q.data_k[pipeline_idx-1];
       end
     end
 
@@ -136,10 +139,10 @@ module gen1_scramble
 
 
         //handle case where lfsr out is reset needs to be reset at next
-        // if ((Q.scramble_reset[byte_idx])
-        //  && (byte_idx == 8'd1)/*(pipe_width_i >> 3)-1)*/) begin
-        //   D.lfsr_in = lfsr_out[byte_idx];
-        // end
+        if ((Q.scramble_reset[byte_idx+1])
+         && (byte_idx == (pipe_width_i >> 3)-1)) begin
+          D.lfsr_in = '1;
+        end
         if (Q.skp_os[byte_idx] != '0) begin
           //skip scrambler advance
           D.lfsr_out = Q.lfsr_out;
@@ -248,5 +251,6 @@ module gen1_scramble
 
   assign data_out_o   = Q.data[NumPipelines-1];
   assign data_k_out_o = Q.data_k[NumPipelines-1];
+  assign data_valid_o = Q.data_k[NumPipelines-1];
 
 endmodule
