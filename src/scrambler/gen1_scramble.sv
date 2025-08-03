@@ -242,8 +242,8 @@ module gen1_scramble
           lfsr_swapped[byte_idx] = ({<<{Q.lfsr_out[0][byte_idx]}});
         end
 
-        D.data[NumPipelines-1][byte_idx*8+:8] = (Q.disable_scrambling[byte_idx] == '0 || (
-          Q.stop_scrambling[byte_idx])) ? 
+        D.data[NumPipelines-1][byte_idx*8+:8] = ((Q.disable_scrambling[byte_idx] == '0 || (
+          Q.stop_scrambling[byte_idx]))) && !Q.data_k[NumPipelines-2][byte_idx]? 
       ( Q.data[NumPipelines-2][byte_idx*8+:8] ^ lfsr_swapped[byte_idx]): Q.data[NumPipelines-2][byte_idx*8+:8];
       end
     end
