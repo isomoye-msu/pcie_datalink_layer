@@ -405,7 +405,7 @@ module lane_management
           for (int i = 0; i < DATA_WIDTH / 8; i++) begin
             int current_lane;
             current_lane = lane_start_index_r + i;
-            if (current_lane < num_active_lanes_i) begin
+            if (current_lane <= num_active_lanes_i) begin
               byte_count_c                = byte_count_r + i;
               lane_start_index_c          = current_lane + 1;
               input_byte_start_index_c    = input_byte_start_index_r[BytesPerTransfer-2:0] + i;

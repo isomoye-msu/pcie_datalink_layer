@@ -251,6 +251,6 @@ module gen1_scramble
 
   assign data_out_o   = Q.data[NumPipelines-1];
   assign data_k_out_o = Q.data_k[NumPipelines-1];
-  assign data_valid_o = Q.data_k[NumPipelines-1];
+  assign data_valid_o = Q.data_valid[NumPipelines-1];
 
 endmodule

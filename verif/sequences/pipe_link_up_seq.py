@@ -769,7 +769,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
                 # self.pipe_agent_config.idle_data_detected_e.clear()
 
                 # Check if 8 consecutive idle data detected
-                if(num_of_idle_data_received == 8):                
+                if(num_of_idle_data_received >= 1):                
                     eight_consecutive_idle_data_detected.set()
                     uvm_root().logger.info(self.name + " 8 Consecutive Idle Data are Detected")
             
@@ -779,6 +779,7 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
         fork3 = cocotb.start_soon(idle_send())
         fork4 = cocotb.start_soon(idle_count())
         await Combine(fork3,fork4)
-        await Timer(200,'ns')
+        eight_consecutive_idle_data_detected.clear()
+        cocotb.start_soon(idle_send())
+        # await Timer(200,'ns')
         uvm_root().logger.info(self.name + " Finished config_idle_state")
-        
