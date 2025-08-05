@@ -35,6 +35,7 @@ filesets:
       - verif/sequences/pipe_speed_change_with_equalization_seq.py : {file_type : user, copyto : .}
       - verif/sequences/pipe_base_seq.py: {file_type : user, copyto : .}
       - verif/sequences/base_vseq.py: {file_type : user, copyto : .}
+      - verif/sequences/pcie_flow_control_seq.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/descrambler_scrambler.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_agent.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_agent_config.py : {file_type : user, copyto : .}
