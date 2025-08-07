@@ -1,0 +1,33 @@
+CAPI=2:
+name: fusesoc:pcie:pipe_wrapper:1.0.0
+description: pcie xilinx pipe wrapper
+
+filesets:
+  rtl:
+    files:
+      - pipe_clock.v
+      - xilinx_pcie_mmcm.v
+      - pipe_wrapper.v
+    file_type: systemVerilogSource
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [pipe_wrapper]
+
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7k325tffg900-2
+    toplevel : pipe_wrapper

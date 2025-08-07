@@ -4,18 +4,18 @@ module pcie_dllp_crc8 (
     output [15:0] crcOut
 );
   int i;
-  logic [15:0] crc;
+  logic [15:0] crc [8:0];
   always_comb begin
-    crc = crcIn ^ data;
+    crc[0] = crcIn ^ data;
     for (i = 0; i < 8; i++) begin
-      if (crc[0] & 1) begin
-        crc = (crc >> 1) ^ 16'hD008;
+      if (crc[i] & 1) begin
+        crc[i+1] = (crc[i] >> 1) ^ 16'hD008;
       end else begin
-        crc = crc >> 1;
+        crc[i+1] = crc[i] >> 1;
 
       end
     end
   end
-  assign crcOut = crc;
+  assign crcOut = crc[8];
 
 endmodule

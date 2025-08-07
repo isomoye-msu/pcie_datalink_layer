@@ -21,7 +21,6 @@ filesets:
       - fusesoc:pcie:phy_receive
       - fusesoc:pcie:phy_transmit
       - fusesoc:pcie:converters
-      - fusesoc:pcie:import_components
       - fusesoc:pcie:pcie_config
       - fusesoc:verilog-pcie:1.0.0
       - fusesoc:pcie:pipe_wrapper
