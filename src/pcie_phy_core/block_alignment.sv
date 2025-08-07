@@ -141,8 +141,8 @@ module block_alignment
             - ((byte_idx >> pipewidth_shift_idx) & 8'b00000011);
             data_out = data_i[lane_number*32+:32];
             data_k = data_k_i[lane_number*4+:4];
-            data_c[byte_idx*8+:8] = data_out[byte_number*8+:8];
-            data_k_c[byte_idx] = data_k[byte_number];
+            data_c[byte_idx*8+:8] = data_out[byte_idx*8+:8];
+            data_k_c[byte_idx] = data_k[byte_idx];
           end
         end
 

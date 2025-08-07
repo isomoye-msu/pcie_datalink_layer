@@ -874,6 +874,7 @@ class pipe_driver_bfm():
                 # print(self.driver_scrambler[lanenum].lfsr_1_2)
                 # print(self.current_gen)
             elif (check_k == D_K_character.K):
+                temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 temp = self.data.pop(0)
                 data_scrambled.append(temp)
                 data_k.append(1)

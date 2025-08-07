@@ -77,8 +77,8 @@ module pcie_flow_ctrl_init
 
 
   always_comb begin : byteswap
-    crc_reversed[7:0] = ~dllp_lcrc_r[15:8];
-    crc_reversed[15:8] = ~dllp_lcrc_r[7:0];
+    crc_reversed[7:0] = ~dllp_lcrc_r[7:0];
+    crc_reversed[15:8] = ~dllp_lcrc_r[15:8];
     // for (int i = 0; i < 8; i++) begin
     //   crc_reversed[i]   = dllp_lcrc_r[7-i];
     //   crc_reversed[i+8] = dllp_lcrc_r[15-i];

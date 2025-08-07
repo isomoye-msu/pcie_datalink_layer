@@ -1242,7 +1242,7 @@ class pipe_monitor_bfm():
                 if (data[i] == 0x5c):
                     # assert 1 == 0
                     self.start_dllp = 1
-                    for j in range(i, len(data)):
+                    for j in range(i+1, len(data)):
                         self.dllp_q.append(data[j])
                     await self.receive_dllp_gen_1_2()
 
@@ -1321,7 +1321,7 @@ class pipe_monitor_bfm():
             self.proxy.notify_tlp_received(self.tlp_received)
 
     async def receive_dllp_gen_1_2(self, start_lane = 0 , end_lane = 1):
-        await RisingEdge(self.dut.clk_i)
+        # await RisingEdge(self.dut.clk_i)
         while self.dllp_done == 0:
             data = self.dut.phy_txdata.value
             datak = self.dut.phy_txdatak.value
@@ -1352,7 +1352,7 @@ class pipe_monitor_bfm():
                             print(f"dllp rx data k type: {type(int(LogicArray(datak)[(4*lane)+byte_]))}")
                             if self.dllp_done == 0:
                                 if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
-                                    self.dllp_q.append(temp_byte)
+                                    # self.dllp_q.append(temp_byte)
                                     if temp_byte == 0xFD:
                                         self.dllp_done = 1
                                 else:
@@ -1369,7 +1369,9 @@ class pipe_monitor_bfm():
         print(f"dllp data first {[hex(q) for q in self.dllp_q]}")
         if self.dllp_done:
             self.start_dllp = 0
+            self.dllp_done = 0
             print(f"dllp data {[hex(q) for q in self.dllp_q]}")
+            # assert 1 == 0
             self.dllp_received = self.dllp_q
             await self.proxy.notify_dllp_received(self.dllp_received)
             self.dllp_q = []

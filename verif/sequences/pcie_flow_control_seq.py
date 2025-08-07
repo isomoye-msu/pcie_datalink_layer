@@ -79,12 +79,14 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
             if self.pipe_agent_config.dllp_data_detected_e.is_set():
                 pkt = Dllp()
                 dllp_in = self.pipe_agent_config.dllp_received
+                dllp_int =  b'\x40\x00\x40\x10\xe3\x29'
                 print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
-
-                pkt.unpack_crc(dllp_in)
+                print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
+                dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
+                pkt.unpack_crc(bytes(dllp_in))
                 await self.port.ext_recv(pkt)
                 self.pipe_agent_config.dllp_data_detected_e.clear()
-                self.pipe_agent_config.dllp_data_read_e.clear()
+                self.pipe_agent_config.dllp_data_read_e.set()
 
 
         # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
