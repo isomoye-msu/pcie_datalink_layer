@@ -13,3 +13,6 @@
 [submodule "tb/gtxe2_gpl"]
 	path = tb/gtxe2_gpl
 	url = git@github.com:Elphel/gtxe2_gpl.git
+[submodule "src/verilog-pcie"]
+	path = src/verilog-pcie
+	url = https://github.com/isomoye-msu/verilog-pcie.git
