@@ -204,15 +204,15 @@ module gen1_scramble
         //check if special symbol
         if (Q.data_k[1][byte_idx]) begin
           //default to scrambling on
-          D.stop_scrambling = '0;
-          if (Q.disable_scrambling << (4 - byte_idx) == '0) begin
-            //disable this index and all subsequent
-            for (int idx = 0; idx < 4; idx++) begin
-              if (idx >= byte_idx) begin
-                D.disable_scrambling[idx] = '1;
-              end
-            end
-          end
+          // D.stop_scrambling[idx] = '1;
+          // if (Q.disable_scrambling << (4 - byte_idx) == '0) begin
+          //   //disable this index and all subsequent
+          //   for (int idx = 0; idx < 4; idx++) begin
+          //     if (idx >= byte_idx) begin
+          //       D.disable_scrambling[idx] = '1;
+          //     end
+          //   end
+          // end
           //check if comma
           if (Q.data[1][byte_idx*8+:8] == COM) begin
             D.scramble_reset[byte_idx+1] = '1;

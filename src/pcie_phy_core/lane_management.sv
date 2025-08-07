@@ -359,102 +359,36 @@ module lane_management
       end
       ST_LANE_MNGT_TX_DATA: begin
         if (s_dllp_axis_tvalid) begin
-          // int max_bytes_per_cycle;
-          // automatic logic [7:0] mask;
-          // max_bytes_per_cycle = bytes_per_packet > BytesPerTransfer ? bytes_per_packet :
-          // BytesPerTransfer;
-          // byte_count_c = byte_count_r[BytesPerTransfer-2:0] +
-          // ((pipe_width_r>>8) * num_active_lanes_i);
-          // mask = '0;
-          // for (int i = 0; i < MAX_NUM_LANES; i++) begin
-          //   if ((1 << i) < num_active_lanes_i) begin
-          //     mask[i-1] = '1;
-          //   end
-          // end
-          // lane_start_index_c = (lane_start_index_r & mask) + BytesPerTransfer;
-          // if ((lane_start_index_r + max_bytes_per_cycle) > num_active_lanes_i) begin
-          //   byte_start_index_c = (byte_start_index_r >= pipe_width_r >> 3) ? '0:
-          //   byte_start_index_r + 1'b1;
-          // end
-          // bytes_sent_c = bytes_sent_r + BytesPerTransfer;
-          // if (bytes_sent_c > bytes_per_packet) begin
-          //   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-          //     if (lane < num_active_lanes_i) begin
-          //       data_valid_c[lane] = '1;
-          //     end
-          //   end
-          // end
-
-          // if (max_bytes_per_cycle >= BytesPerTransfer || (bytes_sent_r > BytesPerTransfer)) begin
-          //   ready_out          = '1;
-          //   byte_start_index_c = '0;
-          //   if (s_dllp_axis_tlast) begin
-          //     for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-          //       if (lane < num_active_lanes_i) begin
-          //         data_valid_c[lane] = '1;
-          //       end
-          //     end
-          //     lane_start_index_c = '0;
-          //     next_state         = ST_IDLE;
-          //     pkt_count_c        = '0;
-          //     word_count_c       = '0;
-          //   end
-          // end
-          // bytes_sent_c = bytes_sent_r + BytesPerTransfer;
-          // if()
-          for (int i = 0; i < DATA_WIDTH / 8; i++) begin
-            int current_lane;
-            current_lane = lane_start_index_r + i;
-            if (current_lane <= num_active_lanes_i) begin
-              byte_count_c                = byte_count_r + i;
-              lane_start_index_c          = current_lane + 1;
-              input_byte_start_index_c    = input_byte_start_index_r[BytesPerTransfer-2:0] + i;
-              data_out                    = data_out_r[current_lane*32+:32];
-              temp_d_k                    = d_k_out_r[current_lane*4+:4];
-              temp_d_k[current_byte]      = s_dllp_axis_tuser[i+input_byte_start_index_r];
-              data_out[8*current_byte+:8] = s_dllp_axis_tdata[(i+input_byte_start_index_r)*8+:8];
-              if (input_byte_start_index_r + i == BytesPerTransfer - 1) begin
-                ready_out = '1;
-                input_byte_start_index_c = '0;
-                if (s_dllp_axis_tlast ||
-                ((byte_start_index_r == ((pipe_width_r >> 3) - 1'b1))
-                && current_lane == num_active_lanes_i-1)
-                ) begin
-                  lane_start_index_c = '0;
-                  next_state         = ST_IDLE;
-                  pkt_count_c        = '0;
-                  complete_c         = '1;
-                  word_count_c       = '0;
-                  for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-                    if (lane < num_active_lanes_i) begin
-                      data_valid_c[lane] = '1;
-                    end
-                  end
+          // TODO: change to lane reversal flag ... lane_idx = (pipe_width_r >> 3) - 1 - byte_count_r;
+          // ready_out = '1;
+          byte_count_c = byte_count_r + ((pipe_width_r >> 3));
+          for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
+            if (lane < num_active_lanes_i) begin
+              data_valid_c[lane]      = '1;
+              d_k_out_c[lane*4+:4]    = '0;
+              data_out_c[lane*32+:32] = '0;
+              for (int byte_ = 0; byte_ < DATA_WIDTH / 8; byte_++) begin
+                if (byte_ < (pipe_width_r >> 3)) begin
+                  data_out_c[(lane*32)+(byte_*8)+:8]   =
+                  s_dllp_axis_tdata[(lane*32)+((byte_+byte_count_r)*8)+:8];
+                  d_k_out_c[(lane*4)+(byte_*1)+:1] = s_dllp_axis_tuser[(lane*4)+((byte_+byte_count_r)*1)+:1];
                 end
               end
-            end else begin
-              lane_start_index_c = '0;
-              // lane_start_index_c = lane_start_index_r >= num_active_lanes_i - 1'b1 ?
-              // '0 :  lane_start_index_r + 1'b1;
-              byte_start_index_c = byte_start_index_r + 1'b1;
-              // if (byte_start_index_r >= ((pipe_width_r >> 3) - 1'b1)) begin
-              //   // ready_out          = '1;
-              //   byte_start_index_c = '0;
-              //   for (logic [7:0] lane = 0; lane < MAX_NUM_LANES; lane = lane + 1) begin
-              //     if (lane < num_active_lanes_i) begin
-              //       data_valid_c[lane] = '1;
-              //     end
-              //   end
-              //   if (s_dllp_axis_tlast) begin
-              //     lane_start_index_c = '0;
-              //     next_state         = ST_IDLE;
-              //     pkt_count_c        = '0;
-              //     word_count_c       = '0;
-              //   end
-              // end
             end
-            d_k_out_c[current_lane*4+:4]    = temp_d_k;
-            data_out_c[current_lane*32+:32] = data_out;
+          end
+          if ((byte_count_r + ((pipe_width_r >> 3))) >= (DATA_WIDTH / 8) - 1) begin
+            byte_count_c = '0;
+            ready_out = '1;
+            if (s_dllp_axis_tlast) begin
+              if (s_dllp_axis_tvalid) begin
+
+              end else begin
+                next_state = ST_IDLE;
+              end
+              complete_c   = '1;
+              pkt_count_c  = '0;
+              word_count_c = '0;
+            end
           end
         end
       end

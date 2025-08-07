@@ -53,6 +53,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         self.sequencer = ConfigDB().get(None, "", "pipe_sequencer")
         assert self.sequencer is not None
         cocotb.start_soon(self.send_rolling_idle())
+        cocotb.start_soon(self.recieve_dllp())
         await super().body()
         self.port = SimPort()
         self.other_port = SimPort()
@@ -71,6 +72,27 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
             await self.finish_item(pipe_seq_item_h)
             # assert 1 == 0
 
+
+    async def recieve_dllp(self):
+        while (1):
+            await self.pipe_agent_config.dllp_data_detected_e.wait()
+            if self.pipe_agent_config.dllp_data_detected_e.is_set():
+                pkt = Dllp()
+                dllp_in = self.pipe_agent_config.dllp_received
+                print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
+
+                pkt.unpack_crc(dllp_in)
+                await self.port.ext_recv(pkt)
+                self.pipe_agent_config.dllp_data_detected_e.clear()
+                self.pipe_agent_config.dllp_data_read_e.clear()
+
+
+        # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
+        # pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
+        # while(1):
+        #     await self.start_item(pipe_seq_item_h)
+        #     await self.finish_item(pipe_seq_item_h)
+            # assert 1 == 0
 
 
     async def send_tlp(self,tlp):
