@@ -61,14 +61,14 @@ module pcie_datalink_crc (
 
 
 
-  always @(*) begin
-    for (int i = 0; i < 8; i++) begin
-      crc4[i]   = crc3[7-i];
-      crc4[i+8] = crc3[15-i];
-    end
-  end
+//   always @(*) begin
+//     for (int i = 0; i < 8; i++) begin
+//       crc4[i]   = crc3[7-i];
+//       crc4[i+8] = crc3[15-i];
+//     end
+//   end
 
-  assign crcOut = crc4;
+  assign crcOut = crc3;
 
 endmodule
 

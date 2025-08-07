@@ -41,7 +41,7 @@ class pipe_monitor_bfm():
         self.bus_data_width = int(self.dut.MAX_NUM_LANES) * pipe_width
         self.linkup = 0
         self.tlp_done = 2
-        self.dllp_done = 2
+        self.dllp_done = 0
         self.start_tlp = 0
         self.start_dllp = 0
         self.tlp_q = []
@@ -1205,16 +1205,24 @@ class pipe_monitor_bfm():
                             temp_scramble = self.driver_scrambler[0].scramble_byte(temp_byte)
                             print(f"monitor pure byte: {hex(temp_byte)} ")
                             print(f"monitor descrambled byte: {hex(temp_scramble)} ")
-                            bytes_stored.append(temp_scramble)
-                            datak_stored.append(LogicArray(datak)[(4*lane)+byte_])
+                            datak_stored.append(int(LogicArray(datak)[(4*lane)+byte_]))
+                            print(f"data k value: {int(LogicArray(datak)[(4*lane)+byte_])}")
+                            print(f"data k type: {type(int(LogicArray(datak)[(4*lane)+byte_]))}")
+                            if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
+                                # assert 1 == 0
+                                # if(temp_byte == 0x5C):
+                                #     # assert 1 == 0
+                                bytes_stored.append(int(temp_byte))
+                            else:
+                                bytes_stored.append(temp_scramble)
                             # if(LogicArray(data).to_BinaryValue() == 0xBE8D):
                             #     assert 1 == 0
                         if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
                         and LogicArray(datak)[(4*lane)+byte_] ):
                             reset_next_byte = 1
                             self.driver_scrambler[0].reset_lfsr(self.current_gen)
-                            bytes_stored = []
-                            datak_stored = []
+                            # bytes_stored = []
+                            # datak_stored = []
 
 
             await RisingEdge(self.dut.clk_i)
@@ -1226,16 +1234,26 @@ class pipe_monitor_bfm():
     async def process_tx_data_gen_1_2(self,data,data_k):
         num_idle_data = 0
         for i in range(len(data)):
-            # # print(i)
-            # if ((data[i] == STP_gen_1_2) and self.tlp_done == 0):
-            #     self.start_tlp = i
-            #     # print("is TLP")
-            #     await self.receive_tlp_gen_1_2()
-            # elif ((data[i] == SDP_gen_1_2) and self.dllp_done == 0):
-            #     self.start_dllp = i
-            #     # print("is DLLP")
-            #     await self.receive_dllp_gen_1_2()
-            if  not data_k[i]:
+            if self.start_dllp == 1:
+                break
+            if  data_k[i] == 1:
+                print(i)
+                print(f"data k data : {hex(data[i])}")
+                if (data[i] == 0x5c):
+                    # assert 1 == 0
+                    self.start_dllp = 1
+                    for j in range(i, len(data)):
+                        self.dllp_q.append(data[j])
+                    await self.receive_dllp_gen_1_2()
+
+                    # print("is DLLP")
+                    break
+                elif ((data[i] == STP_gen_1_2) and self.tlp_done == 0):
+                    assert 1 == 0
+                    self.start_tlp = i
+                    # print("is TLP")
+                    await self.receive_tlp_gen_1_2()
+            else:
                 if data[i] == 0x00:
                     num_idle_data += 1
 
@@ -1302,32 +1320,56 @@ class pipe_monitor_bfm():
             self.tlp_q.clear()
             self.proxy.notify_tlp_received(self.tlp_received)
 
-    async def receive_dllp_gen_1_2(self):
-        end_dllp = (self.bus_data_width_param + 1) / 8
-        for i in range(self.start_tlp, self.bus_data_kontrol_param + 1):
-            j = i - self.start_tlp
-            if not ( LogicArray(self.dut.phy_txdatak.value)[i] == 1 and  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8] == 'END_gen_1_2'):
-                lanenum = int(i // (self.pipe_max_width / 8.0))
-                if  LogicArray(self.dut.phy_txdatak.value)[i] == 0:
-                    temp_value =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
-                    self.data_descrambled[(8 * j):(8 * j) + 8] = self.descramble(self.monitor_tx_scrambler, temp_value, lanenum, self.current_gen)
-                elif  LogicArray(self.dut.phy_txdatak.value)[i] == 1 and ((i - (self.get_width / 8) - 1) % 4) == 0:
-                    self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
-                self.dllp_done = 0
-            else:
-                self.data_descrambled[(8 * j):(8 * j) + 8] =  LogicArray(self.dut.phy_txdata.value)[(8 * i):(8 * i) + 8]
-                self.dllp_done = 1
-                end_dllp = j
-                break
-        if self.pipe_num_of_lanes() == 0:
-            return 
-        for j in range(0, self.bus_data_width // (self.pipe_num_of_lanes() * 8)):
-            for i in range(j, (self.bus_data_width_param + 1) // 8, (self.bus_data_width_param + 1) // (self.pipe_num_of_lanes * 8)):
-                if i > end_dllp:
-                    break
-                self.dllp_q.append(self.data_descrambled[(8 * i):(8 * i) + 8])
-
+    async def receive_dllp_gen_1_2(self, start_lane = 0 , end_lane = 1):
+        await RisingEdge(self.dut.clk_i)
+        while self.dllp_done == 0:
+            data = self.dut.phy_txdata.value
+            datak = self.dut.phy_txdatak.value
+            dataValid = self.dut.phy_txdata_valid.value
+            comma_idx = 0
+            reset_next_byte = 0
+            # # print(bytes(data))
+            # # print(data)
+            # # print(data)
+            #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
+            data = self.dut.phy_txdata.value
+            # datak = self.dut.phy_txdatak.value
+            # dataValid = self.dut.phy_txdata_valid.value
+            if(dataValid):
+                for lane in (range(int(end_lane-start_lane))):
+                    for byte_ in range(int((int(self.dut.pipe_width_o)/8))):
+                        if(reset_next_byte):
+                            ...
+                            temp_scramble = self.driver_scrambler[0].scramble_byte(0x0)
+                            # self.driver_scrambler[lane].reset_lfsr(self.current_gen)
+                        else:
+                            temp_byte = LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue()
+                            temp_scramble = self.driver_scrambler[0].scramble_byte(temp_byte)
+                            print(f"dllp rx monitor pure byte: {hex(temp_byte)} ")
+                            print(f"dllp rx monitor descrambled byte: {hex(temp_scramble)} ")
+                            # datak_stored.append(int(LogicArray(datak)[(4*lane)+byte_]))
+                            print(f"dllp rx data k value: {int(LogicArray(datak)[(4*lane)+byte_])}")
+                            print(f"dllp rx data k type: {type(int(LogicArray(datak)[(4*lane)+byte_]))}")
+                            if self.dllp_done == 0:
+                                if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
+                                    self.dllp_q.append(temp_byte)
+                                    if temp_byte == 0xFD:
+                                        self.dllp_done = 1
+                                else:
+                                    self.dllp_q.append(temp_scramble)
+                            # if(LogicArray(data).to_BinaryValue() == 0xBE8D):
+                            #     assert 1 == 0
+                        if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
+                        and LogicArray(datak)[(4*lane)+byte_] ):
+                            reset_next_byte = 1
+                            self.driver_scrambler[0].reset_lfsr(self.current_gen)
+                            # bytes_stored = []
+                            # datak_stored = []
+            await RisingEdge(self.dut.clk_i)
+        print(f"dllp data first {[hex(q) for q in self.dllp_q]}")
         if self.dllp_done:
-            self.dllp_received = self.dllp_q[:]
-            self.dllp_q.clear()
-            self.proxy.notify_dllp_received(self.dllp_received)
+            self.start_dllp = 0
+            print(f"dllp data {[hex(q) for q in self.dllp_q]}")
+            self.dllp_received = self.dllp_q
+            await self.proxy.notify_dllp_received(self.dllp_received)
+            self.dllp_q = []

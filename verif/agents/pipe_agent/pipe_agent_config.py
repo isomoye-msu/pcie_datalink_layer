@@ -13,6 +13,7 @@ class pipe_agent_config(uvm_component):
         self.is_active =  uvm_active_passive_enum.UVM_ACTIVE  # type: uvm_active_passive_enum  
         self.has_coverage_monitor =  1  # type: bit  
         self.tses_received = [] 
+        self.dllp_received = None
         self.name = name
         self.new_width = None  # type: logic [1:0] 
         self.new_PCLKRate = 0.25  # type: logic [4:0] 
@@ -34,7 +35,9 @@ class pipe_agent_config(uvm_component):
         self.recovery_finished_e = Event('recovery_finished_e')  # type: event  
         self.DUT_start_polling_e = Event('DUT_start_polling_e')  # type: event  
         self.reset_finished_e = Event('reset_finished_e')  # type: event  
-        self.idle_data_detected_e = Event('idle_data_detected_e')  # type: event  
+        self.idle_data_detected_e = Event('idle_data_detected_e')  # type: event
+        self.dllp_data_detected_e = Event('dllp_data_detected_e')  # type: event  
+        self.dllp_data_read_e = Event('dllp_data_read_e')  # type: event   
         self.detected_posedge_clk_e = Event('detected_posedge_clk_e')  # type: event  
         self.detected_exit_electricle_idle_e = Event('detected_exit_electricle_idle_e')  # type: event  
         self.power_down_change_e = Event('power_down_change_e')  # type: event  

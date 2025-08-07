@@ -300,17 +300,21 @@ class pipe_monitor(uvm_monitor):
         self.ap_sent.write(pipe_seq_item)
         #uvm_info(get_name(), sv.sformatf( "notify dllp_sent: %p", dllp), UVM_MEDIUM)
 
-    def notify_dllp_received(self,dllp) :
+    async def notify_dllp_received(self,dllp) :
         # Creating the sequnce item
         # self.pipe_seq_item pipe_seq_item
-        pipe_seq_item = pipe_seq_item("pipe_seq_item")
+        # pipe_seq_item = pipe_seq_item("pipe_seq_item")
         # Determining the detected operation
-        pipe_seq_item.pipe_operation = "DLLP_TRANSFER"
+        # pipe_seq_item.pipe_operation = "DLLP_TRANSFER"
         # Copying the data of the tlp to the sequence item
-        pipe_seq_item.dllp = dllp
+        # pipe_seq_item.dllp = dllp
         # Sending the sequence item to the analysis components
-        self.ap_received.write(pipe_seq_item)
+        # self.ap_received.write(pipe_seq_item)
         #uvm_info(get_name(), "notify dllp_rec", UVM_MEDIUM)
+        self.pipe_agent_config.dllp_received = dllp
+        self.pipe_agent_config.dllp_data_detected_e.set()
+        await self.pipe_agent_config.dllp_data_read_e.wait()
+        # assert 1 == 0
 
     def notify_enter_recovery_sent(self):
         # Creating the sequnce item
