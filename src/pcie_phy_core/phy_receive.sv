@@ -217,23 +217,23 @@ module phy_receive
   );
 
 
-    async_fifo #(
-        .DSIZE(PcieDataSize),
-        .ASIZE(10)
-    ) async_fifo_inst (
-        .wclk(pipe_rx_usr_clk_i),
-        .wrst_n(!rst_i || link_up_i),
-        .winc(wr_en),
-        .wdata({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
-        .wfull(fifo_full),
-        .awfull(),
-        .rclk(clk_i),
-        .rrst_n(!rst_i),
-        .rinc(read_ready_reg),
-        .rdata({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
-        .rempty(fifo_empty),
-        .arempty()
-    );
+    // async_fifo #(
+    //     .DSIZE(PcieDataSize),
+    //     .ASIZE(10)
+    // ) async_fifo_inst (
+    //     .wclk(pipe_rx_usr_clk_i),
+    //     .wrst_n(!rst_i || link_up_i),
+    //     .winc(wr_en),
+    //     .wdata({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
+    //     .wfull(fifo_full),
+    //     .awfull(),
+    //     .rclk(clk_i),
+    //     .rrst_n(!rst_i),
+    //     .rinc(read_ready_reg),
+    //     .rdata({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
+    //     .rempty(fifo_empty),
+    //     .arempty()
+    // );
 
 
   //packed data storage fifo
@@ -261,14 +261,14 @@ module phy_receive
       .clk_i             (clk_i),
       .rst_i             (rst_i),
       .phy_link_up_i     (link_up_i),
-      .phy_fifo_empty_i  (fifo_empty),
-      .phy_fifo_rd_en_o  (rd_en),
+      .phy_fifo_empty_i  ('0),
+      .phy_fifo_rd_en_o  (),
       .lane_reverse_i    ('0),
       .curr_data_rate_i  (curr_data_rate_i),
-      .data_i            (fifo_data),
-      .data_valid_i      (fifo_data_valid),
-      .data_k_i          (fifo_data_k),
-      .sync_header_i     (fifo_sync_header),
+      .data_i            (packer_data),
+      .data_valid_i      (packer_data_valid),
+      .data_k_i          (packer_data_k),
+      .sync_header_i     (packer_sync_header),
       .m_dllp_axis_tdata (m_dllp_axis_tdata),
       .m_dllp_axis_tkeep (m_dllp_axis_tkeep),
       .m_dllp_axis_tvalid(m_dllp_axis_tvalid),

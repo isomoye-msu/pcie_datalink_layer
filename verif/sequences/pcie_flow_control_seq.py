@@ -52,15 +52,17 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
     async def body(self):
         self.sequencer = ConfigDB().get(None, "", "pipe_sequencer")
         assert self.sequencer is not None
-        cocotb.start_soon(self.send_rolling_idle())
-        cocotb.start_soon(self.recieve_dllp())
-        await super().body()
         self.port = SimPort()
         self.other_port = SimPort()
         self.port.other =  self.other_port
         self.other_port.other = self.port
         self.port.handle_tx = self.handle_tx
-        await Timer(200,'ns')
+        cocotb.start_soon(self.send_rolling_idle())
+        cocotb.start_soon(self.recieve_dllp())
+        await super().body()
+        # while not self.port.fc_initialized:
+        #     await NullTrigger()
+        await Timer(700,'ns')
 
         # assert 1 == 0
 
@@ -74,19 +76,30 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
 
 
     async def recieve_dllp(self):
+        count = 0
         while (1):
-            await self.pipe_agent_config.dllp_data_detected_e.wait()
-            if self.pipe_agent_config.dllp_data_detected_e.is_set():
+            # await self.pipe_agent_config.dllp_data_detected_e.wait()
+            if self.pipe_agent_config.dllp_received:
                 pkt = Dllp()
-                dllp_in = self.pipe_agent_config.dllp_received
-                dllp_int =  b'\x40\x00\x40\x10\xe3\x29'
+                dllp_in = self.pipe_agent_config.dllp_received.pop(0)
+                dllp_int =  b'\x00\x00\x40\x10\x5e\x16'
                 print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
                 print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
-                dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
-                pkt.unpack_crc(bytes(dllp_in))
+                # assert 1 == 0
+                # dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
+                pkt = pkt.unpack_crc(bytes(dllp_in))
+                print(f"dllp packet in {repr(pkt)}")
+                print(f"unpacking : {bytes(dllp_in[0:4])}")
                 await self.port.ext_recv(pkt)
+                dw , = struct.unpack_from('>L', bytes(dllp_in[0:4]))
+                print(f"unpacking : {hex(dw)}")
+                print(f"dllp type: {hex((dw >> 24) & 0xff)}")
                 self.pipe_agent_config.dllp_data_detected_e.clear()
                 self.pipe_agent_config.dllp_data_read_e.set()
+                count += 1
+            else:
+                await self.pipe_agent_config.dllp_data_detected_e.wait()
+                # assert 1 == 0
 
 
         # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")

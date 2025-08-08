@@ -771,7 +771,7 @@ class pipe_driver_bfm():
                 self.k_data.append(D_K_character.K)
                 dllp_data = dllp.pack_crc()
                 for byte_ in dllp_data:
-                    print(f"current byte {byte_}")
+                    # print(f"current byte {byte_}")
                     self.data.append( byte_)
                     self.k_data.append(D_K_character.D)
                 # self.k_data.append()
@@ -867,10 +867,10 @@ class pipe_driver_bfm():
             if (check_k == D_K_character.D):
                 temp = self.data.pop(0)
                 data_k.append(0)
-                print(f"scrambler state: {hex(self.driver_scrambler[lanenum].get_scrambler_state())}")
+                # print(f"scrambler state: {hex(self.driver_scrambler[lanenum].get_scrambler_state())}")
                 temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 data_scrambled.append(temp_scramble)
-                print(hex(temp_scramble))
+                # print(hex(temp_scramble))
                 # print(self.driver_scrambler[lanenum].lfsr_1_2)
                 # print(self.current_gen)
             elif (check_k == D_K_character.K):
@@ -906,7 +906,7 @@ class pipe_driver_bfm():
                 # print(width)
                 temp_data |= (Data[i] << (pipe_max_width*i))
                 temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
-            print(hex(temp_data))
+            # print(hex(temp_data))
             # assert 1 == 0
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char

@@ -23,6 +23,7 @@ module os_generator
     output logic                                               os_sent_o,
     input  pcie_ordered_set_t                                  ordered_set_i,
     input  presets_coeff_t    [             MAX_NUM_LANES-1:0] preset_i,
+    input  logic                                               link_up_i,
     //! @virtualbus master_axis_bus @dir out
     output logic              [(DATA_WIDTH*MAX_NUM_LANES)-1:0] m_axis_tdata,
     output logic              [(KEEP_WIDTH*MAX_NUM_LANES)-1:0] m_axis_tkeep,
@@ -37,7 +38,8 @@ module os_generator
   typedef enum logic [7:0] {
     ST_IDLE,
     ST_BUILD,
-    ST_SEND
+    ST_SEND,
+    ST_SKP
   } os_gen_state_e;
 
 
@@ -73,6 +75,7 @@ module os_generator
     pcie_tsos_t [MAX_NUM_LANES-1:0] ordered_set;
     pcie_tsos_t                     temp_ordered_set;
     logic                           os_sent;
+    logic [31:0]                    skp_cnt;
     gen_os_struct_t                 gen_os_ctrl;
 
   } os_get_t;
@@ -129,10 +132,18 @@ module os_generator
     // D.ordered_set     = Q.ordered_set;
     D.os_sent         = '0;
     temp_os           = Q.ordered_set;
+
+
+    if (link_up_i) begin
+      D.skp_cnt = Q.skp_cnt + 1;
+    end
+
+
     // D.special_k       = Q.special_k;
     case (Q.state)
       ST_IDLE: begin
         if (gen_os_ctrl_i.valid) begin
+          D.skp_cnt = '0;
           for (int i = 0; i < MAX_NUM_LANES; i++) begin
             D.ordered_set[i] = ordered_set_i;
           end
@@ -141,6 +152,20 @@ module os_generator
           D.axis_pkt_cnt     = '0;
           D.gen_os_ctrl      = gen_os_ctrl_i;
           D.state            = ST_BUILD;
+        end
+        if (Q.skp_cnt >= 32'h80) begin
+          D.skp_cnt = '0;
+          D.state   = ST_SKP;
+        end
+      end
+      ST_SKP: begin
+        if (ltssm_axis_tready) begin
+          ltssm_axis_tdata = 32'h1c1c1cbc;
+          ltssm_axis_tuser = '1;
+          ltssm_axis_tkeep = '1;
+          ltssm_axis_tvalid = '1;
+          ltssm_axis_tlast = '1;
+          D.state = ST_IDLE;
         end
       end
       ST_BUILD: begin

@@ -43,25 +43,6 @@ module pack_data
     ST_LAST_DATA
   } pack_st_e;
 
-
-  pack_st_e                                    curr_state;
-  pack_st_e                                    next_state;
-
-  logic     [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_c;
-  logic     [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data_r;
-  logic     [               MAX_NUM_LANES-1:0] data_valid_c;
-  logic     [               MAX_NUM_LANES-1:0] data_valid_r;
-  logic     [           (4*MAX_NUM_LANES)-1:0] data_k_c;
-  logic     [           (4*MAX_NUM_LANES)-1:0] data_k_r;
-  logic     [           (2*MAX_NUM_LANES)-1:0] sync_header_c;
-  logic     [           (2*MAX_NUM_LANES)-1:0] sync_header_r;
-
-
-
-  logic     [                             5:0] word_count_c;
-  logic     [                             5:0] word_count_r;
-  logic     [                             5:0] tlp_byte_count_c;
-  logic     [                             5:0] tlp_byte_count_r;
   // logic     [                            31:0] data_out_c       [MAX_NUM_LANES];
   // logic     [                            31:0] data_out_r       [MAX_NUM_LANES];
   // logic     [               MAX_NUM_LANES-1:0] data_valid_c;
@@ -69,38 +50,45 @@ module pack_data
   // logic     [                             3:0] data_k_out_c     [MAX_NUM_LANES];
   // logic     [                             3:0] data_k_out_r     [MAX_NUM_LANES];
 
-  logic                                        is_ordered_set;
-  logic                                        is_data;
-  logic                                        ready_out;
+  logic        is_ordered_set;
+  logic        is_data;
+  logic        ready_out;
 
   // logic     [                             1:0] sync_header_c    [MAX_NUM_LANES];
   // logic     [                             1:0] sync_header_r    [MAX_NUM_LANES];
 
-  logic     [                            15:0] bytes_per_packet;
+  logic [15:0] bytes_per_packet;
 
 
-  logic                                        fifo_wr_c;
-  logic                                        fifo_wr_r;
-  logic                                        end_packet;
-  logic     [                            31:0] byte_shift;
+  logic        end_packet;
+  logic [31:0] byte_shift;
+
+
+  typedef struct packed {
+    pack_st_e                                state;
+    logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] data;
+    logic [MAX_NUM_LANES-1:0]                data_valid;
+    logic [(4*MAX_NUM_LANES)-1:0]            data_k;
+    logic [(2*MAX_NUM_LANES)-1:0]            sync_header;
+    logic [5:0]                              word_count;
+    logic [5:0]                              tlp_byte_count;
+    logic                                    fifo_wr;
+    logic [3:0]                              count;
+  } pack_data_t;
+
+
+  pack_data_t D;
+  pack_data_t Q;
+
 
 
 
   always_ff @(posedge clk_i) begin : main_seq_block
     if (rst_i) begin
-      data_valid_r <= '0;
-      fifo_wr_r <= '0;
-      curr_state <= ST_IDLE;
+      Q <= '{state: ST_IDLE, default: 'd0};
     end else begin
-      data_valid_r <= data_valid_c;
-      fifo_wr_r <= fifo_wr_c;
-      curr_state <= next_state;
+      Q <= D;
     end
-    word_count_r     <= word_count_c;
-    sync_header_r    <= sync_header_c;
-    data_k_r         <= data_k_c;
-    data_r           <= data_c;
-    tlp_byte_count_r <= tlp_byte_count_c;
   end
 
   //assign bytes per packet based on number of lanes
@@ -117,25 +105,30 @@ module pack_data
 
 
   always_comb begin : block_alignment_combinational_logic
-    data_c           = data_r;
-    data_valid_c     = data_valid_r;
-    data_k_c         = data_k_r;
-    sync_header_c    = sync_header_r;
-    tlp_byte_count_c = tlp_byte_count_r;
-    // lane_number      = '0;
-    fifo_wr_c        = '0;
-    next_state       = curr_state;
-    end_packet       = '0;
-    byte_shift       = (bytes_per_packet * word_count_r);
-    case (curr_state)
+    D            = Q;
+    end_packet   = '0;
+    byte_shift   = (bytes_per_packet * Q.word_count);
+    D.data_valid = '0;
+    D.fifo_wr    = '0;
+    D.data_valid  = '0;
+    case (Q.state)
       ST_IDLE: begin
         if (phy_link_up_i && (|data_valid_i)) begin
-          word_count_c  = '0;
-          data_c        = data_i;
-          data_valid_c  = data_valid_i;
-          data_k_c      = data_k_i;
-          sync_header_c = sync_header_i;
-          fifo_wr_c     = '1;
+          D.word_count = '0;
+          if (Q.count == 0) begin
+            D.count       = 3'd1;
+            D.data[15:0]  = data_i[15:0];
+            D.data_k[1:0] = data_k_i[1:0];
+            D.sync_header = sync_header_i;
+            D.fifo_wr     = '1;
+          end else begin
+            D.count       = 3'd0;
+            D.data[31:16]  = data_i[15:0];
+            D.data_k[3:2] = data_k_i[1:0];
+            D.sync_header = sync_header_i;
+            D.fifo_wr     = '1;
+            D.data_valid  = '1;
+          end
         end
       end
       // ST_SEND_DATA: begin
@@ -235,9 +228,9 @@ module pack_data
 
 
 
-  assign sync_header_o = sync_header_r;
-  assign data_valid_o  = data_valid_r;
-  assign data_k_o      = data_k_r;
-  assign data_o        = data_r;
-  assign fifo_wr_o     = fifo_wr_r;
+  assign sync_header_o = Q.sync_header;
+  assign data_valid_o  = Q.data_valid;
+  assign data_k_o      = Q.data_k;
+  assign data_o        = Q.data;
+  assign fifo_wr_o     = Q.fifo_wr;
 endmodule

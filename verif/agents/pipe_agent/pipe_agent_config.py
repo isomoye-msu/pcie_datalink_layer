@@ -13,7 +13,7 @@ class pipe_agent_config(uvm_component):
         self.is_active =  uvm_active_passive_enum.UVM_ACTIVE  # type: uvm_active_passive_enum  
         self.has_coverage_monitor =  1  # type: bit  
         self.tses_received = [] 
-        self.dllp_received = None
+        self.dllp_received = []
         self.name = name
         self.new_width = None  # type: logic [1:0] 
         self.new_PCLKRate = 0.25  # type: logic [4:0] 
