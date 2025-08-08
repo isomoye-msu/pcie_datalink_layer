@@ -62,7 +62,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         await super().body()
         # while not self.port.fc_initialized:
         #     await NullTrigger()
-        await Timer(700,'ns')
+        await Timer(1000,'ns')
 
         # assert 1 == 0
 
