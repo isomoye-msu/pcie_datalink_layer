@@ -281,6 +281,7 @@ module phy_transmit
       .clk_i           (pipe_rx_usr_clk_i),
       .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
+      .link_up_i      (link_up_i),
       .send_ltssm_os_i (send_ordered_set_i),
       .preset_i        ('0),
       .gen_os_ctrl_i   (gen_os_ctrl_i),

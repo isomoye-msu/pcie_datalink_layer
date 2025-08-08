@@ -320,7 +320,7 @@ module lane_management
     bytes_sent_c             = bytes_sent_r;
     case (curr_state)
       ST_IDLE: begin
-        if (s_phy_axis_tvalid) begin
+        if (fifo_phy_axis_tvalid) begin
           pkt_count_c        = '0;
           word_count_c       = '0;
           lane_start_index_c = '0;
@@ -380,11 +380,7 @@ module lane_management
             byte_count_c = '0;
             ready_out = '1;
             if (s_dllp_axis_tlast) begin
-              if (s_dllp_axis_tvalid) begin
-
-              end else begin
                 next_state = ST_IDLE;
-              end
               complete_c   = '1;
               pkt_count_c  = '0;
               word_count_c = '0;
@@ -567,7 +563,7 @@ module lane_management
   assign data_valid_o         = '1;
   assign data_out_o           = data_valid_r ? data_out_r : '0;
   // // assign data_valid_o       = data_valid_r;
-  assign d_k_out_o            = d_k_out_r;
+  assign d_k_out_o            = data_valid_r ? d_k_out_r : '0;
   // assign data_out_o           = temp_data_out;
   assign pipe_width_o         = pipe_width_r;
   // assign start_block_o      = block_start_r;

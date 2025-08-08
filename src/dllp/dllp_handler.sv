@@ -112,10 +112,11 @@ module dllp_handler
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
 
   always_comb begin : byteswap
-    for (int i = 0; i < 8; i++) begin
-      crc_reversed[i]   = crc_in_r[7-i];
-      crc_reversed[i+8] = crc_in_r[15-i];
-    end
+    crc_reversed = ~crc_in_r;
+    // for (int i = 0; i < 8; i++) begin
+    //   crc_reversed[i]   = ~crc_in_r[7-i];
+    //   crc_reversed[i+8] = ~crc_in_r[15-i];
+    // end
   end
 
   always @(posedge clk_i) begin : main_seq
@@ -208,6 +209,9 @@ module dllp_handler
           if (crc_reversed == skid_s_axis_tdata[15:0]) begin
             //process tlp
             next_state = ST_PROCESS_DLLP;
+          end
+          else begin
+            next_state = ST_IDLE;
           end
         end
       end
