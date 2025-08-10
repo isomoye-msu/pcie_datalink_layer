@@ -430,6 +430,9 @@ class pipe_monitor(uvm_monitor):
         self.ap_received.write(pipe_seq_item)
         #uvm_info("pipe_monitor", "idle gat", UVM_MEDIUM)
 
+    def notify_fc_initialized(self):
+        self.pipe_agent_config.fc_initialized.set()
+
 
 
 

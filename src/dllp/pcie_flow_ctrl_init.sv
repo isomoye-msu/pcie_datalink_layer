@@ -32,6 +32,7 @@ module pcie_flow_ctrl_init
 
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
   localparam int FcWaitPeriod = 8'h10;
+  localparam int FcInitWaitPeriod = 8'h10 * 11;
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -77,7 +78,7 @@ module pcie_flow_ctrl_init
 
 
   always_comb begin : byteswap
-    crc_reversed[7:0] = ~dllp_lcrc_r[7:0];
+    crc_reversed[7:0]  = ~dllp_lcrc_r[7:0];
     crc_reversed[15:8] = ~dllp_lcrc_r[15:8];
     // for (int i = 0; i < 8; i++) begin
     //   crc_reversed[i]   = dllp_lcrc_r[7-i];
@@ -121,28 +122,23 @@ module pcie_flow_ctrl_init
     case (curr_state)
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
-          seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
-          if (seq_count_r >= FcWaitPeriod) begin
-            seq_count_c    = '0;
+          seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
+          if (seq_count_r >= FcInitWaitPeriod) begin
+            seq_count_c = '0;
             //build dllp packet
-            fc_axis_tdata  = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
-            dllp_lcrc_c    = crc_out;
-            fc_axis_tkeep  = '1;
-            fc_axis_tvalid = '1;
-            fc_axis_tlast  = '0;
-            init_ack_o     = '1;
-            next_state     = ST_FC1_P;
+            init_ack_o  = '1;
+            next_state  = ST_FC1_P;
           end
         end
       end
       ST_FC1_P: begin
         if (fc_axis_tready) begin
-          fc_axis_tdata  = crc_reversed;
-          dllp_lcrc_c    = crc_out;
-          fc_axis_tkeep  = 8'h3;
+          fc_axis_tdata  = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
+          fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
-          fc_axis_tlast  = '1;
+          fc_axis_tlast  = '0;
           seq_count_c    = '0;
+          dllp_lcrc_c    = crc_out;
           next_state     = ST_FC1_CRC;
         end
       end
@@ -150,14 +146,16 @@ module pcie_flow_ctrl_init
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
           seq_count_c    = '0;
-          fc_axis_tvalid = '0;
+          fc_axis_tdata  = crc_reversed;
+          fc_axis_tkeep  = 8'h3;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '1;
           next_state     = ST_FC1_NP;
         end
       end
       ST_FC1_NP: begin
-        seq_count_c = seq_count_r + 1'b1;
+        seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c    = '0;
@@ -219,7 +217,7 @@ module pcie_flow_ctrl_init
           end else if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c    = '0;
             fc_axis_tvalid = '0;
-            next_state     = ST_IDLE;
+            next_state     = ST_FC1_P;
             if (fc1_values_stored_i || fc2_values_stored_i) begin
               seq_count_c = '0;
               next_state  = ST_FC2;

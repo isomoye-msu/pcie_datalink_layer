@@ -55,6 +55,7 @@ module dllp2tlp
   localparam int MinRxBufferSize = MaxTlpTotalSizeDW * (RX_FIFO_SIZE);
   localparam int RamDataWidth = DATA_WIDTH;
   localparam int RamAddrWidth = $clog2(MinRxBufferSize);
+  localparam int NumPipelines = 3;
 
   //dllp to tlp fsm emum
   typedef enum logic [4:0] {
@@ -71,267 +72,231 @@ module dllp2tlp
   } dll_rx_st_e;
 
 
-  dll_rx_st_e                            curr_state;
-  dll_rx_st_e                            next_state;
-  dllp_union_t                           dll_packet;
-  //tlp nulled
-  logic                                  fc_start_c;
-  logic                                  fc_start_r;
-  logic                                  tlp_nullified_c;
-  logic                                  tlp_nullified_r;
-  //transmit sequence logic
-  logic                 [          15:0] next_transmit_seq_c;
-  logic                 [          15:0] next_transmit_seq_r;
-  logic                 [          15:0] next_expected_seq_num_c;
-  logic                 [          15:0] next_expected_seq_num_r;
-  logic                 [          11:0] ackd_transmit_seq_c;
-  logic                 [          15:0] ackd_transmit_seq_r;
-  //crc helper signals
-  logic                 [          31:0] crc_from_tlp_c;
-  logic                 [          31:0] crc_from_tlp_r;
-  logic                 [          31:0] crc_calculated_c;
-  logic                 [          31:0] crc_calculated_r;
-  logic                 [          31:0] crc_output;
-  logic                 [          31:0] crc_reversed;
-  logic                 [          15:0] dllp_crc_out;
-  logic                 [          15:0] dllp_crc_reversed;
-  logic                 [          31:0] dllp_lcrc_c;
-  logic                 [          31:0] dllp_lcrc_r;
-  logic                 [          31:0] word_count_c;
-  logic                 [          31:0] word_count_r;
-  logic                 [           1:0] crc_byte_select;
-  //tlp type signals
-  pcie_tlp_header_dw0_t                  tlp_dw0;
-  logic                                  tlp_is_cplh_c;
-  logic                                  tlp_is_cplh_r;
-  logic                                  tlp_is_nph_c;
-  logic                                  tlp_is_nph_r;
-  logic                                  tlp_is_ph_c;
-  logic                                  tlp_is_ph_r;
-  logic                                  tlp_is_npd_c;
-  logic                                  tlp_is_npd_r;
-  logic                                  tlp_is_pd_c;
-  logic                                  tlp_is_pd_r;
-  logic                                  tlp_is_cpld_c;
-  logic                                  tlp_is_cpld_r;
-  //skid buffer axis signals
-  logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  logic                                  skid_axis_tvalid;
-  logic                                  skid_axis_tlast;
-  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
-  logic                                  skid_axis_tready;
-  // tlp pipeline axis bus
-  logic                 [DATA_WIDTH-1:0] pipeline_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] pipeline_axis_tkeep;
-  logic                                  pipeline_axis_tvalid;
-  logic                                  pipeline_axis_tlast;
-  logic                 [USER_WIDTH-1:0] pipeline_axis_tuser;
-  logic                                  pipeline_axis_tready;
-  // tlp second stage pipeline axis bus
-  logic                 [DATA_WIDTH-1:0] pipeline_stg2_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] pipeline_stg2_axis_tkeep;
-  logic                                  pipeline_stg2_axis_tvalid;
-  logic                                  pipeline_stg2_axis_tlast;
-  logic                 [USER_WIDTH-1:0] pipeline_stg2_axis_tuser;
-  logic                                  pipeline_stg2_axis_tready;
-  //phy response signals
-  // logic                 [DATA_WIDTH-1:0] phy_axis_tdata;
-  // logic                 [KEEP_WIDTH-1:0] phy_axis_tkeep;
-  // logic                                  phy_axis_tvalid;
-  // logic                                  phy_axis_tlast;
-  // logic                 [USER_WIDTH-1:0] phy_axis_tuser;
-  // logic                                  phy_axis_tready;
-  //tlp output axis signals
-  logic                 [DATA_WIDTH-1:0] tlp_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] tlp_axis_tkeep;
-  logic                                  tlp_axis_tvalid;
-  logic                                  tlp_axis_tlast;
-  logic                 [USER_WIDTH-1:0] tlp_axis_tuser;
-  logic                                  tlp_axis_tready;
-  //credits tracking signals
-  logic                 [          15:0] tlp_header_offset;
-  logic                 [           7:0] ph_credits_consumed_c;
-  logic                 [           7:0] ph_credits_consumed_r;
-  logic                 [          11:0] pd_credits_consumed_c;
-  logic                 [          11:0] pd_credits_consumed_r;
-  logic                 [           7:0] nph_credits_consumed_c;
-  logic                 [           7:0] nph_credits_consumed_r;
-  logic                 [          11:0] npd_credits_consumed_c;
-  logic                 [          11:0] npd_credits_consumed_r;
-  logic                 [           7:0] cplh_credits_consumed_c;
-  logic                 [           7:0] cplh_credits_consumed_r;
-  logic                 [          11:0] cpld_credits_consumed_c;
-  logic                 [          11:0] cpld_credits_consumed_r;
+  logic [          31:0] crc_output;
+  logic [          31:0] crc_reversed;
+  logic [          15:0] dllp_crc_out;
+  logic [          15:0] dllp_crc_reversed;
+
+
+  //axis signals
+  logic [DATA_WIDTH-1:0] tlp_axis_tdata;
+  logic [KEEP_WIDTH-1:0] tlp_axis_tkeep;
+  logic                  tlp_axis_tvalid;
+  logic                  tlp_axis_tlast;
+  logic [USER_WIDTH-1:0] tlp_axis_tuser;
+  logic                  tlp_axis_tready;
+
+
+  logic [DATA_WIDTH-1:0] skid_axis_tdata;
+  logic [KEEP_WIDTH-1:0] skid_axis_tkeep;
+  logic                  skid_axis_tvalid;
+  logic                  skid_axis_tlast;
+  logic [USER_WIDTH-1:0] skid_axis_tuser;
+  logic                  skid_axis_tready;
+
+  typedef struct {
+    //tlp nulled
+    logic        fc_start;
+    logic        tlp_nullified;
+    //transmit sequence logic
+    logic [15:0] next_transmit_seq;
+    logic [15:0] next_expected_seq_num;
+    logic [11:0] ackd_transmit_seq;
+    //crc helper signals
+    logic [31:0] crc_from_tlp;
+    logic [31:0] crc_calculated;
+    logic [31:0] dllp_lcrc;
+    logic [31:0] word_count;
+
+    //tlp type signals
+    logic                                    tlp_is_cplh;
+    logic                                    tlp_is_nph;
+    logic                                    tlp_is_ph;
+    logic                                    tlp_is_npd;
+    logic                                    tlp_is_pd;
+    logic                                    tlp_is_cpld;
+    //axis signals
+    logic [NumPipelines-1:0][DATA_WIDTH-1:0] axis_tdata;
+    logic [NumPipelines-1:0][KEEP_WIDTH-1:0] axis_tkeep;
+    logic [NumPipelines-1:0]                 axis_tvalid;
+    logic [NumPipelines-1:0]                 axis_tlast;
+    logic [NumPipelines-1:0][USER_WIDTH-1:0] axis_tuser;
+    logic [NumPipelines-1:0]                 axis_tready;
+    //credits tracking signals
+    logic [7:0]                              ph_credits_consumed;
+    logic [11:0]                             pd_credits_consumed;
+    logic [7:0]                              nph_credits_consumed;
+    logic [11:0]                             npd_credits_consumed;
+    logic [7:0]                              cplh_credits_consumed;
+    logic [11:0]                             cpld_credits_consumed;
+
+
+    dll_rx_st_e state;
+
+  } dllp2tlp_t;
+
+
+  dllp_union_t                 dll_packet;
+  pcie_tlp_header_dw0_t        tlp_dw0;
+  logic                 [15:0] tlp_header_offset;
+  logic                 [ 1:0] crc_byte_select;
+
+  dllp2tlp_t                   D;
+  dllp2tlp_t                   Q;
 
   //main sequential block
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state              <= ST_IDLE;
-      next_transmit_seq_r     <= '0;
-      next_expected_seq_num_r <= '0;
-      dllp_lcrc_r             <= '1;
-      crc_calculated_r        <= '1;
-      ph_credits_consumed_r   <= HdrMinCredits;
-      pd_credits_consumed_r   <= PdMinCredits;
-      nph_credits_consumed_r  <= HdrMinCredits;
-      npd_credits_consumed_r  <= PdMinCredits;
-      cplh_credits_consumed_r <= HdrMinCredits;
-      cpld_credits_consumed_r <= PdMinCredits;
-      tlp_nullified_r         <= '0;
-      fc_start_r              <= '0;
+      Q <= '{
+          state : ST_IDLE,
+          dllp_lcrc             : '1,
+          crc_calculated        : '1,
+          ph_credits_consumed : HdrMinCredits,
+          pd_credits_consumed : PdMinCredits,
+          nph_credits_consumed : HdrMinCredits,
+          npd_credits_consumed : PdMinCredits,
+          cplh_credits_consumed : HdrMinCredits,
+          cpld_credits_consumed : PdMinCredits,
+          default: 'd0
+      };
     end else begin
-      curr_state              <= next_state;
-      next_transmit_seq_r     <= next_transmit_seq_c;
-      next_expected_seq_num_r <= next_expected_seq_num_c;
-      dllp_lcrc_r             <= dllp_lcrc_c;
-      crc_calculated_r        <= crc_calculated_c;
-      ph_credits_consumed_r   <= ph_credits_consumed_c;
-      pd_credits_consumed_r   <= pd_credits_consumed_c;
-      nph_credits_consumed_r  <= nph_credits_consumed_c;
-      npd_credits_consumed_r  <= npd_credits_consumed_c;
-      cplh_credits_consumed_r <= cplh_credits_consumed_c;
-      cpld_credits_consumed_r <= cpld_credits_consumed_c;
-      tlp_nullified_r         <= tlp_nullified_c;
-      fc_start_r              <= fc_start_c;
+      Q <= D;
     end
-    //non resetable
-    word_count_r   <= word_count_c;
-    tlp_is_cplh_r  <= tlp_is_cplh_c;
-    tlp_is_nph_r   <= tlp_is_nph_c;
-    tlp_is_ph_r    <= tlp_is_ph_c;
-    tlp_is_cpld_r  <= tlp_is_cpld_c;
-    tlp_is_npd_r   <= tlp_is_npd_c;
-    tlp_is_pd_r    <= tlp_is_pd_c;
-    crc_from_tlp_r <= crc_from_tlp_c;
   end
 
 
   always_comb begin : byteswap
     for (int i = 0; i < 8; i++) begin
-      crc_reversed[i]        = crc_calculated_r[7-i];
-      crc_reversed[i+8]      = crc_calculated_r[15-i];
-      crc_reversed[i+16]     = crc_calculated_r[23-i];
-      crc_reversed[i+24]     = crc_calculated_r[31-i];
-      dllp_crc_reversed[i]   = dllp_lcrc_r[7-i];
-      dllp_crc_reversed[i+8] = dllp_lcrc_r[15-i];
+      crc_reversed[i]        = Q.crc_calculated[7-i];
+      crc_reversed[i+8]      = Q.crc_calculated[15-i];
+      crc_reversed[i+16]     = Q.crc_calculated[23-i];
+      crc_reversed[i+24]     = Q.crc_calculated[31-i];
+      dllp_crc_reversed[i]   = Q.dllp_lcrc[7-i];
+      dllp_crc_reversed[i+8] = Q.dllp_lcrc[15-i];
     end
   end
 
 
   always_comb begin : main_combo
-    next_state              = curr_state;
-    dllp_lcrc_c             = dllp_lcrc_r;
-    crc_calculated_c        = crc_calculated_r;
-    crc_byte_select         = '0;
-    crc_from_tlp_c          = crc_from_tlp_r;
-    word_count_c            = word_count_r;
-    tlp_is_cplh_c           = tlp_is_cplh_r;
-    tlp_is_nph_c            = tlp_is_nph_r;
-    tlp_is_ph_c             = tlp_is_ph_r;
-    tlp_is_cpld_c           = tlp_is_cpld_r;
-    tlp_is_npd_c            = tlp_is_npd_r;
-    tlp_is_pd_c             = tlp_is_pd_r;
-    skid_axis_tready        = '0;
-    tlp_dw0                 = '0;
-    dll_packet              = '0;
-    tlp_header_offset       = '0;
-    tlp_nullified_c         = tlp_nullified_r;
-    fc_start_c              = '0;
+    D                 = Q;
+    crc_byte_select   = '0;
+    skid_axis_tready  = '0;
+    tlp_dw0           = '0;
+    dll_packet        = '0;
+    tlp_header_offset = '0;
+    D.fc_start        = '0;
     //tlp axis signals
-    tlp_axis_tdata          = '0;
-    tlp_axis_tkeep          = '0;
-    tlp_axis_tvalid         = '0;
-    tlp_axis_tlast          = '0;
-    tlp_axis_tuser          = '0;
-    ph_credits_consumed_c   = ph_credits_consumed_r;
-    pd_credits_consumed_c   = pd_credits_consumed_r;
-    nph_credits_consumed_c  = nph_credits_consumed_r;
-    npd_credits_consumed_c  = npd_credits_consumed_r;
-    cplh_credits_consumed_c = cplh_credits_consumed_r;
-    cpld_credits_consumed_c = cpld_credits_consumed_r;
-    next_transmit_seq_c     = next_transmit_seq_r;
-    next_expected_seq_num_c = next_expected_seq_num_r;
-    case (curr_state)
+    tlp_axis_tdata    = '0;
+    tlp_axis_tkeep    = '0;
+    tlp_axis_tvalid   = '0;
+    tlp_axis_tlast    = '0;
+    tlp_axis_tuser    = '0;
+
+    if (skid_axis_tvalid && skid_axis_tready) begin
+
+      for (int pipeline_idx = 0; pipeline_idx < NumPipelines; pipeline_idx++) begin
+        if (pipeline_idx == 0) begin
+          D.axis_tdata[pipeline_idx]  = skid_axis_tdata;
+          D.axis_tkeep[pipeline_idx]  = skid_axis_tkeep;
+          D.axis_tvalid[pipeline_idx] = skid_axis_tvalid;
+          D.axis_tlast[pipeline_idx]  = skid_axis_tlast;
+          D.axis_tuser[pipeline_idx]  = skid_axis_tuser;
+          D.axis_tready[pipeline_idx] = skid_axis_tready;
+        end else begin
+          D.axis_tdata[pipeline_idx]  = Q.axis_tdata[pipeline_idx-1];
+          D.axis_tkeep[pipeline_idx]  = Q.axis_tkeep[pipeline_idx-1];
+          D.axis_tvalid[pipeline_idx] = Q.axis_tvalid[pipeline_idx-1];
+          D.axis_tlast[pipeline_idx]  = Q.axis_tlast[pipeline_idx-1];
+          D.axis_tuser[pipeline_idx]  = Q.axis_tuser[pipeline_idx-1];
+          D.axis_tready[pipeline_idx] = Q.axis_tready[pipeline_idx-1];
+        end
+      end
+
+
+
+
+
+    end
+    case (Q.state)
       ST_IDLE: begin
-        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE) && s_axis_tvalid;
+        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE);
         if (skid_axis_tready && skid_axis_tvalid && !skid_axis_tlast) begin
           //store incoming sequence number
-          next_transmit_seq_c = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
+          D.next_transmit_seq = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
           crc_byte_select     = 2'b11;
           //tlp type
-          tlp_is_nph_c        = '0;
-          tlp_is_pd_c         = '0;
-          tlp_is_ph_c         = '0;
-          tlp_is_npd_c        = '0;
-          tlp_is_cplh_c       = '0;
-          tlp_is_cpld_c       = '0;
-          crc_calculated_c    = '1;
-          word_count_c        = '0;
+          D.tlp_is_nph        = '0;
+          D.tlp_is_pd         = '0;
+          D.tlp_is_ph         = '0;
+          D.tlp_is_npd        = '0;
+          D.tlp_is_cplh       = '0;
+          D.tlp_is_cpld       = '0;
+          D.crc_calculated    = '1;
+          D.word_count        = '0;
           //state control
-          next_state          = ST_CHECK_TLP_TYPE;
+          D.state             = ST_CHECK_TLP_TYPE;
         end
       end
       ST_CHECK_TLP_TYPE: begin
-        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
+        skid_axis_tready = tlp_axis_tready && skid_axis_tvalid;
         crc_byte_select  = 2'b11;
         if (skid_axis_tready) begin
-          crc_calculated_c = crc_output;
+          D.crc_calculated = crc_output;
           //shift data_in to account for seq_num offset
-          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          tlp_axis_tdata   = {skid_axis_tdata[15:0], Q.axis_tdata[0][31:16]};
           tlp_axis_tkeep   = '1;
           tlp_axis_tvalid  = '1;
           tlp_dw0          = tlp_axis_tdata;
-          word_count_c     = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+          D.word_count     = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
           //handle posted request
           if (tlp_dw0.byte0 inside {MRd, MRdLk, IORd, CfgRd0, CfgRd1, TCfgRd}) begin
-            tlp_is_nph_c = '1;
+            D.tlp_is_nph = '1;
           end else if (tlp_dw0.byte0 inside {MWr, MsgD}) begin
-            tlp_is_pd_c = '1;
+            D.tlp_is_pd = '1;
           end else if (tlp_dw0.byte0 inside {Msg}) begin
-            tlp_is_ph_c = '1;
+            D.tlp_is_ph = '1;
           end else if (tlp_dw0.byte0 inside {IOWr, CfgWr0, CfgWr1,TCfgWr,FetchAdd,
           Swap,CAS}) begin
-            tlp_is_npd_c = '1;
+            D.tlp_is_npd = '1;
           end else if (tlp_dw0.byte0 inside {Cpl, CplLk}) begin
-            tlp_is_cplh_c = '1;
+            D.tlp_is_cplh = '1;
           end else if (tlp_dw0.byte0 inside {CplD, CplDLk}) begin
-            tlp_is_cpld_c = '1;
+            D.tlp_is_cpld = '1;
           end
           //next state
-          next_state = ST_TLP_STREAM;
+          D.state = ST_TLP_STREAM;
         end
       end
       ST_TLP_STREAM: begin
-        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
+        skid_axis_tready = tlp_axis_tready && skid_axis_tvalid;
         crc_byte_select  = 2'b11;
-        if (tlp_axis_tready && s_axis_tvalid) begin
-          crc_calculated_c = crc_output;
-          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+        if (skid_axis_tready) begin
+          D.crc_calculated = crc_output;
+          tlp_axis_tdata   = {skid_axis_tdata[15:0], Q.axis_tdata[0][31:16]};
           tlp_axis_tkeep   = skid_axis_tkeep;
           tlp_axis_tvalid  = '1;
-          if (s_axis_tlast) begin
-            word_count_c    = word_count_r;
+          if (skid_axis_tlast) begin
+            D.word_count    = Q.word_count;
             tlp_axis_tvalid = '0;
-            next_state      = ST_TLP_LAST;
+            D.state         = ST_TLP_LAST;
             //if last packet of tlp, store crc from phy
-            case (s_axis_tkeep)
+            case (skid_axis_tkeep)
               4'b0001: begin
                 crc_byte_select = '1;
                 tlp_axis_tvalid = '1;
-                crc_from_tlp_c  = {s_axis_tdata[7:0], skid_axis_tdata[31:8]};
+                D.crc_from_tlp  = {s_axis_tdata[7:0], skid_axis_tdata[31:8]};
               end
               4'b0011: begin
                 crc_byte_select = 2'b11;
-                crc_from_tlp_c  = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
+                D.crc_from_tlp  = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
               end
               4'b0111: begin
                 crc_byte_select = 2'b11;
-                crc_from_tlp_c  = {s_axis_tdata[23:0], skid_axis_tdata[31:24]};
+                D.crc_from_tlp  = {s_axis_tdata[23:0], skid_axis_tdata[31:24]};
               end
               4'b1111: begin
                 crc_byte_select = '1;
-                crc_from_tlp_c  = s_axis_tdata;
+                D.crc_from_tlp  = s_axis_tdata;
               end
               default: begin
               end
@@ -342,8 +307,8 @@ module dllp2tlp
       ST_TLP_LAST: begin
         crc_byte_select = 2'b11;
         if (tlp_axis_tready) begin
-          crc_calculated_c = crc_output;
-          next_state = ST_CHECK_CRC;
+          D.crc_calculated = crc_output;
+          D.state = ST_CHECK_CRC;
           //if last packet of tlp, store crc from phy
           case (skid_axis_tkeep)
             4'b0001: begin
@@ -365,13 +330,13 @@ module dllp2tlp
         end
       end
       ST_CHECK_CRC: begin
-        tlp_axis_tdata   = {pipeline_axis_tdata[15:0], pipeline_stg2_axis_tdata[31:16]};
+        tlp_axis_tdata   = {Q.axis_tdata[0][15:0], Q.axis_tdata[1][31:16]};
         tlp_axis_tvalid  = '1;
         tlp_axis_tlast   = '1;
-        crc_calculated_c = '1;
+        D.crc_calculated = '1;
         //default to dllp ack state
-        next_state       = ST_SEND_ACK;
-        fc_start_c       = '1;
+        D.state          = ST_SEND_ACK;
+        D.fc_start       = '1;
         //assign tkeep based on last keep and alignement
         case (skid_axis_tkeep)
           4'b0001: begin
@@ -388,51 +353,51 @@ module dllp2tlp
           end
           default: begin
             //unknown keep value... null tlp buffer
-            tlp_nullified_c = '1;
+            D.tlp_nullified = '1;
             tlp_axis_tuser  = '1;
           end
         endcase
         //check crc
-        if ((crc_reversed == crc_from_tlp_r) && (next_expected_seq_num_r == next_transmit_seq_r)) begin
-          if (tlp_is_nph_r) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 8'h1;
-          end else if (tlp_is_npd_r) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 8'h1;
-            npd_credits_consumed_c = npd_credits_consumed_r +
-            (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
-          end else if (tlp_is_ph_r) begin
-            ph_credits_consumed_c = ph_credits_consumed_r + 8'h1;
-          end else if (tlp_is_pd_r) begin
-            ph_credits_consumed_c = ph_credits_consumed_r + 8'h1;
-            pd_credits_consumed_c = pd_credits_consumed_r +
-            (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
-          end else if (tlp_is_cplh_r) begin
-            cplh_credits_consumed_c = cplh_credits_consumed_r + 8'h1;
-          end else if (tlp_is_cpld_r) begin
-            cplh_credits_consumed_c = cplh_credits_consumed_r + 8'h1;
-            cpld_credits_consumed_c = cpld_credits_consumed_r +
-            (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
+        if ((crc_reversed == Q.crc_from_tlp) && (Q.next_transmit_seq == Q.next_transmit_seq)) begin
+          if (Q.tlp_is_nph) begin
+            D.nph_credits_consumed = Q.nph_credits_consumed + 8'h1;
+          end else if (Q.tlp_is_npd) begin
+            D.nph_credits_consumed = Q.nph_credits_consumed + 8'h1;
+            D.npd_credits_consumed = Q.npd_credits_consumed +
+            (Q.word_count >> 2 == '0 ? 1'b1 : Q.word_count >> 2);
+          end else if (Q.tlp_is_ph) begin
+            D.npd_credits_consumed = Q.ph_credits_consumed + 8'h1;
+          end else if (Q.tlp_is_pd) begin
+            D.npd_credits_consumed = Q.ph_credits_consumed + 8'h1;
+            D.pd_credits_consumed = Q.pd_credits_consumed +
+            (Q.word_count >> 2 == '0 ? 1'b1 : Q.word_count >> 2);
+          end else if (Q.tlp_is_cplh) begin
+            D.cplh_credits_consumed = Q.cplh_credits_consumed + 8'h1;
+          end else if (Q.tlp_is_cpld) begin
+            D.cplh_credits_consumed = Q.cplh_credits_consumed + 8'h1;
+            D.cpld_credits_consumed = Q.cpld_credits_consumed +
+            (Q.word_count >> 2 == '0 ? 1'b1 : Q.word_count >> 2);
           end
         end else begin
           //send nack... retry
           tlp_axis_tuser  = '1;
-          tlp_nullified_c = '1;
+          D.tlp_nullified = '1;
         end
       end
       ST_SEND_ACK: begin
-        fc_start_c = '1;
+        D.fc_start = '1;
         if (start_flow_control_ack_i) begin
-          if (!tlp_nullified_r) begin
-            next_expected_seq_num_c = next_expected_seq_num_r + 32'h1;
+          if (!Q.tlp_nullified) begin
+            D.next_expected_seq_num = Q.next_transmit_seq + 32'h1;
           end
-          tlp_is_nph_c     = '0;
-          tlp_is_pd_c      = '0;
-          tlp_is_ph_c      = '0;
-          tlp_is_npd_c     = '0;
-          tlp_is_cplh_c    = '0;
-          tlp_is_cpld_c    = '0;
-          crc_calculated_c = '1;
-          next_state       = ST_IDLE;
+          D.tlp_is_nph     = '0;
+          D.tlp_is_pd      = '0;
+          D.tlp_is_ph      = '0;
+          D.tlp_is_npd     = '0;
+          D.tlp_is_cplh    = '0;
+          D.tlp_is_cpld    = '0;
+          D.crc_calculated = '1;
+          D.state          = ST_IDLE;
         end
       end
       default: begin
@@ -526,90 +491,90 @@ module dllp2tlp
   );
 
   //axis pipeline skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (skid_axis_tdata),
-      .s_axis_tkeep (skid_axis_tkeep),
-      .s_axis_tvalid(skid_axis_tvalid),
-      .s_axis_tready(),
-      .s_axis_tlast (skid_axis_tlast),
-      .s_axis_tuser (skid_axis_tuser),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .m_axis_tdata (pipeline_axis_tdata),
-      .m_axis_tkeep (pipeline_axis_tkeep),
-      .m_axis_tvalid(pipeline_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast (pipeline_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (pipeline_axis_tuser)
-  );
+  // axis_register #(
+  //     .DATA_WIDTH (DATA_WIDTH),
+  //     .KEEP_ENABLE('1),
+  //     .KEEP_WIDTH (KEEP_WIDTH),
+  //     .LAST_ENABLE('1),
+  //     .ID_ENABLE  ('0),
+  //     .ID_WIDTH   (1),
+  //     .DEST_ENABLE('0),
+  //     .DEST_WIDTH (1),
+  //     .USER_ENABLE('1),
+  //     .USER_WIDTH (USER_WIDTH),
+  //     .REG_TYPE   (SkidBuffer)
+  // ) axis_register_inst (
+  //     .clk          (clk_i),
+  //     .rst          (rst_i),
+  //     .s_axis_tdata (skid_axis_tdata),
+  //     .s_axis_tkeep (skid_axis_tkeep),
+  //     .s_axis_tvalid(skid_axis_tvalid),
+  //     .s_axis_tready(),
+  //     .s_axis_tlast (skid_axis_tlast),
+  //     .s_axis_tuser (skid_axis_tuser),
+  //     .s_axis_tid   ('0),
+  //     .s_axis_tdest ('0),
+  //     .m_axis_tdata (Q.axis_tdata[0]),
+  //     .m_axis_tkeep (pipeline_axis_tkeep),
+  //     .m_axis_tvalid(pipeline_axis_tvalid),
+  //     .m_axis_tready(skid_axis_tready),
+  //     .m_axis_tlast (pipeline_axis_tlast),
+  //     .m_axis_tid   (),
+  //     .m_axis_tdest (),
+  //     .m_axis_tuser (pipeline_axis_tuser)
+  // );
 
 
   //axis pipeline skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_register_pipeline_stage_2_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (pipeline_axis_tdata),
-      .s_axis_tkeep (pipeline_axis_tkeep),
-      .s_axis_tvalid(pipeline_axis_tvalid),
-      .s_axis_tready(),
-      .s_axis_tlast (pipeline_axis_tlast),
-      .s_axis_tuser (pipeline_axis_tuser),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .m_axis_tdata (pipeline_stg2_axis_tdata),
-      .m_axis_tkeep (pipeline_stg2_axis_tkeep),
-      .m_axis_tvalid(pipeline_stg2_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast (pipeline_stg2_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (pipeline_stg2_axis_tuser)
-  );
+  // axis_register #(
+  //     .DATA_WIDTH (DATA_WIDTH),
+  //     .KEEP_ENABLE('1),
+  //     .KEEP_WIDTH (KEEP_WIDTH),
+  //     .LAST_ENABLE('1),
+  //     .ID_ENABLE  ('0),
+  //     .ID_WIDTH   (1),
+  //     .DEST_ENABLE('0),
+  //     .DEST_WIDTH (1),
+  //     .USER_ENABLE('1),
+  //     .USER_WIDTH (USER_WIDTH),
+  //     .REG_TYPE   (SkidBuffer)
+  // ) axis_register_pipeline_stage_2_inst (
+  //     .clk          (clk_i),
+  //     .rst          (rst_i),
+  //     .s_axis_tdata (Q.axis_tdata[0]),
+  //     .s_axis_tkeep (pipeline_axis_tkeep),
+  //     .s_axis_tvalid(pipeline_axis_tvalid),
+  //     .s_axis_tready(),
+  //     .s_axis_tlast (pipeline_axis_tlast),
+  //     .s_axis_tuser (pipeline_axis_tuser),
+  //     .s_axis_tid   ('0),
+  //     .s_axis_tdest ('0),
+  //     .m_axis_tdata (pipeline_stg2_axis_tdata),
+  //     .m_axis_tkeep (pipeline_stg2_axis_tkeep),
+  //     .m_axis_tvalid(pipeline_stg2_axis_tvalid),
+  //     .m_axis_tready(skid_axis_tready),
+  //     .m_axis_tlast (pipeline_stg2_axis_tlast),
+  //     .m_axis_tid   (),
+  //     .m_axis_tdest (),
+  //     .m_axis_tuser (pipeline_stg2_axis_tuser)
+  // );
 
   //tlp crc instance
   pcie_lcrc16 tlp_crc16_inst (
-      .data  (pipeline_axis_tdata),
-      .crcIn (crc_calculated_r),
+      .data  (Q.axis_tdata[0]),
+      .crcIn (Q.crc_calculated),
       .select(crc_byte_select),
       .crcOut(crc_output)
   );
 
   //output assignments
-  assign next_transmit_seq_o    = next_transmit_seq_r;
-  assign tlp_nullified_o        = tlp_nullified_r;
-  assign ph_credits_consumed_o  = ph_credits_consumed_r;
-  assign pd_credits_consumed_o  = pd_credits_consumed_r;
-  assign nph_credits_consumed_o = nph_credits_consumed_r;
-  assign npd_credits_consumed_o = npd_credits_consumed_r;
-  assign start_flow_control_o   = fc_start_r;
+  assign next_transmit_seq_o    = Q.next_transmit_seq;
+  assign tlp_nullified_o        = Q.tlp_nullified;
+  assign ph_credits_consumed_o  = Q.ph_credits_consumed;
+  assign pd_credits_consumed_o  = Q.pd_credits_consumed;
+  assign nph_credits_consumed_o = Q.nph_credits_consumed;
+  assign npd_credits_consumed_o = Q.npd_credits_consumed;
+  assign start_flow_control_o   = Q.fc_start;
 
   /* verilator lint_on WIDTHEXPAND */
   /* verilator lint_on WIDTHTRUNC */

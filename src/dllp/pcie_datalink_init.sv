@@ -85,7 +85,7 @@ module pcie_datalink_init
           next_state   = ST_DL_INACTIVE;
           soft_reset_c = '1;
         end else begin
-          if (fc1_values_stored_i) begin
+          if (fc1_values_stored_i || fc2_values_stored_i) begin
             next_state    = ST_DL_INIT_FC2;
             link_status_c = DL_UP;
           end

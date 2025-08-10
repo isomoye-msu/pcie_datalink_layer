@@ -61,6 +61,10 @@ module axis_user_demux
   logic dllp_valid;
   logic tlp_valid;
 
+
+  logic tlp_ready;
+  logic dllp_ready;
+
   always @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       curr_state <= ST_IDLE;
@@ -89,16 +93,16 @@ module axis_user_demux
         end
       end
       ST_TLP: begin
-        s_axis_tready = m_tlp_axis_tready;
+        s_axis_tready = tlp_ready;
         tlp_valid = s_axis_tvalid;
-        if (s_axis_tvalid && s_axis_tready && s_axis_tlast) begin
+        if (s_axis_tvalid && tlp_ready && s_axis_tlast) begin
           next_state = ST_IDLE;
         end
       end
       ST_DLLP: begin
-        s_axis_tready = m_dllp_axis_tready;
+        s_axis_tready = dllp_ready;
         dllp_valid = s_axis_tvalid;
-        if (s_axis_tvalid && s_axis_tready && s_axis_tlast) begin
+        if (s_axis_tvalid && dllp_ready && s_axis_tlast) begin
           next_state = ST_IDLE;
         end
       end
@@ -129,7 +133,7 @@ module axis_user_demux
       .s_axis_tdata(s_axis_tdata),
       .s_axis_tkeep(s_axis_tkeep),
       .s_axis_tvalid(dllp_valid),
-      .s_axis_tready(),
+      .s_axis_tready(dllp_ready),
       .s_axis_tlast(s_axis_tlast),
       .s_axis_tid('0),
       .s_axis_tdest('0),
@@ -164,7 +168,7 @@ module axis_user_demux
       .s_axis_tdata(s_axis_tdata),
       .s_axis_tkeep(s_axis_tkeep),
       .s_axis_tvalid(tlp_valid),
-      .s_axis_tready(),
+      .s_axis_tready(tlp_ready),
       .s_axis_tlast(s_axis_tlast),
       .s_axis_tid('0),
       .s_axis_tdest('0),

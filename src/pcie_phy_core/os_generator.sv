@@ -78,9 +78,9 @@ module os_generator
     logic [31:0]                    skp_cnt;
     gen_os_struct_t                 gen_os_ctrl;
 
-  } os_get_t;
+  } os_gen_t;
 
-  os_get_t Q, D;
+  os_gen_t Q, D;
 
   // pcie_tsos_t        [             MAX_NUM_LANES-1:0] ordered_set_i;
 
