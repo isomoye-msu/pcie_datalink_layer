@@ -147,7 +147,7 @@ module data_handler
     // pkt_count_c              = pkt_count_r;
     word_count_c             = word_count_r;
     next_state               = curr_state;
-    data_valid_c             = data_valid_r;
+    data_valid_c             = '0;
     sync_header_c            = sync_header_r;
     data_k_c                 = data_k_r;
     data_c                   = data_r;
@@ -176,24 +176,40 @@ module data_handler
             data_k_c      = data_k_i;
             sync_header_c = sync_header_r;
             word_count_c  = '0;
-            if (data_i[7:0] == SDP) begin
-              is_dllp_c    = '1;
-              data_c       = data_i;
-              next_state   = ST_TX;
-              data_valid_c = data_valid_i;
-              word_count_c = 16'd3;
-            end else if (data_i[15:8] == SDP) begin
-              is_dllp_c    = '1;
-              data_c       = data_i;
-              next_state   = ST_TX;
-              data_valid_c = data_valid_i;
-              word_count_c = 16'd2;
+            //for each byte
+            for (int byte_idx = 0; byte_idx < BytesPerTransfer; byte_idx++) begin
+              if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
+                is_dllp_c    = '1;
+                data_c       = data_i;
+                next_state   = ST_TX;
+                data_valid_c = data_valid_i;
+                word_count_c = BytesPerTransfer -1 - byte_idx;
+              end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
+                is_tlp_c    = '1;
+                data_c       = data_i;
+                next_state   = ST_TX;
+                data_valid_c = data_valid_i;
+                word_count_c = BytesPerTransfer -1 - byte_idx;
+              end
             end
-            if (data_i[7:0] == STP) begin
-              is_tlp_c = '1;
-              next_state    = ST_TX;
-              data_valid_c  = data_valid_i;
-            end
+            // if (data_i[7:0] == SDP) begin
+            //   is_dllp_c    = '1;
+            //   data_c       = data_i;
+            //   next_state   = ST_TX;
+            //   data_valid_c = data_valid_i;
+            //   word_count_c = 16'd3;
+            // end else if (data_i[15:8] == SDP) begin
+            //   is_dllp_c    = '1;
+            //   data_c       = data_i;
+            //   next_state   = ST_TX;
+            //   data_valid_c = data_valid_i;
+            //   word_count_c = 16'd2;
+            // end
+            // if (data_i[7:0] == STP) begin
+            //   is_tlp_c = '1;
+            //   next_state    = ST_TX;
+            //   data_valid_c  = data_valid_i;
+            // end
           end else begin
             word_count_c = '0;
             if (check_sdp(data_i)) begin
@@ -224,27 +240,27 @@ module data_handler
           // data_handler_axis_tvalid = '1;
           data_c   = data_i;
           data_k_c = data_k_i;
-
+          data_handler_axis_tuser = is_tlp_r ? '1 : '0;
           if (data_k_i[0] && data_i[7:0] == ENDP) begin
-            is_dllp_c    = '1;
+            // is_dllp_c                = '1;
             data_handler_axis_tdata  = data_r[31:0];
             data_handler_axis_tkeep  = '1;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
             data_c                   = '0;
-            next_state   = ST_CHECK_END;
-            data_valid_c = data_valid_i;
+            next_state               = ST_CHECK_END;
+            data_valid_c             = data_valid_i;
           end else if (data_k_i[1] && data_i[15:8] == ENDP) begin
-            is_dllp_c    = '1;
+            // is_dllp_c                = '1;
             data_c                   = '0;
             data_handler_axis_tdata  = {data_r[23:0], data_i[7:0]};
             data_handler_axis_tkeep  = '1;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
-            next_state   = ST_CHECK_FRAME;
-            data_valid_c = data_valid_i;
+            next_state               = ST_CHECK_FRAME;
+            data_valid_c             = data_valid_i;
           end else if (data_k_i[2] && data_i[23:16] == ENDP) begin
-            is_dllp_c    = '1;
+            // is_dllp_c    = '1;
             // data_c                   = '0;
             // data_handler_axis_tdata  = {data_r[16:0], data_i[15:0]};
             // data_handler_axis_tkeep  = '1;
@@ -253,7 +269,7 @@ module data_handler
             next_state   = ST_CHECK_FRAME;
             data_valid_c = data_valid_i;
           end else if (data_k_i[3] && data_i[31:24] == ENDP) begin
-            is_dllp_c    = '1;
+            // is_dllp_c    = '1;
             // data_c                   = '0;
             // data_handler_axis_tdata  = {data_r[7:0], data_i[23:0]};
             // data_handler_axis_tkeep  = '1;
@@ -276,6 +292,7 @@ module data_handler
       end
       ST_CHECK_END: begin
         phy_fifo_rd_en_o = '1;
+        data_handler_axis_tuser = is_tlp_r ? '1 : '0;
         if (data_handler_axis_tready && data_valid_i) begin
           // word_count_c = word_count_r + 16'h4;
           // data_c                   = data_i;
@@ -286,6 +303,8 @@ module data_handler
           // data_handler_axis_tvalid = '1;
           data_c     = data_i;
           next_state = ST_CHECK_FRAME;
+          is_tlp_c                 = '0;
+          is_dllp_c                = '0;
 
           if (data_k_r[0] && data_r[7:0] == ENDP) begin
             is_dllp_c                = '1;

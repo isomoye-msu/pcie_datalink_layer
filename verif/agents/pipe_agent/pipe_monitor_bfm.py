@@ -91,6 +91,7 @@ class pipe_monitor_bfm():
         cocotb.start_soon(self.polling_state_start())
         cocotb.start_soon(self.recieve_data())
         cocotb.start_soon(self.tx_elec_idle_and_rx_standby())
+        cocotb.start_soon(self.flow_control_initialized())
         # cocotb.start_soon(self.receive_ts())
 
         for i in range(int(self.dut.MAX_NUM_LANES)):
@@ -162,6 +163,12 @@ class pipe_monitor_bfm():
                 # case 0b100:new_PCLKRate=1
                 # case 100: new_PCLKRate = 0.25
             # self.proxy.notify_PCLKRate_changed(new_PCLKRate)
+    async def flow_control_initialized(self):
+        while(True):
+            await RisingEdge(self.dut.clk_i)
+            if self.dut.fc_initialized_o == 1:
+                self.proxy.notify_fc_initialized()
+                break
 
     async def rate_changed(self):
         await self.build_connect_finished_e.wait()
@@ -1178,6 +1185,7 @@ class pipe_monitor_bfm():
         uvm_root().logger.info(self.name + " " + "Starting Data Recieve")
         width = 8
         dllp_found = 0
+        tlp_found = 0
         # flag = 0
         bytes_stored = []
         datak_stored = []
@@ -1217,14 +1225,30 @@ class pipe_monitor_bfm():
                                         self.dllp_received = []
                                 else:
                                     self.dllp_q.append(temp_scramble)
+                            if tlp_found == 1:
+                                if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
+                                    if(temp_byte == 0xFD):
+                                        tlp_found = 0
+                                        # print(f"dllp data {[hex(q) for q in self.dllp_q]}")
+                                        self.tlp_received = self.tlp_q
+                                        self.proxy.notify_tlp_received(self.tlp_received)
+                                        self.tlp_q = []
+                                        self.tlp_received = []
+                                else:
+                                    self.dllp_q.append(temp_scramble)
+
 
                             if not ((int(LogicArray(datak)[(4*lane)+byte_]) == 1) and temp_byte == 0x1c):
                                 if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
                                     if(temp_byte == 0x5C):
                                         dllp_found = 1
+                                    elif(temp_byte == 0xFB):
+                                        tlp_found = 1
                                         # print(f"dllp found, full word: {hex(data)}")
                                     bytes_stored.append(int(temp_byte))
                                 else:
+
+                                    tlp_found
                                     bytes_stored.append(temp_scramble)
                         if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
                         and LogicArray(datak)[(4*lane)+byte_] ):

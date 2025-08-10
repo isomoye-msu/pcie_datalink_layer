@@ -105,30 +105,41 @@ module pack_data
 
 
   always_comb begin : block_alignment_combinational_logic
-    D            = Q;
-    end_packet   = '0;
-    byte_shift   = (bytes_per_packet * Q.word_count);
-    D.data_valid = '0;
-    D.fifo_wr    = '0;
-    D.data_valid  = '0;
+    D                = Q;
+    end_packet       = '0;
+    bytes_per_packet = num_active_lanes_i * ((pipe_width_i) >> 3);
+    byte_shift       = (bytes_per_packet * Q.word_count);
+    D.data_valid     = '0;
+    D.fifo_wr        = '0;
     case (Q.state)
       ST_IDLE: begin
         if (phy_link_up_i && (|data_valid_i)) begin
-          D.word_count = '0;
-          if (Q.count == 0) begin
-            D.count       = 3'd1;
-            D.data[15:0]  = data_i[15:0];
-            D.data_k[1:0] = data_k_i[1:0];
-            D.sync_header = sync_header_i;
-            D.fifo_wr     = '1;
-          end else begin
-            D.count       = 3'd0;
-            D.data[31:16]  = data_i[15:0];
-            D.data_k[3:2] = data_k_i[1:0];
-            D.sync_header = sync_header_i;
-            D.fifo_wr     = '1;
-            D.data_valid  = '1;
+          D.count = Q.count + bytes_per_packet;
+          for (int byte_idx = 0; byte_idx < BytesPerTransfer; byte_idx++) begin
+            if (byte_idx < (pipe_width_i >> 3)) begin
+              D.data[8*(byte_idx+Q.count)+:8] = data_i[8*byte_idx+:8];
+              D.data_k[byte_idx+Q.count]    = data_k_i[byte_idx];
+              D.sync_header         = sync_header_i;
+            end
           end
+          if ((Q.count + bytes_per_packet) >= BytesPerTransfer) begin
+            D.count = '0;
+            D.data_valid = '1;
+          end
+          //   if (Q.count == 0) begin
+          //     D.count       = 3'd1;
+          //     D.data[15:0]  = data_i[15:0];
+          //     D.data_k[1:0] = data_k_i[1:0];
+          //     D.sync_header = sync_header_i;
+          //     D.fifo_wr     = '1;
+          //   end else begin
+          //     D.count       = 3'd0;
+          //     D.data[31:16] = data_i[15:0];
+          //     D.data_k[3:2] = data_k_i[1:0];
+          //     D.sync_header = sync_header_i;
+          //     D.fifo_wr     = '1;
+          //     D.data_valid  = '1;
+          //   end
         end
       end
       // ST_SEND_DATA: begin

@@ -16,6 +16,7 @@ from cocotb.types import Bit,Logic, LogicArray
 from cocotb.types.range import Range
 from cocotb.binary import BinaryRepresentation, BinaryValue
 from descrambler_scrambler import *
+from cocotbext.pcie.core.dllp import crc16
 # sys.path.put(str(Path("..").resolve()))
 # logging.basicConfig(level=logging.NOTSET)
 # logger = logging.getLogger()
@@ -738,33 +739,52 @@ class pipe_driver_bfm():
 #  temp
 #  temp_data
 
-    def send_tlp(self,tlp):
+    async def send_tlp(self,tlp):
+        if self.data:
+            while not self.data_empty.is_set():
+                await RisingEdge(self.dut.clk_i)
+            self.data_empty.clear()
+        self.data_sent.set()
     #uvm_info("pipe_driver_bfm",sv.sformatf("sing tlp, size= %d",len(tlp)),UVM_MEDIUM)
         if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
+            print(repr(tlp))
+            pkt = bytearray()
+            pkt.extend(struct.pack('>L', tlp.seq & 0xffff))
+            pkt += tlp.pack()
+            pkt += struct.pack('<H', (~crc16(pkt)) & 0xffff)
             self.data.append( STP_gen_1_2)
-            self.k_data.put( K)
-            for i in range(len(tlp)):
-                self.data.append( tlp[i])
-                self.k_data.put(D_K_character.D)
+            self.k_data.append( D_K_character.K)
+            for byte_ in pkt:
+                print(byte_)
+                self.data.append( byte_)
+                self.k_data.append(D_K_character.D)
             self.data.append( END_gen_1_2)
-            self.k_data.put( K)
+            self.k_data.append(D_K_character.K)
         elif (self.current_gen == gen_t.GEN3  or  self.current_gen == gen_t.GEN4  or  self.current_gen == gen_t.GEN5):
             tlp_length_field  = len(tlp) + 2
             tlp_gen3_symbol_0 = STP_gen_3 + tlp_length_field[0:3]
             tlp_gen3_symbol_1 = tlp_length_field[4:10] + 0b0
 
             self.data.append( tlp_gen3_symbol_0)
-            self.k_data.put( K  )
+            self.k_data.append( D_K_character.K  )
             self.data.append( tlp_gen3_symbol_1)
-            self.k_data.put(D_K_character.D)
+            self.k_data.append(D_K_character.D)
             #check if i need k_data queue in gen3 or not??
             #check on lenth constraint of TLP , is it different than earlier gens??? 
             for i in range(len(tlp)):
                 self.data.append( tlp[i])
-                self.k_data.put(D_K_character.D)
+                self.k_data.append(D_K_character.D)
+        await self.send_data()
+        self.data_sent.clear()
+
 
     async def send_dllp(self, dllp):
     #uvm_info("pipe_driver_bfm","sing dllp",UVM_MEDIUM)
+        if self.data:
+            while not self.data_empty.is_set():
+                await RisingEdge(self.dut.clk_i)
+            self.data_empty.clear()
+            
         self.data_sent.set()
         if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
                 self.data.append(SDP_gen_1_2)
@@ -788,17 +808,20 @@ class pipe_driver_bfm():
 
 
     async def rolling_idle_data(self):
+        ...
         # assert 1 == 0
-        while (1):
-            if not self.data:
-                for i in range(int(self.dut.MAX_NUM_LANES.value)):
-                    for j in range(4):
-                        self.data.append( 0x00)
-                        self.k_data.append(D_K_character.D)
-            else:
-                ...
-                # print(self.data)
-            await RisingEdge(self.dut.clk_i)
+        # while (1):
+        #     await self.data_empty.wait()
+        #     for i in range(int(self.dut.MAX_NUM_LANES.value)):
+        #         for j in range(4):
+        #             self.data.append( 0x00)
+        #             self.k_data.append(D_K_character.D)
+        #     self.data_empty.clear()
+        #     await self.send_data()
+            # else:
+            #     ...
+            #     # print(self.data)
+            # await RisingEdge(self.dut.clk_i)
         
    
     async def send_idle_data(self):
@@ -818,6 +841,8 @@ class pipe_driver_bfm():
                 self.data.append( 0x00)
                 self.k_data.append(D_K_character.D)
             await self.send_data()
+        # self.data = []
+        # self.k_data = []
                 # while not  self.data_sent.is_set()
                 # self.data_sent.clear()
             # await self.send_data()
@@ -874,8 +899,8 @@ class pipe_driver_bfm():
                 # print(self.driver_scrambler[lanenum].lfsr_1_2)
                 # print(self.current_gen)
             elif (check_k == D_K_character.K):
-                temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 temp = self.data.pop(0)
+                temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 data_scrambled.append(temp)
                 data_k.append(1)
         self.data_empty.set()

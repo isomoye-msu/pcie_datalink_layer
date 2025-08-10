@@ -8,6 +8,7 @@ from cocotbext.pcie.core import *
 from cocotbext.pcie.core.dllp import *
 from cocotbext.pcie.core.tlp import *
 from cocotbext.pcie.core.port import *
+from cocotb.triggers import *
 from pyuvm import *
 from cocotb_coverage import crv
 from pathlib import Path
@@ -28,6 +29,8 @@ def reverse_bits_in_byte(byte):
 class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
     def __init__(self, name):
         super().__init__(name)
+        self.port = None
+        self.other_port = None
         self.config = Configuration(
             width=16,
             polynomial=0x1DB7,
@@ -62,7 +65,8 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         await super().body()
         # while not self.port.fc_initialized:
         #     await NullTrigger()
-        await Timer(1000,'ns')
+        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),5000,'ns')
+        # await self.pipe_agent_config.fc_initialized.wait()
 
         # assert 1 == 0
 
@@ -83,21 +87,21 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
                 pkt = Dllp()
                 dllp_in = self.pipe_agent_config.dllp_received.pop(0)
                 dllp_int =  b'\x00\x00\x40\x10\x5e\x16'
-                print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
-                print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
+                # print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
+                # print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
                 # assert 1 == 0
                 # dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
                 pkt = pkt.unpack_crc(bytes(dllp_in))
-                print(f"dllp packet in {repr(pkt)}")
-                print(f"unpacking : {bytes(dllp_in[0:4])}")
+                # print(f"dllp packet in {repr(pkt)}")
+                # print(f"unpacking : {bytes(dllp_in[0:4])}")
                 await self.port.ext_recv(pkt)
                 dw , = struct.unpack_from('>L', bytes(dllp_in[0:4]))
-                print(f"unpacking : {hex(dw)}")
-                print(f"dllp type: {hex((dw >> 24) & 0xff)}")
-                self.pipe_agent_config.dllp_data_detected_e.clear()
+                # print(f"unpacking : {hex(dw)}")
+                # print(f"dllp type: {hex((dw >> 24) & 0xff)}")
                 self.pipe_agent_config.dllp_data_read_e.set()
                 count += 1
             else:
+                self.pipe_agent_config.dllp_data_detected_e.clear()
                 await self.pipe_agent_config.dllp_data_detected_e.wait()
                 # assert 1 == 0
 
@@ -133,55 +137,22 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         if isinstance(pkt,Dllp):
             print(repr(pkt))
-            # assert 1 == 0
             pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
             pipe_seq_item_h.dllp = pkt
             await self.start_item (pipe_seq_item_h)
             await self.finish_item (pipe_seq_item_h)
-            # seq_item = pkt
-            # seq_item.crc = self.calculator.checksum(
-            #     seq_item.pack()).to_bytes(2, 'big')
-            # crc_array = bytearray(seq_item.crc)
-            # # print(crc_array)
-            # crc_reverse = 0
-            # for byte in crc_array:
-            #     # print(hex(byte))
-            #     # print(hex((reverse_bits_in_byte(byte)>>1) & 0xff))
-            #     crc_reverse = (crc_reverse <<8) | ((reverse_bits_in_byte(byte)>>1) & 0xff)
-            # # assert 1 == 0
-            # data = seq_item.pack()
-            
-            # # print(bin(hex(crc_reverse)))
-            # # assert 1 == 0
-            # # print(crc_reverse.to_bytes(2, 'big'))
-            # data += crc_reverse.to_bytes(2, 'big')
-            # # print([hex(x) for x in data])
-            # print([hex(x) for x in pkt.pack_crc()])
-            # assert 1 == 0
-            # seq_item = pkt
-            # seq_item.crc = self.calculator.checksum(
-            #     seq_item.pack()).to_bytes(2, 'big')
-            # crc_array = bytearray(seq_item.crc)
-            # # print(crc_array)
-            # crc_reverse = 0
-            # for byte in crc_array:
-            #     # print(hex(byte))
-            #     # print(hex((reverse_bits_in_byte(byte)>>1) & 0xff))
-            #     crc_reverse = (crc_reverse <<8) | ((reverse_bits_in_byte(byte)>>1) & 0xff)
-            # # assert 1 == 0
-            # data = seq_item.pack()
-            
-            # # print(bin(hex(crc_reverse)))
-            # # assert 1 == 0
-            # # print(crc_reverse.to_bytes(2, 'big'))
-            # data += crc_reverse.to_bytes(2, 'big')
-            # # print(data)
-            # # self.calculator.checksum(data).to_bytes(2, 'big')
-            # frame = AxiStreamFrame(data)
-            # frame.tuser = 1
             
         elif isinstance(pkt,Tlp):
-            ...
+            # pkt = self.tx_queue.get_nowait()
+            tlp_pkt = pkt
+            tlp_pkt.seq = self.port.next_transmit_seq
+            self.port.log.debug("Send TLP %s", tlp_pkt)
+            self.port.next_transmit_seq = (self.port.next_transmit_seq + 1) & 0xfff
+            self.port.retry_buffer.put_nowait(tlp_pkt)
+            pipe_seq_item_h.pipe_operation = pipe_operation_t.TLP_TRANSFER
+            pipe_seq_item_h.tlp = tlp_pkt
+            await self.start_item (pipe_seq_item_h)
+            await self.finish_item (pipe_seq_item_h)
             # seq_item = pkt
             # seq_item.crc = self.calculator.checksum(
             #     seq_item.pack()).to_bytes(2, 'big')

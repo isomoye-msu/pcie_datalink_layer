@@ -14,6 +14,8 @@ class pipe_agent_config(uvm_component):
         self.has_coverage_monitor =  1  # type: bit  
         self.tses_received = [] 
         self.dllp_received = []
+        self.tlp_received = []
+        self.fc_initialized = Event()
         self.name = name
         self.new_width = None  # type: logic [1:0] 
         self.new_PCLKRate = 0.25  # type: logic [4:0] 

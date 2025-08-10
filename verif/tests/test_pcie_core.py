@@ -11,6 +11,7 @@ from pipe_agent_config import *
 from pipe_link_up_seq import *
 from pipe_speed_change_with_equalization_seq import *
 from pcie_flow_control_seq import *
+from pcie_enumeration_seq import *
 
 
 class OnFallingSignal:
@@ -73,10 +74,15 @@ class link_up_test(uvm_test):
         self.speed_change.pipe_agent_config = self.pipe_agent_config_h
         self.flow_control = pcie_flow_control_seq("flow control")
         self.flow_control.pipe_agent_config = self.pipe_agent_config_h
+        self.enumeration = pcie_enumeration_seq("enumeration")
+        self.enumeration.pipe_agent_config = self.pipe_agent_config_h
+        # self.enumeration.port = self.flow_control.port
+        # self.enumeration.other_port = self.flow_control.other_port
         
     async def run_phase(self):
         self.raise_objection()
         await with_timeout(self.test_all.start(),15000,'ns')
-        await with_timeout(self.flow_control.start(),15000,'ns')
+        # await with_timeout(self.flow_control.start(),15000,'ns')
+        await with_timeout(self.enumeration.start(),15000,'ns')
         # await with_timeout(self.speed_change.start(),15000,'ns')
         self.drop_objection()
