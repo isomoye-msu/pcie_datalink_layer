@@ -277,13 +277,16 @@ class pipe_monitor(uvm_monitor):
     def notify_tlp_received(self,tlp) :
         # Creating the sequnce item
         # pipe_seq_item pipe_seq_item
-        pipe_seq_item = pipe_seq_item("pipe_seq_item")
+        # pipe_seq_item = pipe_seq_item("pipe_seq_item")
         # Determining the detected operation
-        pipe_seq_item.pipe_operation = "TLP_TRANSFER"
+        # pipe_seq_item.pipe_operation = "TLP_TRANSFER"
         # Copying the data of the tlp to the sequence item
-        pipe_seq_item.tlp = tlp
+        # print(tlp)
+        self.pipe_agent_config.tlp_received.append(tlp)
+        self.pipe_agent_config.tlp_data_detected_e.set()
+        # pipe_seq_item.tlp = tlp
         # Sending the sequence item to the analysis components
-        self.ap_received.write(pipe_seq_item)
+        # self.ap_received.write(pipe_seq_item)
         #uvm_info(get_name(), "notify tlp_rec", UVM_MEDIUM)
         #uvm_info(get_name(), sv.sformatf("tlp_rec_size = %d",len(tlp)), UVM_MEDIUM)
         
@@ -496,6 +499,8 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                     await self.pipe_driver_bfm.send_tlp(pipe_seq_item_h.tlp)
                 case pipe_operation_t.DLLP_TRANSFER: 
                     await self.pipe_driver_bfm.send_dllp(pipe_seq_item_h.dllp)
+                case pipe_operation_t.SEND_SKP: 
+                    await self.pipe_driver_bfm.send_skp()
                 # PCLK_RATE_CHANGE: pipe_driver_bfm.change_pclk_rate(pipe_seq_item.pclk_rate)
                 # WIDTH_CHANGE: pipe_driver_bfm.change_width(pipe_seq_item.pipe_width)
                 # SPEED_CHANGE: pipe_driver_bfm.change_speed()
@@ -518,7 +523,8 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                     assert(self.pipe_driver_bfm.eval_feedback_was_asserted == 1)
                     # "Link eval feedback wasn't asserted"      
             self.seq_item_port.item_done()
-            uvm_root().logger.info(f"Exit pipe_driver run_phase: {pipe_seq_item_h.pipe_operation}")
+            if pipe_seq_item_h.pipe_operation != pipe_operation_t.IDLE_DATA_TRANSFER:
+                uvm_root().logger.info(f"Exit pipe_driver run_phase: {pipe_seq_item_h.pipe_operation}")
 
 
 class pipe_agent(uvm_agent):

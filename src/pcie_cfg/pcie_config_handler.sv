@@ -254,7 +254,7 @@ module pcie_config_handler
         s_axil_rready  = 1'b1;
         s_axil_bready  = 1'b0;
         if (s_axil_rvalid == 1'b1) begin
-          D.cpl_tlp    = gen_cpld(Q.tlp_hdr, s_axil_rdata);
+          D.cpl_tlp    = gen_cpl(Q.tlp_hdr, s_axil_rdata);
           D.word_count = '0;
           D.length     = 32'd2;
           D.state      = ST_SEND_CPL_TLP;

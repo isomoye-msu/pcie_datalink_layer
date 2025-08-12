@@ -17,6 +17,7 @@ from cocotb.types.range import Range
 from cocotb.binary import BinaryRepresentation, BinaryValue
 from descrambler_scrambler import *
 from cocotbext.pcie.core.dllp import crc16
+from crc import Calculator, Configuration,Crc32
 # sys.path.put(str(Path("..").resolve()))
 # logging.basicConfig(level=logging.NOTSET)
 # logger = logging.getLogger()
@@ -47,6 +48,15 @@ class pipe_driver_bfm():
         self.k_data = []
         self.data_sent = Event()
         self.data_empty = Event()
+        tlp_config = Configuration(
+        width=32,
+        polynomial=0x04C11DB7,
+        init_value=0xFFFFFFFF,
+        final_xor_value=0x00000000,
+        reverse_input=False,
+        reverse_output=True,
+        )
+        self.tlp_calculator = Calculator(tlp_config)
         # uvm_root().logger.info("pipe_link_up_seq"+ "Started pipe_link_up_seq")
         uvm_root().logger.info(name + " initiated") 
         
@@ -683,7 +693,7 @@ class pipe_driver_bfm():
                     # # print(Data[i])
                     temp_data |= (Data[i] << (pipe_max_width*i))
                     temp_char |=  Character[i] << (int(pipe_max_width/8) *i)
-                print(hex(temp_data))
+                # print(hex(temp_data))
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
@@ -747,15 +757,14 @@ class pipe_driver_bfm():
         self.data_sent.set()
     #uvm_info("pipe_driver_bfm",sv.sformatf("sing tlp, size= %d",len(tlp)),UVM_MEDIUM)
         if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
-            print(repr(tlp))
-            pkt = bytearray()
-            pkt.extend(struct.pack('>L', tlp.seq & 0xffff))
+            # print(repr(tlp))
+            pkt = tlp.seq.to_bytes(2,'big')
             pkt += tlp.pack()
-            pkt += struct.pack('<H', (~crc16(pkt)) & 0xffff)
+            pkt += self.tlp_calculator.checksum(pkt).to_bytes(4,'big')
             self.data.append( STP_gen_1_2)
             self.k_data.append( D_K_character.K)
             for byte_ in pkt:
-                print(byte_)
+                # print(hex(byte_))
                 self.data.append( byte_)
                 self.k_data.append(D_K_character.D)
             self.data.append( END_gen_1_2)
@@ -823,10 +832,24 @@ class pipe_driver_bfm():
             #     # print(self.data)
             # await RisingEdge(self.dut.clk_i)
         
-   
+    async def send_skp(self):
+        if self.data:
+            while not self.data_empty.is_set():
+                await RisingEdge(self.dut.clk_i)
+            self.data_empty.clear()
+        self.data.append( 0xbc)
+        self.k_data.append(D_K_character.K)
+        for i in range(3):
+            self.data.append( 0x1c)
+            self.k_data.append(D_K_character.K)
+        await self.send_data()
+        # self.data = []
+        # self.k_data = []
+
     async def send_idle_data(self):
         # assert 1 == 0
         if self.data:
+            return
             while not self.data_empty.is_set():
                 await RisingEdge(self.dut.clk_i)
             self.data_empty.clear()
@@ -840,7 +863,7 @@ class pipe_driver_bfm():
             for j in range(4):
                 self.data.append( 0x00)
                 self.k_data.append(D_K_character.D)
-            await self.send_data()
+        await self.send_data()
         # self.data = []
         # self.k_data = []
                 # while not  self.data_sent.is_set()
@@ -900,9 +923,18 @@ class pipe_driver_bfm():
                 # print(self.current_gen)
             elif (check_k == D_K_character.K):
                 temp = self.data.pop(0)
-                temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 data_scrambled.append(temp)
                 data_k.append(1)
+                if(temp == 0xbc ):
+                    reset_next_byte = 1
+                    self.driver_scrambler[0].reset_lfsr(self.current_gen)
+                    temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
+                elif(temp == 0x1c ): ##skip
+                    ...
+                    # temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
+                    # data_scrambled.append(temp)
+                else:
+                    temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
         self.data_empty.set()
         # assert 1 == 0
         num_lanes = int(self.dut.num_active_lanes_i)

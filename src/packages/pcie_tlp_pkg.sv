@@ -135,10 +135,10 @@ package pcie_tlp_pkg;
 
 
   typedef struct packed {
-    common_tlp_hdr_t word_0;
-    read_req_dw_1_t  word_1;
-    tlp_hdr_word_2_t word_2;
     tlp_hdr_word_3_t word_3;
+    tlp_hdr_word_2_t word_2;
+    read_req_dw_1_t  word_1;
+    common_tlp_hdr_t word_0;
   } tlp_hdr_t;
 
   typedef union packed {
@@ -199,8 +199,9 @@ package pcie_tlp_pkg;
       temp_cpl.dw_0.byte0 = CplD;
       {temp_cpl.dw_0.byte2.Length1, temp_cpl.dw_0.byte3.Length0} = 10'h01;
       {temp_cpl.dw_1.byte2.byte_count, temp_cpl.dw_1.byte3.byte_count} = 12'h004;
-      {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} = 16'h0030;
-      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_2[6:0];
+      {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} =
+      {tlp_hdr_in.word_2.byte_0,tlp_hdr_in.word_2.byte_2};
+      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_1[6:0];
       temp_cpl.dw_2.byte2.tag = tlp_hdr_in.word_1.tag;
       {temp_cpl.dw_2.byte0.requester_id,temp_cpl.dw_2.byte1.requester_id} =
       tlp_hdr_in.word_1.requester_id;
@@ -220,8 +221,9 @@ package pcie_tlp_pkg;
       temp_cpl.dw_0.byte0 = Cpl;
       {temp_cpl.dw_0.byte2.Length1, temp_cpl.dw_0.byte3.Length0} = 10'h00;
       {temp_cpl.dw_1.byte2.byte_count, temp_cpl.dw_1.byte3.byte_count} = 12'h000;
-      {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} = 16'h0030;
-      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_2[6:0];
+      {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} = 
+      {tlp_hdr_in.word_2.byte_0,tlp_hdr_in.word_2.byte_2};
+      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_1[6:0];
       temp_cpl.dw_2.byte2.tag = tlp_hdr_in.word_1.tag;
       {temp_cpl.dw_2.byte0.requester_id,temp_cpl.dw_2.byte1.requester_id} =
       tlp_hdr_in.word_1.requester_id;

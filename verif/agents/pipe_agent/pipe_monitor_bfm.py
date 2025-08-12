@@ -1144,7 +1144,7 @@ class pipe_monitor_bfm():
                             return
         for i in range(start_lane, end_lane):
             ts[i].TS_gen = 0
-            print(repr(ts[i]))
+            # print(repr(ts[i]))
         self.proxy.notify_tses_received(ts)
 
     async def tx_elec_idle_and_rx_standby(self):
@@ -1235,7 +1235,7 @@ class pipe_monitor_bfm():
                                         self.tlp_q = []
                                         self.tlp_received = []
                                 else:
-                                    self.dllp_q.append(temp_scramble)
+                                    self.tlp_q.append(temp_scramble)
 
 
                             if not ((int(LogicArray(datak)[(4*lane)+byte_]) == 1) and temp_byte == 0x1c):
@@ -1397,11 +1397,11 @@ class pipe_monitor_bfm():
                             # bytes_stored = []
                             # datak_stored = []
             await RisingEdge(self.dut.clk_i)
-        print(f"dllp data first {[hex(q) for q in self.dllp_q]}")
+        # print(f"dllp data first {[hex(q) for q in self.dllp_q]}")
         if self.dllp_done:
             self.start_dllp = 0
             self.dllp_done = 0
-            print(f"dllp data {[hex(q) for q in self.dllp_q]}")
+            # print(f"dllp data {[hex(q) for q in self.dllp_q]}")
             # assert 1 == 0
             self.dllp_received = self.dllp_q
             await self.proxy.notify_dllp_received(self.dllp_received)

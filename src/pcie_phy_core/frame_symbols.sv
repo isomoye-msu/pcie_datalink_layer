@@ -166,7 +166,8 @@ module frame_symbols
         end
       end
       ST_FRAME_STREAM: begin
-        if (phy_axis_tready && s_axis_tvalid) begin
+        s_axis_tready   = phy_axis_tready;
+        if (s_axis_tready && s_axis_tvalid) begin
           s_axis_tready   = '1;
           phy_axis_tvalid = '1;
           phy_axis_tdata  = {s_axis_tdata[23:0], buffer_axis_tdata[31:24]};
@@ -349,7 +350,7 @@ module frame_symbols
       .m_axis_tdata(buffer_axis_tdata),
       .m_axis_tkeep(buffer_axis_tkeep),
       .m_axis_tvalid(buffer_axis_tvalid),
-      .m_axis_tready(phy_axis_tready),
+      .m_axis_tready(phy_axis_tready && mux_axis_tvalid),
       .m_axis_tlast(buffer_axis_tlast),
       .m_axis_tid(),
       .m_axis_tdest(),

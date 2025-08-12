@@ -31,13 +31,13 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)
 
-        cocotb.start_soon(Clock(dut.clk, 2, units="ns").start())
+        cocotb.start_soon(Clock(dut.clk_i, 2, units="ns").start())
 
-        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis"), dut.clk, dut.rst)
-        #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk, dut.rst) for k in range(ports)]
-        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp"), dut.clk, dut.rst)
-        self.sinkdllp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk, dut.rst)
-        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk, dut.rst)
+        self.source = AxiStreamSource(AxiStreamBus.from_prefix(dut, "s_axis"), dut.clk_i, dut.rst)
+        #self.sink = [AxiStreamSink(AxiStreamBus.from_prefix(dut, f"m{k:02d}_axis"), dut.clk_i, dut.rst) for k in range(ports)]
+        self.sink = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_tlp"), dut.clk_i, dut.rst)
+        self.sinkdllp = AxiStreamSink(AxiStreamBus.from_prefix(dut, "m_axis_dllp"), dut.clk_i, dut.rst)
+        #self.monitor = AxiStreamMonitor(AxiStreamBus.from_prefix(dut, "axis"), dut.clk_i, dut.rst)
 
     def set_idle_generator(self, generator=None):
         if generator:
@@ -49,14 +49,14 @@ class TB:
 
     async def reset(self):
         self.dut.rst.setimmediatevalue(0)
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
         self.dut.rst.value = 1
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
         self.dut.rst.value = 0
-        await RisingEdge(self.dut.clk)
-        await RisingEdge(self.dut.clk)
+        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.clk_i)
 
 def cycle_pause():
     return itertools.cycle([1, 1, 1, 0])
@@ -107,13 +107,13 @@ async def run_test(dut):
     tb.set_backpressure_generator(None)
     
     
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
-    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
+    await RisingEdge(dut.clk_i)
 
 
     dut.link_status.value = 0x0002
-    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk_i)
     
     config = Configuration(
         width=32,
@@ -149,7 +149,7 @@ async def run_test(dut):
     test_frame = AxiStreamFrame(data)
     await tb.source.send(test_frame)
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
          
          
     length = random.randint(1, 32)
@@ -175,7 +175,7 @@ async def run_test(dut):
     test_frame = AxiStreamFrame(data)
     await tb.source.send(test_frame)
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
     #
     # data_in = await tb.sink.recv()
     #await axis_source.wait()
@@ -188,13 +188,13 @@ async def run_test(dut):
     #
             
     for i in range(20):
-         await RisingEdge(dut.clk)
+         await RisingEdge(dut.clk_i)
         
-    await RisingEdge(dut.clk)    
+    await RisingEdge(dut.clk_i)    
     # dut.ack_seq_num.value = 0x30
     # dut.ack_nack_vld.value = 1
-    # await RisingEdge(dut.clk)
+    # await RisingEdge(dut.clk_i)
     # dut.ack_nack_vld.value = 0
     # for i in range(20):
-    #     await RisingEdge(dut.clk)
+    #     await RisingEdge(dut.clk_i)
     # data_in = await tb.sink.recv()

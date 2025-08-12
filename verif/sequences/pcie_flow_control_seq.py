@@ -55,20 +55,29 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
     async def body(self):
         self.sequencer = ConfigDB().get(None, "", "pipe_sequencer")
         assert self.sequencer is not None
-        self.port = SimPort()
+        self.port = SimPort(fc_init=[[64, 1024, 64, 64, 64, 1024]]*8)
         self.other_port = SimPort()
         self.port.other =  self.other_port
         self.other_port.other = self.port
         self.port.handle_tx = self.handle_tx
         cocotb.start_soon(self.send_rolling_idle())
         cocotb.start_soon(self.recieve_dllp())
+        cocotb.start_soon(self.recieve_tlp())
         await super().body()
         # while not self.port.fc_initialized:
         #     await NullTrigger()
-        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),5000,'ns')
+        # await self.send_skp()
+        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),1000,'ns')
         # await self.pipe_agent_config.fc_initialized.wait()
 
         # assert 1 == 0
+    async def send_skp(self):
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
+        pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_SKP
+        # pipe_seq_item_h.tlp = tlp_pkt
+        await self.start_item (pipe_seq_item_h)
+        await self.finish_item (pipe_seq_item_h)
+
 
     async def send_rolling_idle(self):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
@@ -86,26 +95,47 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
             if self.pipe_agent_config.dllp_received:
                 pkt = Dllp()
                 dllp_in = self.pipe_agent_config.dllp_received.pop(0)
-                dllp_int =  b'\x00\x00\x40\x10\x5e\x16'
+                dllp_int =  b'\x00\x00\x40\x10\x5a\x16'
                 # print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
                 # print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
                 # assert 1 == 0
                 # dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
-                pkt = pkt.unpack_crc(bytes(dllp_in))
+                pkt = pkt.unpack_crc(bytes(dllp_int))
                 # print(f"dllp packet in {repr(pkt)}")
                 # print(f"unpacking : {bytes(dllp_in[0:4])}")
                 await self.port.ext_recv(pkt)
                 dw , = struct.unpack_from('>L', bytes(dllp_in[0:4]))
                 # print(f"unpacking : {hex(dw)}")
                 # print(f"dllp type: {hex((dw >> 24) & 0xff)}")
+                self.pipe_agent_config.dllp_data_detected_e.clear()
                 self.pipe_agent_config.dllp_data_read_e.set()
                 count += 1
+                # if self.port.fc_initialized:
+                #     break
             else:
-                self.pipe_agent_config.dllp_data_detected_e.clear()
                 await self.pipe_agent_config.dllp_data_detected_e.wait()
                 # assert 1 == 0
 
-
+    async def recieve_tlp(self):
+        count = 0
+        while (1):
+            # await self.pipe_agent_config.dllp_data_detected_e.wait()
+            if self.pipe_agent_config.tlp_received:
+                pkt = Tlp()
+                tlp_in = self.pipe_agent_config.tlp_received.pop(0)
+                # print([hex(j) for j in tlp_in])
+                data = tlp_in[2:len(tlp_in)-4]
+                # print([hex(j) for j in data])
+                pkt = pkt.unpack(bytes(data))
+                seq = int.from_bytes(tlp_in[:2],'big')
+                pkt.seq = int(hex(seq),0)
+                # print(repr(pkt))
+                await self.handle_tlp(pkt)
+                self.pipe_agent_config.tlp_data_read_e.set()
+                count += 1
+            else:
+                await self.pipe_agent_config.tlp_data_detected_e.wait()
+                self.pipe_agent_config.tlp_data_detected_e.clear()
         # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
         # pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
         # while(1):
@@ -114,18 +144,28 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
             # assert 1 == 0
 
 
-    async def send_tlp(self,tlp):
-        pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-        pipe_seq_item_h.pipe_operation = DLLP_TRANSFER
+    async def send_pkt(self,pkt):
+        print(f"compltere id: {pkt.completer_id}")
+        print(f"requester id: {pkt.requester_id}")
+        print(f"requester id: {pkt.dest_id}")
+        print(f"requester id type: {type(pkt.dest_id)}")
+        
+        await self.port.send(pkt)
+        # if pkt.dest_id == 
+
+
+        # dest_id=PcieId(0, 0, 0)dest_id=PcieId(0, 0, 0)
+        # pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
+        # pipe_seq_item_h.pipe_operation = DLLP_TRANSFER
 
 
 
-        seq_item =  pcie_seq_item("pcie_sequence_item")
-        await self.start_item(seq_item)
-        seq_item.is_tlp = True
-        seq_item.frame = AxiStreamFrame(tlp.pack())
-        await self.finish_item(seq_item)
-        self.result = seq_item.results
+        # seq_item =  pcie_seq_item("pcie_sequence_item")
+        # await self.start_item(seq_item)
+        # seq_item.is_tlp = True
+        # seq_item.frame = AxiStreamFrame(tlp.pack())
+        # await self.finish_item(seq_item)
+        # self.result = seq_item.results
     
     
     async def handle_tx(self, pkt):
@@ -136,7 +176,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         # self.log.info("dllp transmit %s", repr(pkt))
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         if isinstance(pkt,Dllp):
-            print(repr(pkt))
+            # print(f"handle tx: {repr(pkt)}")
             pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
             pipe_seq_item_h.dllp = pkt
             await self.start_item (pipe_seq_item_h)
@@ -145,10 +185,10 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         elif isinstance(pkt,Tlp):
             # pkt = self.tx_queue.get_nowait()
             tlp_pkt = pkt
-            tlp_pkt.seq = self.port.next_transmit_seq
-            self.port.log.debug("Send TLP %s", tlp_pkt)
-            self.port.next_transmit_seq = (self.port.next_transmit_seq + 1) & 0xfff
-            self.port.retry_buffer.put_nowait(tlp_pkt)
+            # tlp_pkt.seq = self.port.next_transmit_seq
+            # self.port.log.debug("Send TLP %s", tlp_pkt)
+            # self.port.next_transmit_seq = (self.port.next_transmit_seq + 1) & 0xfff
+            # self.port.retry_buffer.put_nowait(tlp_pkt)
             pipe_seq_item_h.pipe_operation = pipe_operation_t.TLP_TRANSFER
             pipe_seq_item_h.tlp = tlp_pkt
             await self.start_item (pipe_seq_item_h)

@@ -40,6 +40,8 @@ class pipe_agent_config(uvm_component):
         self.idle_data_detected_e = Event('idle_data_detected_e')  # type: event
         self.dllp_data_detected_e = Event('dllp_data_detected_e')  # type: event  
         self.dllp_data_read_e = Event('dllp_data_read_e')  # type: event   
+        self.tlp_data_detected_e = Event('tlp_data_detected_e')  # type: event  
+        self.tlp_data_read_e = Event('tlp_data_read_e')  # type: event   
         self.detected_posedge_clk_e = Event('detected_posedge_clk_e')  # type: event  
         self.detected_exit_electricle_idle_e = Event('detected_exit_electricle_idle_e')  # type: event  
         self.power_down_change_e = Event('power_down_change_e')  # type: event  
