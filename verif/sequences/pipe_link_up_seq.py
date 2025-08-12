@@ -727,13 +727,9 @@ class pipe_link_up_seq(pipe_base_seq, crv.Randomized):
             uvm_root().logger.info(self.name + " one_idle_data_received = 1")        
             
         async def idle_items():
-            nonlocal one_idle_data_received
-            pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
-            while not one_idle_data_received.is_set():
+            ...
+            for i in range(1000):
                 await self.start_item(pipe_seq_item_h)
-                await self.finish_item(pipe_seq_item_h)
-                await self.start_item(pipe_seq_item_h)
-                pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_DATA
                 await self.finish_item(pipe_seq_item_h)
             
         async def idle_send():

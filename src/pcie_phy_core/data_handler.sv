@@ -328,7 +328,7 @@ module data_handler
             is_dllp_c                = '1;
             data_c                   = '0;
             data_handler_axis_tdata  = data_r[7:0];
-            data_handler_axis_tkeep  = '1;
+            data_handler_axis_tkeep  = 4'b0001;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
             next_state               = ST_CHECK_FRAME;
@@ -337,7 +337,7 @@ module data_handler
             is_dllp_c                = '1;
             data_c                   = '0;
             data_handler_axis_tdata  = data_r[23:8];
-            data_handler_axis_tkeep  = '1;
+            data_handler_axis_tkeep  = 4'b0011;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
             next_state               = ST_CHECK_FRAME;

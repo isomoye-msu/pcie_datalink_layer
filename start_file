@@ -1,0 +1,2 @@
+export PATH=/tools/C/research/tools/verilator/bin:$PATH
+export PATH=/tools/C/research/tools/Xilinx/Vivado/2022.1/bin:$PATH

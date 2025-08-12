@@ -35,11 +35,22 @@ targets:
       cocotb_module : dllp_agent
       timescale: 1ns/1ns
       verilator_options:
-        - --trace-fst
+        - --trace-fst  --trace-structs
         - waiver.vlt
     filesets : [rtl,cocotb]
     toplevel : [dllp_receive]
 
+  sim_dllp2tlp:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_dllp2tlp
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst --trace-structs
+        - waiver.vlt
+    filesets : [rtl,cocotb]
+    toplevel : [dllp2tlp]
 
   synth:
     default_tool : vivado
