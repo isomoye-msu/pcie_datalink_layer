@@ -211,14 +211,14 @@ module pcie_flow_ctrl_init
         seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
           fc_axis_tvalid = '0;
-          if (fc1_values_stored_i || fc2_values_stored_i) begin
+          if (fc2_values_stored_i) begin
             seq_count_c = '0;
             next_state  = ST_FC2;
           end else if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c    = '0;
             fc_axis_tvalid = '0;
             next_state     = ST_FC1_P;
-            if (fc1_values_stored_i || fc2_values_stored_i) begin
+            if (fc2_values_stored_i) begin
               seq_count_c = '0;
               next_state  = ST_FC2;
             end
