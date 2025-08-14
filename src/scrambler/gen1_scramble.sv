@@ -61,17 +61,16 @@ module gen1_scramble
 
 
   assign lfsr_out[0] = Q.lfsr_in;
-  // assign data_k_out_o = '0;
-  //   assign scrambled_data[0] = data_in_swapped[7:0];
 
   for (genvar i = 0; i < 4; i++) begin : gen_byte_scramble
-    // logic [15:0] temp_lfsr_in;
-    // logic [15:0] temp_lfsr_out;
-    int pipe_idx;
+    int   pipe_idx;
+    logic reset_byte_scrambler;
     assign pipe_idx = ((pipe_width_i >> 3) - 1) - i;
-    assign temp_lfsr_in[i] = Q.scramble_reset[pipe_idx] ? '1 : lfsr_out[i];
-    // assign temp_lfsr_in[i] = Q.scramble_reset[pipe_idx] ? '1 : lfsr_out[i];
-    assign lfsr_out[i+1] = Q.scramble_reset[pipe_idx] ? '1 : temp_lfsr_out[i];
+    assign reset_byte_scrambler = Q.scramble_reset[pipe_idx] || (
+    (Q.scramble_reset >> (pipe_width_i >> 3) ) != '0);
+
+    assign temp_lfsr_in[i] = reset_byte_scrambler ? '1 : lfsr_out[i];
+    assign lfsr_out[i+1] = reset_byte_scrambler ? '1 : temp_lfsr_out[i];
     byte_scramble byte_scramble_inst (
         .disable_scrambling('0),
         .lfsr_q            (temp_lfsr_in[i]),
@@ -97,7 +96,7 @@ module gen1_scramble
     D.stop_scrambling = '0;
     D.lfsr_in         = lfsr_out[(pipe_width_i>>3)];
     D.skp_os          = '0;
-    D.data_valid[0] = data_valid_i;
+    D.data_valid[0]   = data_valid_i;
 
 
     if (data_valid_i) begin
@@ -140,6 +139,12 @@ module gen1_scramble
         if (byte_idx < (pipe_width_i >> 3)) begin
           //---------------------------------------------------------------------
           //first stage...
+
+
+          //handle case where lfsr out is reset needs to be reset at next
+          if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
+            D.lfsr_in = '1;
+          end
           if (Q.skp_os[byte_idx] != '0) begin
             //skip scrambler advance
             D.lfsr_out = Q.lfsr_out;
@@ -154,10 +159,6 @@ module gen1_scramble
                 end
               end
             end
-          end
-           //handle case where lfsr out is reset needs to be reset at next
-          if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
-            D.lfsr_in = '1;
           end
 
           if ((Q.byte_cnt + (byte_idx + 1)) > 32'd16) begin
