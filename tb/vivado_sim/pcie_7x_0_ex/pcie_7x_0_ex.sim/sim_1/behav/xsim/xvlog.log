@@ -1,3 +1,32 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/arbiter.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module arbiter
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_adapter.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module axis_adapter
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_arb_mux.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module axis_arb_mux
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_async_fifo.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module axis_async_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_fifo.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module axis_fifo
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_register.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module axis_register
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/imports/pcie_7x_0_pipe_clock.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pcie_7x_0_pipe_clock
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_crc8.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pcie_crc8
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_dllp_crc8.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pcie_dllp_crc8
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pcie_kc705_1.0.0/example/pcie_top_kc705.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pcie_top_kc705
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_wrapper.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module pipe_wrapper
+WARNING: [VRFC 10-2938] 'gt_txresetdone_reg' is already implicitly declared on line 349 [/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_wrapper.v:563]
+WARNING: [VRFC 10-2938] 'gt_rxresetdone_reg' is already implicitly declared on line 349 [/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_wrapper.v:564]
+INFO: [VRFC 10-311] analyzing module two_beats
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/priority_encoder.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module priority_encoder
+INFO: [VRFC 10-2263] Analyzing Verilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/xilinx_pcie_mmcm.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module xilinx_pci_mmcm
 INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_packages_1.0.0/pcie_datalink_pkg.sv" into library xil_defaultlib
 INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/tools/C/research/pcie/pcie_datalink_layer/build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_dllp_transmit_1.0.0/axis_retry_fifo.sv" into library xil_defaultlib
 INFO: [VRFC 10-311] analyzing module axis_retry_fifo

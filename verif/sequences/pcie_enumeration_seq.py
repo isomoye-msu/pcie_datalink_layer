@@ -214,6 +214,8 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
                 pipe_seq_item_h.tlp = tlp_pkt
                 await self.start_item (pipe_seq_item_h)
                 await self.finish_item (pipe_seq_item_h)
+            # await Timer(500,'ns')
+            # assert 1 == 0
 
 
     async def send_rolling_idle(self):

@@ -1,0 +1,4 @@
+INFO: [VRFC 10-163] Analyzing VHDL file "/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/imports/pci_exp_usrapp_cfg.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'pci_exp_usrapp_cfg'
+INFO: [VRFC 10-163] Analyzing VHDL file "/tools/C/research/pcie/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/imports/tests.vhd" into library xil_defaultlib
+INFO: [VRFC 10-3107] analyzing entity 'tests'
