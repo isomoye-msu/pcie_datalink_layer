@@ -99,7 +99,7 @@ module pcie_top_kc705 #(
 
 
   wire sys_clk;
-  parameter [5:0] LINK_CAP_MAX_LINK_WIDTH = MAX_NUM_LANES;
+
 
 
   //------------------------------------------------------------------------------
@@ -117,6 +117,7 @@ module pcie_top_kc705 #(
   // Parameters
   localparam CLK_RATE = 100;
   localparam MAX_NUM_LANES = 1;
+  parameter [5:0] LINK_CAP_MAX_LINK_WIDTH = MAX_NUM_LANES;
   localparam DATA_WIDTH = 32;
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;

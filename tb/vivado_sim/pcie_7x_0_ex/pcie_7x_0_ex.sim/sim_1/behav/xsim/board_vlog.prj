@@ -1,24 +1,18 @@
 # compile verilog/system verilog design source files
 verilog xil_defaultlib  \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/arbiter.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_fifo.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_adapter.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_arb_mux.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_async_fifo.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_fifo.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/axis_register.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/fifomem.v" \
 "../../../../imports/pcie_7x_0_pipe_clock.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_crc8.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_dllp_crc8.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pcie_kc705_1.0.0/example/pcie_top_kc705.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/src/pipe_wrapper.v" \
+"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_wrapper.v" \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/priority_encoder.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/rptr_empty.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_r2w.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_w2r.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/wptr_full.v" \
-"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/src/xilinx_pcie_mmcm.v" \
+"../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/xilinx_pcie_mmcm.v" \
 
 sv xil_defaultlib  \
 "../../../../../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_packages_1.0.0/pcie_datalink_pkg.sv" \

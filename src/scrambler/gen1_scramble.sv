@@ -140,12 +140,6 @@ module gen1_scramble
         if (byte_idx < (pipe_width_i >> 3)) begin
           //---------------------------------------------------------------------
           //first stage...
-
-
-          //handle case where lfsr out is reset needs to be reset at next
-          if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
-            D.lfsr_in = '1;
-          end
           if (Q.skp_os[byte_idx] != '0) begin
             //skip scrambler advance
             D.lfsr_out = Q.lfsr_out;
@@ -160,6 +154,10 @@ module gen1_scramble
                 end
               end
             end
+          end
+           //handle case where lfsr out is reset needs to be reset at next
+          if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
+            D.lfsr_in = '1;
           end
 
           if ((Q.byte_cnt + (byte_idx + 1)) > 32'd16) begin

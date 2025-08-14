@@ -58,7 +58,7 @@
     <Option Name="IPStaticSourceDir" Val="$PIPUSERFILESDIR/ipstatic"/>
     <Option Name="EnableBDX" Val="FALSE"/>
     <Option Name="DSABoardId" Val="kc705"/>
-    <Option Name="WTXSimLaunchSim" Val="211"/>
+    <Option Name="WTXSimLaunchSim" Val="267"/>
     <Option Name="WTModelSimLaunchSim" Val="0"/>
     <Option Name="WTQuestaLaunchSim" Val="0"/>
     <Option Name="WTIesLaunchSim" Val="0"/>
@@ -90,13 +90,6 @@
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_axis_1.0.0/rtl/arbiter.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_fifo.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -138,13 +131,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/fifomem.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_crc8.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -159,7 +145,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/src/pipe_wrapper.v">
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_wrapper.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -173,35 +159,7 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/rptr_empty.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_r2w.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_w2r.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/wptr_full.v">
-        <FileInfo>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/src/xilinx_pcie_mmcm.v">
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/xilinx_pcie_mmcm.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="implementation"/>
@@ -543,6 +501,54 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_fifo.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/fifomem.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/rptr_empty.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_r2w.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_w2r.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/wptr_full.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PSRCDIR/sources_1/ip/pcie_7x_0/pcie_7x_0.xci">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -553,7 +559,71 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_bidir_fifo.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_bidir_ramif_fifo.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/fifomem_dp.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <File Path="$PPRDIR/imports/pcie_7x_0_pipe_clock.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_ptr.v">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/Crc16Gen.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_bram_1.0.0/bram_dp.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_bram_1.0.0/bram_sp.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_lcrc32.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -576,38 +646,6 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/imports/hierarchy.txt"/>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_bidir_fifo.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/async_bidir_ramif_fifo.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/sync_ptr.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/async_fifo_1.1.0-r1/rtl/fifomem_dp.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_phy_receive_1.0.0/synchronous_fifo.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -640,30 +678,6 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/src/pipe_clock.v">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/pcie_lcrc32.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_crc_1.0.0/Crc16Gen.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_converters_1.0.0/pcie_to_axis_converter.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
@@ -673,22 +687,6 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_converters_1.0.0/axis_to_pcie_converter.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_bram_1.0.0/bram_sp.sv">
-        <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="UsedIn" Val="synthesis"/>
-          <Attr Name="UsedIn" Val="implementation"/>
-          <Attr Name="UsedIn" Val="simulation"/>
-        </FileInfo>
-      </File>
-      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_bram_1.0.0/bram_dp.sv">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -721,6 +719,14 @@
         </FileInfo>
       </File>
       <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_phy_transmit_1.0.0/synchronous_lifo.sv">
+        <FileInfo>
+          <Attr Name="AutoDisabled" Val="1"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="implementation"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PPRDIR/../../../build/fusesoc_pcie_pcie_kc705_1.0.0/xsim_v-xsim/src/fusesoc_pcie_pipe_wrapper_1.0.0/pipe_clock.v">
         <FileInfo>
           <Attr Name="AutoDisabled" Val="1"/>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -807,6 +813,11 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
+      <File Path="$PPRDIR/board_behav.wcfg">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="board"/>
@@ -820,6 +831,7 @@
         <Option Name="PamSignalDriverFile" Val="xil_bypass_driver"/>
         <Option Name="PamPseudoTop" Val="pseudo_tb"/>
         <Option Name="SrcSet" Val="sources_1"/>
+        <Option Name="XSimWcfgFile" Val="$PPRDIR/board_behav.wcfg"/>
       </Config>
     </FileSet>
     <FileSet Name="utils_1" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">

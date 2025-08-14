@@ -16,3 +16,6 @@
 [submodule "src/verilog-pcie"]
 	path = src/verilog-pcie
 	url = https://github.com/isomoye-msu/verilog-pcie.git
+[submodule "src/verilog-axis"]
+	path = src/verilog-axis
+	url = git@github.com:isomoye-msu/verilog-axis.git

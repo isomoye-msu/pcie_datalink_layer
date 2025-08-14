@@ -93,14 +93,14 @@ module pack_data
 
   //assign bytes per packet based on number of lanes
   //will only work with number of lanes that are powers of two
-  always_comb begin : calc_bytes_per_packet
-    bytes_per_packet = '0;
-    for (int i = 0; i < 8; i++) begin
-      if (num_active_lanes_i == (1 << i)) begin
-        bytes_per_packet = (pipe_width_i) << i;
-      end
-    end
-  end
+  // always_comb begin : calc_bytes_per_packet
+  //   bytes_per_packet = '0;
+  //   for (int i = 0; i < 8; i++) begin
+  //     if (num_active_lanes_i == (1 << i)) begin
+  //       bytes_per_packet = (pipe_width_i) << i;
+  //     end
+  //   end
+  // end
 
 
 

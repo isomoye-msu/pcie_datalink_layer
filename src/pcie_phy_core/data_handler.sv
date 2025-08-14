@@ -176,6 +176,8 @@ module data_handler
             data_k_c      = data_k_i;
             sync_header_c = sync_header_r;
             word_count_c  = '0;
+            is_dllp_c     = '0;
+            is_tlp_c      = '0;
             //for each byte
             for (int byte_idx = 0; byte_idx < BytesPerTransfer; byte_idx++) begin
               if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
@@ -183,33 +185,15 @@ module data_handler
                 data_c       = data_i;
                 next_state   = ST_TX;
                 data_valid_c = data_valid_i;
-                word_count_c = BytesPerTransfer -1 - byte_idx;
+                word_count_c = BytesPerTransfer - 1 - byte_idx;
               end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
-                is_tlp_c    = '1;
+                is_tlp_c     = '1;
                 data_c       = data_i;
                 next_state   = ST_TX;
                 data_valid_c = data_valid_i;
-                word_count_c = BytesPerTransfer -1 - byte_idx;
+                word_count_c = BytesPerTransfer - 1 - byte_idx;
               end
             end
-            // if (data_i[7:0] == SDP) begin
-            //   is_dllp_c    = '1;
-            //   data_c       = data_i;
-            //   next_state   = ST_TX;
-            //   data_valid_c = data_valid_i;
-            //   word_count_c = 16'd3;
-            // end else if (data_i[15:8] == SDP) begin
-            //   is_dllp_c    = '1;
-            //   data_c       = data_i;
-            //   next_state   = ST_TX;
-            //   data_valid_c = data_valid_i;
-            //   word_count_c = 16'd2;
-            // end
-            // if (data_i[7:0] == STP) begin
-            //   is_tlp_c = '1;
-            //   next_state    = ST_TX;
-            //   data_valid_c  = data_valid_i;
-            // end
           end else begin
             word_count_c = '0;
             if (check_sdp(data_i)) begin
@@ -231,104 +215,126 @@ module data_handler
       ST_TX: begin
         phy_fifo_rd_en_o = '1;
         if (data_handler_axis_tready && data_valid_i) begin
-          // word_count_c = word_count_r + 16'h4;
-          // data_c                   = data_i;
-          // data_valid_c             = data_valid_r;
-          // data_k_c                 = data_k_r;
-          // data_handler_axis_tdata  = data_r[31:0];
-          // data_handler_axis_tkeep  = '1;
-          // data_handler_axis_tvalid = '1;
-          data_c   = data_i;
+          data_c = data_i;
           data_k_c = data_k_i;
           data_handler_axis_tuser = is_tlp_r ? '1 : '0;
-          if (data_k_i[0] && data_i[7:0] == ENDP) begin
-            // is_dllp_c                = '1;
-            data_handler_axis_tdata  = data_r[31:0];
-            data_handler_axis_tkeep  = '1;
-            data_handler_axis_tvalid = '1;
-            data_handler_axis_tlast  = '1;
-            data_c                   = '0;
-            next_state               = ST_CHECK_END;
-            data_valid_c             = data_valid_i;
-          end else if (data_k_i[1] && data_i[15:8] == ENDP) begin
-            // is_dllp_c                = '1;
-            data_c                   = '0;
-            data_handler_axis_tdata  = {data_r[23:0], data_i[7:0]};
-            data_handler_axis_tkeep  = '1;
-            data_handler_axis_tvalid = '1;
-            data_handler_axis_tlast  = '1;
-            next_state               = ST_CHECK_FRAME;
-            data_valid_c             = data_valid_i;
-          end else if (data_k_i[2] && data_i[23:16] == ENDP) begin
-            // is_dllp_c    = '1;
-            // data_c                   = '0;
-            // data_handler_axis_tdata  = {data_r[16:0], data_i[15:0]};
-            // data_handler_axis_tkeep  = '1;
-            // data_handler_axis_tvalid = '1;
-            // data_handler_axis_tlast  = '1;
-            next_state   = ST_CHECK_FRAME;
-            data_valid_c = data_valid_i;
-          end else if (data_k_i[3] && data_i[31:24] == ENDP) begin
-            // is_dllp_c    = '1;
-            // data_c                   = '0;
-            // data_handler_axis_tdata  = {data_r[7:0], data_i[23:0]};
-            // data_handler_axis_tkeep  = '1;
-            // data_handler_axis_tvalid = '1;
-            // data_handler_axis_tlast  = '1;
-            next_state   = ST_CHECK_END;
-            data_valid_c = data_valid_i;
-          end
-
-          data_handler_axis_tdata  = data_r >> (8 * (4 - word_count_r));
-          data_handler_axis_tkeep  = '1;
+          data_handler_axis_tdata = data_r >> (8 * (BytesPerTransfer - word_count_r));
+          data_handler_axis_tkeep = '1;
           data_handler_axis_tvalid = '1;
           // data_handler_axis_tlast  = '1;
           for (int i = 3; i >= 0; i--) begin
             if (i >= word_count_r) begin
-              data_handler_axis_tdata[i*8+:8] = data_i[(3-word_count_r)*8+:8];
+              data_handler_axis_tdata[i*8+:8] = data_i[(i-word_count_r)*8+:8];
             end
           end
+
+          //for each byte..
+          for (int byte_idx = 0; byte_idx < BytesPerTransfer; byte_idx++) begin
+            //check for packet end.. if packet ends within this word.. edid tkeep and go back to frame check
+            if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == ENDP)) begin
+              if ((BytesPerTransfer - word_count_r) > byte_idx) begin
+                is_dllp_c               = '0;
+                is_tlp_c                = '0;
+                data_handler_axis_tlast = '1;
+                data_handler_axis_tkeep = (4'hF >> byte_idx);
+                next_state              = ST_CHECK_FRAME;
+              end
+            end
+            //packet end detected but was not within las frame.. edit tkeep head to frame check 
+            if (data_k_r[byte_idx] && (data_r[8*byte_idx+:8] == ENDP)) begin
+              is_dllp_c               = '0;
+              is_tlp_c                = '0;
+              data_handler_axis_tlast = '1;
+              data_handler_axis_tkeep = (4'hF >> 
+              ((BytesPerTransfer - word_count_r) + (BytesPerTransfer - byte_idx)));
+              next_state              = ST_CHECK_FRAME;
+            end
+
+            //check for packet start.. there might be a edge condition being hit here..
+            //where data_i contains both SDP and EDP...
+            //there should not be an issue with the registered checks.
+            if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
+              is_dllp_c    = '1;
+              next_state   = ST_TX;
+              word_count_c = BytesPerTransfer - 1 - byte_idx;
+            end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
+              is_tlp_c     = '1;
+              next_state   = ST_TX;
+              word_count_c = BytesPerTransfer - 1 - byte_idx;
+            end
+          end
+
+          // if (data_k_i[0] && data_i[7:0] == ENDP) begin
+          //   data_handler_axis_tlast = '1;
+          //   next_state              = ST_CHECK_FRAME;
+          //   data_valid_c            = data_valid_i;
+          // end else if (data_k_i[1] && data_i[15:8] == ENDP) begin
+          //   data_handler_axis_tkeep = '1;
+          //   data_handler_axis_tlast = '1;
+          //   next_state              = ST_CHECK_FRAME;
+          //   data_valid_c            = data_valid_i;
+          // end else if (data_k_i[2] && data_i[23:16] == ENDP) begin
+          //   data_handler_axis_tkeep = '1;
+          //   data_handler_axis_tlast = '1;
+          //   next_state              = ST_CHECK_FRAME;
+          //   data_valid_c            = data_valid_i;
+          // end else if (data_k_i[3] && data_i[31:24] == ENDP) begin
+          //   next_state   = ST_CHECK_END;
+          //   data_valid_c = data_valid_i;
+          // end
+
+
+          //for each byte
+          // for (int byte_idx = BytesPerTransfer/2; byte_idx < BytesPerTransfer; byte_idx++) begin
+          //   if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
+          //     is_dllp_c    = '1;
+          //     data_c       = data_i;
+          //     next_state   = ST_TX;
+          //     data_valid_c = data_valid_i;
+          //     word_count_c = BytesPerTransfer - 1 - byte_idx;
+          //   end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
+          //     is_tlp_c     = '1;
+          //     data_c       = data_i;
+          //     next_state   = ST_TX;
+          //     data_valid_c = data_valid_i;
+          //     word_count_c = BytesPerTransfer - 1 - byte_idx;
+          //   end
+          // end
         end
+
       end
       ST_CHECK_END: begin
         phy_fifo_rd_en_o = '1;
         data_handler_axis_tuser = is_tlp_r ? '1 : '0;
         if (data_handler_axis_tready && data_valid_i) begin
-          // word_count_c = word_count_r + 16'h4;
-          // data_c                   = data_i;
-          // data_valid_c             = data_valid_r;
-          // data_k_c                 = data_k_r;
-          // data_handler_axis_tdata  = data_r[31:0];
-          // data_handler_axis_tkeep  = '1;
-          // data_handler_axis_tvalid = '1;
           data_c     = data_i;
           next_state = ST_CHECK_FRAME;
-          is_tlp_c                 = '0;
-          is_dllp_c                = '0;
+          is_tlp_c   = '0;
+          is_dllp_c  = '0;
 
           if (data_k_r[0] && data_r[7:0] == ENDP) begin
-            is_dllp_c                = '1;
-            data_handler_axis_tdata  = data_r[31:0];
-            data_handler_axis_tkeep  = '1;
-            data_handler_axis_tvalid = '1;
-            data_handler_axis_tlast  = '1;
-            data_c                   = '0;
-            next_state               = ST_CHECK_FRAME;
-            data_valid_c             = data_valid_i;
+            // is_dllp_c                = '1;
+            // data_handler_axis_tdata  = data_r[31:0];
+            // data_handler_axis_tkeep  = '1;
+            // data_handler_axis_tvalid = '1;
+            // data_handler_axis_tlast  = '1;
+            // data_c                   = '0;
+            // next_state               = ST_CHECK_FRAME;
+            // data_valid_c             = data_valid_i;
           end else if (data_k_r[1] && data_r[15:8] == ENDP) begin
-            is_dllp_c                = '1;
-            data_c                   = '0;
-            data_handler_axis_tdata  = {data_r[23:0], data_i[7:0]};
-            data_handler_axis_tkeep  = '1;
-            data_handler_axis_tvalid = '1;
-            data_handler_axis_tlast  = '1;
-            next_state               = ST_CHECK_FRAME;
-            data_valid_c             = data_valid_i;
+            // is_dllp_c                = '1;
+            // data_c                   = '0;
+            // data_handler_axis_tdata  = {data_r[23:0], data_i[7:0]};
+            // data_handler_axis_tkeep  = '1;
+            // data_handler_axis_tvalid = '1;
+            // data_handler_axis_tlast  = '1;
+            // next_state               = ST_CHECK_FRAME;
+            // data_valid_c             = data_valid_i;
           end else if (data_k_r[2] && data_r[23:16] == ENDP) begin
             is_dllp_c                = '1;
             data_c                   = '0;
-            data_handler_axis_tdata  = data_r[7:0];
-            data_handler_axis_tkeep  = 4'b0001;
+            data_handler_axis_tdata  = {data_r[15:0]};
+            data_handler_axis_tkeep  = 4'b0011;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
             next_state               = ST_CHECK_FRAME;
@@ -336,12 +342,28 @@ module data_handler
           end else if (data_k_r[3] && data_r[31:24] == ENDP) begin
             is_dllp_c                = '1;
             data_c                   = '0;
-            data_handler_axis_tdata  = data_r[23:8];
+            data_handler_axis_tdata  = {data_r[23:8]};
             data_handler_axis_tkeep  = 4'b0011;
             data_handler_axis_tvalid = '1;
             data_handler_axis_tlast  = '1;
             next_state               = ST_CHECK_FRAME;
             data_valid_c             = data_valid_i;
+          end
+          //for each byte
+          for (int byte_idx = 0; byte_idx < BytesPerTransfer / 2; byte_idx++) begin
+            if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
+              is_dllp_c    = '1;
+              data_c       = data_i;
+              next_state   = ST_TX;
+              data_valid_c = data_valid_i;
+              word_count_c = BytesPerTransfer - 1 - byte_idx;
+            end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
+              is_tlp_c     = '1;
+              data_c       = data_i;
+              next_state   = ST_TX;
+              data_valid_c = data_valid_i;
+              word_count_c = BytesPerTransfer - 1 - byte_idx;
+            end
           end
         end
       end
