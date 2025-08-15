@@ -60,6 +60,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         self.port.other =  self.other_port
         self.other_port.other = self.port
         self.port.handle_tx = self.handle_tx
+        self.other_port.handle_tx = self.waste_tx
         cocotb.start_soon(self.send_rolling_idle())
         cocotb.start_soon(self.recieve_dllp())
         cocotb.start_soon(self.recieve_tlp())
@@ -115,6 +116,13 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
             else:
                 await self.pipe_agent_config.dllp_data_detected_e.wait()
                 # assert 1 == 0
+
+
+    async def waste_tx(self,pkt):
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
+        pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
+        await self.start_item(pipe_seq_item_h)
+        await self.finish_item(pipe_seq_item_h)
 
     async def recieve_tlp(self):
         count = 0

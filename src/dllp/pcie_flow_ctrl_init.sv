@@ -31,8 +31,8 @@ module pcie_flow_ctrl_init
 
 
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
-  localparam int FcWaitPeriod = 8'h0A;
-  localparam int FcInitWaitPeriod = FcWaitPeriod* 11;
+  localparam int FcWaitPeriod = 0;
+  localparam int FcInitWaitPeriod = 8'h0A * 11;
 
   typedef enum logic [4:0] {
     ST_IDLE,
@@ -123,7 +123,7 @@ module pcie_flow_ctrl_init
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
-          if (seq_count_r >= FcInitWaitPeriod) begin
+          if (fc1_values_stored_i) begin
             seq_count_c = '0;
             //build dllp packet
             init_ack_o  = '1;
@@ -205,20 +205,24 @@ module pcie_flow_ctrl_init
           fc_axis_tlast  = '1;
           seq_count_c    = '0;
           next_state     = CHECK_FC1;
+          if (fc1_values_stored_i && fc2_values_stored_i) begin
+            seq_count_c = '0;
+            next_state  = ST_FC2;
+          end
         end
       end
       CHECK_FC1: begin
         seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
           fc_axis_tvalid = '0;
-          if (fc2_values_stored_i) begin
+          if (fc1_values_stored_i && fc2_values_stored_i) begin
             seq_count_c = '0;
             next_state  = ST_FC2;
           end else if (seq_count_r >= FcWaitPeriod) begin
             seq_count_c    = '0;
             fc_axis_tvalid = '0;
             next_state     = ST_FC1_P;
-            if (fc2_values_stored_i) begin
+            if (fc1_values_stored_i && fc2_values_stored_i) begin
               seq_count_c = '0;
               next_state  = ST_FC2;
             end

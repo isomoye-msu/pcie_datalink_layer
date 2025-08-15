@@ -163,6 +163,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
 
         # dev = self.rc.find_device(self.dev.functions[0].pcie_id)
         # await dev.enable_device()
+        await Timer(500,'ns')
         await with_timeout(self.rc.enumerate(),100000,'ns')
         # await self.rc.enumerate()
     # async def send_skp(self):
@@ -239,8 +240,9 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
             if self.pipe_agent_config.dllp_received:
                 pkt = Dllp()
                 dllp_in = self.pipe_agent_config.dllp_received.pop(0)
-                dllp_int =  b'\x00\x00\x40\x10\x5a\x16'
-                # print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
+                # dllp_int =  b'\x00\x00\x40\x10\x5a\x16'
+
+                print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
                 # print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
                 # assert 1 == 0
                 # dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
