@@ -104,6 +104,8 @@ module data_handler
   logic                                                   is_dllp_r;
   logic                                                   is_tlp_c;
   logic                                                   is_tlp_r;
+  logic     data_start_c;
+  logic     data_start_r;
   logic                                                   skid_c;
   logic                                                   skid_r;
   logic                                                   ready_out;
@@ -127,6 +129,7 @@ module data_handler
     is_dllp_r     <= is_dllp_c;
     word_count_r  <= word_count_c;
     skid_r        <= skid_c;
+    data_start_r <= data_start_c;
   end
 
   always_comb begin : lane_data_sync
@@ -144,6 +147,7 @@ module data_handler
     // data_in_c                = data_in_r;
     is_tlp_c                 = is_tlp_r;
     is_dllp_c                = is_dllp_r;
+    data_start_c            = data_start_r;
     // pkt_count_c              = pkt_count_r;
     word_count_c             = word_count_r;
     next_state               = curr_state;
@@ -171,6 +175,7 @@ module data_handler
       ST_CHECK_FRAME: begin
         phy_fifo_rd_en_o = '1;
         if (data_valid_i) begin
+          data_start_c = '0;
           if (curr_data_rate_i < gen3) begin
             data_c        = data_i;
             data_k_c      = data_k_i;
@@ -186,12 +191,14 @@ module data_handler
                 next_state   = ST_TX;
                 data_valid_c = data_valid_i;
                 word_count_c = BytesPerTransfer - 1 - byte_idx;
+                data_start_c = '1;
               end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
                 is_tlp_c     = '1;
                 data_c       = data_i;
                 next_state   = ST_TX;
                 data_valid_c = data_valid_i;
                 word_count_c = BytesPerTransfer - 1 - byte_idx;
+                data_start_c = '1;
               end
             end
           end else begin
@@ -221,6 +228,7 @@ module data_handler
           data_handler_axis_tdata = data_r >> (8 * (BytesPerTransfer - word_count_r));
           data_handler_axis_tkeep = '1;
           data_handler_axis_tvalid = '1;
+          data_start_c = '0;
           // data_handler_axis_tlast  = '1;
           for (int i = 3; i >= 0; i--) begin
             if (i >= word_count_r) begin
@@ -241,7 +249,7 @@ module data_handler
               end
             end
             //packet end detected but was not within las frame.. edit tkeep head to frame check 
-            if (data_k_r[byte_idx] && (data_r[8*byte_idx+:8] == ENDP)) begin
+            if (data_k_r[byte_idx] && (data_r[8*byte_idx+:8] == ENDP) && (!data_start_r)) begin
               is_dllp_c               = '0;
               is_tlp_c                = '0;
               data_handler_axis_tlast = '1;
@@ -255,10 +263,12 @@ module data_handler
             //there should not be an issue with the registered checks.
             if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == SDP)) begin
               is_dllp_c    = '1;
+              data_start_c = '1;
               next_state   = ST_TX;
               word_count_c = BytesPerTransfer - 1 - byte_idx;
             end else if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == STP)) begin
               is_tlp_c     = '1;
+              data_start_c = '1;
               next_state   = ST_TX;
               word_count_c = BytesPerTransfer - 1 - byte_idx;
             end
