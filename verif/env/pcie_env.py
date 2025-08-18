@@ -21,6 +21,7 @@ class pcie_env(uvm_env):
         super().__init__(name, parent)
         self.dut = cocotb.top
         self.pipe_agent_h = None  # type: pipe_agent  
+        self.tlp_agent_h = None
         self.pcie_env_config_h = None  # type: pcie_env_config  
         self.pcie_scoreboard_h = None  # type: pcie_scoreboard  
         self.pcie_coverage_monitor_h = None  # type: pcie_coverage_monitor  

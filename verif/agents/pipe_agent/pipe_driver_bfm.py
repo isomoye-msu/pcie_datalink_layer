@@ -48,14 +48,23 @@ class pipe_driver_bfm():
         self.k_data = []
         self.data_sent = Event()
         self.data_empty = Event()
+        tlp_config_16 = Configuration(
+        width=32,
+        polynomial=0x04C11DB7,
+        init_value=0xFFFFFFFF,
+        final_xor_value=0x00000000,
+        reverse_input=True,
+        reverse_output=False,
+        )
         tlp_config = Configuration(
         width=32,
         polynomial=0x04C11DB7,
         init_value=0xFFFFFFFF,
         final_xor_value=0x00000000,
         reverse_input=False,
-        reverse_output=True,
+        reverse_output=False,
         )
+        self.tlp_calculator_16 = Calculator(tlp_config_16)
         self.tlp_calculator = Calculator(tlp_config)
         # uvm_root().logger.info("pipe_link_up_seq"+ "Started pipe_link_up_seq")
         uvm_root().logger.info(name + " initiated") 
@@ -759,8 +768,31 @@ class pipe_driver_bfm():
         if (self.current_gen == gen_t.GEN1  or  self.current_gen == gen_t.GEN2):
             # print(repr(tlp))
             pkt = tlp.seq.to_bytes(2,'big')
+            crc_pkt = tlp.seq.to_bytes(2,'big')
+            zeros = int(0).to_bytes(6,'big')
+            # print(f"sequence number: {crc_pkt}\n\n\n")
+            # dllp_int =  b'\x10\x00\x00\x00\x10\x00\xA0\x01\x0F\x0F\xA0\x01\x01\x00\x00\x44\x00\x00'
             pkt += tlp.pack()
-            pkt += self.tlp_calculator.checksum(pkt).to_bytes(4,'big')
+            crc_pkt += tlp.pack()
+            # print(f"bytes  {[hex(crc_b) for crc_b in bytes(dllp_int[::-1])]}")
+            crc = self.tlp_calculator_16.checksum(crc_pkt).to_bytes(4,'big')
+            # crc_zeros = self.tlp_calculator_16.checksum(crc_pkt).to_bytes(4,'little')
+            reversed_byte_list = []
+            for byte_val in crc:
+                # Convert byte to integer (0-255)
+                # Reverse bits of the integer
+                reversed_int = 0
+                for i in range(8):  # Assuming 8-bit bytes
+                    if (byte_val >> i) & 1:  # Check if the i-th bit is set
+                        reversed_int |= (1 << (7 - i)) # Set the corresponding bit in the reversed position
+                reversed_byte_list.append(reversed_int)
+
+            negated_bytes_list = []
+            for byte_value in reversed_byte_list:
+                # Perform bitwise NOT and mask with 0xFF to keep it in the 0-255 range
+                negated_byte = (~byte_value) & 0xFF
+                negated_bytes_list.append(negated_byte)
+            pkt += bytes(negated_bytes_list)
             self.data.append( STP_gen_1_2)
             self.k_data.append( D_K_character.K)
             for byte_ in pkt:
@@ -837,11 +869,19 @@ class pipe_driver_bfm():
             while not self.data_empty.is_set():
                 await RisingEdge(self.dut.clk_i)
             self.data_empty.clear()
+        self.data.append( 0x00)
+        self.k_data.append(D_K_character.D)
         self.data.append( 0xbc)
         self.k_data.append(D_K_character.K)
         for i in range(3):
             self.data.append( 0x1c)
             self.k_data.append(D_K_character.K)
+        self.data.append( 0x00)
+        self.k_data.append(D_K_character.D)
+        self.data.append( 0x00)
+        self.k_data.append(D_K_character.D)
+        self.data.append( 0x00)
+        self.k_data.append(D_K_character.D)
         await self.send_data()
         # self.data = []
         # self.k_data = []
@@ -930,7 +970,7 @@ class pipe_driver_bfm():
                     self.driver_scrambler[0].reset_lfsr(self.current_gen)
                     temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                 elif(temp == 0x1c ): ##skip
-                    ...
+                    self.driver_scrambler[0].reset_lfsr(self.current_gen)
                     # temp_scramble = self.driver_scrambler[lanenum].scramble_byte(temp)
                     # data_scrambled.append(temp)
                 else:

@@ -82,10 +82,12 @@ module dllp_fc_update
 
   //crc byteswap
   always_comb begin : byteswap
-    for (int i = 0; i < 8; i++) begin
-      crc_reversed[i]   = dllp_lcrc_r[7-i];
-      crc_reversed[i+8] = dllp_lcrc_r[15-i];
-    end
+    crc_reversed[7:0]  = ~dllp_lcrc_r[7:0];
+    crc_reversed[15:8] = ~dllp_lcrc_r[15:8];
+    // for (int i = 0; i < 8; i++) begin
+    //   crc_reversed[i]   = dllp_lcrc_r[7-i];
+    //   crc_reversed[i+8] = dllp_lcrc_r[15-i];
+    // end
   end
 
   // Initialize to idle state

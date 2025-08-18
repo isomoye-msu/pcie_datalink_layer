@@ -188,7 +188,12 @@ module ordered_set_handler
     case (curr_state)
       ST_IDLE: begin
         if (data_valid_i) begin
+          data_store_c = data_in_i;
           if (curr_data_rate_i < gen3) begin
+            if (data_k_in_i == '0 && data_in_i == '0 &&
+            (data_store_r == '0)) begin
+              idle_valid_c = '1;
+            end
             for (int i = 0; i < 4; i++) begin
               if (i < byte_shift) begin
                 if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
@@ -196,7 +201,7 @@ module ordered_set_handler
                   next_state = ST_RX_GEN1;
                   axis_pkt_cnt_c = byte_shift - i;
                 end else if ((!data_k_in_i[i]) && data_in_i[i*8+:8] == '0) begin
-                  idle_valid_c = '1;
+                  // idle_valid_c = '1;
                 end
               end
             end

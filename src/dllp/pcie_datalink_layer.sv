@@ -58,6 +58,7 @@ module pcie_datalink_layer
     //Configuration
     input  logic                  phy_link_up_i,
     output logic                  fc_initialized_o,
+    input  logic                  idle_valid_i,
     output logic [           7:0] bus_num_o,
     output logic                  ext_tag_enable_o,
     output logic                  rcb_128b_o,
@@ -145,11 +146,14 @@ module pcie_datalink_layer
   logic                               fc1_values_stored;
   logic                               fc2_values_stored;
   logic                               fc2_values_sent;
+  logic                               fc_init_done;
+  logic                               fc2_values_stored_reg;
 
 
 
 
   pcie_dl_status_e                    link_status;
+  logic                               first_tlp_valid;
 
 
   assign fc_initialized_o = fc2_values_sent;
@@ -177,8 +181,11 @@ module pcie_datalink_layer
       .clk_i               (clk_i),
       .rst_i               (rst_i || soft_reset),
       .start_flow_control_i(init_flow_control),
+      .first_tlp_valid_i   (first_tlp_valid),
+      .idle_valid_i        (idle_valid_i),
       .fc1_values_stored_i (fc1_values_stored),
       .fc2_values_stored_i (fc2_values_stored),
+      .update_fc_i         (update_fc),
       .m_axis_tdata        (phy_fc_axis_tdata),
       .m_axis_tkeep        (phy_fc_axis_tkeep),
       .m_axis_tvalid       (phy_fc_axis_tvalid),
@@ -222,7 +229,7 @@ module pcie_datalink_layer
       .tx_fc_npd_i   (tx_fc_npd),
       .tx_fc_cplh_i  (tx_fc_cplh),
       .tx_fc_cpld_i  (tx_fc_cpld),
-      .update_fc_i   (update_fc)
+      .update_fc_i   (update_fc || fc_init_done)
   );
 
 
@@ -268,6 +275,7 @@ module pcie_datalink_layer
       .seq_num_acknack_o     (seq_num_acknack),
       .fc1_values_stored_o   (fc1_values_stored),
       .fc2_values_stored_o   (fc2_values_stored),
+      .first_tlp_valid_o     (first_tlp_valid),
       .tx_fc_ph_o            (tx_fc_ph),
       .tx_fc_pd_o            (tx_fc_pd),
       .tx_fc_nph_o           (tx_fc_nph),
@@ -353,6 +361,11 @@ module pcie_datalink_layer
       .m_axis_tuser (tx_tlp_tuser)
   );
 
+  always_ff @(posedge clk_i) begin
+    fc2_values_stored_reg <= fc1_values_stored;
+  end
+
+
   assign bus_num_o               = '0;
   assign ext_tag_enable_o        = '0;
   assign rcb_128b_o              = '0;
@@ -360,6 +373,7 @@ module pcie_datalink_layer
   assign max_payload_size_o      = '0;
   assign msix_enable_o           = '0;
   assign msix_mask_o             = '0;
+  assign fc_init_done            = fc1_values_stored && (!fc2_values_stored_reg);
 
   //   initial begin
   //     $dumpfile("dllp_core.fst");

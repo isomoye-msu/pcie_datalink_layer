@@ -68,7 +68,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
         # while not self.port.fc_initialized:
         #     await NullTrigger()
         # await self.send_skp()
-        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),1000,'ns')
+        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),5000,'ns')
         # await self.pipe_agent_config.fc_initialized.wait()
 
         # assert 1 == 0
@@ -137,12 +137,12 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
                 pkt = pkt.unpack(bytes(data))
                 seq = int.from_bytes(tlp_in[:2],'big')
                 pkt.seq = int(hex(seq),0)
-                # print(repr(pkt))
+                print(repr(pkt))
                 await self.handle_tlp(pkt)
                 self.pipe_agent_config.tlp_data_read_e.set()
                 count += 1
             else:
-                await self.pipe_agent_config.tlp_data_detected_e.wait()
+                await First(self.pipe_agent_config.tlp_data_detected_e.wait(),Timer(1000, 'ns'))
                 self.pipe_agent_config.tlp_data_detected_e.clear()
         # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
         # pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
@@ -153,10 +153,10 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
 
 
     async def send_pkt(self,pkt):
-        print(f"compltere id: {pkt.completer_id}")
-        print(f"requester id: {pkt.requester_id}")
-        print(f"requester id: {pkt.dest_id}")
-        print(f"requester id type: {type(pkt.dest_id)}")
+        # print(f"compltere id: {pkt.completer_id}")
+        # print(f"requester id: {pkt.requester_id}")
+        # print(f"requester id: {pkt.dest_id}")
+        # print(f"requester id type: {type(pkt.dest_id)}")
         
         await self.port.send(pkt)
         # if pkt.dest_id == 

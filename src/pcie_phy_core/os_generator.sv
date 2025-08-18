@@ -153,7 +153,7 @@ module os_generator
           D.gen_os_ctrl      = gen_os_ctrl_i;
           D.state            = ST_BUILD;
         end
-        if (Q.skp_cnt >= 32'h80) begin
+        if (Q.skp_cnt >= 32'hB0) begin
           D.skp_cnt = '0;
           D.state   = ST_SKP;
         end

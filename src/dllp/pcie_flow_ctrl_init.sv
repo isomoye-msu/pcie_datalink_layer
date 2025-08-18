@@ -15,6 +15,9 @@ module pcie_flow_ctrl_init
     input logic start_flow_control_i,
     input logic fc1_values_stored_i,
     input logic fc2_values_stored_i,
+    input logic first_tlp_valid_i,
+    input logic idle_valid_i,
+    input logic update_fc_i,
 
     /*
      * DLLP UPDATE AXI output
@@ -31,7 +34,7 @@ module pcie_flow_ctrl_init
 
 
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
-  localparam int FcWaitPeriod = 0;
+  localparam int FcWaitPeriod = 8'h2;
   localparam int FcInitWaitPeriod = 8'h0A * 11;
 
   typedef enum logic [4:0] {
@@ -52,6 +55,10 @@ module pcie_flow_ctrl_init
     ST_FC2_CPL,
     ST_FC2_CPL_CRC,
     CHECK_FC2,
+    ST_UPDATE_P,
+    ST_UPDATE_CRC,
+    ST_UPDATE_NP,
+    ST_UPDATE_NP_CRC,
     ST_FC_COMPLETE
   } flow_control_state_e;
 
@@ -73,8 +80,14 @@ module pcie_flow_ctrl_init
   logic                [          15:0] dllp_lcrc_r;
   logic                [          15:0] seq_count_c;
   logic                [          15:0] seq_count_r;
+  logic                [          15:0] fc2_count_c;
+  logic                [          15:0] fc2_count_r;
+  logic                [          15:0] idle_count_c;
+  logic                [          15:0] idle_count_r;
   logic                [          15:0] crc_out;
   logic                [          15:0] crc_reversed;
+  logic                                 update_fc_c;
+  logic                                 update_fc_r;
 
 
   always_comb begin : byteswap
@@ -91,13 +104,19 @@ module pcie_flow_ctrl_init
     if (rst_i) begin
       curr_state   <= ST_IDLE;
       dll_packet_r <= '0;
+      idle_count_r <= '0;
       seq_count_r  <= '0;
       //crc signals
       dllp_lcrc_r  <= '0;
+      fc2_count_r  <= '0;
+      update_fc_r  <= '0;
     end else begin
       curr_state   <= next_state;
       dll_packet_r <= dll_packet_c;
+      idle_count_r <= idle_count_c;
       seq_count_r  <= seq_count_c;
+      fc2_count_r  <= fc2_count_c;
+      update_fc_r  <= update_fc_c;
       //crc signals
       dllp_lcrc_r  <= dllp_lcrc_c;
     end
@@ -113,18 +132,33 @@ module pcie_flow_ctrl_init
     fc_axis_tkeep     = '0;
     fc_axis_tvalid    = '0;
     fc_axis_tlast     = '0;
+    idle_count_c      = idle_count_r;
     fc_axis_tuser     = 4'h01;
+    update_fc_c       = update_fc_r;
     //crc signals
     dllp_lcrc_c       = dllp_lcrc_r;
+    fc2_count_c       = fc2_count_r;
     //init handshake
     init_ack_o        = '0;
     fc2_values_sent_o = '0;
+
+
+    if (curr_state >= ST_FC2) begin
+      if (idle_valid_i) begin
+        idle_count_c = idle_count_r + 1'b1;
+      end
+      if (update_fc_i) begin
+        update_fc_c  = '1;
+        idle_count_c = '0;
+      end
+    end
     case (curr_state)
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
           if (fc1_values_stored_i) begin
             seq_count_c = '0;
+            fc2_count_c = '0;
             //build dllp packet
             init_ack_o  = '1;
             next_state  = ST_FC1_P;
@@ -132,7 +166,8 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC1_P: begin
-        if (fc_axis_tready) begin
+        seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
           fc_axis_tdata  = send_fc_init(InitFC1_P, '0, HdrMinCredits, PdMinCredits);
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -143,7 +178,7 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC1_CRC: begin
-        seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
+        // seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
           seq_count_c    = '0;
           fc_axis_tdata  = crc_reversed;
@@ -155,17 +190,14 @@ module pcie_flow_ctrl_init
       end
       ST_FC1_NP: begin
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
-        if (fc_axis_tready) begin
-          //wait for 10us
-          if (seq_count_r >= FcWaitPeriod) begin
-            seq_count_c    = '0;
-            fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
-            dllp_lcrc_c    = crc_out;
-            fc_axis_tkeep  = '1;
-            fc_axis_tvalid = '1;
-            fc_axis_tlast  = '0;
-            next_state     = ST_FC1_NP_CRC;
-          end
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+          seq_count_c    = '0;
+          fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
+          dllp_lcrc_c    = crc_out;
+          fc_axis_tkeep  = '1;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '0;
+          next_state     = ST_FC1_NP_CRC;
         end
       end
       ST_FC1_NP_CRC: begin
@@ -181,19 +213,17 @@ module pcie_flow_ctrl_init
       end
       //send np
       ST_FC1_CPL: begin
-        seq_count_c = seq_count_r + 1'b1;
-        if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
+        seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+
           //wait for 10us
-          if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
-            dllp_lcrc_c    = crc_out;
-            fc_axis_tkeep  = '1;
-            fc_axis_tvalid = '1;
-            fc_axis_tlast  = '0;
-            seq_count_c    = '0;
-            next_state     = ST_FC1_CPL_CRC;
-          end
+          fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
+          dllp_lcrc_c    = crc_out;
+          fc_axis_tkeep  = '1;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '0;
+          seq_count_c    = '0;
+          next_state     = ST_FC1_CPL_CRC;
         end
       end
       ST_FC1_CPL_CRC: begin
@@ -205,34 +235,28 @@ module pcie_flow_ctrl_init
           fc_axis_tlast  = '1;
           seq_count_c    = '0;
           next_state     = CHECK_FC1;
-          if (fc1_values_stored_i && fc2_values_stored_i) begin
-            seq_count_c = '0;
-            next_state  = ST_FC2;
-          end
         end
       end
       CHECK_FC1: begin
         seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
-        if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
-          if (fc1_values_stored_i && fc2_values_stored_i) begin
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+          if (fc1_values_stored_i) begin
             seq_count_c = '0;
-            next_state  = ST_FC2;
-          end else if (seq_count_r >= FcWaitPeriod) begin
-            seq_count_c    = '0;
-            fc_axis_tvalid = '0;
-            next_state     = ST_FC1_P;
-            if (fc1_values_stored_i && fc2_values_stored_i) begin
-              seq_count_c = '0;
-              next_state  = ST_FC2;
+            fc2_count_c = fc2_count_r + 1;
+            if (fc2_count_r >= 8'd5) begin
+              fc2_count_c  = '0;
+              idle_count_c = '0;
+              next_state   = ST_FC2;
+            end else begin
+              next_state = ST_FC1_P;
             end
           end
         end
       end
       ST_FC2: begin
-        seq_count_c = seq_count_r + 1'b1;
-        if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
+        seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+
           //wait for 10us
           if (seq_count_r >= FcWaitPeriod) begin
             fc_axis_tdata  = send_fc_init(InitFC2_P, '0, HdrMinCredits, PdMinCredits);
@@ -257,20 +281,18 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC2_NP: begin
-        seq_count_c = seq_count_r + 1'b1;
-        if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
+        seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+
           //wait for 10us
-          if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
-            // fc_axis_tdata = dll_packet_c;
-            fc_axis_tkeep  = '1;
-            fc_axis_tvalid = '1;
-            fc_axis_tlast  = '0;
-            dllp_lcrc_c    = crc_out;
-            seq_count_c    = '0;
-            next_state     = ST_FC2_NP_CRC;
-          end
+          fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
+          // fc_axis_tdata = dll_packet_c;
+          fc_axis_tkeep  = '1;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '0;
+          dllp_lcrc_c    = crc_out;
+          seq_count_c    = '0;
+          next_state     = ST_FC2_NP_CRC;
         end
       end
       ST_FC2_NP_CRC: begin
@@ -285,19 +307,17 @@ module pcie_flow_ctrl_init
         end
       end
       ST_FC2_CPL: begin
-        seq_count_c = seq_count_r + 1'b1;
+        seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
         //wait for 10us
-        if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
-          if (seq_count_r >= FcWaitPeriod) begin
-            fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
-            dllp_lcrc_c    = crc_out;
-            fc_axis_tkeep  = '1;
-            fc_axis_tvalid = '1;
-            fc_axis_tlast  = '0;
-            seq_count_c    = '0;
-            next_state     = ST_FC2_CPL_CRC;
-          end
+        if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
+
+          fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
+          dllp_lcrc_c    = crc_out;
+          fc_axis_tkeep  = '1;
+          fc_axis_tvalid = '1;
+          fc_axis_tlast  = '0;
+          seq_count_c    = '0;
+          next_state     = ST_FC2_CPL_CRC;
         end
       end
       ST_FC2_CPL_CRC: begin
@@ -312,18 +332,69 @@ module pcie_flow_ctrl_init
         end
       end
       CHECK_FC2: begin
-        seq_count_c = seq_count_r + 1'b1;
+        seq_count_c = (seq_count_r >= FcWaitPeriod) ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready) begin
-          fc_axis_tvalid = '0;
-          if (fc2_values_stored_i) begin
-            seq_count_c    = '0;
-            fc_axis_tvalid = '0;
-            next_state     = ST_FC_COMPLETE;
+          fc2_count_c = fc2_count_r + 1;
+          if (fc2_values_stored_i && (update_fc_r == '1 || idle_count_r >= 16'h60)) begin
+            seq_count_c       = '0;
+            fc_axis_tvalid    = '0;
+            fc2_values_sent_o = '1;
+            // next_state        = ST_FC2;
+            // if (first_tlp_valid_i) begin
+            next_state        = ST_UPDATE_P;
+            // end
+            // next_state     = ST_FC_COMPLETE;
           end else if (seq_count_r >= FcWaitPeriod) begin
-            seq_count_c    = '0;
-            fc_axis_tvalid = '0;
-            next_state     = ST_FC2;
+            seq_count_c = '0;
+
+            next_state  = ST_FC2;
           end
+        end
+      end
+      ST_UPDATE_P: begin
+        //build dllp fc update for crc
+        //build axis master output
+        fc_axis_tdata = send_fc_init(UpdateFC_P, '0, HdrMinCredits, PdMinCredits);
+        dllp_lcrc_c = crc_out;
+        fc_axis_tkeep = '1;
+        fc_axis_tvalid = '1;
+        //done with dllp
+        if (fc_axis_tready) begin
+          next_state = ST_UPDATE_CRC;
+        end
+      end
+      ST_UPDATE_CRC: begin
+        //build axis master output
+        fc_axis_tdata  = crc_reversed;
+        fc_axis_tkeep  = 8'h03;
+        fc_axis_tvalid = '1;
+        fc_axis_tlast  = '1;
+        //done with dllp
+        if (fc_axis_tready) begin
+          next_state = ST_UPDATE_NP;
+        end
+      end
+      ST_UPDATE_NP: begin
+        //build axis master output
+        dllp_lcrc_c = crc_out;
+        fc_axis_tkeep = '1;
+        fc_axis_tvalid = '1;
+        //build dllp fc update for crc
+        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, HdrMinCredits, HdrMinCredits);
+        //done with dllp
+        if (fc_axis_tready) begin
+          next_state = ST_UPDATE_NP_CRC;
+        end
+      end
+      ST_UPDATE_NP_CRC: begin
+        //build axis master output
+        fc_axis_tdata  = crc_reversed;
+        fc_axis_tkeep  = 8'h03;
+        fc_axis_tvalid = '1;
+        fc_axis_tlast  = '1;
+        //done with dllp
+        if (fc_axis_tready) begin
+          next_state = ST_FC_COMPLETE;
         end
       end
       ST_FC_COMPLETE: begin

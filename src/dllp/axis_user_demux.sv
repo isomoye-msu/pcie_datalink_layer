@@ -19,6 +19,7 @@ module axis_user_demux
     input  logic                               rst_i,              // Reset signal
     //link status
     input  pcie_dl_status_e                    link_status_i,
+    output logic                               first_tlp_valid_o,
     //TLP AXIS inputs
     input  logic            [  DATA_WIDTH-1:0] s_axis_tdata,
     input  logic            [  KEEP_WIDTH-1:0] s_axis_tkeep,
@@ -60,6 +61,8 @@ module axis_user_demux
 
   logic dllp_valid;
   logic tlp_valid;
+  logic first_tlp_valid_c;
+  logic first_tlp_valid_r;
 
 
   logic tlp_ready;
@@ -68,8 +71,10 @@ module axis_user_demux
   always @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       curr_state <= ST_IDLE;
+      first_tlp_valid_r <= '0;
     end else begin
       curr_state <= next_state;
+      first_tlp_valid_r <= first_tlp_valid_c;
     end
   end
 
@@ -78,6 +83,7 @@ module axis_user_demux
     dllp_valid = '0;
     tlp_valid = '0;
     s_axis_tready = '0;
+    first_tlp_valid_c = first_tlp_valid_r;
     case (curr_state)
       ST_IDLE: begin
         if (s_axis_tvalid) begin
@@ -95,6 +101,7 @@ module axis_user_demux
       ST_TLP: begin
         s_axis_tready = tlp_ready;
         tlp_valid = s_axis_tvalid;
+        first_tlp_valid_c = '1;
         if (s_axis_tvalid && tlp_ready && s_axis_tlast) begin
           next_state = ST_IDLE;
         end
@@ -109,8 +116,9 @@ module axis_user_demux
       default: begin
       end
     endcase
-
   end
+
+  assign first_tlp_valid_o = first_tlp_valid_r;
 
 
 
