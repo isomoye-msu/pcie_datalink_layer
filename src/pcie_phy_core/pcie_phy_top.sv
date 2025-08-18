@@ -336,6 +336,7 @@ module pcie_phy_top
       .m_phy_axis_tready      (s_dllp_axis_tready),
       .phy_link_up_i          (link_up),
       .fc_initialized_o       (fc_initialized_o),
+      .idle_valid_i(idle_valid),
       .bus_num_o              (),
       .ext_tag_enable_o       (),
       .rcb_128b_o             (),

@@ -93,6 +93,7 @@ class  pipe_operation_t (Enum):
     SET_EQ_PARAM     =  16
     ASSERT_EVAL_FEEDBACK_CHANGED  = 17
     SEND_SKP = 18
+    SEND_MAC_TLP = 19
 
 
 class pclk_rate_t(Enum):

@@ -42,7 +42,7 @@ module gen1_scramble
   // logic [ 3:0] os_complete_c;
   // logic [ 3:0] os_complete_r;
 
-  typedef struct packed {
+  typedef struct {
     logic [15:0]                        lfsr_in;
     logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
     logic [3:0]                         scramble_reset;
@@ -70,7 +70,7 @@ module gen1_scramble
     (Q.scramble_reset >> (pipe_width_i >> 3) ) != '0);
 
     assign temp_lfsr_in[i] = reset_byte_scrambler ? '1 : lfsr_out[i];
-    assign lfsr_out[i+1] = reset_byte_scrambler ? '1 : temp_lfsr_out[i];
+    assign lfsr_out[i+1] = reset_byte_scrambler || Q.skp_os[i]? '1 : temp_lfsr_out[i];
     byte_scramble byte_scramble_inst (
         .disable_scrambling('0),
         .lfsr_q            (temp_lfsr_in[i]),
@@ -142,13 +142,13 @@ module gen1_scramble
 
 
           //handle case where lfsr out is reset needs to be reset at next
-          if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
-            D.lfsr_in = '1;
-          end
+          // if ((Q.scramble_reset[byte_idx+1]) && (byte_idx == (pipe_width_i >> 3) - 1)) begin
+          //   D.lfsr_in = '1;
+          // end
           if (Q.skp_os[byte_idx] != '0) begin
             //skip scrambler advance
-            D.lfsr_out = Q.lfsr_out;
-            D.lfsr_in  = lfsr_out[byte_idx];
+            // D.lfsr_out = Q.lfsr_out;
+            // D.lfsr_in  = lfsr_out[byte_idx];
             if ((Q.data[0][byte_idx*8+:8] != SKP)) begin
               // D.skp_os   = '0;
               D.byte_cnt = '0;
@@ -236,6 +236,15 @@ module gen1_scramble
           else if (Q.data[1][byte_idx*8+:8] == PAD_) begin
             end
           end
+
+
+          // if (Q.data_k[2][byte_idx]) begin
+          //   if (Q.data[2][byte_idx*8+:8] == SKP) begin
+          //     D.skp_os[byte_idx] = '1;
+          //     // D.disable_scrambling[byte_idx] = '1;
+          //     // D.lfsr_in                      = lfsr_out[byte_idx];
+          //   end  //special k that is not pad... disable scrambling for now
+          // end
 
           //third stage
           if (Q.skp_os == '0) begin

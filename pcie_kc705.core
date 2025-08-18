@@ -77,6 +77,8 @@ filesets:
       - verif/agents/pipe_agent/pipe_agent.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_agent_config.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_driver_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/tlp_driver_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/tlp_monitor_bfm.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_if.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_monitor_bfm.py : {file_type : user, copyto : .}
       - verif/agents/pipe_agent/pipe_types.py: {file_type : user, copyto : .}

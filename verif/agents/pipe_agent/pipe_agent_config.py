@@ -3,18 +3,23 @@ from pyuvm import *
 from cocotb.triggers import *
 from pipe_driver_bfm import *
 from pipe_monitor_bfm import *
+from tlp_driver_bfm import *
+from tlp_monitor_bfm import *
 
 class pipe_agent_config(uvm_component):
      
     def __init__(self,name = "", parent = None):
         super().__init__(name,parent)
         self.pipe_driver_bfm_h = pipe_driver_bfm("pipe_driver_bfm")  # type: pipe_driver_bfm_param  
-        self.pipe_monitor_bfm_h = pipe_monitor_bfm("pipe_monitor_bfm")  # type: pipe_monitor_bfm_param  
+        self.pipe_monitor_bfm_h = pipe_monitor_bfm("pipe_monitor_bfm")  # type: pipe_monitor_bfm_param
+        self.tlp_driver_bfm_h = tlp_driver_bfm("tlp_driver_bfm")  
+        self.tlp_monitor_bfm_h = tlp_monitor_bfm("tlp_monitor_bfm")  
         self.is_active =  uvm_active_passive_enum.UVM_ACTIVE  # type: uvm_active_passive_enum  
         self.has_coverage_monitor =  1  # type: bit  
         self.tses_received = [] 
         self.dllp_received = []
         self.tlp_received = []
+        self.mac_tlp_received = []
         self.fc_initialized = Event()
         self.name = name
         self.new_width = None  # type: logic [1:0] 
@@ -42,6 +47,7 @@ class pipe_agent_config(uvm_component):
         self.dllp_data_read_e = Event('dllp_data_read_e')  # type: event   
         self.tlp_data_detected_e = Event('tlp_data_detected_e')  # type: event  
         self.tlp_data_read_e = Event('tlp_data_read_e')  # type: event   
+        self.mac_tlp_data_detected_e = Event('mac_tlp_data_read_e')  # type: event   
         self.detected_posedge_clk_e = Event('detected_posedge_clk_e')  # type: event  
         self.detected_exit_electricle_idle_e = Event('detected_exit_electricle_idle_e')  # type: event  
         self.power_down_change_e = Event('power_down_change_e')  # type: event  

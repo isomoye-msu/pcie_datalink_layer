@@ -83,6 +83,6 @@ class link_up_test(uvm_test):
         self.raise_objection()
         await with_timeout(self.test_all.start(),15000,'ns')
         # await with_timeout(self.flow_control.start(),15000,'ns')
-        await with_timeout(self.enumeration.start(),150000,'ns')
+        await with_timeout(self.enumeration.start(),55550000,'ns')
         # await with_timeout(self.speed_change.start(),15000,'ns')
         self.drop_objection()

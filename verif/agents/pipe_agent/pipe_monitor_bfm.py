@@ -1207,8 +1207,8 @@ class pipe_monitor_bfm():
                     for byte_ in range(int((int(self.dut.pipe_width_o)/8))):
                         temp_byte = LogicArray(data)[(8*byte_)+7 : 8*byte_].to_BinaryValue()
                         if(reset_next_byte):
-                            ...
-                            temp_scramble = self.driver_scrambler[0].scramble_byte(0x0)
+                            if not ((int(LogicArray(datak)[(4*lane)+byte_]) == 1) and temp_byte == 0x1c):
+                                temp_scramble = self.driver_scrambler[0].scramble_byte(0x0)
                         else:
                             if not ((int(LogicArray(datak)[(4*lane)+byte_]) == 1) and temp_byte == 0x1c):
                                 temp_scramble = self.driver_scrambler[0].scramble_byte(temp_byte)
@@ -1218,6 +1218,7 @@ class pipe_monitor_bfm():
                                 if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
                                     if(temp_byte == 0xFD):
                                         dllp_found = 0
+                                        tlp_found = 0
                                         # print(f"dllp data {[hex(q) for q in self.dllp_q]}")
                                         self.dllp_received = self.dllp_q
                                         self.proxy.notify_dllp_received(self.dllp_received)
@@ -1225,10 +1226,11 @@ class pipe_monitor_bfm():
                                         self.dllp_received = []
                                 else:
                                     self.dllp_q.append(temp_scramble)
-                            if tlp_found == 1:
+                            elif tlp_found == 1:
                                 if(int(LogicArray(datak)[(4*lane)+byte_]) == 1):
                                     if(temp_byte == 0xFD):
                                         tlp_found = 0
+                                        dllp_found = 0
                                         # print(f"dllp data {[hex(q) for q in self.dllp_q]}")
                                         self.tlp_received = self.tlp_q
                                         self.proxy.notify_tlp_received(self.tlp_received)
@@ -1243,12 +1245,11 @@ class pipe_monitor_bfm():
                                     if(temp_byte == 0x5C):
                                         dllp_found = 1
                                     elif(temp_byte == 0xFB):
+                                        print("TLP FOUND")
                                         tlp_found = 1
                                         # print(f"dllp found, full word: {hex(data)}")
                                     bytes_stored.append(int(temp_byte))
                                 else:
-
-                                    tlp_found
                                     bytes_stored.append(temp_scramble)
                         if((LogicArray(data)[(32*lane)+(((byte_*8) +8)-1): (32*lane)+((byte_*8))].to_BinaryValue() == 0xbc) 
                         and LogicArray(datak)[(4*lane)+byte_] ):

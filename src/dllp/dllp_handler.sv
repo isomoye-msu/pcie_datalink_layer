@@ -266,7 +266,6 @@ module dllp_handler
           InitFC2_Cpl: begin
             get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
             fc2_c_stored_c = '1;
-            update_fc_c = '1;
           end
           UpdateFC_P: begin
             get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);

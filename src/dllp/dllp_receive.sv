@@ -60,6 +60,7 @@ module dllp_receive
     //flow control values
     output logic                               fc1_values_stored_o,
     output logic                               fc2_values_stored_o,
+    output logic                                first_tlp_valid_o,
     //Flow control
     output logic            [             7:0] tx_fc_ph_o,
     output logic            [            11:0] tx_fc_pd_o,
@@ -115,12 +116,12 @@ module dllp_receive
   logic                  [(USER_WIDTH)-1:0] dllp_axis_tuser;
   logic                                     dllp_axis_tready;
 
-//   logic                  [  DATA_WIDTH-1:0] cpl_from_cfg_tdata;
-//   logic                  [  KEEP_WIDTH-1:0] cpl_from_cfg_tkeep;
-//   logic                                     cpl_from_cfg_tvalid;
-//   logic                                     cpl_from_cfg_tlast;
-//   logic                  [  USER_WIDTH-1:0] cpl_from_cfg_tuser;
-//   logic                                     cpl_from_cfg_tready;
+  //   logic                  [  DATA_WIDTH-1:0] cpl_from_cfg_tdata;
+  //   logic                  [  KEEP_WIDTH-1:0] cpl_from_cfg_tkeep;
+  //   logic                                     cpl_from_cfg_tvalid;
+  //   logic                                     cpl_from_cfg_tlast;
+  //   logic                  [  USER_WIDTH-1:0] cpl_from_cfg_tuser;
+  //   logic                                     cpl_from_cfg_tready;
 
   logic                  [  DATA_WIDTH-1:0] tlp_to_mac_tdata;
   logic                  [  KEEP_WIDTH-1:0] tlp_to_mac_tkeep;
@@ -136,6 +137,8 @@ module dllp_receive
   logic                                     dllp_fc_tlast;
   logic                  [  USER_WIDTH-1:0] dllp_fc_tuser;
   logic                                     dllp_fc_tready;
+
+  // logic                                     first_tlp_valid;
 
   pcie_config_reg__in_t                     hwif_in;
   pcie_config_reg__out_t                    hwif_out;
@@ -154,6 +157,7 @@ module dllp_receive
       .clk_i             (clk_i),
       .rst_i             (rst_i),
       .link_status_i     (link_status_i),
+      .first_tlp_valid_o (first_tlp_valid_o),
       .s_axis_tdata      (s_axis_tdata),
       .s_axis_tkeep      (s_axis_tkeep),
       .s_axis_tvalid     (s_axis_tvalid),
@@ -303,42 +307,42 @@ module dllp_receive
   );
 
 
-//   axis_arb_mux #(
-//       .S_COUNT              (2),
-//       .DATA_WIDTH           (DATA_WIDTH),
-//       .KEEP_ENABLE          (KEEP_ENABLE),
-//       .KEEP_WIDTH           (KEEP_WIDTH),
-//       .ID_ENABLE            (ID_ENABLE),
-//       .S_ID_WIDTH           (ID_WIDTH),
-//       .DEST_ENABLE          (DEST_ENABLE),
-//       .DEST_WIDTH           (DEST_WIDTH),
-//       .USER_ENABLE          (USER_ENABLE),
-//       .USER_WIDTH           (USER_WIDTH),
-//       .LAST_ENABLE          (LAST_ENABLE),
-//       .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
-//       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
-//   ) arbiter_mux_inst (
-//       .clk          (clk_i),
-//       .rst          (rst_i),
-//       // AXI inputs
-//       .s_axis_tdata ({cpl_from_cfg_tdata, dllp_fc_tdata}),
-//       .s_axis_tkeep ({cpl_from_cfg_tkeep, dllp_fc_tkeep}),
-//       .s_axis_tvalid({cpl_from_cfg_tvalid, dllp_fc_tvalid}),
-//       .s_axis_tready({cpl_from_cfg_tready, dllp_fc_tready}),
-//       .s_axis_tlast ({cpl_from_cfg_tlast, dllp_fc_tlast}),
-//       .s_axis_tid   (),
-//       .s_axis_tdest (),
-//       .s_axis_tuser ({cpl_from_cfg_tuser, dllp_fc_tuser}),
-//       // AXI output
-//       .m_axis_tdata (m_axis_dllp2phy_tdata),
-//       .m_axis_tkeep (m_axis_dllp2phy_tkeep),
-//       .m_axis_tvalid(m_axis_dllp2phy_tvalid),
-//       .m_axis_tready(m_axis_dllp2phy_tready),
-//       .m_axis_tlast (m_axis_dllp2phy_tlast),
-//       .m_axis_tid   (),
-//       .m_axis_tdest (),
-//       .m_axis_tuser (m_axis_dllp2phy_tuser)
-//   );
+  //   axis_arb_mux #(
+  //       .S_COUNT              (2),
+  //       .DATA_WIDTH           (DATA_WIDTH),
+  //       .KEEP_ENABLE          (KEEP_ENABLE),
+  //       .KEEP_WIDTH           (KEEP_WIDTH),
+  //       .ID_ENABLE            (ID_ENABLE),
+  //       .S_ID_WIDTH           (ID_WIDTH),
+  //       .DEST_ENABLE          (DEST_ENABLE),
+  //       .DEST_WIDTH           (DEST_WIDTH),
+  //       .USER_ENABLE          (USER_ENABLE),
+  //       .USER_WIDTH           (USER_WIDTH),
+  //       .LAST_ENABLE          (LAST_ENABLE),
+  //       .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
+  //       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
+  //   ) arbiter_mux_inst (
+  //       .clk          (clk_i),
+  //       .rst          (rst_i),
+  //       // AXI inputs
+  //       .s_axis_tdata ({cpl_from_cfg_tdata, dllp_fc_tdata}),
+  //       .s_axis_tkeep ({cpl_from_cfg_tkeep, dllp_fc_tkeep}),
+  //       .s_axis_tvalid({cpl_from_cfg_tvalid, dllp_fc_tvalid}),
+  //       .s_axis_tready({cpl_from_cfg_tready, dllp_fc_tready}),
+  //       .s_axis_tlast ({cpl_from_cfg_tlast, dllp_fc_tlast}),
+  //       .s_axis_tid   (),
+  //       .s_axis_tdest (),
+  //       .s_axis_tuser ({cpl_from_cfg_tuser, dllp_fc_tuser}),
+  //       // AXI output
+  //       .m_axis_tdata (m_axis_dllp2phy_tdata),
+  //       .m_axis_tkeep (m_axis_dllp2phy_tkeep),
+  //       .m_axis_tvalid(m_axis_dllp2phy_tvalid),
+  //       .m_axis_tready(m_axis_dllp2phy_tready),
+  //       .m_axis_tlast (m_axis_dllp2phy_tlast),
+  //       .m_axis_tid   (),
+  //       .m_axis_tdest (),
+  //       .m_axis_tuser (m_axis_dllp2phy_tuser)
+  //   );
   //mux the tready input...
   // assign s_axis_tready = s_axis_tuser[UserIsDllp] ? dllp_ready :
   // s_axis_tuser[UserIsTlp] ? tlp_ready : '0;

@@ -153,6 +153,7 @@ class pipe_monitor(uvm_monitor):
     def __init__(self, name = "pipe_monitor", parent=None):
         super().__init__(name, parent)
         self.pipe_monitor_bfm = None  # type: pipe_monitor_bfm_param  
+        self.tlp_monitor_bfm = None  # type: pipe_monitor_bfm_param  
         self.pipe_agent_config = None  # type: pipe_agent_config  
         self.name = name
         self.ap_sent = uvm_analysis_port("ap_sent", self)
@@ -170,9 +171,12 @@ class pipe_monitor(uvm_monitor):
         self.pipe_monitor_bfm = self.pipe_agent_config.pipe_monitor_bfm_h
         self.pipe_monitor_bfm.proxy = self
         self.pipe_monitor_bfm.build_connect_finished_e.set()
+        self.tlp_monitor_bfm = self.pipe_agent_config.tlp_monitor_bfm_h
+        self.tlp_monitor_bfm.proxy = self
         #uvm_info(get_name(), "Exit pipe_monitor connect_phase", UVM_MEDIUM)
     async def run_phase(self):
         cocotb.start_soon(self.pipe_monitor_bfm.start())
+        cocotb.start_soon(self.tlp_monitor_bfm.start())
         
     async def detect_posedge_clk(self): 
         self.pipe_agent_config.detected_posedge_clk_e.set()
@@ -227,39 +231,38 @@ class pipe_monitor(uvm_monitor):
         self.pipe_agent_config.detected_width_change_e.set()
 
     def notify_PCLKRate_changed(self, new_PCLKRate) :
-    #sv.display("flag",new_PCLKRate)
+    
         self.pipe_agent_config.new_PCLKRate = new_PCLKRate
         self.pipe_agent_config.detected_PCLKRate_change_e.set()
         
     def notify_Rate_changed(self, new_Rate) :
-    #sv.display("flag",new_PCLKRate)
+    
         self.pipe_agent_config.new_Rate =new_Rate
         self.pipe_agent_config.detected_Rate_change_e.set()
  
     def notify_TxDeemph_changed(self, new_TxDeemph) :
-        #sv.display("flag",new_PCLKRate)
+        
         self.pipe_agent_config.new_TxDeemph = new_TxDeemph
         self.pipe_agent_config.detected_TxDeemph_change_e.set()
 
     def notify_link_up_sent(self) :
       # Creating the sequnce item
-    #   pipe_seq_item pipe_seq_item
+    
       pipe_seq_item = pipe_seq_item("pipe_seq_item")
       # Determining the detected operation
       pipe_seq_item.pipe_operation = "LINK_UP"
       # Sending the sequence item to the analysis components
       self.ap_sent.write(pipe_seq_item)
-    # endfunction
+    
 
     def notify_link_up_received(self) :
       # Creating the sequnce item
-    #   pipe_seq_item pipe_seq_item
       pipe_seq_item = pipe_seq_item("pipe_seq_item")
       # Determining the detected operation
       pipe_seq_item.pipe_operation = "LINK_UP"
       # Sending the sequence item to the analysis components
       self.ap_received.write(pipe_seq_item)
-    # endfunction
+    
 
     def notify_tlp_sent(self,tlp) :
     # Creating the sequnce item
@@ -276,17 +279,8 @@ class pipe_monitor(uvm_monitor):
 
     def notify_tlp_received(self,tlp) :
         # Creating the sequnce item
-        # pipe_seq_item pipe_seq_item
-        # pipe_seq_item = pipe_seq_item("pipe_seq_item")
-        # Determining the detected operation
-        # pipe_seq_item.pipe_operation = "TLP_TRANSFER"
-        # Copying the data of the tlp to the sequence item
-        # print(tlp)
         self.pipe_agent_config.tlp_received.append(tlp)
         self.pipe_agent_config.tlp_data_detected_e.set()
-        # pipe_seq_item.tlp = tlp
-        # Sending the sequence item to the analysis components
-        # self.ap_received.write(pipe_seq_item)
         #uvm_info(get_name(), "notify tlp_rec", UVM_MEDIUM)
         #uvm_info(get_name(), sv.sformatf("tlp_rec_size = %d",len(tlp)), UVM_MEDIUM)
         
@@ -302,6 +296,11 @@ class pipe_monitor(uvm_monitor):
         # Sending the sequence item to the analysis components
         self.ap_sent.write(pipe_seq_item)
         #uvm_info(get_name(), sv.sformatf( "notify dllp_sent: %p", dllp), UVM_MEDIUM)
+
+    def notify_mac_tlp_received(self,tlp):
+        self.pipe_agent_config.mac_tlp_received.append(tlp)
+        self.pipe_agent_config.mac_tlp_data_detected_e.set()
+
 
     def notify_dllp_received(self,dllp) :
         # Creating the sequnce item
@@ -323,16 +322,16 @@ class pipe_monitor(uvm_monitor):
 
     def notify_enter_recovery_sent(self):
         # Creating the sequnce item
-        #   pipe_seq_item pipe_seq_item
+        
         pipe_seq_item = pipe_seq_item("pipe_seq_item")
         # Determining the detected operation
         pipe_seq_item.pipe_operation = "ENTER_RECOVERY"
         # Sending the sequence item to the analysis components
         self.ap_sent.write(pipe_seq_item)
-        # endfunction
+
 
     async def notify_enter_recovery_received(self):
-        #   pipe_seq_item pipe_seq_item
+        
         pipe_seq_item = pipe_seq_item("pipe_seq_item")
         # Wait till the sequence finishes the link up
         await self.pipe_agent_config.recovery_finished_e.is_set()
@@ -342,11 +341,11 @@ class pipe_monitor(uvm_monitor):
         # Sending the sequence item to the analysis components
         self.ap_received.write(pipe_seq_item)
         self.pipe_agent_config.recovery_finished_e.clear()
-        # endfunction
+
 
     def notify_gen_change_sent(self, gen) :
         # Creating the sequnce item
-        #   pipe_seq_item pipe_seq_item
+        
         pipe_seq_item = pipe_seq_item("pipe_seq_item")
         # Determining the detected operation
         pipe_seq_item.pipe_operation = "SPEED_CHANGE"
@@ -354,7 +353,7 @@ class pipe_monitor(uvm_monitor):
         pipe_seq_item.gen = gen
         # Sending the sequence item to the analysis components
         self.ap_sent.write(pipe_seq_item)
-    # endfunction
+    
 
     def notify_gen_change_received(self, gen) :
         # Creating the sequnce item
@@ -390,7 +389,7 @@ class pipe_monitor(uvm_monitor):
         pipe_seq_item.pclk_rate = pclk_rate
         # Sending the sequence item to the analysis components
         self.ap_sent.write(pipe_seq_item)
-    # endfunction
+    
 
     def notify_pclk_rate_change_received(self, pclk_rate) :
         # Creating the sequnce item
@@ -402,7 +401,7 @@ class pipe_monitor(uvm_monitor):
         pipe_seq_item_h.pclk_rate = pclk_rate
         # Sending the sequence item to the analysis components
         self.ap_received.write(pipe_seq_item_h)
-    # endfunction
+    
 
     def DUT_polling_state_start(self) :
         uvm_root().logger.info(self.name + " " + "DUT_polling_state_start is called")
@@ -435,7 +434,7 @@ class pipe_monitor(uvm_monitor):
 
     def notify_fc_initialized(self):
         self.pipe_agent_config.fc_initialized.set()
-
+    
 
 
 
@@ -445,6 +444,7 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
         
     def __init__(self, name = "pipe_driver", parent=None):
         self.pipe_driver_bfm = None  # type: pipe_driver_bfm_param  
+        self.tlp_driver_bfm  = None
         self.pipe_agent_config = None  # type: pipe_agent_config  
         super().__init__(name, parent)
 
@@ -459,6 +459,7 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
         super().connect_phase()
         # uvm_info(get_name(), "Enter pipe_driver connect_phase", UVM_MEDIUM)
         self.pipe_driver_bfm = self.pipe_agent_config.pipe_driver_bfm_h
+        self.tlp_driver_bfm = self.pipe_agent_config.tlp_driver_bfm_h
         # uvm_info(get_name(), "Exit pipe_driver connect_phase", UVM_MEDIUM)
     
 
@@ -501,6 +502,8 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                     await self.pipe_driver_bfm.send_dllp(pipe_seq_item_h.dllp)
                 case pipe_operation_t.SEND_SKP: 
                     await self.pipe_driver_bfm.send_skp()
+                case pipe_operation_t.SEND_MAC_TLP: 
+                    await self.tlp_driver_bfm.send_tlp(pipe_seq_item_h.tlp)
                 # PCLK_RATE_CHANGE: pipe_driver_bfm.change_pclk_rate(pipe_seq_item.pclk_rate)
                 # WIDTH_CHANGE: pipe_driver_bfm.change_width(pipe_seq_item.pipe_width)
                 # SPEED_CHANGE: pipe_driver_bfm.change_speed()

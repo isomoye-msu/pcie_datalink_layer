@@ -102,16 +102,17 @@ module tlp2dllp
   logic                 [USER_WIDTH-1:0] tlp_axis_tuser;
   logic                                  tlp_axis_tready;
   //crc helper signals
+  logic                 [DATA_WIDTH-1:0] crc_tlp_axis_tdata;
   logic                 [          31:0] crc_in_c;
   logic                 [          31:0] dllp_lcrc_c;
   logic                 [          31:0] crc_in_r;
   logic                 [          31:0] dllp_lcrc_r;
-  logic                 [          31:0] crc_out;
-  logic                 [          31:0] crc_out16;
+  logic                 [          31:0] crc_out_32;
+  logic                 [          31:0] crc_out_16;
   logic                 [           1:0] crc_select;
-  logic                 [          31:0] crc_reversed;
+  logic                 [          31:0] lcrc32d32;
   logic                 [          15:0] dllp_crc_out;
-  logic                 [          15:0] dllp_crc_reversed;
+  logic                 [          15:0] dllp_lcrc32d32;
   //tlp nulled
   logic                                  tlp_nullified_c;
   logic                                  tlp_nullified_r;
@@ -185,12 +186,40 @@ module tlp2dllp
 
   //combinatarial block to byteswap the crc.
   always_comb begin : byteswap
-    for (int i = 0; i < 8; i++) begin
-      crc_reversed[i]    = crc_in_r[7-i];
-      crc_reversed[i+8]  = crc_in_r[15-i];
-      crc_reversed[i+16] = crc_in_r[23-i];
-      crc_reversed[i+24] = crc_in_r[31-i];
-    end
+    lcrc32d32 = {
+      ~crc_in_r[0],
+      ~crc_in_r[1],
+      ~crc_in_r[2],
+      ~crc_in_r[3],
+      ~crc_in_r[4],
+      ~crc_in_r[5],
+      ~crc_in_r[6],
+      ~crc_in_r[7],
+      ~crc_in_r[8],
+      ~crc_in_r[9],
+      ~crc_in_r[10],
+      ~crc_in_r[11],
+      ~crc_in_r[12],
+      ~crc_in_r[13],
+      ~crc_in_r[14],
+      ~crc_in_r[15],
+      ~crc_in_r[16],
+      ~crc_in_r[17],
+      ~crc_in_r[18],
+      ~crc_in_r[19],
+      ~crc_in_r[20],
+      ~crc_in_r[21],
+      ~crc_in_r[22],
+      ~crc_in_r[23],
+      ~crc_in_r[24],
+      ~crc_in_r[25],
+      ~crc_in_r[26],
+      ~crc_in_r[27],
+      ~crc_in_r[28],
+      ~crc_in_r[29],
+      ~crc_in_r[30],
+      ~crc_in_r[31]
+    };
   end
 
 
@@ -206,6 +235,7 @@ module tlp2dllp
     crc_in_c                = crc_in_r;
     dllp_valid_o            = '0;
     tlp_dw0                 = '0;
+    crc_tlp_axis_tdata = '0;
     ph_credits_consumed_c   = ph_credits_consumed_r;
     pd_credits_consumed_c   = pd_credits_consumed_r;
     nph_credits_consumed_c  = nph_credits_consumed_r;
@@ -245,6 +275,9 @@ module tlp2dllp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
         };
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
+        };
         tlp_axis_tkeep = '1;
         //check that nph credit is available
         if (nph_credit_limit_r >= nph_credits_consumed_r) begin
@@ -260,7 +293,7 @@ module tlp2dllp
           end
         end
         if (has_nph_credit) begin
-          crc_in_c         = crc_out16;
+          crc_in_c         = crc_out_32;
           tlp_axis_tvalid  = skid_axis_tvalid;
           skid_axis_tready = '1;
           next_state       = ST_TLP_STREAM;
@@ -276,6 +309,9 @@ module tlp2dllp
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
@@ -304,7 +340,7 @@ module tlp2dllp
         if (has_nph_credit && has_npd_credit) begin
           nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
           npd_credits_consumed_c = npd_credits_consumed_r + data_credits_required;
-          crc_in_c               = crc_out16;
+          crc_in_c               = crc_out_32;
           tlp_axis_tvalid        = skid_axis_tvalid;
           skid_axis_tready       = '1;
           next_state             = ST_TLP_STREAM;
@@ -315,6 +351,9 @@ module tlp2dllp
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
@@ -332,7 +371,7 @@ module tlp2dllp
         end
         //check next_state criteria
         if (has_ph_credit) begin
-          crc_in_c         = crc_out16;
+          crc_in_c         = crc_out_32;
           tlp_axis_tvalid  = skid_axis_tvalid;
           skid_axis_tready = '1;
           next_state       = ST_TLP_STREAM;
@@ -351,6 +390,9 @@ module tlp2dllp
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
@@ -379,7 +421,7 @@ module tlp2dllp
         if (has_ph_credit && has_pd_credit) begin
           pd_credits_consumed_c = pd_credits_consumed_r + data_credits_required;
           ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
-          crc_in_c              = crc_out16;
+          crc_in_c              = crc_out_32;
           tlp_axis_tvalid       = skid_axis_tvalid;
           skid_axis_tready      = '1;
           next_state            = ST_TLP_STREAM;
@@ -391,6 +433,9 @@ module tlp2dllp
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
+        };
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
         };
         tlp_axis_tkeep = '1;
         //check that nph credit is available
@@ -407,7 +452,7 @@ module tlp2dllp
           end
         end
         if (has_cplh_credit) begin
-          crc_in_c         = crc_out16;
+          crc_in_c         = crc_out_32;
           tlp_axis_tvalid  = skid_axis_tvalid;
           skid_axis_tready = '1;
           next_state       = ST_TLP_STREAM;
@@ -427,7 +472,9 @@ module tlp2dllp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
         };
-        // tlp_axis_tdata        = {skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:0]};
+        crc_tlp_axis_tdata = {
+          skid_axis_tdata[15:0], 4'h0, next_transmit_seq_r[11:8], next_transmit_seq_r[7:0]
+        };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
         if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
@@ -455,7 +502,7 @@ module tlp2dllp
         if (has_cplh_credit && has_cpld_credit) begin
           cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
           cpld_credits_consumed_c = cpld_credits_consumed_r + data_credits_required;
-          crc_in_c                = crc_out16;
+          crc_in_c                = crc_out_32;
           tlp_axis_tvalid         = skid_axis_tvalid;
           skid_axis_tready        = '1;
           next_state              = ST_TLP_STREAM;
@@ -466,20 +513,12 @@ module tlp2dllp
       ST_TLP_STREAM: begin
         skid_axis_tready = tlp_axis_tready;
         if (tlp_axis_tready && skid_axis_tvalid) begin
-          crc_in_c        = crc_out16;
+          crc_in_c        = crc_out_32;
           tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          crc_tlp_axis_tdata = tlp_axis_tdata;
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = skid_axis_tvalid;
           if (skid_axis_tlast) begin  //check if packet is last
-            case (skid_axis_tkeep)  //handle shift crc placement
-              4'b0001: begin
-                tlp_axis_tvalid = '0;
-                tlp_axis_tdata  = {8'h0, skid_axis_tdata[7:0], pipeline_axis_tdata[31:16]};
-                crc_select      = 2'b10;
-              end
-              default: begin
-              end
-            endcase
             next_state = ST_TLP_CRC;
           end
         end
@@ -489,35 +528,12 @@ module tlp2dllp
       ST_TLP_CRC: begin
         skid_axis_tready = '0;
         if (tlp_axis_tready) begin
-          crc_in_c       = crc_out16;
-          tlp_axis_tkeep = '1;
-          next_state     = ST_TLP_CRC_ALIGN;
-          //handle shift crc placement
-          //complete the rest of crc placement
-          case (pipeline_axis_tkeep)
-            4'b0001: begin
-              crc_in_c        = crc_in_r;
-              tlp_axis_tdata  = {crc_reversed[7:0], pipeline_axis_tdata[23:0]};
-              tlp_axis_tvalid = '1;
-            end
-            4'b0011: begin
-              tlp_axis_tdata  = crc_reversed;
-              tlp_axis_tlast  = '1;
-              tlp_axis_tvalid = '1;
-              dllp_valid_o    = '1;
-              next_state      = ST_TLP_LAST;
-            end
-            4'b0111: begin
-              tlp_axis_tdata = {24'h0, pipeline_axis_tdata[31:24]};
-              crc_select     = 2'b00;
-            end
-            4'b1111: begin
-              tlp_axis_tdata = {16'h0, pipeline_axis_tdata[31:16]};
-              crc_select     = 2'b01;
-            end
-            default: begin
-            end
-          endcase
+          crc_in_c       = crc_out_16;
+          tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          crc_tlp_axis_tdata = tlp_axis_tdata;
+          next_state = ST_TLP_CRC_ALIGN;
+          // tlp_axis_tkeep  = '1;
+          // tlp_axis_tvalid = skid_axis_tvalid;
         end
       end
       ST_TLP_CRC_ALIGN: begin
@@ -526,54 +542,20 @@ module tlp2dllp
         if (tlp_axis_tready) begin
           tlp_axis_tkeep  = '1;
           tlp_axis_tvalid = '1;
-          case (pipeline_axis_tkeep)  //handle shift crc placement
-            4'b0001: begin
-              tlp_axis_tdata = {8'h0, crc_reversed[31:8]};
-              tlp_axis_tkeep = 4'b0111;
-              tlp_axis_tlast = '1;
-              dllp_valid_o   = '1;
-              next_state     = ST_TLP_LAST;
-            end
-            4'b0111: begin
-              tlp_axis_tdata = {crc_reversed[23:0], pipeline_axis_tdata[31:24]};
-              crc_select     = 2'b00;
-              next_state     = ST_TLP_CRC_TLAST_ALIGN;
-            end
-            4'b1111: begin
-              tlp_axis_tdata = {crc_reversed[15:0], pipeline_axis_tdata[31:16]};
-              crc_select     = 2'b01;
-              next_state     = ST_TLP_CRC_TLAST_ALIGN;
-            end
-            default: begin
-            end
-          endcase
+          tlp_axis_tdata = { lcrc32d32[15:0],pipeline_axis_tdata[31:16]};
+          crc_tlp_axis_tdata = tlp_axis_tdata;
+          next_state = ST_TLP_CRC_TLAST_ALIGN;
         end
       end
       ST_TLP_CRC_TLAST_ALIGN: begin
         skid_axis_tready = '0;
         if (tlp_axis_tready) begin  //wait for upstream ready
-          tlp_axis_tkeep  = '1;
+          tlp_axis_tkeep  = 4'b0011;
           tlp_axis_tvalid = '1;
-          //handle shift crc placement
-          //final crc alignment if necessary
-          case (pipeline_axis_tkeep)
-            4'b0111: begin
-              tlp_axis_tdata = {8'h0, crc_reversed[31:24]};
-              tlp_axis_tkeep = 4'b0001;
-              tlp_axis_tlast = '1;
-              dllp_valid_o   = '1;
-              next_state     = ST_TLP_LAST;
-            end
-            4'b1111: begin
-              tlp_axis_tdata = {8'h0, crc_reversed[31:16]};
-              tlp_axis_tkeep = 4'b0011;
-              tlp_axis_tlast = '1;
-              dllp_valid_o   = '1;
-              next_state     = ST_TLP_LAST;
-            end
-            default: begin
-            end
-          endcase
+          tlp_axis_tlast = '1;
+          tlp_axis_tdata = {lcrc32d32[31:16]};
+          crc_tlp_axis_tdata = tlp_axis_tdata;
+          next_state = ST_TLP_LAST;
         end
       end
       ST_TLP_LAST: begin
@@ -721,11 +703,16 @@ module tlp2dllp
 
 
   pcie_lcrc16 tlp_crc16_inst (
-      .data  (tlp_axis_tdata),
+      .data  (crc_tlp_axis_tdata),
       .crcIn (crc_in_r),
-      .select(crc_select),
-      .crcOut(crc_out16)
+      .crcOut(crc_out_16)
   );
+
+  pcie_lcrc32 pcie_lcrc32_inst (
+    .crcIn (crc_in_r),
+    .data  (crc_tlp_axis_tdata),
+    .crcOut(crc_out_32)
+);
 
   assign seq_num_o = next_transmit_seq_r;
 
