@@ -27,10 +27,10 @@ module dllp_transmit
     //TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
-    input  logic [   S_COUNT-1:0] s_axis_tvalid,
-    input  logic [   S_COUNT-1:0] s_axis_tlast,
+    input  logic                  s_axis_tvalid,
+    input  logic                  s_axis_tlast,
     input  logic [USER_WIDTH-1:0] s_axis_tuser,
-    output logic [   S_COUNT-1:0] s_axis_tready,
+    output logic                  s_axis_tready,
     //dllp AXIS output
     output logic [DATA_WIDTH-1:0] m_axis_tdata,
     output logic [KEEP_WIDTH-1:0] m_axis_tkeep,
