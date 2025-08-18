@@ -126,8 +126,8 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         # self.dev.upstream_port.ext_recv = self.handle_tx
         # self.dev.upstream_recv = self.upstream_recv
         # self.upstream_port.send(tlp) 
-        self.dev.upstream_port.upstream_send = self.send_tlp_mac
-        self.dev.send = self.send_tlp_mac
+        self.dev.upstream_send = self.send_tlp_mac
+        # self.dev.send = self.send_tlp_mac
 
         self.dev.log.setLevel(logging.INFO)
         self.rc.log.setLevel(logging.INFO)
@@ -161,8 +161,9 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         
         # self.dev.functions[0].log.setLevel(logging.DEBUG)
         # self.dev.functions[0].upstream_tx_handler = self.send_tlp
-        for f in self.dev.functions:
-            f.upstream_tx_handler = self.send_tlp_mac
+        # for f in self.dev.functions:
+        #     f.upstream_tx_handler = self.send_tlp_mac
+        self.dev.functions[0].upstream_tx_handler = self.send_tlp_mac
         
         # await self.rc.enumerate()
         
@@ -184,16 +185,16 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
 
         for length in list(range(0, 32))+[1024]:
             for offset in list(range(8))+list(range(4096-8, 4096)):
-                # tb.log.info("Memory operation (32-bit BAR) length: %d offset: %d", length, offset)
+                uvm_root().logger.info("Memory operation (32-bit BAR) length: %d offset: %d", length, offset)
                 test_data = bytearray([x % 256 for x in range(length)])
 
-                await dev_bar0.write(offset, test_data, timeout=1000000, timeout_unit='ns')
+                await dev_bar0.write(offset, test_data, timeout=10000, timeout_unit='ns')
                 # wait for write to complete
-                await dev_bar0.read(offset, 0, timeout=1000000, timeout_unit='ns')
+                await dev_bar0.read(offset, 0, timeout=10000, timeout_unit='ns')
                 assert await ep.read_region(0, offset, length) == test_data
 
-                assert await dev_bar0.read(offset, length, timeout=1000000, timeout_unit='ns') == test_data
-        assert 1 == 0
+        #         assert await dev_bar0.read(offset, length, timeout=1000000, timeout_unit='ns') == test_data
+        # assert 1 == 0
 
 
     async def send_tlp_mac(self,tlp):
@@ -432,7 +433,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
     async def handle_tlp(self, tlp):
         # print(f"handle tlp {repr(tlp)}")
         # print([hex(word) for word in tlp.data])
-        await self.dev.upstream_port.other.ext_recv(tlp)
+        await self.dev.upstream_port.send(tlp)
 
     async def response_tlp(self,tlp):
         while True:

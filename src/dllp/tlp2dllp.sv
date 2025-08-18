@@ -235,7 +235,7 @@ module tlp2dllp
     crc_in_c                = crc_in_r;
     dllp_valid_o            = '0;
     tlp_dw0                 = '0;
-    crc_tlp_axis_tdata = '0;
+    crc_tlp_axis_tdata      = '0;
     ph_credits_consumed_c   = ph_credits_consumed_r;
     pd_credits_consumed_c   = pd_credits_consumed_r;
     nph_credits_consumed_c  = nph_credits_consumed_r;
@@ -444,6 +444,10 @@ module tlp2dllp
             cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
             has_cplh_credit         = '1;
           end
+          //account for unlimited completion credit limit
+          if (cplh_credit_limit_r == '0) begin
+            has_cplh_credit = '1;
+          end
         end  //account for wrap around
         else begin
           if ((cplh_credits_consumed_r - cplh_credit_limit_r) >= 1'b1) begin
@@ -481,6 +485,10 @@ module tlp2dllp
           if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin
             has_cplh_credit = '1;
           end
+          //account for unlimited completion credit limit
+          if (cplh_credit_limit_r == '0) begin
+            has_cplh_credit = '1;
+          end
         end  //account for wrap around
         else begin
           if ((cplh_credits_consumed_r - cplh_credit_limit_r) >= 1'b1) begin
@@ -490,6 +498,10 @@ module tlp2dllp
         //check that posted data credit is available
         if (cpld_credit_limit_r >= cpld_credits_consumed_r) begin
           if ((cpld_credit_limit_r - cpld_credits_consumed_r) >= data_credits_required) begin
+            has_cpld_credit = '1;
+          end
+            //account for unlimited completion credit limit
+          if (cpld_credit_limit_r == '0) begin
             has_cpld_credit = '1;
           end
         end  //account for wrap around
@@ -513,11 +525,11 @@ module tlp2dllp
       ST_TLP_STREAM: begin
         skid_axis_tready = tlp_axis_tready;
         if (tlp_axis_tready && skid_axis_tvalid) begin
-          crc_in_c        = crc_out_32;
-          tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          crc_in_c           = crc_out_32;
+          tlp_axis_tdata     = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
           crc_tlp_axis_tdata = tlp_axis_tdata;
-          tlp_axis_tkeep  = '1;
-          tlp_axis_tvalid = skid_axis_tvalid;
+          tlp_axis_tkeep     = '1;
+          tlp_axis_tvalid    = skid_axis_tvalid;
           if (skid_axis_tlast) begin  //check if packet is last
             next_state = ST_TLP_CRC;
           end
@@ -528,10 +540,10 @@ module tlp2dllp
       ST_TLP_CRC: begin
         skid_axis_tready = '0;
         if (tlp_axis_tready) begin
-          crc_in_c       = crc_out_16;
-          tlp_axis_tdata  = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
+          crc_in_c           = crc_out_16;
+          tlp_axis_tdata     = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
           crc_tlp_axis_tdata = tlp_axis_tdata;
-          next_state = ST_TLP_CRC_ALIGN;
+          next_state         = ST_TLP_CRC_ALIGN;
           // tlp_axis_tkeep  = '1;
           // tlp_axis_tvalid = skid_axis_tvalid;
         end
@@ -540,9 +552,9 @@ module tlp2dllp
         skid_axis_tready = '0;
         //wait for upstream ready
         if (tlp_axis_tready) begin
-          tlp_axis_tkeep  = '1;
+          tlp_axis_tkeep = '1;
           tlp_axis_tvalid = '1;
-          tlp_axis_tdata = { lcrc32d32[15:0],pipeline_axis_tdata[31:16]};
+          tlp_axis_tdata = {lcrc32d32[15:0], pipeline_axis_tdata[31:16]};
           crc_tlp_axis_tdata = tlp_axis_tdata;
           next_state = ST_TLP_CRC_TLAST_ALIGN;
         end
@@ -550,7 +562,7 @@ module tlp2dllp
       ST_TLP_CRC_TLAST_ALIGN: begin
         skid_axis_tready = '0;
         if (tlp_axis_tready) begin  //wait for upstream ready
-          tlp_axis_tkeep  = 4'b0011;
+          tlp_axis_tkeep = 4'b0011;
           tlp_axis_tvalid = '1;
           tlp_axis_tlast = '1;
           tlp_axis_tdata = {lcrc32d32[31:16]};
@@ -709,10 +721,10 @@ module tlp2dllp
   );
 
   pcie_lcrc32 pcie_lcrc32_inst (
-    .crcIn (crc_in_r),
-    .data  (crc_tlp_axis_tdata),
-    .crcOut(crc_out_32)
-);
+      .crcIn (crc_in_r),
+      .data  (crc_tlp_axis_tdata),
+      .crcOut(crc_out_32)
+  );
 
   assign seq_num_o = next_transmit_seq_r;
 
