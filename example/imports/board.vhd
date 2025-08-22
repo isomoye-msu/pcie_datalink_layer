@@ -74,7 +74,7 @@ end board;
 
 architecture rtl of board is
 
-component xilinx_pcie_2_1_ep_7x is
+component pcie_top_kc705 is
 generic (
   PL_FAST_TRAIN   : string := "TRUE"
 ) ;
@@ -214,7 +214,7 @@ end writeNowToScreen;
 
 begin
 
-EP : xilinx_pcie_2_1_ep_7x generic map (
+EP : pcie_top_kc705 generic map (
 
   PL_FAST_TRAIN => "TRUE"
 

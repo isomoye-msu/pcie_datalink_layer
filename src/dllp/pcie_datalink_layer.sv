@@ -25,8 +25,8 @@ module pcie_datalink_layer
     parameter int RETRY_TLP_SIZE = 3,
     parameter int MAX_PAYLOAD_SIZE = 256
 ) (
-    input  logic                  clk_i,                    // Clock signal
-    input  logic                  rst_i,                    // Reset signal
+    input  logic                  clk_i,              // Clock signal
+    input  logic                  rst_i,              // Reset signal
     //TLP AXIS inputs
     input  logic [DATA_WIDTH-1:0] s_tlp_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_tlp_axis_tkeep,
@@ -59,18 +59,22 @@ module pcie_datalink_layer
     input  logic                  phy_link_up_i,
     output logic                  fc_initialized_o,
     input  logic                  idle_valid_i,
-    output logic [           7:0] bus_num_o,
-    output logic                  ext_tag_enable_o,
-    output logic                  rcb_128b_o,
-    output logic [           2:0] max_read_request_size_o,
-    output logic [           2:0] max_payload_size_o,
-    output logic                  msix_enable_o,
-    output logic                  msix_mask_o,
+
+    output logic [7:0] cfg_bus_number_o,
+    output logic [4:0] cfg_device_number_o,
+    output logic [2:0] cfg_function_number_o,
+
+    output logic       ext_tag_enable_o,
+    output logic       rcb_128b_o,
+    output logic [2:0] max_read_request_size_o,
+    output logic [2:0] max_payload_size_o,
+    output logic       msix_enable_o,
+    output logic       msix_mask_o,
     //Status
-    input  logic                  status_error_cor_i,
-    input  logic                  status_error_uncor_i,
+    input  logic       status_error_cor_i,
+    input  logic       status_error_uncor_i,
     //Control and status
-    input  logic                  rx_cpl_stall_i
+    input  logic       rx_cpl_stall_i
 );
 
 
@@ -148,6 +152,7 @@ module pcie_datalink_layer
   logic                               fc2_values_sent;
   logic                               fc_init_done;
   logic                               fc2_values_stored_reg;
+
 
 
 
@@ -270,6 +275,9 @@ module pcie_datalink_layer
       .m_cpl_from_cfg_tlast  (cpl_from_cfg_tlast),
       .m_cpl_from_cfg_tuser  (cpl_from_cfg_tuser),
       .m_cpl_from_cfg_tready (cpl_from_cfg_tready),
+      .cfg_bus_number_o      (cfg_bus_number_o),
+      .cfg_device_number_o   (cfg_device_number_o),
+      .cfg_function_number_o (cfg_function_number_o),
       .seq_num_o             (seq_num),
       .seq_num_vld_o         (seq_num_vld),
       .seq_num_acknack_o     (seq_num_acknack),

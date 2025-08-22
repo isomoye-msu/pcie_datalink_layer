@@ -445,7 +445,7 @@ module tlp2dllp
             has_cplh_credit         = '1;
           end
           //account for unlimited completion credit limit
-          if (cplh_credit_limit_r == '0) begin
+          if (cplh_credit_limit_r == '0 && cplh_credits_consumed_r == '0) begin
             has_cplh_credit = '1;
           end
         end  //account for wrap around
@@ -486,7 +486,7 @@ module tlp2dllp
             has_cplh_credit = '1;
           end
           //account for unlimited completion credit limit
-          if (cplh_credit_limit_r == '0) begin
+          if (cplh_credit_limit_r == '0 && cplh_credits_consumed_r == '0) begin
             has_cplh_credit = '1;
           end
         end  //account for wrap around
@@ -501,7 +501,7 @@ module tlp2dllp
             has_cpld_credit = '1;
           end
             //account for unlimited completion credit limit
-          if (cpld_credit_limit_r == '0) begin
+          if (cpld_credit_limit_r == '0 && cpld_credits_consumed_r == '0) begin
             has_cpld_credit = '1;
           end
         end  //account for wrap around
@@ -715,14 +715,14 @@ module tlp2dllp
 
 
   pcie_lcrc16 tlp_crc16_inst (
-      .data  (crc_tlp_axis_tdata),
+      .data  (tlp_axis_tdata),
       .crcIn (crc_in_r),
       .crcOut(crc_out_16)
   );
 
   pcie_lcrc32 pcie_lcrc32_inst (
       .crcIn (crc_in_r),
-      .data  (crc_tlp_axis_tdata),
+      .data  (tlp_axis_tdata),
       .crcOut(crc_out_32)
   );
 
