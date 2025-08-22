@@ -17,8 +17,8 @@ module pcie_phy_top
     parameter int CROSSLINK_EN  = 0,               //crosslink not supported
     parameter int UPCONFIG_EN   = 0                //upconfig not supported
 ) (
-    input  logic                                    clk_i,                 //! 100MHz clock signal
-    input  logic                                    rst_i,                 //! Reset signal
+    input  logic                                    clk_i,              //! 100MHz clock signal
+    input  logic                                    rst_i,              //! Reset signal
     input  logic                                    en_i,
     input  logic                                    pipe_rx_usr_clk_i,
     input  logic                                    pipe_tx_usr_clk_i,
@@ -45,35 +45,43 @@ module pcie_phy_top
     output wire  [               MAX_NUM_LANES-1:0] phy_rxpolarity,
     output wire  [                             1:0] phy_powerdown,
     output wire  [                             2:0] phy_rate,
+
+
     // PHY Status
-    input  wire  [               MAX_NUM_LANES-1:0] phy_rxvalid,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_phystatus,
-    input  wire                                     phy_phystatus_rst,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_rxelecidle,
-    input  wire  [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+    input  wire [     MAX_NUM_LANES-1:0] phy_rxvalid,
+    input  wire [     MAX_NUM_LANES-1:0] phy_phystatus,
+    input  wire                          phy_phystatus_rst,
+    input  wire [     MAX_NUM_LANES-1:0] phy_rxelecidle,
+    input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
     // TX Driver
-    output wire  [                             2:0] phy_txmargin,
-    output wire                                     phy_txswing,
-    output wire                                     phy_txdeemph,
+    output wire [                   2:0] phy_txmargin,
+    output wire                          phy_txswing,
+    output wire                          phy_txdeemph,
     // TX Equalization (Gen3/4)
-    output wire  [           (MAX_NUM_LANES*2)-1:0] phy_txeq_ctrl,
-    output wire  [           (MAX_NUM_LANES*4)-1:0] phy_txeq_preset,
-    output wire  [           (MAX_NUM_LANES*6)-1:0] phy_txeq_coeff,
-    input  wire  [                             5:0] phy_txeq_fs,
-    input  wire  [                             5:0] phy_txeq_lf,
-    input  wire  [          (MAX_NUM_LANES*18)-1:0] phy_txeq_new_coeff,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_txeq_done,
+    output wire [ (MAX_NUM_LANES*2)-1:0] phy_txeq_ctrl,
+    output wire [ (MAX_NUM_LANES*4)-1:0] phy_txeq_preset,
+    output wire [ (MAX_NUM_LANES*6)-1:0] phy_txeq_coeff,
+    input  wire [                   5:0] phy_txeq_fs,
+    input  wire [                   5:0] phy_txeq_lf,
+    input  wire [(MAX_NUM_LANES*18)-1:0] phy_txeq_new_coeff,
+    input  wire [     MAX_NUM_LANES-1:0] phy_txeq_done,
     // RX Equalization (Gen3/4)
-    output wire  [           (MAX_NUM_LANES*2)-1:0] phy_rxeq_ctrl,
-    output wire  [           (MAX_NUM_LANES*4)-1:0] phy_rxeq_txpreset,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_preset_sel,
-    input  wire  [          (MAX_NUM_LANES*18)-1:0] phy_rxeq_new_txcoeff,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_adapt_done,
-    input  wire  [               MAX_NUM_LANES-1:0] phy_rxeq_done,
-    output wire  [                           8-1:0] pipe_width_o,
+    output wire [ (MAX_NUM_LANES*2)-1:0] phy_rxeq_ctrl,
+    output wire [ (MAX_NUM_LANES*4)-1:0] phy_rxeq_txpreset,
+    input  wire [     MAX_NUM_LANES-1:0] phy_rxeq_preset_sel,
+    input  wire [(MAX_NUM_LANES*18)-1:0] phy_rxeq_new_txcoeff,
+    input  wire [     MAX_NUM_LANES-1:0] phy_rxeq_adapt_done,
+    input  wire [     MAX_NUM_LANES-1:0] phy_rxeq_done,
+    output wire [                 8-1:0] pipe_width_o,
+
+
+    output logic [7:0] cfg_bus_number_o,
+    output logic [4:0] cfg_device_number_o,
+    output logic [2:0] cfg_function_number_o,
+
     //detect phy signals
-    output reg                                      as_mac_in_detect,
-    output reg                                      as_cdr_hold_req,
+    output reg as_mac_in_detect,
+    output reg as_cdr_hold_req,
 
     // Debug output
 
@@ -334,10 +342,12 @@ module pcie_phy_top
       .m_phy_axis_tlast       (s_dllp_axis_tlast),
       .m_phy_axis_tuser       (s_dllp_axis_tuser),
       .m_phy_axis_tready      (s_dllp_axis_tready),
+      .cfg_bus_number_o       (cfg_bus_number_o),
+      .cfg_device_number_o    (cfg_device_number_o),
+      .cfg_function_number_o  (cfg_function_number_o),
       .phy_link_up_i          (link_up),
       .fc_initialized_o       (fc_initialized_o),
-      .idle_valid_i(idle_valid),
-      .bus_num_o              (),
+      .idle_valid_i           (idle_valid),
       .ext_tag_enable_o       (),
       .rcb_128b_o             (),
       .max_read_request_size_o(),

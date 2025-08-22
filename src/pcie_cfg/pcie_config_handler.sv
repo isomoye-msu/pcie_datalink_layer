@@ -53,6 +53,14 @@ module pcie_config_handler
     input  logic [ 1:0] s_axil_bresp,
 
     /*
+     * Captured Config IDs
+     */
+
+    output logic [7:0] cfg_bus_number_o,
+    output logic [4:0] cfg_device_number_o,
+    output logic [2:0] cfg_function_number_o,
+
+    /*
      * TLP output (completion to DMA)
      */
     output logic [(DATA_WIDTH)-1:0] cpl_axis_tdata,
@@ -82,6 +90,9 @@ module pcie_config_handler
     tlp_hdr_union_t            tlp_hdr;
     logic [31:0]               word_count;
     cpl_tlp_hdr_t              cpl_tlp;
+    logic [7:0]                cfg_bus_number;
+    logic [4:0]                cfg_device_number;
+    logic [2:0]                cfg_function_number;
     //tlp type signals
     pcie_tlp_header_dw0_t      tlp_dw0;
     logic                      tlp_is_3dw;
@@ -103,6 +114,10 @@ module pcie_config_handler
   logic [USER_WIDTH-1:0] s_axis_tuser;
   logic                  s_axis_tready;
   logic [          31:0] address;
+
+  assign cfg_bus_number_o      = Q.cfg_bus_number;
+  assign cfg_device_number_o   = Q.cfg_device_number;
+  assign cfg_function_number_o = Q.cfg_function_number;
 
 
 
@@ -167,10 +182,13 @@ module pcie_config_handler
         // pready         = 1'b0;
         // pslverr        = 1'b0;
         // prdata         = '0;
-        s_axil_wvalid  = 1'b1;
+        s_axil_wvalid = 1'b1;
         s_axil_arvalid = 1'b0;
-        s_axil_rready  = 1'b0;
-        s_axil_bready  = 1'b0;
+        s_axil_rready = 1'b0;
+        s_axil_bready = 1'b0;
+        {D.cfg_bus_number, D.cfg_device_number, D.cfg_function_number} = {
+          Q.tlp_hdr.struct_.word_2.byte_0, Q.tlp_hdr.struct_.word_2.byte_1
+        };
         if ((s_axil_awready & s_axil_wready) == 1'b1) begin
           D.state = ST_CFG_WR_ACK;
         end else if (s_axil_awready == 1'b1) begin
@@ -185,10 +203,13 @@ module pcie_config_handler
         // pready         = 1'b0;
         // pslverr        = 1'b0;
         // prdata         = '0;
-        s_axil_wvalid  = 1'b1;
+        s_axil_wvalid = 1'b1;
         s_axil_arvalid = 1'b0;
-        s_axil_rready  = 1'b0;
-        s_axil_bready  = 1'b0;
+        s_axil_rready = 1'b0;
+        s_axil_bready = 1'b0;
+        {D.cfg_bus_number, D.cfg_device_number, D.cfg_function_number} = {
+          Q.tlp_hdr.struct_.word_2.byte_0, Q.tlp_hdr.struct_.word_2.byte_1
+        };
         if (s_axil_wready == 1'b1) begin
           D.state = ST_CFG_WR_ACK;
         end else begin

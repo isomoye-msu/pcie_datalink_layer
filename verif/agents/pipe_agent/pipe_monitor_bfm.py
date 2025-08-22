@@ -1245,9 +1245,7 @@ class pipe_monitor_bfm():
                                     if(temp_byte == 0x5C):
                                         dllp_found = 1
                                     elif(temp_byte == 0xFB):
-                                        print("TLP FOUND")
                                         tlp_found = 1
-                                        # print(f"dllp found, full word: {hex(data)}")
                                     bytes_stored.append(int(temp_byte))
                                 else:
                                     bytes_stored.append(temp_scramble)

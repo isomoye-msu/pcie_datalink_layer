@@ -137,7 +137,7 @@ class pcie_flow_control_seq(pipe_base_seq, crv.Randomized):
                 pkt = pkt.unpack(bytes(data))
                 seq = int.from_bytes(tlp_in[:2],'big')
                 pkt.seq = int(hex(seq),0)
-                print(repr(pkt))
+                # print(repr(pkt))
                 await self.handle_tlp(pkt)
                 self.pipe_agent_config.tlp_data_read_e.set()
                 count += 1

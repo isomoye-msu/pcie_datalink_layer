@@ -134,7 +134,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         
 
         self.regions = [None]*6
-        self.regions[0] = mmap.mmap(-1, 1024*1024)
+        self.regions[0] = mmap.mmap(-1, 1024*1024*1024)
         self.regions[1] = mmap.mmap(-1, 1024*1024)
         self.regions[3] = mmap.mmap(-1, 1024)
         self.regions[4] = mmap.mmap(-1, 1024*64)
@@ -168,6 +168,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         # await self.rc.enumerate()
         
         self.dev.functions[0].pcie_id = PcieId(1,0,0)
+        self.dev.functions[0].configure_bar(0, len(self.regions[0]))
         await Timer(2000,'ns')
         await with_timeout(self.rc.enumerate(),100000,'ns')
         # print(f"endpoint id : {self.dev.functions[0].pcie_id}")
@@ -190,8 +191,9 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
 
                 await dev_bar0.write(offset, test_data, timeout=10000, timeout_unit='ns')
                 # wait for write to complete
-                await dev_bar0.read(offset, 0, timeout=10000, timeout_unit='ns')
+                await dev_bar0.read(offset, 0, timeout=100000, timeout_unit='ns')
                 assert await ep.read_region(0, offset, length) == test_data
+            # assert 1 == 0
 
         #         assert await dev_bar0.read(offset, length, timeout=1000000, timeout_unit='ns') == test_data
         # assert 1 == 0
@@ -212,7 +214,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
                 pkt = Tlp()
                 tlp_data = self.pipe_agent_config.mac_tlp_received.pop(0)
                 pkt = pkt.unpack(bytes(tlp_data))
-                print(repr(pkt))
+                print(f"receive mac tlp: repr(pkt)")
                 # print([hex(j) for j in tlp_in])
                 # data = tlp
                 await self.dev.upstream_recv(pkt)
@@ -265,7 +267,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
                         self.dev.upstream_port.send_ack.set()
         else:
             pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-            print(f"handle tx override: {repr(pkt)}")
+            # print(f"handle tx override: {repr(pkt)}")
             if isinstance(pkt,Dllp):
                 pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
                 pipe_seq_item_h.dllp = pkt
@@ -438,7 +440,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
     async def response_tlp(self,tlp):
         while True:
             seq_item = await self.seqr.response_fifo.get()
-            self.log.debug("response tlp: %s",repr(seq_item.pkt))
+            # self.log.debug("response tlp: %s",repr(seq_item.pkt))
             # print("response tlp: %s",repr(seq_item.pkt))
             if seq_item.is_pkt and seq_item.pkt:
                 # print(type(seq_item.pkt))

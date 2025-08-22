@@ -53,22 +53,26 @@ module dllp_receive
     output logic                               m_cpl_from_cfg_tlast,
     output logic            [(USER_WIDTH)-1:0] m_cpl_from_cfg_tuser,
     input  logic                               m_cpl_from_cfg_tready,
+
+    output logic [ 7:0] cfg_bus_number_o,
+    output logic [ 4:0] cfg_device_number_o,
+    output logic [ 2:0] cfg_function_number_o,
     //tlp ack/nak
-    output logic            [            11:0] seq_num_o,
-    output logic                               seq_num_vld_o,
-    output logic                               seq_num_acknack_o,
+    output logic [11:0] seq_num_o,
+    output logic        seq_num_vld_o,
+    output logic        seq_num_acknack_o,
     //flow control values
-    output logic                               fc1_values_stored_o,
-    output logic                               fc2_values_stored_o,
-    output logic                                first_tlp_valid_o,
+    output logic        fc1_values_stored_o,
+    output logic        fc2_values_stored_o,
+    output logic        first_tlp_valid_o,
     //Flow control
-    output logic            [             7:0] tx_fc_ph_o,
-    output logic            [            11:0] tx_fc_pd_o,
-    output logic            [             7:0] tx_fc_nph_o,
-    output logic            [            11:0] tx_fc_npd_o,
-    output logic            [             7:0] tx_fc_cplh_o,
-    output logic            [            11:0] tx_fc_cpld_o,
-    output logic                               update_fc_o
+    output logic [ 7:0] tx_fc_ph_o,
+    output logic [11:0] tx_fc_pd_o,
+    output logic [ 7:0] tx_fc_nph_o,
+    output logic [11:0] tx_fc_npd_o,
+    output logic [ 7:0] tx_fc_cplh_o,
+    output logic [11:0] tx_fc_cpld_o,
+    output logic        update_fc_o
 );
 
   localparam int UserIsTlp = 1;
@@ -295,6 +299,10 @@ module dllp_receive
       .cpl_axis_tlast (m_cpl_from_cfg_tlast),
       .cpl_axis_tuser (m_cpl_from_cfg_tuser),
       .cpl_axis_tready(m_cpl_from_cfg_tready),
+
+      .cfg_bus_number_o     (cfg_bus_number_o),
+      .cfg_device_number_o  (cfg_device_number_o),
+      .cfg_function_number_o(cfg_function_number_o),
 
       .m_tlp_axis_tdata (m_axis_dllp2tlp_tdata),
       .m_tlp_axis_tkeep (m_axis_dllp2tlp_tkeep),

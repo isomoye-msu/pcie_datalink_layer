@@ -191,18 +191,20 @@ module pcie_top_kc705 #(
 
 
   wire [                  DATA_WIDTH-1:0] s_tlp_axis_tdata;
+  wire [                  DATA_WIDTH-1:0] s_tlp_axis_byte_swap_tdata;
   wire [                  KEEP_WIDTH-1:0] s_tlp_axis_tkeep;
   wire                                    s_tlp_axis_tvalid;
   wire                                    s_tlp_axis_tlast;
   wire [                  USER_WIDTH-1:0] s_tlp_axis_tuser;
   wire                                    s_tlp_axis_tready;
 
-  //   wire [                  DATA_WIDTH-1:0] m_tlp_axis_tdata;
-  //   wire [                  KEEP_WIDTH-1:0] m_tlp_axis_tkeep;
-  //   wire                                    m_tlp_axis_tvalid;
-  //   wire                                    m_tlp_axis_tlast;
-  //   wire [                  USER_WIDTH-1:0] m_tlp_axis_tuser;
-  //   reg                                     m_tlp_axis_tready;
+  wire [                  DATA_WIDTH-1:0] m_tlp_axis_tdata;
+  wire [                  DATA_WIDTH-1:0] m_tlp_axis_byte_swap_tdata;
+  wire [                  KEEP_WIDTH-1:0] m_tlp_axis_tkeep;
+  wire                                    m_tlp_axis_tvalid;
+  wire                                    m_tlp_axis_tlast;
+  wire [                  USER_WIDTH-1:0] m_tlp_axis_tuser;
+  wire                                    m_tlp_axis_tready;
 
 
 
@@ -279,55 +281,71 @@ module pcie_top_kc705 #(
   wire                     cfg_mgmt_wr_readonly;
 
 
+
+  // assign cfg_bus_number      = 8'd0;
+  // assign cfg_device_number   = 8'd0;
+  // assign cfg_function_number = 8'd0;
+
   //-------------------------------------------------------
   // 4. Physical Layer Control and Status (PL) Interface
   //-------------------------------------------------------
 
-  wire                     pl_directed_link_auton;
-  wire [              1:0] pl_directed_link_change;
-  wire                     pl_directed_link_speed;
-  wire [              1:0] pl_directed_link_width;
-  wire                     pl_upstream_prefer_deemph;
+  wire       pl_directed_link_auton;
+  wire [1:0] pl_directed_link_change;
+  wire       pl_directed_link_speed;
+  wire [1:0] pl_directed_link_width;
+  wire       pl_upstream_prefer_deemph;
 
-  wire                     sys_rst_n_c;
+  wire       sys_rst_n_c;
 
   // Wires used for external clocking connectivity
-  wire                     pipe_pclk_in;
-  wire                     pipe_rxusrclk_in;
-  wire [              7:0] pipe_rxoutclk_in;
-  wire                     pipe_dclk_in;
-  wire                     pipe_userclk1_in;
-  wire                     pipe_userclk2_in;
-  wire                     pipe_mmcm_lock_in;
+  wire       pipe_pclk_in;
+  wire       pipe_rxusrclk_in;
+  wire [7:0] pipe_rxoutclk_in;
+  wire       pipe_dclk_in;
+  wire       pipe_userclk1_in;
+  wire       pipe_userclk2_in;
+  wire       pipe_mmcm_lock_in;
 
-  wire                     pipe_txoutclk_out;
-  wire [              7:0] pipe_rxoutclk_out;
-  wire [              7:0] pipe_pclk_sel_out;
-  wire                     pipe_gen3_out;
-  wire                     pipe_oobclk_in;
+  wire       pipe_txoutclk_out;
+  wire [7:0] pipe_rxoutclk_out;
+  wire [7:0] pipe_pclk_sel_out;
+  wire       pipe_gen3_out;
+  wire       pipe_oobclk_in;
 
-  wire                     rx_np_req;
+  wire       rx_np_req;
 
   // Flow Control
-  wire [              2:0] fc_sel;
+  wire [2:0] fc_sel;
 
-  wire                     link_up;
+  wire       link_up;
 
-  wire                     PIPE_TXOUTCLK_OUT;
-  wire                     PIPE_DCLK_IN;
-  wire                     PIPE_MMCM_LOCK_IN;
-  wire                     PIPE_RXUSRCLK_IN;
-  wire                     PIPE_OOBCLK_IN;
+  wire       PIPE_TXOUTCLK_OUT;
+  wire       PIPE_DCLK_IN;
+  wire       PIPE_MMCM_LOCK_IN;
+  wire       PIPE_RXUSRCLK_IN;
+  wire       PIPE_OOBCLK_IN;
 
 
-  wire                     trn_lnk_up;
-  reg                      user_reset_int;
-  reg                      bridge_reset_int;
-  reg                      bridge_reset_d;
-  reg                      phy_rdy_n;
-  wire                     user_clk_out;  // actually is user_clk2
-  reg                      user_reset_out;
-  reg                      user_lnk_up;
+  wire       trn_lnk_up;
+  reg        user_reset_int;
+  reg        bridge_reset_int;
+  reg        bridge_reset_d;
+  reg        phy_rdy_n;
+  wire       user_clk_out;  // actually is user_clk2
+  reg        user_reset_out;
+  reg        user_lnk_up;
+
+  assign m_tlp_axis_byte_swap_tdata[7:0]   = m_tlp_axis_tdata[31:24];
+  assign m_tlp_axis_byte_swap_tdata[15:8]  = m_tlp_axis_tdata[23:16];
+  assign m_tlp_axis_byte_swap_tdata[23:16] = m_tlp_axis_tdata[15:8];
+  assign m_tlp_axis_byte_swap_tdata[31:24] = m_tlp_axis_tdata[7:0];
+
+
+  assign s_tlp_axis_byte_swap_tdata[7:0]   = s_tlp_axis_tdata[31:24];
+  assign s_tlp_axis_byte_swap_tdata[15:8]  = s_tlp_axis_tdata[23:16];
+  assign s_tlp_axis_byte_swap_tdata[23:16] = s_tlp_axis_tdata[15:8];
+  assign s_tlp_axis_byte_swap_tdata[31:24] = s_tlp_axis_tdata[7:0];
 
   pcie_phy_top #(
       .CLK_RATE     (CLK_RATE),
@@ -387,6 +405,10 @@ module pcie_top_kc705 #(
       .phy_rxeq_adapt_done (phy_rxeq_adapt_done),
       .phy_rxeq_done       (phy_rxeq_done),
 
+      .cfg_bus_number_o     (cfg_bus_number),
+      .cfg_device_number_o  (cfg_device_number),
+      .cfg_function_number_o(cfg_function_number),
+
       .pipe_width_o     (pipe_width_o),
       .as_mac_in_detect (as_mac_in_detect),
       .as_cdr_hold_req  (as_cdr_hold_req),
@@ -395,7 +417,7 @@ module pcie_top_kc705 #(
       .phy_ready_en     (phy_ready_en),
       .link_up_o        (link_up),
       //tlp inputs
-      .s_tlp_axis_tdata (s_tlp_axis_tdata),
+      .s_tlp_axis_tdata (s_tlp_axis_byte_swap_tdata),
       .s_tlp_axis_tkeep (s_tlp_axis_tkeep),
       .s_tlp_axis_tvalid(s_tlp_axis_tvalid),
       .s_tlp_axis_tlast (s_tlp_axis_tlast),
@@ -480,7 +502,7 @@ module pcie_top_kc705 #(
       .clk(sys_clk),
       .rst(!sys_rst_n),
 
-      .s_axis_tdata (m_tlp_axis_tdata),
+      .s_axis_tdata (m_tlp_axis_byte_swap_tdata),
       .s_axis_tkeep (m_tlp_axis_tkeep),
       .s_axis_tvalid(m_tlp_axis_tvalid),
       .s_axis_tready(m_tlp_axis_tready),
