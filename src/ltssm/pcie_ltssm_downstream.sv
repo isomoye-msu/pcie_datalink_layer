@@ -57,7 +57,7 @@ module pcie_ltssm_downstream
     input  logic [MAX_NUM_LANES-1:0] receiver_detected_i,
     input  logic [MAX_NUM_LANES-1:0] phy_rxelecidle_i,
     output logic [MAX_NUM_LANES-1:0] tx_enter_elec_idle_o,
-    output logic [              3:0] ltssm_state_o,
+    output logic [              19:0] ltssm_state_o,
     output logic                     goto_cfg_o,
     output logic                     goto_detect_o,
     input  logic                     ordered_set_tranmitted_i,
@@ -256,7 +256,7 @@ module pcie_ltssm_downstream
   equal_t                                     equal_status_r;
 
   assign active_lanes_o         = lane_active_r;
-  assign ltssm_state_o          = curr_state[3:0];
+  assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
 
 
