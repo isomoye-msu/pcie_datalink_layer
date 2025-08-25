@@ -176,7 +176,10 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         await dev.enable_device()
 
         self.dev.functions[0].bar[0] = 0xc0000000
+        mask = 2**((len(self.regions[0])-1).bit_length())-1
+        self.dev.functions[0].bar_mask[0] = 0xfffffff0 & ~mask
 
+        
         print(f"dev bar {hex(self.dev.functions[0].bar[0])}")
         # assert 1 == 0
 
@@ -191,7 +194,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
 
                 await dev_bar0.write(offset, test_data, timeout=10000, timeout_unit='ns')
                 # wait for write to complete
-                await dev_bar0.read(offset, 0, timeout=100000, timeout_unit='ns')
+                await dev_bar0.read(offset, 0, timeout=1000, timeout_unit='ns')
                 assert await ep.read_region(0, offset, length) == test_data
             # assert 1 == 0
 
@@ -214,7 +217,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
                 pkt = Tlp()
                 tlp_data = self.pipe_agent_config.mac_tlp_received.pop(0)
                 pkt = pkt.unpack(bytes(tlp_data))
-                print(f"receive mac tlp: repr(pkt)")
+                print(f"receive mac tlp: {repr(pkt)}") 
                 # print([hex(j) for j in tlp_in])
                 # data = tlp
                 await self.dev.upstream_recv(pkt)

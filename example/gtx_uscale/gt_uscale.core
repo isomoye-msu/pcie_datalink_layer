@@ -1,0 +1,90 @@
+CAPI=2:
+name: fusesoc:pcie:gt_uscale:1.0.0
+description: pcie xilinx ultra-scale wrapper
+
+filesets:
+  rtl:
+    files:
+      - source/gen4_phy_defines.vh
+      - source/pcie4_uscale_plus_0_bram_4k_int.v
+      - source/pcie4_uscale_plus_0_bram_16k_int.v
+      - source/pcie4_uscale_plus_0_bram_16k.v
+      - source/pcie4_uscale_plus_0_bram_32k.v
+      - source/pcie4_uscale_plus_0_bram_msix.v
+      - source/pcie4_uscale_plus_0_bram_rep_int.v
+      - source/pcie4_uscale_plus_0_bram_rep.v
+      - source/pcie4_uscale_plus_0_bram_tph.v
+      - source/pcie4_uscale_plus_0_bram.v
+      - source/pcie4_uscale_plus_0_gt_cdr_ctrl_on_eidle.v
+      - source/pcie4_uscale_plus_0_gt_gt_channel.v
+      - source/pcie4_uscale_plus_0_gt_gt_common.v
+      - source/pcie4_uscale_plus_0_gt_phy_clk.v
+      - source/pcie4_uscale_plus_0_gt_phy_rst.v
+      - source/pcie4_uscale_plus_0_gt_phy_rxeq.v
+      - source/pcie4_uscale_plus_0_gt_phy_txeq.v
+      - source/pcie4_uscale_plus_0_gt_phy_wrapper.v
+      - source/pcie4_uscale_plus_0_gt_receiver_detect_rxterm.v
+      - source/pcie4_uscale_plus_0_gtwizard_top.v
+      - source/pcie4_uscale_plus_0_init_ctrl.v
+      - source/pcie4_uscale_plus_0_pcie4_uscale_core_top.v
+      - source/pcie4_uscale_plus_0_phy_ff_chain.v
+      - source/pcie4_uscale_plus_0_phy_pipeline.v
+      - source/pcie4_uscale_plus_0_phy_top.v
+      - source/pcie4_uscale_plus_0_pipe.v
+      - source/pcie4_uscale_plus_0_pl_eq.v
+      - source/pcie4_uscale_plus_0_seqnum_fifo.v
+      - source/pcie4_uscale_plus_0_sync_cell.v
+      - source/pcie4_uscale_plus_0_sync.v
+      - source/pcie4_uscale_plus_0_sys_clk_gen_ps.v
+      - source/pcie4_uscale_plus_0_vf_decode.v
+      - synth/pcie4_uscale_plus_0_gt.v
+      - synth/pcie4_uscale_plus_0_gt_gtwizard_top.v
+      - synth/pcie4_uscale_plus_0_gt_gtwizard_gthe4.v
+      - synth/pcie4_uscale_plus_0_gt_gthe4_channel_wrapper.v
+      - synth/gtwizard_ultrascale_v1_7_gthe4_channel.v
+      - hdl/gtwizard_ultrascale_v1_7_bit_sync.v
+      - hdl/gtwizard_ultrascale_v1_7_gte4_drp_arb.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe3_cal_freqcnt.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe3_cpll_cal.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe4_cal_freqcnt.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe4_cpll_cal_rx.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe4_cpll_cal_tx.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe4_cpll_cal.v
+      - hdl/gtwizard_ultrascale_v1_7_gthe4_delay_powergood.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_buffbypass_rx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_buffbypass_tx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_reset.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_userclk_rx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_userclk_tx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_userdata_rx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtwiz_userdata_tx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtye4_cal_freqcnt.v
+      - hdl/gtwizard_ultrascale_v1_7_gtye4_cpll_cal_rx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtye4_cpll_cal_tx.v
+      - hdl/gtwizard_ultrascale_v1_7_gtye4_cpll_cal.v
+      - hdl/gtwizard_ultrascale_v1_7_gtye4_delay_powergood.v
+      - hdl/gtwizard_ultrascale_v1_7_reset_inv_sync.v
+      - hdl/gtwizard_ultrascale_v1_7_reset_sync.v
+    file_type: systemVerilogSource
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [pcie4_uscale_plus_0_phy_top]
+
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7k325tffg900-2
+    toplevel : pcie4_uscale_plus_0_phy_top

@@ -85,7 +85,7 @@ module pcie_phy_top
 
     // Debug output
 
-    (* mark_debug *) output wire [7:0] debug_state,
+    (* mark_debug *) output wire [20:0] ltssm_debug_state,
 
     // Bringup Control Inputs
     (* mark_debug *) input wire tx_elec_idle,
@@ -298,7 +298,7 @@ module pcie_phy_top
       .lane_status_i           (lane_status),
       .curr_data_rate_o        (curr_data_rate),
       .data_rate_o             (),
-      .ltssm_state_o           (),
+      .ltssm_state_o           (ltssm_debug_state),
       //   .gen_os_o(ordered_set),
       .ordered_set_i           (rx_ordered_set),
       .ordered_set_tranmitted_i(ordered_set_tranmitted),

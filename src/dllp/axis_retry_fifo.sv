@@ -1,6 +1,6 @@
 //!module: axis_retry_fifo
 //! Author: Idris Somoye
-//! Module implements a retry management FIFO. Stores TLPs as axis frames. 
+//! Module implements a retry management FIFO. Stores TLPs as axis frames.
 //! Module resets read and write pointer after every frame allowing for retransmission
 //! as long as data is not overwritten.
 module axis_retry_fifo
@@ -48,124 +48,60 @@ module axis_retry_fifo
     logic [DATA_WIDTH-1:0] tdata;
   } axis_tlp_pkt_t;
 
-  //incoming surbodanate axis helper struct
-  // axis_tlp_pkt_t        s_axis;
-  //outgoing surbodanate axis helper struct
-  // axis_tlp_pkt_t        m_axis;
-  //write pointer signals
-  logic          [15:0] wr_ptr_c;
-  logic          [15:0] wr_ptr_r;
-  //read pointer signals
-  logic          [15:0] rd_ptr_c;
-  logic          [15:0] rd_ptr_r;
-  axis_tlp_pkt_t        axis_mem_c        [MaxPktSize];
-  axis_tlp_pkt_t        axis_mem_r        [MaxPktSize];
-  logic                 frame_available_c;
-  logic                 frame_available_r;
-  //axis signals
-  // logic          [DATA_WIDTH-1:0] retry_axis_tdata;
-  // logic          [KEEP_WIDTH-1:0] retry_axis_tkeep;
-  // logic                           retry_axis_tvalid;
-  // logic                           retry_axis_tlast;
-  // logic          [USER_WIDTH-1:0] retry_axis_tuser;
-  // logic                           retry_axis_tready;
+
+  typedef struct {
+    logic [15:0]                wr_ptr;
+    //read pointer signals
+    logic [15:0]                rd_ptr;
+    axis_tlp_pkt_t [MaxPktSize-1:0] axis_mem;
+    logic                       frame_available;
+  } retry_fifo_t;
 
 
+  retry_fifo_t D;
+  retry_fifo_t Q;
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      wr_ptr_r          <= '0;
-      rd_ptr_r          <= '0;
-      frame_available_r <= '0;
+      Q <= '{default: 'd0};
     end else begin
-      wr_ptr_r          <= wr_ptr_c;
-      rd_ptr_r          <= rd_ptr_c;
-      frame_available_r <= frame_available_c;
+      Q <= D;
     end
-    //non-resetable
-    axis_mem_r <= axis_mem_c;
   end
 
 
   //simple write logic overflow is handled by retry management module
-  always_comb begin : write_logic
-    axis_mem_c        = axis_mem_r;
-    // s_axis.tdata      = s_axis_tdata;
-    // s_axis.tkeep      = s_axis_tkeep;
-    // s_axis.tlast      = s_axis_tlast;
-    // s_axis.tuser      = s_axis_tuser;
-    // s_axis.tvalid     = s_axis_tvalid;
-    wr_ptr_c          = wr_ptr_r;
-    s_axis_tready     = '1;
-    frame_available_c = frame_available_r;
-    if (s_axis_tvalid && s_axis_tready) begin
-      axis_mem_c[wr_ptr_r] = {
-        s_axis_tvalid, s_axis_tuser, s_axis_tlast, s_axis_tkeep, s_axis_tdata
-      };
-      // {s_axis;
-      wr_ptr_c = wr_ptr_r + 1'b1;
-      if (s_axis_tlast) begin
-        wr_ptr_c          = '0;
-        frame_available_c = '1;
-      end
-    end
-  end
-
-  //read out data to master
-  always_comb begin : read_logic
+  always_comb begin : read_write_logic
+    D             = Q;
+    s_axis_tready = '1;
     m_axis_tdata  = '0;
     m_axis_tkeep  = '0;
     m_axis_tvalid = '0;
     m_axis_tlast  = '0;
     m_axis_tuser  = '0;
-    rd_ptr_c      = rd_ptr_r;
-    // m_axis            = axis_mem_r[rd_ptr_r];
-    if (m_axis_tready && frame_available_r) begin
-      m_axis_tvalid = axis_mem_r[rd_ptr_r].tvalid;
-      m_axis_tdata  = axis_mem_r[rd_ptr_r].tdata;
-      m_axis_tkeep  = axis_mem_r[rd_ptr_r].tkeep;
-      m_axis_tlast  = axis_mem_r[rd_ptr_r].tlast;
-      m_axis_tuser  = axis_mem_r[rd_ptr_r].tuser;
-      rd_ptr_c      = rd_ptr_r + 1'b1;
+
+    if (m_axis_tready && Q.frame_available) begin
+      m_axis_tvalid = Q.axis_mem[Q.rd_ptr].tvalid;
+      m_axis_tdata  = Q.axis_mem[Q.rd_ptr].tdata;
+      m_axis_tkeep  = Q.axis_mem[Q.rd_ptr].tkeep;
+      m_axis_tlast  = Q.axis_mem[Q.rd_ptr].tlast;
+      m_axis_tuser  = Q.axis_mem[Q.rd_ptr].tuser;
+      D.rd_ptr      = Q.rd_ptr + 1'b1;
       if (m_axis_tlast) begin
-        rd_ptr_c = '0;
+        D.rd_ptr = '0;
+      end
+    end
+
+
+    if (s_axis_tvalid && s_axis_tready) begin
+      D.axis_mem[Q.wr_ptr] = {
+        s_axis_tvalid, s_axis_tuser, s_axis_tlast, s_axis_tkeep, s_axis_tdata
+      };
+      D.wr_ptr = Q.wr_ptr + 1'b1;
+      if (s_axis_tlast) begin
+        D.wr_ptr          = '0;
+        D.frame_available = '1;
       end
     end
   end
-
-
-  //output register for axis fifo
-  // axis_register #(
-  //     .DATA_WIDTH(DATA_WIDTH),
-  //     .KEEP_ENABLE('1),
-  //     .KEEP_WIDTH(KEEP_WIDTH),
-  //     .LAST_ENABLE('1),
-  //     .ID_ENABLE('0),
-  //     .ID_WIDTH(1),
-  //     .DEST_ENABLE('0),
-  //     .DEST_WIDTH(1),
-  //     .USER_ENABLE('1),
-  //     .USER_WIDTH(USER_WIDTH),
-  //     .REG_TYPE(SkidBuffer)
-  // ) axis_register_inst (
-  //     .clk(clk_i),
-  //     .rst(rst_i),
-  //     .s_axis_tdata(retry_axis_tdata),
-  //     .s_axis_tkeep(retry_axis_tkeep),
-  //     .s_axis_tvalid(retry_axis_tvalid),
-  //     .s_axis_tready(retry_axis_tready),
-  //     .s_axis_tlast(retry_axis_tlast),
-  //     .s_axis_tuser(retry_axis_tuser),
-  //     .s_axis_tid('0),
-  //     .s_axis_tdest('0),
-  //     .m_axis_tdata(m_axis_tdata),
-  //     .m_axis_tkeep(m_axis_tkeep),
-  //     .m_axis_tvalid(m_axis_tvalid),
-  //     .m_axis_tready(m_axis_tready),
-  //     .m_axis_tlast(m_axis_tlast),
-  //     .m_axis_tuser(m_axis_tuser),
-  //     .m_axis_tid(),
-  //     .m_axis_tdest()
-  // );
-
 
 endmodule
