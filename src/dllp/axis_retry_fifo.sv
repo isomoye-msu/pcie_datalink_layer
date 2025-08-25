@@ -49,7 +49,7 @@ module axis_retry_fifo
   } axis_tlp_pkt_t;
 
 
-  typedef struct {
+  typedef struct packed{
     logic [15:0]                wr_ptr;
     //read pointer signals
     logic [15:0]                rd_ptr;

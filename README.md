@@ -43,13 +43,13 @@ The project is intended to serve as a research and educational platform for high
 
 ### Cloning the Repository
 ```bash
-git clone https://github.com//pcie-endpoint-controller.git
-cd pcie-endpoint-controller
+git clone https://github.com/isomoye-msu/pcie_datalink_layer.git
+cd pcie_datalink_layer
 ```
 
 ### Registering with FuseSoC
 
-fusesoc library add pcie-endpoint-controller ./pcie-endpoint-controller
+fusesoc library add pcie-endpoint-controller ./pcie_datalink_layer
 
 
 ### Running Simulation

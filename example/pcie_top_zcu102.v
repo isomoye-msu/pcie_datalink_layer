@@ -613,7 +613,7 @@ module pcie_top_zcu102 #(
       .rst_i            (!sys_rst_n),
       .en_i             (1'b1),
       .pipe_rx_usr_clk_i(PIPE_RXUSRCLK_IN),
-      .pipe_tx_usr_clk_i(PIPE_RXUSRCLK_IN),
+      .pipe_tx_usr_clk_i(PIPE_TXOUTCLK_OUT),
       .fc_initialized_o (fc_initialized_o),
       .phy_txdata       (phy_txdata),
       .phy_txdata_valid (phy_txdata_valid),
@@ -1224,7 +1224,7 @@ module pcie_top_zcu102 #(
       .PIPE_SYNC_FSM_RX(),
       .PIPE_DRP_FSM    (),
 
-      .PIPE_RST_IDLE        (),
+      .PIPE_RST_IDLE        (phy_phystatus_rst),
       .PIPE_QRST_IDLE       (),
       .PIPE_RATE_IDLE       (),
       .PIPE_EYESCANDATAERROR(),

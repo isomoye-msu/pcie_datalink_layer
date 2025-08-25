@@ -23,7 +23,7 @@ filesets:
       - fusesoc:pcie:converters
       - fusesoc:pcie:pcie_config
       - fusesoc:pcie:gt_pipe_wrapper
-      - fusesoc:pcie:gt_uscale
+      - fusesoc:pcie:pipe_wrapper
   gtx:
     depend:
       - fusesoc:pcie:gtex2
