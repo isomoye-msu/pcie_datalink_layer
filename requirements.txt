@@ -108,10 +108,6 @@ launchpadlib==1.10.16
 lazr.restfulclient==0.14.4
 lazr.uri==1.0.6
 lazy-object-proxy==0.0.0
-liteiclink==2024.12
-litepcie==2024.12
-litex==2024.12
-litex-boards @ file:///tools/C/research/os_hw/litex-boards
 lockfile==0.12.2
 logilab-common==1.8.2
 louis==3.20.0
