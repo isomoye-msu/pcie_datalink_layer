@@ -1,0 +1,60 @@
+verilog xil_defaultlib --include "../../../../copy-pcie/src/pcie_cfg" \
+"../../../../copy-pcie/src/verilog-pcie/rtl/arbiter.v" \
+"../../../../copy-pcie/src/verilog-axis/rtl/axis_adapter.v" \
+"../../../../copy-pcie/src/verilog-pcie/rtl/axis_arb_mux.v" \
+"../../../../copy-pcie/src/verilog-axis/rtl/axis_async_fifo.v" \
+"../../../../copy-pcie/src/verilog-axis/rtl/axis_fifo.v" \
+"../../../../copy-pcie/src/verilog-axis/rtl/axis_register.v" \
+"../../../example/imports/pcie_7x_0_pipe_clock.v" \
+"../../../../copy-pcie/src/crc/pcie_dllp_crc8.v" \
+"../../../example/pcie_top_kc705.v" \
+"../../../../copy-pcie/example/pcie_pipe_wrapper/pipe_wrapper.v" \
+"../../../../copy-pcie/src/verilog-pcie/rtl/priority_encoder.v" \
+"../../../../copy-pcie/example/pcie_pipe_wrapper/xilinx_pcie_mmcm.v" \
+
+sv xil_defaultlib --include "../../../../copy-pcie/src/pcie_cfg" \
+"../../../../copy-pcie/src/packages/pcie_datalink_pkg.sv" \
+"../../../../copy-pcie/src/dllp/axis_retry_fifo.sv" \
+"../../../../copy-pcie/src/packages/pcie_tlp_pkg.sv" \
+"../../../../copy-pcie/src/dllp/axis_user_demux.sv" \
+"../../../../copy-pcie/src/packages/pcie_phy_pkg.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/block_alignment.sv" \
+"../../../../copy-pcie/src/scrambler/byte_scramble.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/data_handler.sv" \
+"../../../../copy-pcie/src/dllp/dllp2tlp.sv" \
+"../../../../copy-pcie/src/dllp/dllp_fc_update.sv" \
+"../../../../copy-pcie/src/dllp/dllp_handler.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_config_reg_pkg.sv" \
+"../../../../copy-pcie/src/dllp/dllp_receive.sv" \
+"../../../../copy-pcie/src/dllp/dllp_transmit.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/frame_symbols.sv" \
+"../../../../copy-pcie/src/scrambler/gen1_scramble.sv" \
+"../../../../copy-pcie/src/scrambler/gen3_byte_scramble.sv" \
+"../../../../copy-pcie/src/scrambler/gen3_scramble.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/lane_management.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/ordered_set_handler.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/os_generator.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/pack_data.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_cfg_wrapper.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_config_decode.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_config_handler.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_config_mux.sv" \
+"../../../../copy-pcie/src/pcie_cfg/pcie_config_reg.sv" \
+"../../../../copy-pcie/src/crc/pcie_datalink_crc.sv" \
+"../../../../copy-pcie/src/dllp/pcie_datalink_init.sv" \
+"../../../../copy-pcie/src/dllp/pcie_datalink_layer.sv" \
+"../../../../copy-pcie/src/dllp/pcie_flow_ctrl_init.sv" \
+"../../../../copy-pcie/src/crc/pcie_lcrc16.sv" \
+"../../../src/crc/pcie_lcrc32.sv" \
+"../../../../copy-pcie/src/ltssm/pcie_ltssm_downstream.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/pcie_phy_top.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/phy_receive.sv" \
+"../../../../copy-pcie/src/pcie_phy_core/phy_transmit.sv" \
+"../../../../copy-pcie/src/dllp/retry_management.sv" \
+"../../../../copy-pcie/src/dllp/retry_transmit.sv" \
+"../../../../copy-pcie/src/scrambler/scrambler.sv" \
+"../../../../copy-pcie/src/dllp/tlp2dllp.sv" \
+
+verilog xil_defaultlib "glbl.v"
+
+nosort

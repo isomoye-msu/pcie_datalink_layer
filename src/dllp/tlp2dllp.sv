@@ -77,9 +77,6 @@ module tlp2dllp
   //fsm holder signals
   dll_tx_st_e                            curr_state;
   dll_tx_st_e                            next_state;
-  //transmit sequence logic
-  logic                 [          11:0] next_transmit_seq_c;
-  logic                 [          11:0] next_transmit_seq_r;
   //skid buffer axis stage1 signals
   logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] skid_axis_tkeep;
@@ -146,42 +143,24 @@ module tlp2dllp
   logic                 [          11:0] cplh_credit_limit_r;
 
 
+  typedef struct packed{
+      //transmit sequence logic
+  logic                 [          11:0] next_transmit_seq;
+
+  } tlp2dlp_t;
+
+
+  tlp2dlp_t D;
+  tlp2dlp_t Q;
 
 
   always @(posedge clk_i) begin
     if (rst_i) begin
-      curr_state              <= ST_IDLE;
-      next_transmit_seq_r     <= '0;
-      crc_in_r                <= '1;
-      ph_credits_consumed_r   <= '0;
-      pd_credits_consumed_r   <= '0;
-      nph_credits_consumed_r  <= '0;
-      npd_credits_consumed_r  <= '0;
-      cplh_credits_consumed_r <= '0;
-      cpld_credits_consumed_r <= '0;
-      ph_credit_limit_r       <= '0;
-      pd_credit_limit_r       <= '0;
-      nph_credit_limit_r      <= '0;
-      npd_credit_limit_r      <= '0;
-      cpld_credit_limit_r     <= '0;
-      cplh_credit_limit_r     <= '0;
+      Q <= '{default: 'd0};
+
     end else begin
-      curr_state              <= next_state;
-      next_transmit_seq_r     <= next_transmit_seq_c;
-      ph_credits_consumed_r   <= ph_credits_consumed_c;
-      pd_credits_consumed_r   <= pd_credits_consumed_c;
-      nph_credits_consumed_r  <= nph_credits_consumed_c;
-      npd_credits_consumed_r  <= npd_credits_consumed_c;
-      cplh_credits_consumed_r <= cplh_credits_consumed_c;
-      cpld_credits_consumed_r <= cpld_credits_consumed_c;
-      ph_credit_limit_r       <= ph_credit_limit_c;
-      pd_credit_limit_r       <= pd_credit_limit_c;
-      nph_credit_limit_r      <= nph_credit_limit_c;
-      npd_credit_limit_r      <= npd_credit_limit_c;
-      cpld_credit_limit_r     <= cpld_credit_limit_c;
-      cplh_credit_limit_r     <= cplh_credit_limit_c;
+     Q <= D;
     end
-    crc_in_r <= crc_in_c;
   end
 
   //combinatarial block to byteswap the crc.

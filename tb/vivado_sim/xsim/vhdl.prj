@@ -1,0 +1,23 @@
+vhdl xil_defaultlib  \
+"../pcie_7x_0_ex/imports/EP_MEM.vhd" \
+"../pcie_7x_0_ex/imports/PIO.vhd" \
+"../pcie_7x_0_ex/imports/PIO_EP.vhd" \
+"../pcie_7x_0_ex/imports/PIO_EP_MEM_ACCESS.vhd" \
+"../pcie_7x_0_ex/imports/PIO_RX_ENGINE.vhd" \
+"../pcie_7x_0_ex/imports/PIO_TO_CTRL.vhd" \
+"../pcie_7x_0_ex/imports/PIO_TX_ENGINE.vhd" \
+"../pcie_7x_0_ex/imports/test_interface.vhd" \
+"../pcie_7x_0_ex/imports/pci_exp_usrapp_cfg.vhd" \
+"../pcie_7x_0_ex/imports/pci_exp_usrapp_pl.vhd" \
+"../pcie_7x_0_ex/imports/pci_exp_usrapp_rx.vhd" \
+"../pcie_7x_0_ex/imports/pci_exp_usrapp_tx.vhd" \
+"../pcie_7x_0_ex/imports/pcie_2_1_rport_7x.vhd" \
+"../pcie_7x_0_ex/imports/pcie_app_7x.vhd" \
+"../pcie_7x_0_ex/imports/pcie_axi_trn_bridge.vhd" \
+"../pcie_7x_0_ex/imports/sys_clk_gen.vhd" \
+"../pcie_7x_0_ex/imports/sys_clk_gen_ds.vhd" \
+"../pcie_7x_0_ex/imports/tests.vhd" \
+"../pcie_7x_0_ex/imports/xilinx_pcie_2_1_rport_7x.vhd" \
+"../pcie_7x_0_ex/imports/board.vhd" \
+
+nosort

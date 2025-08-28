@@ -124,7 +124,7 @@ class pipe_speed_change_without_eq_usp_seq(pipe_base_seq, crv.Randomized):
             nonlocal ts2_sent_count
             nonlocal ts2_recived_count
             while((ts2_sent_count < 8)  or  (ts2_recived_count < 8)):
-                await tses_recv = self.get_tses_recived()
+                tses_recv = await self.get_tses_recived()
                 for i in range(len(tses_recv)):
                     if((tses_recv[i].speed_change==1)  and (tses_recv[i].ts_type == ts_type_t.TS2)):
                         ts2_recived_count += 1

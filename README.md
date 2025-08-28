@@ -47,6 +47,15 @@ git clone https://github.com/isomoye-msu/pcie_datalink_layer.git
 cd pcie_datalink_layer
 ```
 
+### Install prereqs with pip
+
+```
+  pip install git+https://github.com/olofk/edalize.git
+  pip install git+https://github.com/olofk/fusesoc.git
+
+  pip install -r requirements.txt
+```
+
 ### Registering with FuseSoC
 
 fusesoc library add pcie-endpoint-controller ./pcie_datalink_layer
