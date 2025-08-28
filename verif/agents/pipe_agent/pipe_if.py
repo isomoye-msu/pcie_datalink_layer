@@ -30,8 +30,8 @@ class pipe_if(sv_if):
         if bus_map is None:
             #  If NONE then create this as default.
             bus_map = {
-                "clk": "clk"
-                "reset": "reset"
+                "clk": "clk",
+                "reset": "reset" ,
                 "phy_txdata"            :  "phy_txdata"        ,  
                 "phy_txdata_valid"      :  "phy_txdata_valid"  , 
                 "phy_txdatak"           :  "phy_txdatak"       , 

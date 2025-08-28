@@ -57,6 +57,7 @@ filesets:
       - example/imports/sys_clk_gen.vhd
       - example/imports/test_interface.vhd
       - example/imports/tests.vhd
+      - example/imports/pcie_7x_0_support.vhd
       - example/imports/xilinx_pcie_2_1_ep_7x.vhd
       - example/imports/xilinx_pcie_2_1_rport_7x.vhd
     file_type: vhdlSource
@@ -159,7 +160,7 @@ targets:
 
   synth:
     default_tool : vivado
-    filesets : [rtl,synth]
+    filesets : [rtl,synth,xsim_tb,glbl]
     tools:
       vivado:
         part : xc7k325tffg900-2
