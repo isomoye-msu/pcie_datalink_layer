@@ -45,6 +45,8 @@ The project is intended to serve as a research and educational platform for high
 ```bash
 git clone https://github.com/isomoye-msu/pcie_datalink_layer.git
 cd pcie_datalink_layer
+
+git submodule init && git submodule update
 ```
 
 ### Install prereqs with pip
