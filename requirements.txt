@@ -232,9 +232,6 @@ requests-toolbelt==1.0.0
 restructuredtext-lint==1.4.0
 rfc3986==2.0.0
 rich==13.9.4
-riscof @ git+https://github.com/riscv/riscof.git@9fe3597d75757c6c6198e034bbe62e8dceecc755
-riscv-config==3.18.3
--e git+https://github.com/riscv-non-isa/riscv-arch-test.git@cd94912fed2aab75d7d5f115b441da0813fdce8d#egg=riscv_isac&subdirectory=riscv-isac
 rpds-py==0.20.0
 rst2pdf==0.102
 ruamel.yaml==0.18.6
