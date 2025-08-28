@@ -7,7 +7,6 @@ filesets:
     files:
       - lfsr.v
       - synchronous_lifo.sv
-      - synchronous_fifo.sv
       - lane_management.sv
       - frame_symbols.sv
       - os_generator.sv
