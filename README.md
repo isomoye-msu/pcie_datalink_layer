@@ -58,8 +58,9 @@ cd pcie_datalink_layer
 
 ### Registering with FuseSoC
 
+```
 fusesoc library add pcie-endpoint-controller ./pcie_datalink_layer
-
+```
 
 ### Running Simulation
 
