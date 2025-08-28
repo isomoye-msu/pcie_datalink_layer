@@ -50,9 +50,9 @@ cd pcie_datalink_layer
 ### Install prereqs with pip
 
 ```
-  pip install git+https://github.com/olofk/edalize
-  pip install git+https://github.com/olofk/fusesoc
-  pip install -r requirements.txt
+  pip install git+https://github.com/olofk/edalize --user
+  pip install git+https://github.com/olofk/fusesoc --user
+  pip install -r requirements.txt --user
 ```
 
 ### Registering with FuseSoC
