@@ -50,7 +50,8 @@ cd pcie_datalink_layer
 ### Install prereqs with pip
 
 ```
-  pip install setuptools --user
+  pip install setuptools>=64
+  pip install wheel --user
   pip install git+https://github.com/olofk/edalize --user
   pip install git+https://github.com/olofk/fusesoc --user
   pip install -r requirements.txt --user
