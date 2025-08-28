@@ -88,12 +88,12 @@ class pipe_driver_bfm():
 
     async def reset(self):
         self.dut.rst_i.setimmediatevalue(0)
-        self.dut.phy_phystatus.setimmediatevalue(0)
         await RisingEdge(self.dut.clk_i)
         await RisingEdge(self.dut.clk_i)
         self.dut.rst_i.value = 1
         await RisingEdge(self.dut.clk_i)
         await RisingEdge(self.dut.clk_i)
+        self.dut.phy_phystatus.value = 0
         self.dut.rst_i.value = 0
         await RisingEdge(self.dut.clk_i)
         await RisingEdge(self.dut.clk_i)
