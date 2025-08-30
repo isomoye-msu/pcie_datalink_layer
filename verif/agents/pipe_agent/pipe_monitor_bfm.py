@@ -343,13 +343,25 @@ class pipe_monitor_bfm():
 
             # for i in range(len(self.dut.phy_txdetectrx)):
             #     flag = self.dut.phy_txdetectrx[i] == 1
-            
             await RisingEdge(self.dut.clk_i)
+            # await FallingEdge(self.dut.rst_i)
+            # await RisingEdge(self.dut.clk_i)
 
-            # for i in range(NUM_OF_LANES):
-            #     assert self.dut.phy_txdetectrx[i] == 1
-            while not all( LogicArray(self.dut.phy_phystatus.value)[i] == Logic(1) for i in range(int(self.dut.MAX_NUM_LANES))):
+            # while(self.dut.phy_txdetectrx.value == 0):
+            #     await RisingEdge(self.dut.clk_i)
+            # assert 1 == 0
+
+            flag = 0
+            while flag == 0:
+                flag = 1
                 await RisingEdge(self.dut.clk_i)
+                for i in range(int(self.dut.MAX_NUM_LANES)):
+                    if LogicArray(self.dut.phy_phystatus.value)[i] != Logic(1):
+                        flag = 0 
+
+
+            # while not all( LogicArray(self.dut.phy_phystatus.value)[i] == Logic(1) for i in range(int(self.dut.MAX_NUM_LANES))):
+            #     await RisingEdge(self.dut.clk_i)
                 # # print(LogicArray(self.dut.phy_phystatus.value))
                 # # print(LogicArray(self.dut.phy_phystatus.value)[0])
                 # if(LogicArray(self.dut.phy_phystatus.value)[0] == Logic(0)):
@@ -1164,18 +1176,29 @@ class pipe_monitor_bfm():
 
     async def polling_state_start(self):
         uvm_root().logger.info(self.name + " " + "waiting")
-        while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==1 for i in range(self.dut.phy_phystatus.value)):
-            await RisingEdge(self.dut.clk_i)
+        flag = 0
+        while flag == 0:
+            flag = 1
+            for i in range(len(self.dut.phy_phystatus.value)):
+                if LogicArray(self.dut.phy_phystatus.value)[i] ==0:
+                    flag = 0
+                    print(f"phystatus: {LogicArray(self.dut.phy_phystatus.value)[i]}")
             uvm_root().logger.info(self.name + " " + "waiting1")
+
+
+        # while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==1 for i in range(len(self.dut.phy_phystatus.value))):
+        #     await RisingEdge(self.dut.clk_i)
+        #     uvm_root().logger.info(self.name + " " + "waiting1")
             # print(LogicArray(self.dut.phy_phystatus.value))
             # print(LogicArray(self.dut.phy_phystatus.value)[0])
 
         await RisingEdge(self.dut.clk_i)
-        while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==0b0 for i in range(self.dut.phy_phystatus.value)):
+        while self.dut.phy_phystatus.value != 0:
+            print(f"phystatus: {self.dut.phy_phystatus.value}")
             await RisingEdge(self.dut.clk_i)
             uvm_root().logger.info(self.name + " " + "waiting2")
 
-        while not all( LogicArray(self.dut.phy_txelecidle.value)[i] ==0b0 for i in range(self.dut.phy_txelecidle.value)):
+        while self.dut.phy_txelecidle.value != 0:
             await RisingEdge(self.dut.clk_i)
             uvm_root().logger.info(self.name + " " + "waiting3")
 

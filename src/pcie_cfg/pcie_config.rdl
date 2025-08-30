@@ -33,7 +33,7 @@ addrmap pcie_config_reg {
         field { desc = "capabilities_list                "; sw = wr; hw = r; } capabilities_list               [16+4  :  16+ 4] = 0x0;
         field { desc = "interrupt_status                 "; sw = wr; hw = r; } interrupt_status                [16+3  :  16+ 3] = 0x0;
 
-        field { desc = "unused                           "; sw= wr ; hw=r; } rsvd [18:11];
+        field { desc = "unused                           "; sw= wr ; hw=r; } rsvd [18:11] = 0x0;
         field { desc = "interrupt_disable                "; sw= wr ; hw=r; } interrupt_disable                    [10:10] = 0x0; 
         field { desc = "fast_b2b_transactions_enable     "; sw= wr ; hw=r; } fast_b2b_transactions_enable         [9 :9]  = 0x0; 
         field { desc = "SERR_Enable                      "; sw= wr ; hw=r; } SERR_Enable                          [8 :8]  = 0x0; 
@@ -204,13 +204,13 @@ addrmap pcie_config_reg {
 
     reg {
         name = "capabilities pointer";
-        field {} pme_support [31:27];
-        field {} d2_support [26:26];
-        field {} d1_support [25:25];
-        field {} aux_current [24:22];
-        field {} dev_spec_init [21:21];
-        field {} pme_clock [19:19];
-        field {} version[18:16];
+        field {} pme_support [31:27]  = 0x0;
+        field {} d2_support [26:26] = 0x0;
+        field {} d1_support [25:25] = 0x0;
+        field {} aux_current [24:22] = 0x0;
+        field {} dev_spec_init [21:21] = 0x0;
+        field {} pme_clock [19:19] = 0x0;
+        field {} version[18:16] = 0x0;
         field {
             desc = "next capability pointer";
             sw=r; hw=r;

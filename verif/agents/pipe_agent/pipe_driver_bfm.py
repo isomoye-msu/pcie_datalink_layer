@@ -93,7 +93,6 @@ class pipe_driver_bfm():
         self.dut.rst_i.value = 1
         await RisingEdge(self.dut.clk_i)
         await RisingEdge(self.dut.clk_i)
-        self.dut.phy_phystatus.value = 0
         self.dut.rst_i.value = 0
         await RisingEdge(self.dut.clk_i)
         await RisingEdge(self.dut.clk_i)
@@ -111,13 +110,14 @@ class pipe_driver_bfm():
         self.dut.phy_rxsync_header.value = 0
         self.dut.phy_rxvalid.value     = 0
         self.dut.phy_rxstatus.value    = 0
+        self.dut.phy_phystatus_rst.value = 0
         # self.dut.phy_rxstandby   = 0
         self.dut.phy_rxelecidle.value  = 0
         await RisingEdge(self.dut.clk_i)
         while(self.dut.rst_i == 0x1):
             await RisingEdge(self.dut.rst_i)
-        for i in range(int(self.dut.MAX_NUM_LANES)):
-            self.dut.phy_phystatus.value[i] = 0x0
+        # for i in range(int(self.dut.MAX_NUM_LANES)):
+        self.dut.phy_phystatus.value = 0x0
         await RisingEdge(self.dut.clk_i)
         
 

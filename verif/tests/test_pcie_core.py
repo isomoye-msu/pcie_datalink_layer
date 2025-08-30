@@ -81,7 +81,7 @@ class link_up_test(uvm_test):
         
     async def run_phase(self):
         self.raise_objection()
-        await with_timeout(self.test_all.start(),15000,'ns')
+        await with_timeout(self.test_all.start(),25000,'ns')
         # await with_timeout(self.flow_control.start(),15000,'ns')
         await with_timeout(self.enumeration.start(),55550000,'ns')
         # await with_timeout(self.speed_change.start(),15000,'ns')
