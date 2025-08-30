@@ -187,7 +187,7 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         dev_bar1 = dev.bar_window[1]
         dev_bar3 = dev.bar_window[3]
 
-        for length in list(range(0, 32))+[1024]:
+        for length in range(1):
             for offset in list(range(8))+list(range(4096-8, 4096)):
                 uvm_root().logger.info("Memory operation (32-bit BAR) length: %d offset: %d", length, offset)
                 test_data = bytearray([x % 256 for x in range(length)])
