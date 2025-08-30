@@ -71,7 +71,7 @@ Don't override. Generated from: pcie_config_reg
 |  8  |         SERR_Enable         |  rw  | 0x0 |  — |
 |  9  | fast_b2b_transactions_enable|  rw  | 0x0 |  — |
 |  10 |      interrupt_disable      |  rw  | 0x0 |  — |
-|18:11|             rsvd            |  rw  |  —  |  — |
+|18:11|             rsvd            |  rw  | 0x0 |  — |
 |  19 |       interrupt_status      |  rw  | 0x0 |  — |
 |  20 |      capabilities_list      |  rw  | 0x0 |  — |
 |  21 |     sixtysix_mhz_capable    |  rw  | 0x0 |  — |
@@ -416,13 +416,13 @@ Don't override. Generated from: pcie_config_reg
 |-----|---------------|------|-----|----|
 | 7:0 |capabilities_id|   r  | 0x1 |  — |
 | 15:8|  next_cap_ptr |   r  | 0x48|  — |
-|18:16|    version    |  rw  |  —  |  — |
-|  19 |   pme_clock   |  rw  |  —  |  — |
-|  21 | dev_spec_init |  rw  |  —  |  — |
-|24:22|  aux_current  |  rw  |  —  |  — |
-|  25 |   d1_support  |  rw  |  —  |  — |
-|  26 |   d2_support  |  rw  |  —  |  — |
-|31:27|  pme_support  |  rw  |  —  |  — |
+|18:16|    version    |  rw  | 0x0 |  — |
+|  19 |   pme_clock   |  rw  | 0x0 |  — |
+|  21 | dev_spec_init |  rw  | 0x0 |  — |
+|24:22|  aux_current  |  rw  | 0x0 |  — |
+|  25 |   d1_support  |  rw  | 0x0 |  — |
+|  26 |   d2_support  |  rw  | 0x0 |  — |
+|31:27|  pme_support  |  rw  | 0x0 |  — |
 
 #### capabilities_id field
 

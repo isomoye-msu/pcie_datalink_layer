@@ -949,8 +949,12 @@ module pcie_config_reg (
         field_combo.byte_offset_04.rsvd.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.byte_offset_04.rsvd.load_next) begin
-            field_storage.byte_offset_04.rsvd.value <= field_combo.byte_offset_04.rsvd.next;
+        if(rst) begin
+            field_storage.byte_offset_04.rsvd.value <= 8'h0;
+        end else begin
+            if(field_combo.byte_offset_04.rsvd.load_next) begin
+                field_storage.byte_offset_04.rsvd.value <= field_combo.byte_offset_04.rsvd.next;
+            end
         end
     end
     assign hwif_out.byte_offset_04.rsvd.value = field_storage.byte_offset_04.rsvd.value;
@@ -1508,8 +1512,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.version.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.version.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.version.value <= field_combo.capabilities_power_mngt_pointer.version.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.version.value <= 3'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.version.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.version.value <= field_combo.capabilities_power_mngt_pointer.version.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.version.value = field_storage.capabilities_power_mngt_pointer.version.value;
@@ -1527,8 +1535,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.pme_clock.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.pme_clock.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.pme_clock.value <= field_combo.capabilities_power_mngt_pointer.pme_clock.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.pme_clock.value <= 1'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.pme_clock.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.pme_clock.value <= field_combo.capabilities_power_mngt_pointer.pme_clock.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.pme_clock.value = field_storage.capabilities_power_mngt_pointer.pme_clock.value;
@@ -1546,8 +1558,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.dev_spec_init.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.dev_spec_init.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.dev_spec_init.value <= field_combo.capabilities_power_mngt_pointer.dev_spec_init.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.dev_spec_init.value <= 1'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.dev_spec_init.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.dev_spec_init.value <= field_combo.capabilities_power_mngt_pointer.dev_spec_init.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.dev_spec_init.value = field_storage.capabilities_power_mngt_pointer.dev_spec_init.value;
@@ -1565,8 +1581,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.aux_current.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.aux_current.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.aux_current.value <= field_combo.capabilities_power_mngt_pointer.aux_current.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.aux_current.value <= 3'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.aux_current.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.aux_current.value <= field_combo.capabilities_power_mngt_pointer.aux_current.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.aux_current.value = field_storage.capabilities_power_mngt_pointer.aux_current.value;
@@ -1584,8 +1604,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.d1_support.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.d1_support.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.d1_support.value <= field_combo.capabilities_power_mngt_pointer.d1_support.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.d1_support.value <= 1'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.d1_support.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.d1_support.value <= field_combo.capabilities_power_mngt_pointer.d1_support.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.d1_support.value = field_storage.capabilities_power_mngt_pointer.d1_support.value;
@@ -1603,8 +1627,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.d2_support.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.d2_support.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.d2_support.value <= field_combo.capabilities_power_mngt_pointer.d2_support.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.d2_support.value <= 1'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.d2_support.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.d2_support.value <= field_combo.capabilities_power_mngt_pointer.d2_support.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.d2_support.value = field_storage.capabilities_power_mngt_pointer.d2_support.value;
@@ -1622,8 +1650,12 @@ module pcie_config_reg (
         field_combo.capabilities_power_mngt_pointer.pme_support.load_next = load_next_c;
     end
     always_ff @(posedge clk) begin
-        if(field_combo.capabilities_power_mngt_pointer.pme_support.load_next) begin
-            field_storage.capabilities_power_mngt_pointer.pme_support.value <= field_combo.capabilities_power_mngt_pointer.pme_support.next;
+        if(rst) begin
+            field_storage.capabilities_power_mngt_pointer.pme_support.value <= 5'h0;
+        end else begin
+            if(field_combo.capabilities_power_mngt_pointer.pme_support.load_next) begin
+                field_storage.capabilities_power_mngt_pointer.pme_support.value <= field_combo.capabilities_power_mngt_pointer.pme_support.next;
+            end
         end
     end
     assign hwif_out.capabilities_power_mngt_pointer.pme_support.value = field_storage.capabilities_power_mngt_pointer.pme_support.value;

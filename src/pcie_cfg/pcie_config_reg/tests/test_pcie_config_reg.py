@@ -1780,7 +1780,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFFF807FF)
             self.assertEqual(fut.max_value,0xFF)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.byte_offset_04.interrupt_status'):
@@ -2420,7 +2420,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFFF8FFFF)
             self.assertEqual(fut.max_value,0x7)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.pme_clock'):
@@ -2436,7 +2436,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFFF7FFFF)
             self.assertEqual(fut.max_value,0x1)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.dev_spec_init'):
@@ -2452,7 +2452,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFFDFFFFF)
             self.assertEqual(fut.max_value,0x1)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.aux_current'):
@@ -2468,7 +2468,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFE3FFFFF)
             self.assertEqual(fut.max_value,0x7)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.d1_support'):
@@ -2484,7 +2484,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFDFFFFFF)
             self.assertEqual(fut.max_value,0x1)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.d2_support'):
@@ -2500,7 +2500,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0xFBFFFFFF)
             self.assertEqual(fut.max_value,0x1)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.capabilities_power_mngt_pointer.pme_support'):
@@ -2516,7 +2516,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0x7FFFFFF)
             self.assertEqual(fut.max_value,0x1F)
                 
-            self.assertEqual(fut.default,None)
+            self.assertEqual(fut.default,0)
                 
             self.assertEqual(fut.is_volatile,False)
         with self.subTest(msg='field: pcie_config_reg.power_management_pointer.power_state'):

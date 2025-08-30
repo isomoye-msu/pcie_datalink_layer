@@ -2191,7 +2191,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=16,
                 high=18),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.version',
             inst_name='version',
@@ -2205,7 +2205,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=19,
                 high=19),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.pme_clock',
             inst_name='pme_clock',
@@ -2219,7 +2219,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=21,
                 high=21),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.dev_spec_init',
             inst_name='dev_spec_init',
@@ -2233,7 +2233,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=22,
                 high=24),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.aux_current',
             inst_name='aux_current',
@@ -2247,7 +2247,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=25,
                 high=25),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.d1_support',
             inst_name='d1_support',
@@ -2261,7 +2261,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=26,
                 high=26),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.d2_support',
             inst_name='d2_support',
@@ -2275,7 +2275,7 @@ class pcie_config_reg_capabilities_power_mngt_pointer_cls(RegAsyncReadWrite):
                 low=27,
                 high=31),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.pme_support',
             inst_name='pme_support',
@@ -6018,7 +6018,7 @@ class pcie_config_reg_byte_offset_04_cls(RegAsyncReadWrite):
                 low=11,
                 high=18),
             misc_props=FieldMiscProps(
-                default=None,
+                default=0,
                 is_volatile=False),
             logger_handle=logger_handle+'.rsvd',
             inst_name='rsvd',
