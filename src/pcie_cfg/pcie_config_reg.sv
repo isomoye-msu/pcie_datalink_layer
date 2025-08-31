@@ -1327,7 +1327,7 @@ module pcie_config_reg (
     end
     always_ff @(posedge clk) begin
         if(rst) begin
-            field_storage.base_ddress_register_2.BAR.value <= 32'h20000000;
+            field_storage.base_ddress_register_2.BAR.value <= 32'h2000000;
         end else begin
             if(field_combo.base_ddress_register_2.BAR.load_next) begin
                 field_storage.base_ddress_register_2.BAR.value <= field_combo.base_ddress_register_2.BAR.next;
@@ -1353,7 +1353,7 @@ module pcie_config_reg (
     end
     always_ff @(posedge clk) begin
         if(rst) begin
-            field_storage.base_ddress_register_3.BAR.value <= 32'h21000000;
+            field_storage.base_ddress_register_3.BAR.value <= 32'h2100000;
         end else begin
             if(field_combo.base_ddress_register_3.BAR.load_next) begin
                 field_storage.base_ddress_register_3.BAR.value <= field_combo.base_ddress_register_3.BAR.next;
@@ -1379,7 +1379,7 @@ module pcie_config_reg (
     end
     always_ff @(posedge clk) begin
         if(rst) begin
-            field_storage.base_ddress_register_4.BAR.value <= 32'h30000000;
+            field_storage.base_ddress_register_4.BAR.value <= 32'h3000000;
         end else begin
             if(field_combo.base_ddress_register_4.BAR.load_next) begin
                 field_storage.base_ddress_register_4.BAR.value <= field_combo.base_ddress_register_4.BAR.next;
@@ -1405,7 +1405,7 @@ module pcie_config_reg (
     end
     always_ff @(posedge clk) begin
         if(rst) begin
-            field_storage.base_ddress_register_5.BAR.value <= 32'h30000000;
+            field_storage.base_ddress_register_5.BAR.value <= 32'h5000000;
         end else begin
             if(field_combo.base_ddress_register_5.BAR.load_next) begin
                 field_storage.base_ddress_register_5.BAR.value <= field_combo.base_ddress_register_5.BAR.next;

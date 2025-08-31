@@ -2196,7 +2196,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0x0)
             self.assertEqual(fut.max_value,0xFFFFFFFF)
                 
-            self.assertEqual(fut.default,536870912)
+            self.assertEqual(fut.default,33554432)
                 
             self.assertEqual(fut.is_volatile,True)
         with self.subTest(msg='field: pcie_config_reg.base_ddress_register_3.BAR'):
@@ -2212,7 +2212,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0x0)
             self.assertEqual(fut.max_value,0xFFFFFFFF)
                 
-            self.assertEqual(fut.default,553648128)
+            self.assertEqual(fut.default,34603008)
                 
             self.assertEqual(fut.is_volatile,True)
         with self.subTest(msg='field: pcie_config_reg.base_ddress_register_4.BAR'):
@@ -2228,7 +2228,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0x0)
             self.assertEqual(fut.max_value,0xFFFFFFFF)
                 
-            self.assertEqual(fut.default,805306368)
+            self.assertEqual(fut.default,50331648)
                 
             self.assertEqual(fut.is_volatile,True)
         with self.subTest(msg='field: pcie_config_reg.base_ddress_register_5.BAR'):
@@ -2244,7 +2244,7 @@ class pcie_config_reg_single_access(pcie_config_reg_TestCase): # type: ignore[va
             self.assertEqual(fut.inverse_bitmask,0x0)
             self.assertEqual(fut.max_value,0xFFFFFFFF)
                 
-            self.assertEqual(fut.default,805306368)
+            self.assertEqual(fut.default,83886080)
                 
             self.assertEqual(fut.is_volatile,True)
         with self.subTest(msg='field: pcie_config_reg.cardbus_cis_pointer.word'):

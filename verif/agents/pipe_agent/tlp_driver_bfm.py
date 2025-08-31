@@ -24,6 +24,7 @@ class tlp_driver_bfm():
         self.tlp_sender = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
         uvm_root().logger.info(name + " initiated") 
+        self.tlp_sender.log = uvm_root().logger
 
 
     async def send_tlp(self,tlp):

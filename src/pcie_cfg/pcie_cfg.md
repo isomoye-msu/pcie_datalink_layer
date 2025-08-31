@@ -280,9 +280,9 @@ Don't override. Generated from: pcie_config_reg
 - Base Offset: 0x18
 - Size: 0x4
 
-|Bits|Identifier|Access|   Reset  |Name|
-|----|----------|------|----------|----|
-|31:0|    BAR   |  rw  |0x20000000|  — |
+|Bits|Identifier|Access|  Reset  |Name|
+|----|----------|------|---------|----|
+|31:0|    BAR   |  rw  |0x2000000|  — |
 
 #### BAR field
 
@@ -294,9 +294,9 @@ Don't override. Generated from: pcie_config_reg
 - Base Offset: 0x1C
 - Size: 0x4
 
-|Bits|Identifier|Access|   Reset  |Name|
-|----|----------|------|----------|----|
-|31:0|    BAR   |  rw  |0x21000000|  — |
+|Bits|Identifier|Access|  Reset  |Name|
+|----|----------|------|---------|----|
+|31:0|    BAR   |  rw  |0x2100000|  — |
 
 #### BAR field
 
@@ -308,9 +308,9 @@ Don't override. Generated from: pcie_config_reg
 - Base Offset: 0x20
 - Size: 0x4
 
-|Bits|Identifier|Access|   Reset  |Name|
-|----|----------|------|----------|----|
-|31:0|    BAR   |  rw  |0x30000000|  — |
+|Bits|Identifier|Access|  Reset  |Name|
+|----|----------|------|---------|----|
+|31:0|    BAR   |  rw  |0x3000000|  — |
 
 #### BAR field
 
@@ -322,9 +322,9 @@ Don't override. Generated from: pcie_config_reg
 - Base Offset: 0x24
 - Size: 0x4
 
-|Bits|Identifier|Access|   Reset  |Name|
-|----|----------|------|----------|----|
-|31:0|    BAR   |  rw  |0x30000000|  — |
+|Bits|Identifier|Access|  Reset  |Name|
+|----|----------|------|---------|----|
+|31:0|    BAR   |  rw  |0x5000000|  — |
 
 #### BAR field
 

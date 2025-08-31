@@ -209,7 +209,7 @@ module dllp_fc_update
       ST_UPDATE_CPL: begin
         //build dllp fc update for crc
         fc_axis_tdata =
-            send_fc_init(UpdateFC_Cpl, '0, ph_credits_consumed_i, pd_credits_consumed_i + FcPData);
+            send_fc_init(UpdateFC_Cpl, '0, '0, '0);
         dllp_lcrc_c = crc_out;
         //build axis master output
         fc_axis_tkeep = '1;
