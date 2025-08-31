@@ -61,6 +61,7 @@ class link_up_test(uvm_test):
     def build_phase(self):
         self.log = logging.getLogger("link_up_test.tb")
         self.logger.setLevel(logging.DEBUG)
+        uvm_report_object.set_default_logging_level(DEBUG)
         self.pcie_env_config = pcie_env_config("pcie_env_config")
         self.pipe_agent_config_h = pipe_agent_config("pipe_agent_config_h")
         self.pcie_env_config.pipe_agent_config_h = self.pipe_agent_config_h
@@ -76,13 +77,11 @@ class link_up_test(uvm_test):
         self.flow_control.pipe_agent_config = self.pipe_agent_config_h
         self.enumeration = pcie_enumeration_seq("enumeration")
         self.enumeration.pipe_agent_config = self.pipe_agent_config_h
-        # self.enumeration.port = self.flow_control.port
-        # self.enumeration.other_port = self.flow_control.other_port
-        
+
     async def run_phase(self):
         self.raise_objection()
         await with_timeout(self.test_all.start(),25000,'ns')
         # await with_timeout(self.flow_control.start(),15000,'ns')
-        await with_timeout(self.enumeration.start(),55550000,'ns')
+        await with_timeout(self.enumeration.start(),1000000,'ns')
         # await with_timeout(self.speed_change.start(),15000,'ns')
         self.drop_objection()

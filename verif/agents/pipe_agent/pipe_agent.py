@@ -483,32 +483,44 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                 case pipe_operation_t.SEND_TS: 
                     # assert 1 == 0
                     await self.pipe_driver_bfm.send_ts(pipe_seq_item_h.ts_sent)
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_TSES: 
                     await self.pipe_driver_bfm.send_tses(pipe_seq_item_h.tses_sent)
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_EIOS:
                     await self.pipe_driver_bfm.send_eios()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_EIEOS:
                     await self.pipe_driver_bfm.send_eieos()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SET_GEN:
                     self.pipe_driver_bfm.current_gen=pipe_seq_item_h.gen
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_DATA: 
                     # assert 1 == 0
                     await self.pipe_driver_bfm.send_data()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.IDLE_DATA_TRANSFER: 
                     await self.pipe_driver_bfm.send_idle_data()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.TLP_TRANSFER: 
                     await self.pipe_driver_bfm.send_tlp(pipe_seq_item_h.tlp)
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.DLLP_TRANSFER: 
                     await self.pipe_driver_bfm.send_dllp(pipe_seq_item_h.dllp)
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_SKP: 
                     await self.pipe_driver_bfm.send_skp()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SEND_MAC_TLP: 
                     await self.tlp_driver_bfm.send_tlp(pipe_seq_item_h.tlp)
+                    self.seq_item_port.item_done()
                 # PCLK_RATE_CHANGE: pipe_driver_bfm.change_pclk_rate(pipe_seq_item.pclk_rate)
                 # WIDTH_CHANGE: pipe_driver_bfm.change_width(pipe_seq_item.pipe_width)
                 # SPEED_CHANGE: pipe_driver_bfm.change_speed()
                 case pipe_operation_t.CHECK_EQ_PRESET_APPLIED: 
                     self.pipe_driver_bfm.equalization_preset_applied()
+                    self.seq_item_port.item_done()
                 case pipe_operation_t.SET_EQ_PARAM:
                     self.pipe_driver_bfm.set_eq_param(  pipe_seq_item_h.lf_usp,
                                                             pipe_seq_item_h.fs_usp,
@@ -520,12 +532,13 @@ class pipe_driver(uvm_driver): #(pipe_seq_item)
                                                             pipe_seq_item_h.tx_preset,
                                                             pipe_seq_item_h.rx_presetint,
                                                             pipe_seq_item_h.local_txPreset_coefficients)
-
+                    self.seq_item_port.item_done()
                 #SEND_IDLE_DATA: pipe_driver_bfm.send_idle_data(pipe_seq_item_h.start_lane, pipe_seq_item_h.end_lane)
                 case pipe_operation_t.ASSERT_EVAL_FEEDBACK_CHANGED:
                     assert(self.pipe_driver_bfm.eval_feedback_was_asserted == 1)
+                    self.seq_item_port.item_done()
                     # "Link eval feedback wasn't asserted"      
-            self.seq_item_port.item_done()
+            # self.seq_item_port.item_done()
             if pipe_seq_item_h.pipe_operation != pipe_operation_t.IDLE_DATA_TRANSFER:
                 uvm_root().logger.info(f"Exit pipe_driver run_phase: {pipe_seq_item_h.pipe_operation}")
 

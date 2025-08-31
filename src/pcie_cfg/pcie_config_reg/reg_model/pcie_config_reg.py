@@ -3412,7 +3412,7 @@ class pcie_config_reg_base_ddress_register_5_cls(RegAsyncReadWrite):
                 low=0,
                 high=31),
             misc_props=FieldMiscProps(
-                default=805306368,
+                default=83886080,
                 is_volatile=True),
             logger_handle=logger_handle+'.BAR',
             inst_name='BAR',
@@ -3561,7 +3561,7 @@ class pcie_config_reg_base_ddress_register_4_cls(RegAsyncReadWrite):
                 low=0,
                 high=31),
             misc_props=FieldMiscProps(
-                default=805306368,
+                default=50331648,
                 is_volatile=True),
             logger_handle=logger_handle+'.BAR',
             inst_name='BAR',
@@ -3710,7 +3710,7 @@ class pcie_config_reg_base_ddress_register_3_cls(RegAsyncReadWrite):
                 low=0,
                 high=31),
             misc_props=FieldMiscProps(
-                default=553648128,
+                default=34603008,
                 is_volatile=True),
             logger_handle=logger_handle+'.BAR',
             inst_name='BAR',
@@ -3859,7 +3859,7 @@ class pcie_config_reg_base_ddress_register_2_cls(RegAsyncReadWrite):
                 low=0,
                 high=31),
             misc_props=FieldMiscProps(
-                default=536870912,
+                default=33554432,
                 is_volatile=True),
             logger_handle=logger_handle+'.BAR',
             inst_name='BAR',

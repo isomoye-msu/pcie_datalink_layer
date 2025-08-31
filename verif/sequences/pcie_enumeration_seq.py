@@ -47,87 +47,42 @@ def reverse_bits_in_byte(byte):
     bit_array.reverse()
     return bit_array.uint
 
-class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
+class pcie_enumeration_seq(pipe_base_seq, crv.Randomized):
     def __init__(self, name):
         super().__init__(name)
-        # self.config = config
         self.log = logging.getLogger("pcie enumeration seq")
         self.log.setLevel(logging.ERROR)
-        # self.msix = msix
         self.tlp_queue = Queue()
         self.dllp_queue = Queue()
-        # self.port = None
-        # self.other_port = None
         
             
     async def body(self):
         self.sequencer = ConfigDB().get(None, "", "pipe_sequencer")
         assert self.sequencer is not None
         await super().body()
-
+        cocotb.start_soon(self.send_rolling_idle())
+        cocotb.start_soon(self.recieve_dllp())
+        cocotb.start_soon(self.recieve_tlp())
+        cocotb.start_soon(self.receive_tlp_mac())
         await self.send_skp()
 
 
+        #declare root complex and memory endpoint model
         self.rc = RootComplex()
-        # print(self.rc)
         ep = TestEndpoint()
         self.dev = Device(ep)
-        cocotb.start_soon(self.receive_tlp_mac())
-        # configure port
-        # self.dev.upstream_port.max_link_speed = 3
-        # self.dev.upstream_port.max_link_width = 2
-        # # self.dev.upstream_port.max_payload_size = 128
-        # self.dev.upstream_port.port_delay = 8e-9
-        # self.dev.device_num = 0
-        # self.dev.function_num = 0
-
-
         
-        self.rx_queue = Queue()
-        
+        #connect endpoint and rootcomplex
         port = self.rc.make_port()
-        # print(repr(port))
         port.connect(self.dev)
 
 
-        # for i in range(len(self.dev.upstream_port.fc_state)):
-        # await self.dev.upstream_port.fc_state[0].initialized.wait()
-        # assert 1 == 0
-        # self.rc.add_endpoint(self.dev)
-        # self.rc._run_routing(self.dev)
-        # self.rc.upstream_bridge.set_upstream_port = self.port
-        
+        #disconnect rc port from dev simport and connect to RTL pcie port
+        self.dev.upstream_port.other.handle_tx = self.handle_tx_port
+        self.dev.upstream_port.handle_tx = self.waste
+        self.dev.upstream_port.fc_initialized = True
 
-
-        # self.hold_downstream_tx_handler = self.rc.upstream_bridge.downstream_tx_handler
-        # upstream_tx_handler
-        # self.rc.upstream_bridge.downstream_tx_handler = self.send_pkt
-        # self.port.rx_handler = self.rc.downstream_recv
-        # self.rc.handle_tlp = self.handle_tlp
-        # self.rc.perform_nonposted_operation = self.perform_nonposted_operation
-        # self.rc.upstream_bridge.set_upstream_port(self.port)
-        # self.port.rx_handler = self.rc.upstream_bridge.downstream_recv
-        # self.downstream_port = self.port
-        # self.rc.upstream_bridge.downstream_tx_handler = self.port.send
-        # self.rc.upstream_bridge.downstream_recv = self.upstream_recv
-
-        self.dev.upstream_port.ext_recv = self.handle_tx_port
-        # self.port.ext_recv = self.dev.upstream_port.other.ext_recv
-        # self.dev.set_port(self.port)
-        # self.dev.upstream_port.handle_tx = self.waste
-        # self.dev.upstream_recv = self.handle_tx
-        # self.port.handle_tx = self.waste
-
-        # self.dev.upstream_port.fc_initialized = True
-        # # self.dev.upstream_port.fc_state[0].reset()
-        # self.dev.upstream_port.log.setLevel(logging.DEBUG)
-
-        # self.port.rx_handler = self.rc.upstream_bridge.upstream_tx_handler
-        # self.dev.upstream_port.ext_recv = self.handle_tx
-        # self.dev.upstream_recv = self.upstream_recv
-        # self.upstream_port.send(tlp) 
-        self.dev.upstream_send = self.send_tlp_mac
-        # self.dev.send = self.send_tlp_mac
+        self.dev.send = self.send_tlp_mac
 
         self.dev.log.setLevel(logging.INFO)
         self.rc.log.setLevel(logging.INFO)
@@ -157,21 +112,14 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         self.dev.functions[0].configure_bar(1, len(self.regions[1]), True, True)
         self.dev.functions[0].configure_bar(3, len(self.regions[3]), False, False, True)
         self.dev.functions[0].configure_bar(4, len(self.regions[4]))
-        # self.dev.make_function()
-        
-        # self.dev.functions[0].log.setLevel(logging.DEBUG)
-        # self.dev.functions[0].upstream_tx_handler = self.send_tlp
-        # for f in self.dev.functions:
-        #     f.upstream_tx_handler = self.send_tlp_mac
+
         self.dev.functions[0].upstream_tx_handler = self.send_tlp_mac
         
-        # await self.rc.enumerate()
         
         self.dev.functions[0].pcie_id = PcieId(1,0,0)
         self.dev.functions[0].configure_bar(0, len(self.regions[0]))
-        await Timer(2000,'ns')
+        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),5000,'ns')
         await with_timeout(self.rc.enumerate(),100000,'ns')
-        # print(f"endpoint id : {self.dev.functions[0].pcie_id}")
         dev = self.rc.find_device(self.dev.functions[0].pcie_id)
         await dev.enable_device()
 
@@ -179,35 +127,25 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
         mask = 2**((len(self.regions[0])-1).bit_length())-1
         self.dev.functions[0].bar_mask[0] = 0xfffffff0 & ~mask
 
-        
-        print(f"dev bar {hex(self.dev.functions[0].bar[0])}")
-        # assert 1 == 0
-
         dev_bar0 = dev.bar_window[0]
         dev_bar1 = dev.bar_window[1]
         dev_bar3 = dev.bar_window[3]
 
-        for length in range(1):
+        for length in list(range(0, 32))+[1024]:
             for offset in list(range(8))+list(range(4096-8, 4096)):
                 uvm_root().logger.info("Memory operation (32-bit BAR) length: %d offset: %d", length, offset)
                 test_data = bytearray([x % 256 for x in range(length)])
-
                 await dev_bar0.write(offset, test_data, timeout=10000, timeout_unit='ns')
                 # wait for write to complete
-                await dev_bar0.read(offset, 0, timeout=1000, timeout_unit='ns')
+                await dev_bar0.read(offset, 0, timeout=10000, timeout_unit='ns')
                 assert await ep.read_region(0, offset, length) == test_data
-            # assert 1 == 0
-
-        #         assert await dev_bar0.read(offset, length, timeout=1000000, timeout_unit='ns') == test_data
-        # assert 1 == 0
+                assert await dev_bar0.read(offset, length, timeout=10000, timeout_unit='ns') == test_data
 
 
     async def send_tlp_mac(self,tlp):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_MAC_TLP
         pipe_seq_item_h.tlp = tlp
-        print(f"mac tlp: {repr(tlp)}")
-        # assert 1 == 0
         await self.start_item (pipe_seq_item_h)
         await self.finish_item (pipe_seq_item_h)
 
@@ -217,242 +155,85 @@ class pcie_enumeration_seq(pcie_flow_control_seq, crv.Randomized):
                 pkt = Tlp()
                 tlp_data = self.pipe_agent_config.mac_tlp_received.pop(0)
                 pkt = pkt.unpack(bytes(tlp_data))
-                print(f"receive mac tlp: {repr(pkt)}") 
-                # print([hex(j) for j in tlp_in])
-                # data = tlp
                 await self.dev.upstream_recv(pkt)
-                # assert 1 == 0
             else:
                 await self.pipe_agent_config.mac_tlp_data_detected_e.wait()
                 self.pipe_agent_config.mac_tlp_data_detected_e.clear()
-        # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
-        # pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
-        # while(1):
-        #     await self.start_item(pipe_seq_item_h)
-        #     await self.finish_item(pipe_seq_item_h)
-            # assert 1 == 0
 
 
     async def send_skp(self):
         pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
         pipe_seq_item_h.pipe_operation = pipe_operation_t.SEND_SKP
-        # pipe_seq_item_h.tlp = tlp_pkt
         await self.start_item (pipe_seq_item_h)
         await self.finish_item (pipe_seq_item_h)
 
     async def handle_tx_port(self,pkt):
-        # print(f"handle tx: {repr(pkt)}")
-        if self.dev.upstream_port.fc_initialized == False:
-            if isinstance(pkt, Dllp):
-                # DLLP
-                self.dev.upstream_port.log.debug("Receive DLLP %s", pkt)
-                self.dev.upstream_port.handle_dllp(pkt)
-            else:
-                # TLP
-                self.dev.upstream_port.log.debug("Receive TLP %s", pkt)
-                if pkt.seq == self.dev.upstream_port.next_recv_seq:
-                    # expected seq
-                    self.dev.upstream_port.next_recv_seq = (self.dev.upstream_port.next_recv_seq + 1) & 0xfff
-                    self.dev.upstream_port.nak_scheduled = False
-                    self.dev.upstream_port.start_ack_latency_timer()
-                    pkt = Tlp(pkt)
-                    self.dev.upstream_port.fc_state[self.dev.upstream_port.classify_tlp_vc(pkt)].rx_process_tlp_fc(pkt)
-                    self.dev.upstream_port.rx_queue.put_nowait(pkt)
-                elif (self.dev.upstream_port.next_recv_seq - pkt.seq) & 0xfff < 2048:
-                    self.dev.upstream_port.log.warning("Received duplicate TLP, discarding (seq %d, expecting %d)", pkt.seq, self.dev.upstream_port.next_recv_seq)
-                    self.dev.upstream_port.stop_ack_latency_timer()
-                    self.dev.upstream_port.send_ack.set()
-                else:
-                    self.dev.upstream_port.log.warning("Received out-of-sequence TLP, sending NAK (seq %d, expecting %d)", pkt.seq, self.dev.upstream_port.next_recv_seq)
-                    if not self.dev.upstream_port.nak_scheduled:
-                        self.dev.upstream_port.nak_scheduled = True
-                        self.dev.upstream_port.stop_ack_latency_timer()
-                        self.dev.upstream_port.send_ack.set()
-        else:
-            pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-            # print(f"handle tx override: {repr(pkt)}")
-            if isinstance(pkt,Dllp):
-                pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
-                pipe_seq_item_h.dllp = pkt
-                await self.start_item (pipe_seq_item_h)
-                await self.finish_item (pipe_seq_item_h)
-                
-            elif isinstance(pkt,Tlp):
-                tlp_pkt = pkt
-                pipe_seq_item_h.pipe_operation = pipe_operation_t.TLP_TRANSFER
-                pipe_seq_item_h.tlp = tlp_pkt
-                await self.start_item (pipe_seq_item_h)
-                await self.finish_item (pipe_seq_item_h)
-            # await Timer(500,'ns')
-            # assert 1 == 0
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
+        if isinstance(pkt,Dllp):
+            pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
+            pipe_seq_item_h.dllp = pkt
+            await self.start_item (pipe_seq_item_h)
+            await self.finish_item (pipe_seq_item_h)
+            
+        elif isinstance(pkt,Tlp):
+            tlp_pkt = pkt
+            pipe_seq_item_h.pipe_operation = pipe_operation_t.TLP_TRANSFER
+            pipe_seq_item_h.tlp = tlp_pkt
+            await self.start_item (pipe_seq_item_h)
+            await self.finish_item (pipe_seq_item_h)
 
 
     async def send_rolling_idle(self):
-        ...
+        pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
+        pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
+        while(1):
+            await self.start_item(pipe_seq_item_h)
+            await self.finish_item(pipe_seq_item_h)
 
     async def waste(self,req):
         if self.dev.upstream_port.fc_initialized == False:
             await self.dev.upstream_port.other.ext_recv(req)
         else:
             ...
-            # print(f"wasting {repr(req)}")
-            # Timer(1000, 'ns')
-
-        # assert 1 == 0
 
 
 
     async def recieve_dllp(self):
         count = 0
         while (1):
-            # await self.pipe_agent_config.dllp_data_detected_e.wait()
             if self.pipe_agent_config.dllp_received:
                 pkt = Dllp()
                 dllp_in = self.pipe_agent_config.dllp_received.pop(0)
-                # dllp_int =  b'\x00\x00\x40\x10\x5a\x16'
-
-                # print(f" dllp_in data: {[hex(q) for q in dllp_in]}")
-                # print(f" dllp_int data: {[hex(q) for q in dllp_int]}")
-                # assert 1 == 0
-                # dllp_int = int.from_bytes(dllp_in, byteorder='little', signed=False)
                 pkt = pkt.unpack_crc(bytes(dllp_in))
-                # print(f"dllp packet in {repr(pkt)}")
-                # print(f"unpacking : {bytes(dllp_in[0:4])}")
-                await self.port.ext_recv(pkt)
+                await self.dev.upstream_port.other.ext_recv(pkt)
                 dw , = struct.unpack_from('>L', bytes(dllp_in[0:4]))
-                # print(f"unpacking : {hex(dw)}")
-                # print(f"dllp type: {hex((dw >> 24) & 0xff)}")
                 self.pipe_agent_config.dllp_data_detected_e.clear()
                 self.pipe_agent_config.dllp_data_read_e.set()
                 count += 1
-                if self.port.fc_initialized:
-                    break
             else:
                 await self.pipe_agent_config.dllp_data_detected_e.wait()
-                # assert 1 == 0
 
 
-        # pipe_seq_item_h = pipe_seq_item("pipe_seq_item_h")
-        # pipe_seq_item_h.pipe_operation = pipe_operation_t.IDLE_DATA_TRANSFER
-        # while(1):
-        #     await self.start_item(pipe_seq_item_h)
-        #     await self.finish_item(pipe_seq_item_h)
-            # assert 1 == 0
-
-
-    # async def send_tlp(self,tlp):
-    #     pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-    #     pipe_seq_item_h.pipe_operation = DLLP_TRANSFER
-
-
-
-    #     seq_item =  pcie_seq_item("pcie_sequence_item")
-    #     await self.start_item(seq_item)
-    #     seq_item.is_tlp = True
-    #     seq_item.frame = AxiStreamFrame(tlp.pack())
-    #     await self.finish_item(seq_item)
-    #     self.result = seq_item.results
-    
-    async def send_pkt(self,pkt):
-        # print(f"compltere id: {pkt.completer_id}")
-        # print(f"requester id: {pkt.requester_id}")
-        # print(f"requester id: {pkt.dest_id}")
-        # print(f"requester id type: {type(pkt.dest_id)}")
-
-        if pkt.dest_id == PcieId(0,1,0):
-            await self.port.send(pkt)
-        else:
-            # await self.port.ext_recv(None)
-            await self.hold_downstream_tx_handler(pkt)
-
-        # await self.hold_downstream_tx_handler(pkt)
-    # async def handle_tx(self, pkt):
-    #     pipe_seq_item_h = pipe_seq_item("pipe_seq_item")
-    #     if isinstance(pkt,Dllp):
-    #         print(repr(pkt))
-    #         # assert 1 == 0
-    #         pipe_seq_item_h.pipe_operation = pipe_operation_t.DLLP_TRANSFER
-    #         pipe_seq_item_h.dllp = pkt
-    #         await self.start_item (pipe_seq_item_h)
-    #         await self.finish_item (pipe_seq_item_h)
-            
-    #     elif isinstance(pkt,Tlp):
-    #         ...
-    #         # seq_item = pkt
-    #         # seq_item.crc = self.calculator.checksum(
-    #         #     seq_item.pack()).to_bytes(2, 'big')
-    #         # data = seq_item.pack()
-    #         # frame = AxiStreamFrame(self.tlp2dllp(self.seq_num,data,self.tlp_calculator))
-    #         # frame.tuser = 2
-    #         # self.seq_num += 1
-    #         # frame.normalize()
-    #     # await self.dllp_queue.put(frame)
-    #     # seq_item =  pcie_seq_item("pcie_sequence_item")
-    #     # await self.start_item(seq_item)
-    #     # seq_item.is_dllp = True
-    #     # seq_item.frame = frame
-    #     # await self.finish_item(seq_item)
-    #     # self.result = seq_item.results
-    #     # await self.send_dllp(frame)
-    # # async def response_tlp(self):
-    # #         while True:
-    # #             seq_item = await self.seqr.response_fifo.get()
-    # #             self.log.debug("response tlp: %s",repr(seq_item.pkt))
-    # #             # print("response tlp: %s",repr(seq_item.pkt))
-    # #             if seq_item.is_pkt and seq_item.pkt:
-    # #                 # print(type(seq_item.pkt))
-    # #                 # await self.dev.upstream_port.handle_tx(seq_item.pkt)
-    # #                 await self.dev.upstream_port._transmit((seq_item.pkt))
-    # #                 # await self.dev.upstream_port.send(seq_item.pkt)
-    # #                 # await self.dev.upstream_port.other.ext_recv(seq_item.pkt)
-    # #             elif seq_item.pkt:
-    # #                 # self.dev.upstream_port.rx_queue.put_nowait(Tlp(seq_item.pkt))
-    # #                 await self.upstream_recv(seq_item.pkt)
-                
-        
-    def tlp2dllp(self,seq_num, data,tlp_calculator):
-        test_data = seq_num.to_bytes(2,'big')
-        test_data += data
-        test_data += tlp_calculator.checksum(test_data).to_bytes(4,'big')
-        # seq_num += 1
-        return test_data
-    
-    async def send_rc_cpl(self,pkt):
-        if pkt.fmt_type == TlpType.CPL or pkt.fmt_type == TlpType.CPL_DATA :
-            await   self.handle_tx(pkt)
-        else:
-            await self.rc.downstream_send(pkt)
-            # await self.rc.downstream_send(pkt)
-           
-    # async def send_tlp(self,tlp):
-    #         # await Timer(20, 'ns')
-    #         # self.log.info("send tlp: %s",tlp)
-    #         seq_item =  pcie_seq_item("pcie_sequence_item")
-    #         await self.start_item(seq_item)
-    #         seq_item.is_tlp = True
-    #         seq_item.frame = AxiStreamFrame(tlp.pack())
-    #         await self.finish_item(seq_item)
-    #         self.result = seq_item.results
+    async def recieve_tlp(self):
+        count = 0
+        while (1):
+            if self.pipe_agent_config.tlp_received:
+                pkt = Tlp()
+                tlp_in = self.pipe_agent_config.tlp_received.pop(0)
+                data = tlp_in[2:len(tlp_in)-4]
+                pkt = pkt.unpack(bytes(data))
+                seq = int.from_bytes(tlp_in[:2],'big')
+                pkt.seq = int(hex(seq),0)
+                await self.handle_tlp(pkt)
+                self.pipe_agent_config.tlp_data_read_e.set()
+                count += 1
+            else:
+                await First(self.pipe_agent_config.tlp_data_detected_e.wait(),Timer(1000, 'ns'))
+                self.pipe_agent_config.tlp_data_detected_e.clear()
     
 
     async def handle_tlp(self, tlp):
-        # print(f"handle tlp {repr(tlp)}")
-        # print([hex(word) for word in tlp.data])
-        await self.dev.upstream_port.send(tlp)
+        await self.dev.upstream_port.other.ext_recv(tlp)
 
-    async def response_tlp(self,tlp):
-        while True:
-            seq_item = await self.seqr.response_fifo.get()
-            # self.log.debug("response tlp: %s",repr(seq_item.pkt))
-            # print("response tlp: %s",repr(seq_item.pkt))
-            if seq_item.is_pkt and seq_item.pkt:
-                # print(type(seq_item.pkt))
-                # await self.dev.upstream_port.handle_tx(seq_item.pkt)
-                await self.dev.upstream_port._transmit((seq_item.pkt))
-                # await self.dev.upstream_port.send(seq_item.pkt)
-                # await self.dev.upstream_port.other.ext_recv(seq_item.pkt)
-            elif seq_item.pkt:
-                # self.dev.upstream_port.rx_queue.put_nowait(Tlp(seq_item.pkt))
-                await self.upstream_recv(seq_item.pkt)
 
 

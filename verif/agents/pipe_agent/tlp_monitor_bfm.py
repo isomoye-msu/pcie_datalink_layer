@@ -20,6 +20,7 @@ class tlp_monitor_bfm():
         self.dut = cocotb.top
         self.sink_tlp = AxiStreamSink(AxiStreamBus.from_prefix(
             self.dut, "m_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
+        self.sink_tlp.log = uvm_root().logger
 
     async def start(self):
         while True:
