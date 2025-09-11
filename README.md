@@ -57,7 +57,7 @@ git submodule init && git submodule update
   pip install setuptools>=64
   pip install wheel --user
   pip install edalize --user
-  pip install fusesoc>=2.4.4 -user
+  pip install fusesoc>=2.4.4 --user
   pip install -r requirements.txt --user
 ```
 
