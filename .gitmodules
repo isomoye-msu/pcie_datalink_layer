@@ -14,3 +14,6 @@
 	path = src/verilog-axis
 	url = https://github.com/isomoye-msu/verilog-axis.git
 
+[submodule "example/surf"]
+	path = example/surf
+	url = https://github.com/slaclab/surf.git
