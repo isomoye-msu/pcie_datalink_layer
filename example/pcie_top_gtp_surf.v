@@ -1,4 +1,4 @@
-module pcie_top_kc705 #(
+module pcie_top_gtp_surf #(
 
     parameter         [ 4:0] PL_LINK_CAP_MAX_LINK_WIDTH    = 5'd1,
     parameter                EXTERNAL_MMCM                 = "FALSE",
@@ -102,9 +102,9 @@ module pcie_top_kc705 #(
 
 
 
-  //------------------------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////////////////
   // Instance IBUFDS of IBUFDS Module.
-  //------------------------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////////////////
   IBUFDS IBUFDS (
       // Inputs.
       .I (sys_clk_p),
@@ -241,9 +241,9 @@ module pcie_top_kc705 #(
 
   reg                      reg_clock_locked;
 
-  //-------------------------------------------------------
+  ////////////////////////////////////////////////////////-
   // 3. Configuration (CFG) Interface
-  //-------------------------------------------------------
+  ////////////////////////////////////////////////////////-
   wire                     cfg_err_cor;
   wire                     cfg_err_ur;
   wire                     cfg_err_ecrc;
@@ -286,55 +286,55 @@ module pcie_top_kc705 #(
   // assign cfg_device_number   = 8'd0;
   // assign cfg_function_number = 8'd0;
 
-  //-------------------------------------------------------
+  ////////////////////////////////////////////////////////-
   // 4. Physical Layer Control and Status (PL) Interface
-  //-------------------------------------------------------
+  ////////////////////////////////////////////////////////-
 
-  wire       pl_directed_link_auton;
-  wire [1:0] pl_directed_link_change;
-  wire       pl_directed_link_speed;
-  wire [1:0] pl_directed_link_width;
-  wire       pl_upstream_prefer_deemph;
+  wire                     pl_directed_link_auton;
+  wire [              1:0] pl_directed_link_change;
+  wire                     pl_directed_link_speed;
+  wire [              1:0] pl_directed_link_width;
+  wire                     pl_upstream_prefer_deemph;
 
-  wire       sys_rst_n_c;
+  wire                     sys_rst_n_c;
 
   // Wires used for external clocking connectivity
-  wire       pipe_pclk_in;
-  wire       pipe_rxusrclk_in;
-  wire [7:0] pipe_rxoutclk_in;
-  wire       pipe_dclk_in;
-  wire       pipe_userclk1_in;
-  wire       pipe_userclk2_in;
-  wire       pipe_mmcm_lock_in;
+  wire                     pipe_pclk_in;
+  wire                     pipe_rxusrclk_in;
+  wire [              7:0] pipe_rxoutclk_in;
+  wire                     pipe_dclk_in;
+  wire                     pipe_userclk1_in;
+  wire                     pipe_userclk2_in;
+  wire                     pipe_mmcm_lock_in;
 
-  wire       pipe_txoutclk_out;
-  wire [7:0] pipe_rxoutclk_out;
-  wire [7:0] pipe_pclk_sel_out;
-  wire       pipe_gen3_out;
-  wire       pipe_oobclk_in;
+  wire                     pipe_txoutclk_out;
+  wire [              7:0] pipe_rxoutclk_out;
+  wire [              7:0] pipe_pclk_sel_out;
+  wire                     pipe_gen3_out;
+  wire                     pipe_oobclk_in;
 
-  wire       rx_np_req;
+  wire                     rx_np_req;
 
   // Flow Control
-  wire [2:0] fc_sel;
+  wire [              2:0] fc_sel;
 
-  wire       link_up;
+  wire                     link_up;
 
-  wire       PIPE_TXOUTCLK_OUT;
-  wire       PIPE_DCLK_IN;
-  wire       PIPE_MMCM_LOCK_IN;
-  wire       PIPE_RXUSRCLK_IN;
-  wire       PIPE_OOBCLK_IN;
+  wire                     PIPE_TXOUTCLK_OUT;
+  wire                     PIPE_DCLK_IN;
+  wire                     PIPE_MMCM_LOCK_IN;
+  wire                     PIPE_RXUSRCLK_IN;
+  wire                     PIPE_OOBCLK_IN;
 
 
-  wire       trn_lnk_up;
-  reg        user_reset_int;
-  reg        bridge_reset_int;
-  reg        bridge_reset_d;
-  reg        phy_rdy_n;
-  wire       user_clk_out;  // actually is user_clk2
-  reg        user_reset_out;
-  reg        user_lnk_up;
+  wire                     trn_lnk_up;
+  reg                      user_reset_int;
+  reg                      bridge_reset_int;
+  reg                      bridge_reset_d;
+  reg                      phy_rdy_n;
+  wire                     user_clk_out;  // actually is user_clk2
+  reg                      user_reset_out;
+  reg                      user_lnk_up;
 
   assign m_tlp_axis_byte_swap_tdata[7:0]   = m_tlp_axis_tdata[31:24];
   assign m_tlp_axis_byte_swap_tdata[15:8]  = m_tlp_axis_tdata[23:16];
@@ -409,10 +409,10 @@ module pcie_top_kc705 #(
       .cfg_device_number_o  (cfg_device_number),
       .cfg_function_number_o(cfg_function_number),
 
-      .pipe_width_o           (pipe_width_o),
-      .as_mac_in_detect       (as_mac_in_detect),
-      .as_cdr_hold_req        (as_cdr_hold_req),
-      .ltssm_debug_state      (debug_state),
+      .pipe_width_o     (pipe_width_o),
+      .as_mac_in_detect (as_mac_in_detect),
+      .as_cdr_hold_req  (as_cdr_hold_req),
+      .ltssm_debug_state(debug_state),
       .tx_elec_idle     (tx_elec_idle),
       .phy_ready_en     (phy_ready_en),
       .link_up_o        (link_up),
@@ -527,9 +527,9 @@ module pcie_top_kc705 #(
       .TCQ(1)
 
   ) app (
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 1. AXI-S Interface                                                                                             //
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Common
       .user_clk        (sys_clk),
       .user_reset      (!sys_rst_n),
@@ -554,9 +554,9 @@ module pcie_top_kc705 #(
 
       // Flow Control
       .fc_sel                       (fc_sel),
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 2. Configuration (CFG) Interface                                                                               //
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       .cfg_err_cor                  (cfg_err_cor),
       .cfg_err_atomic_egress_blocked(cfg_err_atomic_egress_blocked),
       .cfg_err_internal_cor         (cfg_err_internal_cor),
@@ -594,9 +594,9 @@ module pcie_top_kc705 #(
       .cfg_function_number(cfg_function_number),
       .cfg_dsn            (cfg_dsn),
 
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 3. Management (MGMT) Interface                                                                                 //
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       .cfg_mgmt_di         (cfg_mgmt_di),
       .cfg_mgmt_byte_en    (cfg_mgmt_byte_en),
       .cfg_mgmt_dwaddr     (cfg_mgmt_dwaddr),
@@ -604,15 +604,15 @@ module pcie_top_kc705 #(
       .cfg_mgmt_rd_en      (cfg_mgmt_rd_en),
       .cfg_mgmt_wr_readonly(cfg_mgmt_wr_readonly),
 
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 3. Advanced Error Reporting (AER) Interface                                                                    //
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       .cfg_err_aer_headerlog   (cfg_err_aer_headerlog),
       .cfg_aer_interrupt_msgnum(cfg_aer_interrupt_msgnum),
 
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 4. Physical Layer Control and Status (PL) Interface                                                            //
-      //----------------------------------------------------------------------------------------------------------------//
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       .pl_directed_link_auton   (pl_directed_link_auton),
       .pl_directed_link_change  (pl_directed_link_change),
       .pl_directed_link_speed   (pl_directed_link_speed),
@@ -650,6 +650,205 @@ module pcie_top_kc705 #(
 
   assign pipe_mmcm_rst_n = sys_rst_n;
 
+
+  // parameter TPD_G                 = 1 ns;
+  // parameter COMMON_CLK_G          = false;// set true if (stableClk = axilClk)
+  // parameter ///////////////////////////////////////////////////////////////////////
+  // parameter // GT Settings
+  // parameter ///////////////////////////////////////////////////////////////////////
+  // parameter // Sim Generics
+  // parameter SIM_GTRESET_SPEEDUP_G = "FALSE";
+  // parameter SIM_VERSION_G         = "2.0";
+  // parameter STABLE_CLOCK_PERIOD_G = 4.0E-9;                    //units of seconds
+  // parameter // Configure PLL
+  // parameter RXOUT_DIV_G           = 2;
+  // parameter TXOUT_DIV_G           = 2;
+  // parameter RX_CLK25_DIV_G        = 7;      // Set by wizard
+  // parameter TX_CLK25_DIV_G        = 7;      // Set by wizard
+  // parameter PMA_RSV_G             = x"00000333";               // Set by wizard
+  // parameter RX_OS_CFG_G           = "0001111110000";           // Set by wizard
+  // parameter RXCDR_CFG_G           = x"0000107FE206001041010";  // Set by wizard
+  // parameter RXLPM_INCM_CFG_G      = '1';    // Set by wizard
+  // parameter RXLPM_IPCM_CFG_G      = '0';    // Set by wizard
+  // parameter DYNAMIC_QPLL_G        = false;
+  // parameter TX_PLL_G              = "PLL0";
+  // parameter RX_PLL_G              = "PLL1";
+  // parameter // Configure Buffe
+  // parameter TX_BUF_EN_G           = true;
+  // parameter TX_OUTCLK_SRC_G       = "OUTCLKPMA";
+  // parameter TX_DLY_BYPASS_G       = '1';
+  // parameter TX_PHASE_ALIGN_G      = "NONE";
+  // parameter TX_BUF_ADDR_MODE_G    = "FULL";
+  // parameter // Configure Number o
+  // parameter LANE_CNT_G            = 1;
+  // parameter //////////////////////////////////////////////////////////////////////////////////////////////
+  // parameter // PGP Settings
+  // parameter //////////////////////////////////////////////////////////////////////////////////////////////
+  // parameter VC_INTERLEAVE_G       : integer              = 0;      // No interleave Frames
+  // parameter PAYLOAD_CNT_TOP_G     : integer              = 7;      // Top bit for payload counter
+  // parameter NUM_VC_EN_G           : integer range 1 to 4 = 4;
+  // parameter TX_POLARITY_G         : sl                   = '0';
+  // parameter RX_POLARITY_G         : sl                   = '0';
+  // parameter TX_ENABLE_G           : boolean              = true;   // Enable TX direction
+  // parameter RX_ENABLE_G           : boolean              :
+
+  Gtp7Core #(
+      .TPD_G                   (1ns),
+      .SIM_GTRESET_SPEEDUP_G   ("FALSE"),
+      .SIM_VERSION_G           ("2.0"),
+      // .SIMULATION_G(SIMULATION_G),
+      .STABLE_CLOCK_PERIOD_G   (4 ** -9),
+      // .REF_CLK_FREQ_G(REF_CLK_FREQ_G),
+      .RXOUT_DIV_G             (2),
+      .TXOUT_DIV_G             (2),
+      .RX_CLK25_DIV_G          (7),
+      .TX_CLK25_DIV_G          (7),
+      .PMA_RSV_G               ('h00000333),
+      .RX_OS_CFG_G             ("0001111110000"),
+      .RXCDR_CFG_G             ('h0000107FE206001041010),
+      .RXLPM_INCM_CFG_G        (1),
+      .RXLPM_IPCM_CFG_G        (0),
+      .TX_PLL_G                ("PLL0"),
+      .RX_PLL_G                ("PLL1"),
+      // .DYNAMIC_QPLL_G(DYNAMIC_QPLL_G),
+      .TX_EXT_DATA_WIDTH_G     (16),
+      .TX_INT_DATA_WIDTH_G     (0),
+      .TX_8B10B_EN_G           (1),
+      .RX_EXT_DATA_WIDTH_G     (16),
+      .RX_INT_DATA_WIDTH_G     (0),
+      .RX_8B10B_EN_G           (true),
+      .TX_BUF_EN_G             (1),
+      .TX_OUTCLK_SRC_G         ("OUTCLKPMA"),
+      .TX_DLY_BYPASS_G         (1),
+      .TX_PHASE_ALIGN_G        ("NONE"),
+      .TX_BUF_ADDR_MODE_G      ("FULL"),
+      .RX_BUF_EN_G             (1),
+      .RX_OUTCLK_SRC_G         ("OUTCLKPMA"),
+      .RX_USRCLK_SRC_G         ("RXOUTCLK"),
+      .RX_DLY_BYPASS_G         (1),
+      .RX_DDIEN_G              (0),
+      .RX_BUF_ADDR_MODE_G      ("FULL"),
+      .RX_ALIGN_MODE_G         ("GT"),
+      //Comma Alignment Attributes            
+      .ALIGN_COMMA_DOUBLE_G    ("FALSE"),
+      .ALIGN_COMMA_ENABLE_G    (10'b1111111111),
+      .ALIGN_COMMA_WORD_G      (1),
+      .ALIGN_MCOMMA_DET_G      ("TRUE"),
+      .ALIGN_MCOMMA_VALUE_G    (10'b1010000011),
+      .ALIGN_MCOMMA_EN_G       (1),
+      .ALIGN_PCOMMA_DET_G      ("TRUE"),
+      .ALIGN_PCOMMA_VALUE_G    (10'b0101111100),
+      .ALIGN_PCOMMA_EN_G       (1),
+      .SHOW_REALIGN_COMMA_G    ("FALSE"),
+      .RXSLIDE_MODE_G          ("AUTO"),
+      // .FIXED_COMMA_EN_G(FIXED_COMMA_EN_G),
+      // .FIXED_ALIGN_COMMA_0_G(FIXED_ALIGN_COMMA_0_G),
+      // .FIXED_ALIGN_COMMA_1_G(FIXED_ALIGN_COMMA_1_G),
+      // .FIXED_ALIGN_COMMA_2_G(FIXED_ALIGN_COMMA_2_G),
+      // .FIXED_ALIGN_COMMA_3_G(FIXED_ALIGN_COMMA_3_G),
+      .RX_DISPERR_SEQ_MATCH_G  ("TRUE"),
+      .DEC_MCOMMA_DETECT_G     ("TRUE"),
+      .DEC_PCOMMA_DETECT_G     ("TRUE"),
+      .DEC_VALID_COMMA_ONLY_G  ("FALSE"),
+      .CBCC_DATA_SOURCE_SEL_G  ("DECODED"),
+      .CLK_COR_SEQ_2_USE_G     ("FALSE"),
+      .CLK_COR_KEEP_IDLE_G     ("TRUE"),
+      .CLK_COR_MAX_LAT_G       (15),
+      .CLK_COR_MIN_LAT_G       (13),
+      .CLK_COR_PRECEDENCE_G    ("TRUE"),
+      .CLK_COR_REPEAT_WAIT_G   (0),
+      .CLK_COR_SEQ_LEN_G       (1),
+      .CLK_COR_SEQ_1_ENABLE_G  (4'b1111),
+      .CLK_COR_SEQ_1_1_G       (10'b0100011100),
+      .CLK_COR_SEQ_1_2_G       (10'b0000000000),
+      .CLK_COR_SEQ_1_3_G       (10'b0000000000),
+      .CLK_COR_SEQ_1_4_G       (10'b0000000000),
+      .CLK_CORRECT_USE_G       ("TRUE"),
+      .CLK_COR_SEQ_2_ENABLE_G  (4'b0000),
+      .CLK_COR_SEQ_2_1_G       (10'b0000000000), // Disabled
+      .CLK_COR_SEQ_2_2_G       (10'b0000000000), // Disabled
+      .CLK_COR_SEQ_2_3_G       (10'b0000000000), // Disabled
+      .CLK_COR_SEQ_2_4_G       (10'b0000000000), // Disabled
+      // .RX_CHAN_BOND_EN_G       (RX_CHAN_BOND_EN_G),
+      // .RX_CHAN_BOND_MASTER_G   (RX_CHAN_BOND_MASTER_G),
+      .CHAN_BOND_KEEP_ALIGN_G  ("TRUE"),        // PCIe
+      .CHAN_BOND_MAX_SKEW_G    ( 7),            // 
+      .CHAN_BOND_SEQ_LEN_G     ( 4),            // PCIe
+      .CHAN_BOND_SEQ_1_1_G     (10'b0001001010),// D10.2 (4A) - TS1 
+      .CHAN_BOND_SEQ_1_2_G     (10'b0001001010),// D10.2 (4A) - TS1
+      .CHAN_BOND_SEQ_1_3_G     (10'b0001001010),// D10.2 (4A) - TS1
+      .CHAN_BOND_SEQ_1_4_G     (10'b0110111100),// K28.5 (BC) - COM
+      .CHAN_BOND_SEQ_1_ENABLE_G( 4'b1111),      //
+      .CHAN_BOND_SEQ_2_1_G     (10'b0001000101),// D5.2  (45) - TS2
+      .CHAN_BOND_SEQ_2_2_G     (10'b0001000101),// D5.2  (45) - TS2
+      .CHAN_BOND_SEQ_2_3_G     (10'b0001000101),// D5.2  (45) - TS2
+      .CHAN_BOND_SEQ_2_4_G     (10'b0110111100),// K28.5 (BC) - COM
+      .CHAN_BOND_SEQ_2_ENABLE_G(4'b1111),
+      .CHAN_BOND_SEQ_2_USE_G   ("TRUE"),
+      .FTS_DESKEW_SEQ_ENABLE_G ( 4'b1111),
+      .FTS_LANE_DESKEW_CFG_G   ("TRUE"),   // PCIe
+      .FTS_LANE_DESKEW_EN_G    ( 4'b1111),
+  ) Gtp7Core_inst (
+      .stableClkIn(sys_clk),
+      .qPllRxSelect(2'b00),
+      .qPllTxSelect(2'b00),
+      .qPllRefClkIn(qPllRefClkIn),
+      .qPllClkIn(qPllClkIn),
+      .qPllLockIn(qPllLockIn),
+      .qPllRefClkLostIn(qPllRefClkLostIn),
+      .qPllResetOut(qPllResetOut),
+      .gtRxRefClkBufg(gtRxRefClkBufg),
+      .gtTxP(gtTxP),
+      .gtTxN(gtTxN),
+      .gtRxP(gtRxP),
+      .gtRxN(gtRxN),
+      .rxOutClkOut(rxOutClkOut),
+      .rxUsrClkIn(rxUsrClkIn),
+      .rxUsrClk2In(rxUsrClk2In),
+      .rxUserRdyOut(rxUserRdyOut),
+      .rxMmcmResetOut(rxMmcmResetOut),
+      .rxMmcmLockedIn(rxMmcmLockedIn),
+      .rxUserResetIn(rxUserResetIn),
+      .rxResetDoneOut(rxResetDoneOut),
+      .rxDataValidIn(rxDataValidIn),
+      .rxSlideIn(rxSlideIn),
+      .rxDataOut(rxDataOut),
+      .rxCharIsKOut(rxCharIsKOut),
+      .rxDecErrOut(rxDecErrOut),
+      .rxDispErrOut(rxDispErrOut),
+      .rxPolarityIn(rxPolarityIn),
+      .rxBufStatusOut(rxBufStatusOut),
+      .rxChBondLevelIn(rxChBondLevelIn),
+      .rxChBondIn(rxChBondIn),
+      .rxChBondOut(rxChBondOut),
+      .txOutClkOut(txOutClkOut),
+      .txUsrClkIn(txUsrClkIn),
+      .txUsrClk2In(txUsrClk2In),
+      .txUserRdyOut(txUserRdyOut),
+      .txMmcmResetOut(txMmcmResetOut),
+      .txMmcmLockedIn(txMmcmLockedIn),
+      .txUserResetIn(txUserResetIn),
+      .txResetDoneOut(txResetDoneOut),
+      .txDataIn(txDataIn),
+      .txCharIsKIn(txCharIsKIn),
+      .txBufStatusOut(txBufStatusOut),
+      .txPolarityIn(txPolarityIn),
+      .txPowerDown(txPowerDown),
+      .rxPowerDown(rxPowerDown),
+      .loopbackIn(loopbackIn),
+      .txPreCursor(txPreCursor),
+      .txPostCursor(txPostCursor),
+      .txDiffCtrl(txDiffCtrl),
+      .drpGnt(drpGnt),
+      .drpRdy(drpRdy),
+      .drpOverride(drpOverride),
+      .drpEn(drpEn),
+      .drpWe(drpWe),
+      .drpAddr(drpAddr),
+      .drpDi(drpDi),
+      .drpDo(drpDo)
+  );
+
   generate
     if (EXTERNAL_MMCM == "FALSE") begin : in_module_mmcm
       // clock for pipe
@@ -686,86 +885,86 @@ module pcie_top_kc705 #(
 
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
-  pipe_wrapper #(
-      .PCIE_SIM_MODE             ("TRUE"),
-      // synthesis translate_off
-      .PCIE_SIM_SPEEDUP          ("TRUE"),
-      // synthesis translate_on
-      .PCIE_EXT_CLK              (PCIE_EXT_CLK),
-      .PCIE_TXBUF_EN             (PCIE_TXBUF_EN),
-      .PCIE_EXT_GT_COMMON        (PCIE_EXT_GT_COMMON),
-      .EXT_CH_GT_DRP             (EXT_CH_GT_DRP),
-      .TX_MARGIN_FULL_0          (TX_MARGIN_FULL_0),
-      .TX_MARGIN_FULL_1          (TX_MARGIN_FULL_1),
-      .TX_MARGIN_FULL_2          (TX_MARGIN_FULL_2),
-      .TX_MARGIN_FULL_3          (TX_MARGIN_FULL_3),
-      .TX_MARGIN_FULL_4          (TX_MARGIN_FULL_4),
-      .TX_MARGIN_LOW_0           (TX_MARGIN_LOW_0),
-      .TX_MARGIN_LOW_1           (TX_MARGIN_LOW_1),
-      .TX_MARGIN_LOW_2           (TX_MARGIN_LOW_2),
-      .TX_MARGIN_LOW_3           (TX_MARGIN_LOW_3),
-      .TX_MARGIN_LOW_4           (TX_MARGIN_LOW_4),
-      .PCIE_ASYNC_EN             (PCIE_ASYNC_EN),
-      .PCIE_CHAN_BOND            (PCIE_CHAN_BOND),
-      .PCIE_PLL_SEL              (PCIE_PLL_SEL),
-      .PCIE_GT_DEVICE            (PCIE_GT_DEVICE),
-      .PCIE_USE_MODE             (PCIE_USE_MODE),
-      .PCIE_LANE                 (LINK_CAP_MAX_LINK_WIDTH),
-      .PCIE_LPM_DFE              ("LPM"),
-      .PCIE_LINK_SPEED           (3),
-      .PCIE_TX_EIDLE_ASSERT_DELAY(3'd2),
-      .PCIE_OOBCLK_MODE          (1),
-      .PCIE_REFCLK_FREQ          (REF_CLK_FREQ),
-      .PCIE_USERCLK1_FREQ        (USER_CLK_FREQ + 1),        // unused
-      .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
-  ) pipe_wrapper_i (
-      //---------- PIPE Clock & Reset Ports ------------------
-      .PIPE_CLK    (sys_clk),
-      .PIPE_RESET_N(sys_rst_n),
-      // .PIPE_PCLK   (),
-      //---------- PIPE TX Data Ports ------------------
-      .PIPE_TXDATA (phy_txdata),
-      .PIPE_TXDATAK(phy_txdatak),
+  // pipe_wrapper #(
+  //     .PCIE_SIM_MODE             ("TRUE"),
+  //     // synthesis translate_off
+  //     .PCIE_SIM_SPEEDUP          ("TRUE"),
+  //     // synthesis translate_on
+  //     .PCIE_EXT_CLK              (PCIE_EXT_CLK),
+  //     .PCIE_TXBUF_EN             (PCIE_TXBUF_EN),
+  //     .PCIE_EXT_GT_COMMON        (PCIE_EXT_GT_COMMON),
+  //     .EXT_CH_GT_DRP             (EXT_CH_GT_DRP),
+  //     .TX_MARGIN_FULL_0          (TX_MARGIN_FULL_0),
+  //     .TX_MARGIN_FULL_1          (TX_MARGIN_FULL_1),
+  //     .TX_MARGIN_FULL_2          (TX_MARGIN_FULL_2),
+  //     .TX_MARGIN_FULL_3          (TX_MARGIN_FULL_3),
+  //     .TX_MARGIN_FULL_4          (TX_MARGIN_FULL_4),
+  //     .TX_MARGIN_LOW_0           (TX_MARGIN_LOW_0),
+  //     .TX_MARGIN_LOW_1           (TX_MARGIN_LOW_1),
+  //     .TX_MARGIN_LOW_2           (TX_MARGIN_LOW_2),
+  //     .TX_MARGIN_LOW_3           (TX_MARGIN_LOW_3),
+  //     .TX_MARGIN_LOW_4           (TX_MARGIN_LOW_4),
+  //     .PCIE_ASYNC_EN             (PCIE_ASYNC_EN),
+  //     .PCIE_CHAN_BOND            (PCIE_CHAN_BOND),
+  //     .PCIE_PLL_SEL              (PCIE_PLL_SEL),
+  //     .PCIE_GT_DEVICE            (PCIE_GT_DEVICE),
+  //     .PCIE_USE_MODE             (PCIE_USE_MODE),
+  //     .PCIE_LANE                 (LINK_CAP_MAX_LINK_WIDTH),
+  //     .PCIE_LPM_DFE              ("LPM"),
+  //     .PCIE_LINK_SPEED           (3),
+  //     .PCIE_TX_EIDLE_ASSERT_DELAY(3'd2),
+  //     .PCIE_OOBCLK_MODE          (1),
+  //     .PCIE_REFCLK_FREQ          (REF_CLK_FREQ),
+  //     .PCIE_USERCLK1_FREQ        (USER_CLK_FREQ + 1),        // unused
+  //     .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
+  // ) pipe_wrapper_i (
+  //     //////////// PIPE Clock & Reset Ports //////////////////
+  //     .PIPE_CLK    (PIPE_PCLK_IN),
+  //     .PIPE_RESET_N(sys_rst_n),
+  //     // .PIPE_PCLK   (),
+  //     //////////// PIPE TX Data Ports //////////////////
+  //     .PIPE_TXDATA (phy_txdata),
+  //     .PIPE_TXDATAK(phy_txdatak),
 
-      .PIPE_TXP(pci_exp_txp[0:0]),
-      .PIPE_TXN(pci_exp_txn[0:0]),
-      //---------- PIPE RX Data Ports ------------------
-      .PIPE_RXP(pci_exp_rxp[0:0]),
-      .PIPE_RXN(pci_exp_rxn[0:0]),
+  //     .PIPE_TXP(pci_exp_txp[0:0]),
+  //     .PIPE_TXN(pci_exp_txn[0:0]),
+  //     //////////// PIPE RX Data Ports //////////////////
+  //     .PIPE_RXP(pci_exp_rxp[0:0]),
+  //     .PIPE_RXN(pci_exp_rxn[0:0]),
 
-      .PIPE_RXDATA          (phy_rxdata[31:0]),
-      .PIPE_RXDATAK         (phy_rxdatak[3:0]),
-      //---------- PIPE Command Ports ------------------
-      .PIPE_TXDETECTRX      (phy_txdetectrx),
-      .PIPE_TXELECIDLE      (phy_txelecidle),
-      .PIPE_TXCOMPLIANCE    (phy_txcompliance),
-      .PIPE_RXPOLARITY      (phy_rxpolarity),
-      .PIPE_POWERDOWN       (phy_powerdown),
-      .PIPE_RATE            ({1'b0, phy_rate}),
-      //---------- PIPE Electrical Command Ports ------------------
-      .PIPE_TXMARGIN        (phy_txmargin[2:0]),
-      .PIPE_TXSWING         (0),
-      .PIPE_TXDEEMPH        ({(LINK_CAP_MAX_LINK_WIDTH) {phy_txdeemph}}),
-      //---------- PIPE Status Ports -------------------
-      .PIPE_RXVALID         (phy_rxdata_valid[0:0]),
-      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),
-      .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
-      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),
-      .PIPE_EYESCANDATAERROR(),
-      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),
-      //---------- PIPE User Ports ---------------------------
-      .PIPE_MMCM_RST_N      (pipe_mmcm_rst_n),
-      .PIPE_PCLK_LOCK       (clock_locked),
-      .PIPE_RXCHANISALIGNED (  /*gt_rxchanisaligned_wire[LINK_CAP_MAX_LINK_WIDTH-1:0]*/),
-      //---------- External Clock Ports ---------------------------
-      .PIPE_PCLK_IN         (PIPE_PCLK_IN),
-      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),
-      .PIPE_DCLK_IN         (PIPE_DCLK_IN),
-      .PIPE_OOBCLK_IN       (PIPE_OOBCLK_IN),
-      .PIPE_MMCM_LOCK_IN    (PIPE_MMCM_LOCK_IN),
-      .PIPE_TXOUTCLK_OUT    (PIPE_TXOUTCLK_OUT),
-      .gt_reset_fsm         (gt_reset_fsm)
-  );
+  //     .PIPE_RXDATA          (phy_rxdata[31:0]),
+  //     .PIPE_RXDATAK         (phy_rxdatak[3:0]),
+  //     //////////// PIPE Command Ports //////////////////
+  //     .PIPE_TXDETECTRX      (phy_txdetectrx),
+  //     .PIPE_TXELECIDLE      (phy_txelecidle),
+  //     .PIPE_TXCOMPLIANCE    (phy_txcompliance),
+  //     .PIPE_RXPOLARITY      (phy_rxpolarity),
+  //     .PIPE_POWERDOWN       (phy_powerdown),
+  //     .PIPE_RATE            ({1'b0, phy_rate}),
+  //     //////////// PIPE Electrical Command Ports //////////////////
+  //     .PIPE_TXMARGIN        (phy_txmargin[2:0]),
+  //     .PIPE_TXSWING         (0),
+  //     .PIPE_TXDEEMPH        ({(LINK_CAP_MAX_LINK_WIDTH) {phy_txdeemph}}),
+  //     //////////// PIPE Status Ports //////////////////-
+  //     .PIPE_RXVALID         (phy_rxdata_valid[0:0]),
+  //     .PIPE_PHYSTATUS       (phy_phystatus[0:0]),
+  //     .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
+  //     .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),
+  //     .PIPE_EYESCANDATAERROR(),
+  //     .PIPE_RXSTATUS        (phy_rxstatus[2:0]),
+  //     //////////// PIPE User Ports //////////////////////////-
+  //     .PIPE_MMCM_RST_N      (pipe_mmcm_rst_n),
+  //     .PIPE_PCLK_LOCK       (clock_locked),
+  //     .PIPE_RXCHANISALIGNED (  /*gt_rxchanisaligned_wire[LINK_CAP_MAX_LINK_WIDTH-1:0]*/),
+  //     //////////// External Clock Ports //////////////////////////-
+  //     .PIPE_PCLK_IN         (PIPE_PCLK_IN),
+  //     .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),
+  //     .PIPE_DCLK_IN         (PIPE_DCLK_IN),
+  //     .PIPE_OOBCLK_IN       (PIPE_OOBCLK_IN),
+  //     .PIPE_MMCM_LOCK_IN    (PIPE_MMCM_LOCK_IN),
+  //     .PIPE_TXOUTCLK_OUT    (PIPE_TXOUTCLK_OUT),
+  //     .gt_reset_fsm         (gt_reset_fsm)
+  // );
 
 
 

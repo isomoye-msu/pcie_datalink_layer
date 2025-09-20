@@ -15,6 +15,7 @@ from cocotbext.axi import AxiStreamFrame, AxiStreamBus, AxiStreamSource, AxiStre
 from cocotbext.pcie.core import RootComplex, MemoryEndpoint, Device, Switch
 from cocotbext.pcie.core.dllp import Dllp, DllpType, FcScale
 from cocotbext.pcie.core.tlp import Tlp, TlpType
+from cocotb.log import SimLog
 
 class tlp_driver_bfm():
     def __init__(self, name = "pipe_driver_bfm", parent=None, pipe_interface = None):
@@ -24,7 +25,7 @@ class tlp_driver_bfm():
         self.tlp_sender = AxiStreamSource(AxiStreamBus.from_prefix(
             self.dut, "s_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
         uvm_root().logger.info(name + " initiated") 
-        self.tlp_sender.log = uvm_root().logger
+        self.tlp_sender.log = SimLog("cocotb.tb")
 
 
     async def send_tlp(self,tlp):

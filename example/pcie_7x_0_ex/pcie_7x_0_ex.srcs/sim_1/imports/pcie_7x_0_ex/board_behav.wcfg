@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="board_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="board" />
+            <top_module name="glbl" />
+            <top_module name="test_interface" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="52,089.569 ns"></ZoomStartTime>
+      <ZoomEndTime time="52,108.370 ns"></ZoomEndTime>
+      <Cursor1Time time="52,097.769 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="292"></NameColumnWidth>
+      <ValueColumnWidth column_width="140"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="74" />
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/clk_i">
+      <obj_property name="ElementShortName">clk_i</obj_property>
+      <obj_property name="ObjectShortName">clk_i</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/rst_i">
+      <obj_property name="ElementShortName">rst_i</obj_property>
+      <obj_property name="ObjectShortName">rst_i</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/phy_link_up_i">
+      <obj_property name="ElementShortName">phy_link_up_i</obj_property>
+      <obj_property name="ObjectShortName">phy_link_up_i</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tdata">
+      <obj_property name="ElementShortName">s_axis_tdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tkeep">
+      <obj_property name="ElementShortName">s_axis_tkeep[3:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tkeep[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tvalid">
+      <obj_property name="ElementShortName">s_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tlast">
+      <obj_property name="ElementShortName">s_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tuser">
+      <obj_property name="ElementShortName">s_axis_tuser[4:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tuser[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/s_axis_tready">
+      <obj_property name="ElementShortName">s_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tready</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/seq_num_o">
+      <obj_property name="ElementShortName">seq_num_o[11:0]</obj_property>
+      <obj_property name="ObjectShortName">seq_num_o[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/seq_num_vld_o">
+      <obj_property name="ElementShortName">seq_num_vld_o</obj_property>
+      <obj_property name="ObjectShortName">seq_num_vld_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/seq_num_acknack_o">
+      <obj_property name="ElementShortName">seq_num_acknack_o</obj_property>
+      <obj_property name="ObjectShortName">seq_num_acknack_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_values_stored_o">
+      <obj_property name="ElementShortName">fc1_values_stored_o</obj_property>
+      <obj_property name="ObjectShortName">fc1_values_stored_o</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_values_stored_o">
+      <obj_property name="ElementShortName">fc2_values_stored_o</obj_property>
+      <obj_property name="ObjectShortName">fc2_values_stored_o</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_ph_o">
+      <obj_property name="ElementShortName">tx_fc_ph_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_ph_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_pd_o">
+      <obj_property name="ElementShortName">tx_fc_pd_o[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_pd_o[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_nph_o">
+      <obj_property name="ElementShortName">tx_fc_nph_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_nph_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_npd_o">
+      <obj_property name="ElementShortName">tx_fc_npd_o[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_npd_o[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cplh_o">
+      <obj_property name="ElementShortName">tx_fc_cplh_o[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cplh_o[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cpld_o">
+      <obj_property name="ElementShortName">tx_fc_cpld_o[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cpld_o[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/update_fc_o">
+      <obj_property name="ElementShortName">update_fc_o</obj_property>
+      <obj_property name="ObjectShortName">update_fc_o</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/curr_state">
+      <obj_property name="ElementShortName">curr_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/next_state">
+      <obj_property name="ElementShortName">next_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">next_state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/dll_packet_c">
+      <obj_property name="ElementShortName">dll_packet_c</obj_property>
+      <obj_property name="ObjectShortName">dll_packet_c</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/dll_packet_r">
+      <obj_property name="ElementShortName">dll_packet_r</obj_property>
+      <obj_property name="ObjectShortName">dll_packet_r</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_in_c">
+      <obj_property name="ElementShortName">crc_in_c[15:0]</obj_property>
+      <obj_property name="ObjectShortName">crc_in_c[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_in_r">
+      <obj_property name="ElementShortName">crc_in_r[15:0]</obj_property>
+      <obj_property name="ObjectShortName">crc_in_r[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_out">
+      <obj_property name="ElementShortName">crc_out[15:0]</obj_property>
+      <obj_property name="ObjectShortName">crc_out[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tlp_nullified_c">
+      <obj_property name="ElementShortName">tlp_nullified_c</obj_property>
+      <obj_property name="ObjectShortName">tlp_nullified_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tlp_nullified_r">
+      <obj_property name="ElementShortName">tlp_nullified_r</obj_property>
+      <obj_property name="ObjectShortName">tlp_nullified_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_tlp_ready_c">
+      <obj_property name="ElementShortName">tx_tlp_ready_c</obj_property>
+      <obj_property name="ObjectShortName">tx_tlp_ready_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_tlp_ready_r">
+      <obj_property name="ElementShortName">tx_tlp_ready_r</obj_property>
+      <obj_property name="ObjectShortName">tx_tlp_ready_r</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/next_transmit_seq_c">
+      <obj_property name="ElementShortName">next_transmit_seq_c[15:0]</obj_property>
+      <obj_property name="ObjectShortName">next_transmit_seq_c[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/next_transmit_seq_r">
+      <obj_property name="ElementShortName">next_transmit_seq_r[15:0]</obj_property>
+      <obj_property name="ObjectShortName">next_transmit_seq_r[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/ackd_transmit_seq_c">
+      <obj_property name="ElementShortName">ackd_transmit_seq_c[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ackd_transmit_seq_c[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/ackd_transmit_seq_r">
+      <obj_property name="ElementShortName">ackd_transmit_seq_r[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ackd_transmit_seq_r[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tdata">
+      <obj_property name="ElementShortName">skid_s_axis_tdata[31:0]</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tdata[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tkeep">
+      <obj_property name="ElementShortName">skid_s_axis_tkeep[3:0]</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tkeep[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tvalid">
+      <obj_property name="ElementShortName">skid_s_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tlast">
+      <obj_property name="ElementShortName">skid_s_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tuser">
+      <obj_property name="ElementShortName">skid_s_axis_tuser[4:0]</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tuser[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/skid_s_axis_tready">
+      <obj_property name="ElementShortName">skid_s_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">skid_s_axis_tready</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_ph_c">
+      <obj_property name="ElementShortName">tx_fc_ph_c[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_ph_c[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_ph_r">
+      <obj_property name="ElementShortName">tx_fc_ph_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_ph_r[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_pd_c">
+      <obj_property name="ElementShortName">tx_fc_pd_c[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_pd_c[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_pd_r">
+      <obj_property name="ElementShortName">tx_fc_pd_r[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_pd_r[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_nph_c">
+      <obj_property name="ElementShortName">tx_fc_nph_c[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_nph_c[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_nph_r">
+      <obj_property name="ElementShortName">tx_fc_nph_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_nph_r[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_npd_c">
+      <obj_property name="ElementShortName">tx_fc_npd_c[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_npd_c[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_npd_r">
+      <obj_property name="ElementShortName">tx_fc_npd_r[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_npd_r[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cplh_c">
+      <obj_property name="ElementShortName">tx_fc_cplh_c[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cplh_c[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cplh_r">
+      <obj_property name="ElementShortName">tx_fc_cplh_r[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cplh_r[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cpld_c">
+      <obj_property name="ElementShortName">tx_fc_cpld_c[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cpld_c[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/tx_fc_cpld_r">
+      <obj_property name="ElementShortName">tx_fc_cpld_r[11:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_fc_cpld_r[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/update_fc_c">
+      <obj_property name="ElementShortName">update_fc_c</obj_property>
+      <obj_property name="ObjectShortName">update_fc_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/update_fc_r">
+      <obj_property name="ElementShortName">update_fc_r</obj_property>
+      <obj_property name="ObjectShortName">update_fc_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_np_stored_c">
+      <obj_property name="ElementShortName">fc1_np_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc1_np_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_np_stored_r">
+      <obj_property name="ElementShortName">fc1_np_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc1_np_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_p_stored_c">
+      <obj_property name="ElementShortName">fc1_p_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc1_p_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_p_stored_r">
+      <obj_property name="ElementShortName">fc1_p_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc1_p_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_c_stored_c">
+      <obj_property name="ElementShortName">fc1_c_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc1_c_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc1_c_stored_r">
+      <obj_property name="ElementShortName">fc1_c_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc1_c_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_np_stored_c">
+      <obj_property name="ElementShortName">fc2_np_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc2_np_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_np_stored_r">
+      <obj_property name="ElementShortName">fc2_np_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc2_np_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_p_stored_c">
+      <obj_property name="ElementShortName">fc2_p_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc2_p_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_p_stored_r">
+      <obj_property name="ElementShortName">fc2_p_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc2_p_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_c_stored_c">
+      <obj_property name="ElementShortName">fc2_c_stored_c</obj_property>
+      <obj_property name="ObjectShortName">fc2_c_stored_c</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/fc2_c_stored_r">
+      <obj_property name="ElementShortName">fc2_c_stored_r</obj_property>
+      <obj_property name="ObjectShortName">fc2_c_stored_r</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed">
+      <obj_property name="ElementShortName">crc_reversed[15:0]</obj_property>
+      <obj_property name="ObjectShortName">crc_reversed[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/DATA_WIDTH">
+      <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/STRB_WIDTH">
+      <obj_property name="ElementShortName">STRB_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">STRB_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/KEEP_WIDTH">
+      <obj_property name="ElementShortName">KEEP_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">KEEP_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/USER_WIDTH">
+      <obj_property name="ElementShortName">USER_WIDTH[31:0]</obj_property>
+      <obj_property name="ObjectShortName">USER_WIDTH[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/board/EP/pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/UserIsDllp">
+      <obj_property name="ElementShortName">UserIsDllp[31:0]</obj_property>
+      <obj_property name="ObjectShortName">UserIsDllp[31:0]</obj_property>
+   </wvobject>
+</wave_config>

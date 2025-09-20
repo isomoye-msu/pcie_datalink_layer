@@ -34,6 +34,17 @@ filesets:
       - xilinx/7Series/gtx7/rtl/Gtx7TxManualPhaseAligner.vhd
       - xilinx/7Series/gtx7/rtl/Gtx7TxRst.vhd
       - xilinx/7Series/gtx7/rtl/Gtxe2ChannelDummy.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7AutoPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7CfgPkg.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7Core.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7QuadPll.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RecClkMonitor.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxFixedLatPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxRst.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxRstSeq.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7TxManualPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7TxRst.vhd
+      - xilinx/7Series/gtp7/rtl/Gtpe2ChannelDummy.vhd
     file_type: vhdlSource
 
 
