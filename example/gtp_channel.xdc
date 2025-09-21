@@ -58,7 +58,7 @@ set_property LOC M20 [get_ports sys_rst_n]
 ################################################################################
 
 
-create_clock -name sys_clk_p -period 5.0 [get_ports sys_clk_p]
+create_clock -name sys_clk_p -period 10.0 [get_ports sys_clk_p]
 
 # create_clock -name tx_clk -period 20.0 [get_nets tx_clk]
 

@@ -57,7 +57,7 @@
 //--------------------------------------------------------------------------------
 
 `timescale 1ns / 1ns
-module pcie_7x_0_gt_top #(
+module pcie_7x_0_gt_top_temp #(
     parameter LINK_CAP_MAX_LINK_WIDTH = 8,  // 1 - x1 , 2 - x2 , 4 - x4 , 8 - x8
     parameter REF_CLK_FREQ = 0,  // 0 - 100 MHz , 1 - 125 MHz , 2 - 250 MHz
     parameter USER_CLK2_DIV2 = "FALSE",  // "FALSE" => user_clk2 = user_clk

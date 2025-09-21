@@ -216,6 +216,15 @@ module pcie_top_gtp #(
   wire [              APP_USER_WIDTH-1:0] s_app_axis_tuser;
   wire                                    s_app_axis_tready;
 
+
+
+  wire [              APP_DATA_WIDTH-1:0] s_app_reg_axis_tdata;
+  wire [              APP_KEEP_WIDTH-1:0] s_app_reg_axis_tkeep;
+  wire                                    s_app_reg_axis_tvalid;
+  wire                                    s_app_reg_axis_tlast;
+  wire [              APP_USER_WIDTH-1:0] s_app_reg_axis_tuser;
+  wire                                    s_app_reg_axis_tready;
+
   wire [              APP_DATA_WIDTH-1:0] m_app_axis_tdata;
   wire [              APP_KEEP_WIDTH-1:0] m_app_axis_tkeep;
   wire                                    m_app_axis_tvalid;
@@ -444,7 +453,39 @@ module pcie_top_gtp #(
   wire cfg_err_internal_cor;
 
 
-
+//axis input skid buffer
+  axis_register #(
+      .DATA_WIDTH (APP_DATA_WIDTH),
+      .KEEP_ENABLE(1'b1),
+      .KEEP_WIDTH (APP_KEEP_WIDTH),
+      .LAST_ENABLE(1'b1),
+      .ID_ENABLE  (1'b0),
+      .ID_WIDTH   (1),
+      .DEST_ENABLE(1'b0),
+      .DEST_WIDTH (1),
+      .USER_ENABLE(1'b1),
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (2)
+  ) app_rx_pipeline_inst (
+      .clk          (sys_clk),
+      .rst          (!sys_rst_n),
+      .s_axis_tdata (s_app_axis_tdata),
+      .s_axis_tkeep (s_app_axis_tkeep),
+      .s_axis_tvalid(s_app_axis_tvalid),
+      .s_axis_tready(s_app_axis_tready),
+      .s_axis_tlast (s_app_axis_tlast),
+      .s_axis_tuser (s_app_axis_tuser),
+      .s_axis_tid   (1'b0),
+      .s_axis_tdest (1'b0),
+      .m_axis_tdata (s_app_reg_axis_tdata),
+      .m_axis_tkeep (s_app_reg_axis_tkeep),
+      .m_axis_tvalid(s_app_reg_axis_tvalid),
+      .m_axis_tready(s_app_reg_axis_tready),
+      .m_axis_tlast (s_app_reg_axis_tlast),
+      .m_axis_tuser (s_app_reg_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
+  );
 
 
   axis_adapter #(
@@ -464,14 +505,14 @@ module pcie_top_gtp #(
       .clk(sys_clk),
       .rst(!sys_rst_n),
 
-      .s_axis_tdata (s_app_axis_tdata),
-      .s_axis_tkeep (s_app_axis_tkeep),
-      .s_axis_tvalid(s_app_axis_tvalid),
-      .s_axis_tready(s_app_axis_tready),
-      .s_axis_tlast (s_app_axis_tlast),
+      .s_axis_tdata (s_app_reg_axis_tdata),
+      .s_axis_tkeep (s_app_reg_axis_tkeep),
+      .s_axis_tvalid(s_app_reg_axis_tvalid),
+      .s_axis_tready(s_app_reg_axis_tready),
+      .s_axis_tlast (s_app_reg_axis_tlast),
       .s_axis_tid   (),
       .s_axis_tdest (),
-      .s_axis_tuser (s_app_axis_tuser),
+      .s_axis_tuser (s_app_reg_axis_tuser),
 
       .m_axis_tdata (s_tlp_axis_tdata),
       .m_axis_tkeep (s_tlp_axis_tkeep),
@@ -650,22 +691,121 @@ module pcie_top_gtp #(
 
   assign pipe_mmcm_rst_n = sys_rst_n;
 
+   // Clocking PRIMITIVE
+  //------------------------------------
 
-  wire fb_clk;
+  // Instantiation of the MMCM PRIMITIVE
+  //    * Unused inputs are tied off
+  //    * Unused outputs are labeled unused
+
+  wire        clk_out1_clk_wiz_0;
+  wire        clk_out2_clk_wiz_0;
+  wire        clk_out3_clk_wiz_0;
+  wire        clk_out4_clk_wiz_0;
+  wire        clk_out5_clk_wiz_0;
+  wire        clk_out6_clk_wiz_0;
+  wire        clk_out7_clk_wiz_0;
+
+  wire [15:0] do_unused;
+  wire        drdy_unused;
+  wire        psdone_unused;
+  wire        locked_int;
+  wire        clkfbout_clk_wiz_0;
+  wire        clkfbout_buf_clk_wiz_0;
+  wire        clkfboutb_unused;
+    wire clkout0b_unused;
+   wire clkout1_unused;
+   wire clkout1b_unused;
+   wire clkout2_unused;
+   wire clkout2b_unused;
+   wire clkout3_unused;
+   wire clkout3b_unused;
+   wire clkout4_unused;
+  wire        clkout5_unused;
+  wire        clkout6_unused;
+  wire        clkfbstopped_unused;
+  wire        clkinstopped_unused;
+  wire        reset_high;
   wire gt_clk;
-    // Instantiating a Xilinx PLL
-MMCME2_BASE #(
-  .CLKIN1_PERIOD(8.0),    // Input clock period (e.g., 10ns = 100MHz)
-  .CLKFBOUT_MULT_F(1),    // Multiply by 10 → 1 GHz VCO
-  .DIVCLK_DIVIDE(1),
-  .CLKOUT0_DIVIDE_F(10)      // Divide by 10 → 100 MHz output
-) pll_inst (
-  .CLKIN1(PIPE_PCLK_IN),
-  .CLKFBIN(fb_clk),
-  .CLKOUT0(gt_clk),
-  .CLKFBOUT(fb_clk),
-  .LOCKED(pll_locked)
-);
+
+  MMCME2_ADV
+  #(.BANDWIDTH            ("OPTIMIZED"),
+    .CLKOUT4_CASCADE      ("FALSE"),
+    .COMPENSATION         ("ZHOLD"),
+    .STARTUP_WAIT         ("FALSE"),
+    .DIVCLK_DIVIDE        (1),
+    .CLKFBOUT_MULT_F      (10.000),
+    .CLKFBOUT_PHASE       (0.000),
+    .CLKFBOUT_USE_FINE_PS ("FALSE"),
+    .CLKOUT0_DIVIDE_F     (10.000),
+    .CLKOUT0_PHASE        (0.000),
+    .CLKOUT0_DUTY_CYCLE   (0.500),
+    .CLKOUT0_USE_FINE_PS  ("FALSE"),
+    .CLKIN1_PERIOD        (10.000))
+  mmcm_adv_inst
+    // Output clocks
+   (
+    .CLKFBOUT            (clkfbout_clk_wiz_0),
+    .CLKFBOUTB           (clkfboutb_unused),
+    .CLKOUT0             (gt_clk),
+    .CLKOUT0B            (clkout0b_unused),
+    .CLKOUT1             (clkout1_unused),
+    .CLKOUT1B            (clkout1b_unused),
+    .CLKOUT2             (clkout2_unused),
+    .CLKOUT2B            (clkout2b_unused),
+    .CLKOUT3             (clkout3_unused),
+    .CLKOUT3B            (clkout3b_unused),
+    .CLKOUT4             (clkout4_unused),
+    .CLKOUT5             (clkout5_unused),
+    .CLKOUT6             (clkout6_unused),
+     // Input clock control
+    .CLKFBIN             (clkfbout_buf_clk_wiz_0),
+    .CLKIN1              (sys_clk),
+    .CLKIN2              (1'b0),
+     // Tied to always select the primary input clock
+    .CLKINSEL            (1'b1),
+    // Ports for dynamic reconfiguration
+    .DADDR               (7'h0),
+    .DCLK                (1'b0),
+    .DEN                 (1'b0),
+    .DI                  (16'h0),
+    .DO                  (do_unused),
+    .DRDY                (drdy_unused),
+    .DWE                 (1'b0),
+    // Ports for dynamic phase shift
+    .PSCLK               (1'b0),
+    .PSEN                (1'b0),
+    .PSINCDEC            (1'b0),
+    .PSDONE              (psdone_unused),
+    // Other control and status signals
+    .LOCKED              (locked_int),
+    .CLKINSTOPPED        (clkinstopped_unused),
+    .CLKFBSTOPPED        (clkfbstopped_unused),
+    .PWRDWN              (1'b0),
+    .RST                 (!sys_rst_n));
+
+
+//      assign reset_high = reset; 
+
+  assign locked = locked_int;
+// Clock Monitor clock assigning
+//--------------------------------------
+ // Output buffering
+  //-----------------------------------
+
+  BUFG clkf_buf
+   (.O (clkfbout_buf_clk_wiz_0),
+    .I (clkfbout_clk_wiz_0));
+
+
+
+
+
+
+  // BUFG clkout1_buf
+  //  (.O   (clk_out1),
+  //   .I   (clk_out1_clk_wiz_0));
+
 
   generate
     if (EXTERNAL_MMCM == "FALSE") begin : in_module_mmcm

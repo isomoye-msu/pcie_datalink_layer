@@ -1,4 +1,4 @@
-module pcie_top_zcu102 #(
+module pcie_top_gtx #(
 
     parameter         [ 4:0] PL_LINK_CAP_MAX_LINK_WIDTH    = 5'd1,
     parameter                EXTERNAL_MMCM                 = "FALSE",
@@ -11,7 +11,7 @@ module pcie_top_zcu102 #(
     parameter         [11:0] RBAR_CAP_NEXTPTR              = 12'h000,
     parameter         [ 3:0] RBAR_CAP_VERSION              = 4'h1,
     parameter                PCIE_USE_MODE                 = "1.0",
-    parameter                PCIE_GT_DEVICE                = "GTH",
+    parameter                PCIE_GT_DEVICE                = "GTX",
     parameter                PL_AUTO_CONFIG                = 0,
     parameter                ENABLE_JTAG_DBG               = "FALSE",
     parameter                PL_FAST_TRAIN                 = "FALSE",
@@ -966,7 +966,7 @@ module pcie_top_zcu102 #(
   //     2) Kintex-7 GTX                                                                                              //
   //     3) Artix-7  GTP                                                                                              //
   //------------------------------------------------------------------------------------------------------------------//
-  pcie_7x_0_gt_top #(
+  pcie_7x_0_gt_top_temp #(
       .LINK_CAP_MAX_LINK_WIDTH(LINK_CAP_MAX_LINK_WIDTH),
       .REF_CLK_FREQ           (REF_CLK_FREQ),
       .USER_CLK_FREQ          (USER_CLK_FREQ),
@@ -1152,18 +1152,18 @@ module pcie_top_zcu102 #(
       .phy_rdy_n(phy_rdy_n),
 
       // ---------- Shared Logic Internal------------------
-      .INT_PCLK_OUT_SLAVE   (int_pclk_out_slave),
-      .INT_RXUSRCLK_OUT     (int_pipe_rxusrclk_out),
-      .INT_RXOUTCLK_OUT     (int_rxoutclk_out),
-      .INT_DCLK_OUT         (int_dclk_out),
-      .INT_USERCLK1_OUT     (int_userclk1_out),
-      .INT_USERCLK2_OUT     (int_userclk2_out),
-      .INT_OOBCLK_OUT       (int_oobclk_out),
-      .INT_MMCM_LOCK_OUT    (int_mmcm_lock_out),
-      .INT_QPLLLOCK_OUT     (int_qplllock_out),
-      .INT_QPLLOUTCLK_OUT   (int_qplloutclk_out),
-      .INT_QPLLOUTREFCLK_OUT(int_qplloutrefclk_out),
-      .INT_PCLK_SEL_SLAVE   (int_pclk_sel_slave),
+      // .INT_PCLK_OUT_SLAVE   (int_pclk_out_slave),
+      // .INT_RXUSRCLK_OUT     (int_pipe_rxusrclk_out),
+      // .INT_RXOUTCLK_OUT     (int_rxoutclk_out),
+      // .INT_DCLK_OUT         (int_dclk_out),
+      // .INT_USERCLK1_OUT     (int_userclk1_out),
+      // .INT_USERCLK2_OUT     (int_userclk2_out),
+      // .INT_OOBCLK_OUT       (int_oobclk_out),
+      // .INT_MMCM_LOCK_OUT    (int_mmcm_lock_out),
+      // .INT_QPLLLOCK_OUT     (int_qplllock_out),
+      // .INT_QPLLOUTCLK_OUT   (int_qplloutclk_out),
+      // .INT_QPLLOUTREFCLK_OUT(int_qplloutrefclk_out),
+      .INT_PCLK_SEL_SLAVE   (1'b0),
 
       // ---------- Shared Logic External------------------
       //External Clock Ports 

@@ -1,0 +1,8 @@
+bitstring==4.2.3
+cocotb==1.9.2
+cocotb_test==0.2.6
+cocotbext_axi==0.1.24
+cocotbext_pcie==0.2.14
+crc==7.1.0
+pytest==8.3.2
+pyuvm==3.0.0
