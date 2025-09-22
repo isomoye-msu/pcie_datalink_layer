@@ -1,0 +1,141 @@
+CAPI=2:
+name: fusesoc:pcie:pcie_gtx:1.0.0
+description: pcie gtx example
+
+filesets:
+  rtl:
+    files:
+      - src/pcie_phy_core/pcie_phy_top.sv
+      - example/pcie_cfg_top.sv
+      - example/pcie_top_gtx.v
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:pcie:packages
+      - fusesoc:pcie:crc
+      - fusesoc:pcie:bram
+      - fusesoc:pcie:axis
+      - fusesoc:pcie:ltssm
+      - fusesoc:pcie:base_uvm
+      - fusesoc:pcie:dllp_core
+      - fusesoc:pcie:lint
+      - fusesoc:pcie:phy_receive
+      - fusesoc:pcie:phy_transmit
+      - fusesoc:pcie:converters
+      - fusesoc:pcie:pcie_config
+      - fusesoc:pcie:gt_pipe_wrapper
+      - fusesoc:pcie:pipe_wrapper
+  gtx:
+    depend:
+      - fusesoc:pcie:gt_pipe_wrapper
+      - fusesoc:pcie:verilator_xilinx
+
+  glbl:
+    files:
+     - example/imports/pcie_7x_0_pipe_clock.v
+     - tb/vivado_sim/glbl.v 
+    file_type: systemVerilogSource
+     
+      
+  xsim_tb:
+    files:
+      - example/imports/board.vhd
+      - example/imports/EP_MEM.vhd
+      - example/imports/pci_exp_usrapp_cfg.vhd
+      - example/imports/pci_exp_usrapp_pl.vhd
+      - example/imports/pci_exp_usrapp_rx.vhd
+      - example/imports/pci_exp_usrapp_tx.vhd
+      - example/imports/pcie_2_1_rport_7x.vhd
+      - example/imports/pcie_7x_0_support.vhd
+      - example/imports/pcie_app_7x.vhd
+      - example/imports/pcie_axi_trn_bridge.vhd
+      - example/imports/PIO_EP_MEM_ACCESS.vhd
+      - example/imports/PIO_EP.vhd
+      - example/imports/PIO_RX_ENGINE.vhd
+      - example/imports/PIO_TO_CTRL.vhd
+      - example/imports/PIO_TX_ENGINE.vhd
+      - example/imports/PIO.vhd
+      - example/imports/sys_clk_gen_ds.vhd
+      - example/imports/sys_clk_gen.vhd
+      - example/imports/test_interface.vhd
+      - example/imports/tests.vhd
+      - example/imports/xilinx_pcie_2_1_ep_7x.vhd
+      - example/imports/xilinx_pcie_2_1_rport_7x.vhd
+    file_type: vhdlSource
+
+
+  synth:
+    files:
+      - example/gtx_channel.xdc : {file_type : xdc}
+
+  cocotb:
+    files:
+      - verif/sequences/pipe_link_up_seq.py: {file_type : user, copyto : .}
+      - verif/sequences/pipe_speed_change_with_equalization_seq.py : {file_type : user, copyto : .}
+      - verif/sequences/pipe_base_seq.py: {file_type : user, copyto : .}
+      - verif/sequences/base_vseq.py: {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/descrambler_scrambler.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_agent.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_agent_config.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_driver_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/tlp_driver_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/tlp_monitor_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_if.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_monitor_bfm.py : {file_type : user, copyto : .}
+      - verif/agents/pipe_agent/pipe_types.py: {file_type : user, copyto : .}
+      - verif/env/pcie_coverage_monitor.py : {file_type : user, copyto : .}
+      - verif/env/pcie_env.py: {file_type : user, copyto : .}
+      - verif/env/pcie_scoreboard.py: {file_type : user, copyto : .}
+      - verif/tests/test_pcie_core.py: {file_type : user, copyto : .}
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_top_gtx]
+  
+  sim:
+    default_tool: xsim
+    filesets : [rtl,xsim_tb,glbl]
+    tools:
+      modelsim:
+        vlog_options: [-timescale=1ns/1ns]
+      xsim:
+        xelab_options: [--timescale, 1ns/1ns --incr --debug typical --relax --mt 8 -L unisims_ver -L unimacro_ver -L secureip -L xpm ]
+        xsim_options: [--gui]
+    toplevel: [board,glbl]
+
+  verilate:
+    flow: sim
+    flow_options:
+      tool : verilator
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+      verilator_options:
+        - --trace-fst
+        - -Iincludes/
+        - waiver.vlt
+        - --no-timing
+      vlogan_options:
+        - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
+      vcs_options:
+        - +vcs+dumpvars+test.vcd
+    filesets : [rtl,cocotb]
+    toplevel : [pcie_top_gtx]
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl,synth]
+    tools:
+      vivado:
+        part : XC7K325T-2FFG900C
+    toplevel : pcie_top_gtx
+
+scripts:
+  iceprog:
+    cmd : [MODULE=pcie_top]
