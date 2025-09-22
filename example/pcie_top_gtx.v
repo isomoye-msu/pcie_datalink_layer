@@ -1,6 +1,6 @@
 module pcie_top_gtx #(
 
-    parameter         [ 4:0] PL_LINK_CAP_MAX_LINK_WIDTH    = 5'd1,
+    parameter         [ 4:0] PL_LINK_CAP_MAX_LINK_WIDTH    = 6'd1,
     parameter                EXTERNAL_MMCM                 = "FALSE",
     parameter integer        LANES                         = PL_LINK_CAP_MAX_LINK_WIDTH,
     parameter integer        DW                            = 64,
@@ -38,7 +38,7 @@ module pcie_top_gtx #(
     parameter AXISTEN_IF_EXT_512_INTFC_RAM_STYLE = "BRAM",
     parameter FPGA_FAMILY = "USM",
     parameter FPGA_XCVR = "H",
-    parameter [1:0] PL_SIM_FAST_LINK_TRAINING = 2'h3,
+    parameter  PL_SIM_FAST_LINK_TRAINING = "TRUE",
     parameter [3:0] PL_LINK_CAP_MAX_LINK_SPEED = 4'b0100,
 
     parameter PHY_REFCLK_FREQ = 0,
@@ -230,6 +230,13 @@ module pcie_top_gtx #(
   wire                                      s_app_axis_tlast;
   wire [                APP_USER_WIDTH-1:0] s_app_axis_tuser;
   wire                                      s_app_axis_tready;
+
+  wire [              APP_DATA_WIDTH-1:0] s_app_reg_axis_tdata;
+  wire [              APP_KEEP_WIDTH-1:0] s_app_reg_axis_tkeep;
+  wire                                    s_app_reg_axis_tvalid;
+  wire                                    s_app_reg_axis_tlast;
+  wire [              APP_USER_WIDTH-1:0] s_app_reg_axis_tuser;
+  wire                                    s_app_reg_axis_tready;
 
   wire [                APP_DATA_WIDTH-1:0] m_app_axis_tdata;
   wire [                APP_KEEP_WIDTH-1:0] m_app_axis_tkeep;
@@ -585,6 +592,122 @@ module pcie_top_gtx #(
     end
   end
 
+
+    // Clocking PRIMITIVE
+  //------------------------------------
+
+  // Instantiation of the MMCM PRIMITIVE
+  //    * Unused inputs are tied off
+  //    * Unused outputs are labeled unused
+
+  wire        clk_out1_clk_wiz_0;
+  wire        clk_out2_clk_wiz_0;
+  wire        clk_out3_clk_wiz_0;
+  wire        clk_out4_clk_wiz_0;
+  wire        clk_out5_clk_wiz_0;
+  wire        clk_out6_clk_wiz_0;
+  wire        clk_out7_clk_wiz_0;
+
+  wire [15:0] do_unused;
+  wire        drdy_unused;
+  wire        psdone_unused;
+  wire        locked_int;
+  wire        clkfbout_clk_wiz_0;
+  wire        clkfbout_buf_clk_wiz_0;
+  wire        clkfboutb_unused;
+    wire clkout0b_unused;
+   wire clkout1_unused;
+   wire clkout1b_unused;
+   wire clkout2_unused;
+   wire clkout2b_unused;
+   wire clkout3_unused;
+   wire clkout3b_unused;
+   wire clkout4_unused;
+  wire        clkout5_unused;
+  wire        clkout6_unused;
+  wire        clkfbstopped_unused;
+  wire        clkinstopped_unused;
+  wire        reset_high;
+  wire gt_clk;
+
+  MMCME2_ADV
+  #(.BANDWIDTH            ("OPTIMIZED"),
+    .CLKOUT4_CASCADE      ("FALSE"),
+    .COMPENSATION         ("ZHOLD"),
+    .STARTUP_WAIT         ("FALSE"),
+    .DIVCLK_DIVIDE        (1),
+    .CLKFBOUT_MULT_F      (10.000),
+    .CLKFBOUT_PHASE       (0.000),
+    .CLKFBOUT_USE_FINE_PS ("FALSE"),
+    .CLKOUT0_DIVIDE_F     (10.000),
+    .CLKOUT0_PHASE        (0.000),
+    .CLKOUT0_DUTY_CYCLE   (0.500),
+    .CLKOUT0_USE_FINE_PS  ("FALSE"),
+    .CLKIN1_PERIOD        (10.000))
+  mmcm_adv_inst
+    // Output clocks
+   (
+    .CLKFBOUT            (clkfbout_clk_wiz_0),
+    .CLKFBOUTB           (clkfboutb_unused),
+    .CLKOUT0             (gt_clk),
+    .CLKOUT0B            (clkout0b_unused),
+    .CLKOUT1             (clkout1_unused),
+    .CLKOUT1B            (clkout1b_unused),
+    .CLKOUT2             (clkout2_unused),
+    .CLKOUT2B            (clkout2b_unused),
+    .CLKOUT3             (clkout3_unused),
+    .CLKOUT3B            (clkout3b_unused),
+    .CLKOUT4             (clkout4_unused),
+    .CLKOUT5             (clkout5_unused),
+    .CLKOUT6             (clkout6_unused),
+     // Input clock control
+    .CLKFBIN             (clkfbout_buf_clk_wiz_0),
+    .CLKIN1              (sys_clk),
+    .CLKIN2              (1'b0),
+     // Tied to always select the primary input clock
+    .CLKINSEL            (1'b1),
+    // Ports for dynamic reconfiguration
+    .DADDR               (7'h0),
+    .DCLK                (1'b0),
+    .DEN                 (1'b0),
+    .DI                  (16'h0),
+    .DO                  (do_unused),
+    .DRDY                (drdy_unused),
+    .DWE                 (1'b0),
+    // Ports for dynamic phase shift
+    .PSCLK               (1'b0),
+    .PSEN                (1'b0),
+    .PSINCDEC            (1'b0),
+    .PSDONE              (psdone_unused),
+    // Other control and status signals
+    .LOCKED              (locked_int),
+    .CLKINSTOPPED        (clkinstopped_unused),
+    .CLKFBSTOPPED        (clkfbstopped_unused),
+    .PWRDWN              (1'b0),
+    .RST                 (!sys_rst_n));
+
+
+//      assign reset_high = reset; 
+
+  assign locked = locked_int;
+// Clock Monitor clock assigning
+//--------------------------------------
+ // Output buffering
+  //-----------------------------------
+
+  BUFG clkf_buf
+   (.O (clkfbout_buf_clk_wiz_0),
+    .I (clkfbout_clk_wiz_0));
+
+
+
+
+
+
+  // BUFG clkout1_buf
+  //  (.O   (clk_out1),
+  //   .I   (clk_out1_clk_wiz_0));
+
   assign m_tlp_axis_byte_swap_tdata[7:0]   = m_tlp_axis_tdata[31:24];
   assign m_tlp_axis_byte_swap_tdata[15:8]  = m_tlp_axis_tdata[23:16];
   assign m_tlp_axis_byte_swap_tdata[23:16] = m_tlp_axis_tdata[15:8];
@@ -613,7 +736,7 @@ module pcie_top_gtx #(
       .rst_i            (!sys_rst_n),
       .en_i             (1'b1),
       .pipe_rx_usr_clk_i(PIPE_RXUSRCLK_IN),
-      .pipe_tx_usr_clk_i(PIPE_TXOUTCLK_OUT),
+      .pipe_tx_usr_clk_i(PIPE_RXUSRCLK_IN),
       .fc_initialized_o (fc_initialized_o),
       .phy_txdata       (phy_txdata),
       .phy_txdata_valid (phy_txdata_valid),
@@ -634,7 +757,7 @@ module pcie_top_gtx #(
       .phy_rate            (phy_rate),
       .phy_rxvalid         (phy_rxvalid),
       .phy_phystatus       (phy_phystatus),
-      .phy_phystatus_rst   (phy_phystatus_rst),
+      .phy_phystatus_rst   (!phy_phystatus_rst),
       .phy_rxelecidle      (phy_rxelecidle),
       .phy_rxstatus        (phy_rxstatus),
       .phy_txmargin        (phy_txmargin),
@@ -697,41 +820,40 @@ module pcie_top_gtx #(
 
 
   axis_adapter #(
-      .S_DATA_WIDTH (APP_DATA_WIDTH),
-      .S_KEEP_ENABLE(1'b1),
-      .S_KEEP_WIDTH (APP_KEEP_WIDTH),
-      .M_DATA_WIDTH (DATA_WIDTH),
-      .M_KEEP_ENABLE(1'b1),
-      .M_KEEP_WIDTH (KEEP_WIDTH),
-      .ID_ENABLE    (1'b0),
-      .ID_WIDTH     (1),
-      .DEST_ENABLE  (1'b0),
-      .DEST_WIDTH   (1),
-      .USER_ENABLE  (1'b1),
-      .USER_WIDTH   (USER_WIDTH)
-  ) axis_app_rx_inst (
-      .clk(sys_clk),
-      .rst(!sys_rst_n),
+    .S_DATA_WIDTH (APP_DATA_WIDTH),
+    .S_KEEP_ENABLE(1'b1),
+    .S_KEEP_WIDTH (APP_KEEP_WIDTH),
+    .M_DATA_WIDTH (DATA_WIDTH),
+    .M_KEEP_ENABLE(1'b1),
+    .M_KEEP_WIDTH (KEEP_WIDTH),
+    .ID_ENABLE    (1'b0),
+    .ID_WIDTH     (1),
+    .DEST_ENABLE  (1'b0),
+    .DEST_WIDTH   (1),
+    .USER_ENABLE  (1'b1),
+    .USER_WIDTH   (USER_WIDTH)
+) axis_app_rx_inst (
+    .clk(sys_clk),
+    .rst(!sys_rst_n),
 
-      .s_axis_tdata (s_app_axis_tdata),
-      .s_axis_tkeep (s_app_axis_tkeep),
-      .s_axis_tvalid(s_app_axis_tvalid),
-      .s_axis_tready(s_app_axis_tready),
-      .s_axis_tlast (s_app_axis_tlast),
-      .s_axis_tid   (),
-      .s_axis_tdest (),
-      .s_axis_tuser (s_app_axis_tuser),
+    .s_axis_tdata (s_app_reg_axis_tdata),
+    .s_axis_tkeep (s_app_reg_axis_tkeep),
+    .s_axis_tvalid(s_app_reg_axis_tvalid),
+    .s_axis_tready(s_app_reg_axis_tready),
+    .s_axis_tlast (s_app_reg_axis_tlast),
+    .s_axis_tid   (),
+    .s_axis_tdest (),
+    .s_axis_tuser (s_app_reg_axis_tuser),
 
-      .m_axis_tdata (s_tlp_axis_tdata),
-      .m_axis_tkeep (s_tlp_axis_tkeep),
-      .m_axis_tvalid(s_tlp_axis_tvalid),
-      .m_axis_tready(s_tlp_axis_tready),
-      .m_axis_tlast (s_tlp_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (s_tlp_axis_tuser)
-  );
-
+    .m_axis_tdata (s_tlp_axis_tdata),
+    .m_axis_tkeep (s_tlp_axis_tkeep),
+    .m_axis_tvalid(s_tlp_axis_tvalid),
+    .m_axis_tready(s_tlp_axis_tready),
+    .m_axis_tlast (s_tlp_axis_tlast),
+    .m_axis_tid   (),
+    .m_axis_tdest (),
+    .m_axis_tuser (s_tlp_axis_tuser)
+);
 
 
   axis_adapter #(
@@ -769,6 +891,42 @@ module pcie_top_gtx #(
       .m_axis_tdest (),
       .m_axis_tuser (m_app_axis_tuser)
   );
+
+
+  //axis input skid buffer
+  axis_register #(
+      .DATA_WIDTH (APP_DATA_WIDTH),
+      .KEEP_ENABLE(1'b1),
+      .KEEP_WIDTH (APP_KEEP_WIDTH),
+      .LAST_ENABLE(1'b1),
+      .ID_ENABLE  (1'b0),
+      .ID_WIDTH   (1),
+      .DEST_ENABLE(1'b0),
+      .DEST_WIDTH (1),
+      .USER_ENABLE(1'b1),
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (2)
+  ) app_rx_pipeline_inst (
+      .clk          (sys_clk),
+      .rst          (!sys_rst_n),
+      .s_axis_tdata (s_app_axis_tdata),
+      .s_axis_tkeep (s_app_axis_tkeep),
+      .s_axis_tvalid(s_app_axis_tvalid),
+      .s_axis_tready(s_app_axis_tready),
+      .s_axis_tlast (s_app_axis_tlast),
+      .s_axis_tuser (s_app_axis_tuser),
+      .s_axis_tid   (1'b0),
+      .s_axis_tdest (1'b0),
+      .m_axis_tdata (s_app_reg_axis_tdata),
+      .m_axis_tkeep (s_app_reg_axis_tkeep),
+      .m_axis_tvalid(s_app_reg_axis_tvalid),
+      .m_axis_tready(s_app_reg_axis_tready),
+      .m_axis_tlast (s_app_reg_axis_tlast),
+      .m_axis_tuser (s_app_reg_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
+  );
+
 
 
   pcie_app_7x #(
@@ -973,7 +1131,7 @@ module pcie_top_gtx #(
       .USER_CLK2_DIV2         (USER_CLK2_DIV2),
 
       // synthesis translate_off
-      .PL_FAST_TRAIN(PL_SIM_FAST_LINK_TRAINING),
+      .PL_FAST_TRAIN("TRUE"),
       // synthesis translate_on
 
       .PCIE_EXT_CLK      (PCIE_EXT_CLK),
@@ -1001,7 +1159,7 @@ module pcie_top_gtx #(
       .pl_ltssm_state(ltssm_debug_state),
 
       // Pipe Common Signals
-      .pipe_tx_rcvr_det(phy_txelecidle),
+      .pipe_tx_rcvr_det(phy_txdetectrx),
       .pipe_tx_reset   (1'b0),
       .pipe_tx_rate    (phy_rate),
       .pipe_tx_deemph  (phy_txdeemph),
@@ -1013,8 +1171,8 @@ module pcie_top_gtx #(
       .pipe_rx0_data         (phy_rxdata),
       .pipe_rx0_valid        (phy_rxdata_valid),
       .pipe_rx0_chanisaligned(pipe_rx0_chanisaligned_gt),
-      .pipe_rx0_status       (phy_phystatus),
-      .pipe_rx0_phy_status   (phy_rxstatus),
+      .pipe_rx0_status       (phy_rxstatus),
+      .pipe_rx0_phy_status   (phy_phystatus),
       .pipe_rx0_elec_idle    (phy_rxelecidle),
       .pipe_rx0_polarity     (phy_rxpolarity),
       .pipe_tx0_compliance   (phy_txcompliance),
@@ -1033,11 +1191,11 @@ module pcie_top_gtx #(
       // .pipe_rx1_phy_status   (pipe_rx1_phy_status_gt),
       // .pipe_rx1_elec_idle    (pipe_rx1_elec_idle_gt),
       // .pipe_rx1_polarity     (pipe_rx1_polarity_gt),
-      // .pipe_tx1_compliance   (pipe_tx1_compliance_gt),
-      // .pipe_tx1_char_is_k    (pipe_tx1_char_is_k_gt),
-      // .pipe_tx1_data         (pipe_tx1_data_gt),
-      // .pipe_tx1_elec_idle    (pipe_tx1_elec_idle_gt),
-      // .pipe_tx1_powerdown    (pipe_tx1_powerdown_gt),
+      .pipe_tx1_compliance   (32'h0),
+      .pipe_tx1_char_is_k    (32'h0),
+      .pipe_tx1_data         (32'h0),
+      .pipe_tx1_elec_idle    (32'h1),
+      .pipe_tx1_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 2
 
@@ -1049,11 +1207,11 @@ module pcie_top_gtx #(
       // .pipe_rx2_phy_status   (pipe_rx2_phy_status_gt),
       // .pipe_rx2_elec_idle    (pipe_rx2_elec_idle_gt),
       // .pipe_rx2_polarity     (pipe_rx2_polarity_gt),
-      // .pipe_tx2_compliance   (pipe_tx2_compliance_gt),
-      // .pipe_tx2_char_is_k    (pipe_tx2_char_is_k_gt),
-      // .pipe_tx2_data         (pipe_tx2_data_gt),
-      // .pipe_tx2_elec_idle    (pipe_tx2_elec_idle_gt),
-      // .pipe_tx2_powerdown    (pipe_tx2_powerdown_gt),
+      .pipe_tx2_compliance   (32'h0),
+      .pipe_tx2_char_is_k    (32'h0),
+      .pipe_tx2_data         (32'h0),
+      .pipe_tx2_elec_idle    (32'h1),
+      .pipe_tx2_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 3
 
@@ -1065,11 +1223,11 @@ module pcie_top_gtx #(
       // .pipe_rx3_phy_status   (pipe_rx3_phy_status_gt),
       // .pipe_rx3_elec_idle    (pipe_rx3_elec_idle_gt),
       // .pipe_rx3_polarity     (pipe_rx3_polarity_gt),
-      // .pipe_tx3_compliance   (pipe_tx3_compliance_gt),
-      // .pipe_tx3_char_is_k    (pipe_tx3_char_is_k_gt),
-      // .pipe_tx3_data         (pipe_tx3_data_gt),
-      // .pipe_tx3_elec_idle    (pipe_tx3_elec_idle_gt),
-      // .pipe_tx3_powerdown    (pipe_tx3_powerdown_gt),
+      .pipe_tx3_compliance   (32'h0),
+      .pipe_tx3_char_is_k    (32'h0),
+      .pipe_tx3_data         (32'h0),
+      .pipe_tx3_elec_idle    (32'h1),
+      .pipe_tx3_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 4
 
@@ -1081,11 +1239,11 @@ module pcie_top_gtx #(
       // .pipe_rx4_phy_status   (pipe_rx4_phy_status_gt),
       // .pipe_rx4_elec_idle    (pipe_rx4_elec_idle_gt),
       // .pipe_rx4_polarity     (pipe_rx4_polarity_gt),
-      // .pipe_tx4_compliance   (pipe_tx4_compliance_gt),
-      // .pipe_tx4_char_is_k    (pipe_tx4_char_is_k_gt),
-      // .pipe_tx4_data         (pipe_tx4_data_gt),
-      // .pipe_tx4_elec_idle    (pipe_tx4_elec_idle_gt),
-      // .pipe_tx4_powerdown    (pipe_tx4_powerdown_gt),
+      .pipe_tx4_compliance   (32'h0),
+      .pipe_tx4_char_is_k    (32'h0),
+      .pipe_tx4_data         (32'h0),
+      .pipe_tx4_elec_idle    (32'h1),
+      .pipe_tx4_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 5
 
@@ -1097,11 +1255,11 @@ module pcie_top_gtx #(
       // .pipe_rx5_phy_status   (pipe_rx5_phy_status_gt),
       // .pipe_rx5_elec_idle    (pipe_rx5_elec_idle_gt),
       // .pipe_rx5_polarity     (pipe_rx5_polarity_gt),
-      // .pipe_tx5_compliance   (pipe_tx5_compliance_gt),
-      // .pipe_tx5_char_is_k    (pipe_tx5_char_is_k_gt),
-      // .pipe_tx5_data         (pipe_tx5_data_gt),
-      // .pipe_tx5_elec_idle    (pipe_tx5_elec_idle_gt),
-      // .pipe_tx5_powerdown    (pipe_tx5_powerdown_gt),
+      .pipe_tx5_compliance   (32'h0),
+      .pipe_tx5_char_is_k    (32'h0),
+      .pipe_tx5_data         (32'h0),
+      .pipe_tx5_elec_idle    (32'h1),
+      .pipe_tx5_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 6
 
@@ -1113,11 +1271,11 @@ module pcie_top_gtx #(
       // .pipe_rx6_phy_status   (pipe_rx6_phy_status_gt),
       // .pipe_rx6_elec_idle    (pipe_rx6_elec_idle_gt),
       // .pipe_rx6_polarity     (pipe_rx6_polarity_gt),
-      // .pipe_tx6_compliance   (pipe_tx6_compliance_gt),
-      // .pipe_tx6_char_is_k    (pipe_tx6_char_is_k_gt),
-      // .pipe_tx6_data         (pipe_tx6_data_gt),
-      // .pipe_tx6_elec_idle    (pipe_tx6_elec_idle_gt),
-      // .pipe_tx6_powerdown    (pipe_tx6_powerdown_gt),
+      .pipe_tx6_compliance   (32'h0),
+      .pipe_tx6_char_is_k    (32'h0),
+      .pipe_tx6_data         (32'h0),
+      .pipe_tx6_elec_idle    (32'h1),
+      .pipe_tx6_powerdown    (32'h1),
 
       // Pipe Per-Lane Signals - Lane 7
 
@@ -1129,11 +1287,11 @@ module pcie_top_gtx #(
       // .pipe_rx7_phy_status   (pipe_rx7_phy_status_gt),
       // .pipe_rx7_elec_idle    (pipe_rx7_elec_idle_gt),
       // .pipe_rx7_polarity     (pipe_rx7_polarity_gt),
-      // .pipe_tx7_compliance   (pipe_tx7_compliance_gt),
-      // .pipe_tx7_char_is_k    (pipe_tx7_char_is_k_gt),
-      // .pipe_tx7_data         (pipe_tx7_data_gt),
-      // .pipe_tx7_elec_idle    (pipe_tx7_elec_idle_gt),
-      // .pipe_tx7_powerdown    (pipe_tx7_powerdown_gt),
+      .pipe_tx7_compliance   (32'h0),
+      .pipe_tx7_char_is_k    (32'h0),
+      .pipe_tx7_data         (32'h0),
+      .pipe_tx7_elec_idle    (32'h1),
+      .pipe_tx7_powerdown    (32'h1),
 
       // PCI Express Signals
       .pci_exp_txn(pci_exp_txn),
@@ -1142,7 +1300,7 @@ module pcie_top_gtx #(
       .pci_exp_rxp(pci_exp_rxp),
 
       // Non PIPE Signals
-      .sys_clk        (sys_clk),
+      .sys_clk        (gt_clk),
       .sys_rst_n      (sys_rst_n),
       .PIPE_MMCM_RST_N(pipe_mmcm_rst_n),  // Async      | Async
       .pipe_clk       (pipe_clk),
@@ -1177,7 +1335,7 @@ module pcie_top_gtx #(
       .PIPE_MMCM_LOCK_IN(PIPE_MMCM_LOCK_IN),
 
       .PIPE_TXOUTCLK_OUT(PIPE_TXOUTCLK_OUT),
-      .PIPE_RXOUTCLK_OUT(),
+      .PIPE_RXOUTCLK_OUT(pipe_rxoutclk_out),
       .PIPE_PCLK_SEL_OUT(),
       .PIPE_GEN3_OUT    (),
 

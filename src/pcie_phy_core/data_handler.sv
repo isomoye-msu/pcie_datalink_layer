@@ -239,7 +239,8 @@ module data_handler
           //for each byte..
           for (int byte_idx = 0; byte_idx < BytesPerTransfer; byte_idx++) begin
             //check for packet end.. if packet ends within this word.. edid tkeep and go back to frame check
-            if (data_k_i[byte_idx] && (data_i[8*byte_idx+:8] == ENDP)) begin
+            if (data_k_i[byte_idx] &&
+            ((data_i[8*byte_idx+:8] == ENDP) || data_i[8*byte_idx+:8] == EDB)) begin
               if ((BytesPerTransfer - word_count_r) > byte_idx) begin
                 is_dllp_c               = '0;
                 is_tlp_c                = '0;
@@ -249,7 +250,8 @@ module data_handler
               end
             end
             //packet end detected but was not within las frame.. edit tkeep head to frame check 
-            if (data_k_r[byte_idx] && (data_r[8*byte_idx+:8] == ENDP) && (!data_start_r)) begin
+            if (data_k_r[byte_idx] && ((data_i[8*byte_idx+:8] == ENDP)
+            || data_i[8*byte_idx+:8] == EDB) && (!data_start_r)) begin
               is_dllp_c = '0;
               is_tlp_c = '0;
               data_handler_axis_tlast = '1;
@@ -325,7 +327,7 @@ module data_handler
           is_tlp_c   = '0;
           is_dllp_c  = '0;
 
-          if (data_k_r[0] && data_r[7:0] == ENDP) begin
+          if (data_k_r[0] && ((data_r[7:0] == ENDP) || (data_r[7:0] == EDB))) begin
             // is_dllp_c                = '1;
             // data_handler_axis_tdata  = data_r[31:0];
             // data_handler_axis_tkeep  = '1;
@@ -334,7 +336,7 @@ module data_handler
             // data_c                   = '0;
             // next_state               = ST_CHECK_FRAME;
             // data_valid_c             = data_valid_i;
-          end else if (data_k_r[1] && data_r[15:8] == ENDP) begin
+          end else if (data_k_r[1] && ((data_r[15:8] == ENDP) || (data_r[15:8] == EDB))) begin
             // is_dllp_c                = '1;
             // data_c                   = '0;
             // data_handler_axis_tdata  = {data_r[23:0], data_i[7:0]};
@@ -343,7 +345,7 @@ module data_handler
             // data_handler_axis_tlast  = '1;
             // next_state               = ST_CHECK_FRAME;
             // data_valid_c             = data_valid_i;
-          end else if (data_k_r[2] && data_r[23:16] == ENDP) begin
+          end else if (data_k_r[2] && ((data_r[23:16] == ENDP) || (data_r[23:16] == EDB))) begin
             is_dllp_c                = '1;
             data_c                   = '0;
             data_handler_axis_tdata  = {data_r[15:0]};
@@ -352,7 +354,7 @@ module data_handler
             data_handler_axis_tlast  = '1;
             next_state               = ST_CHECK_FRAME;
             data_valid_c             = data_valid_i;
-          end else if (data_k_r[3] && data_r[31:24] == ENDP) begin
+          end else if (data_k_r[3] && ((data_r[31:24] == ENDP) || (data_r[31:24] == EDB))) begin
             is_dllp_c                = '1;
             data_c                   = '0;
             data_handler_axis_tdata  = {data_r[23:8]};
