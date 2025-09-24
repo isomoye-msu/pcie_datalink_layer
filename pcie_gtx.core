@@ -130,10 +130,10 @@ targets:
 
   synth:
     default_tool : vivado
-    filesets : [rtl,synth]
+    filesets : [rtl,synth,xsim_tb]
     tools:
       vivado:
-        part : XC7K325T-2FFG900C
+        part : xc7k325tffg900-2
     toplevel : pcie_top_gtx
 
 scripts:

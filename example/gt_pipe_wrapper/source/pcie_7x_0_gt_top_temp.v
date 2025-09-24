@@ -412,8 +412,8 @@ module pcie_7x_0_gt_top_temp #(
   wire plm_in_rs = (pl_ltssm_state_q == 6'h1f);
 
   //-------------RX FILTER Instantiation----------------------------------------------------------//
-  assign gt_rx_data_k_wire     = gt_rx_data_k_wire_filter;
-  assign gt_rx_data_wire       = gt_rx_data_wire_filter;
+  assign gt_rx_data_k_wire[1:0]     = gt_rx_data_k_wire_filter;
+  assign gt_rx_data_wire[15:0]       = gt_rx_data_wire_filter;
   assign gt_rx_valid_wire      = gt_rx_valid_wire_filter;
   assign gt_rx_elec_idle_wire  = gt_rx_elec_idle_wire_filter;
   assign gt_rx_status_wire     = gt_rx_status_wire_filter;

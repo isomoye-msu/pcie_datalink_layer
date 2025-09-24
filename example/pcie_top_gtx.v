@@ -10,7 +10,7 @@ module pcie_top_gtx #(
     parameter         [15:0] RBAR_CAP_ID                   = 16'h0015,
     parameter         [11:0] RBAR_CAP_NEXTPTR              = 12'h000,
     parameter         [ 3:0] RBAR_CAP_VERSION              = 4'h1,
-    parameter                PCIE_USE_MODE                 = "1.0",
+    parameter                PCIE_USE_MODE                 = "2.0",
     parameter                PCIE_GT_DEVICE                = "GTX",
     parameter                PL_AUTO_CONFIG                = 0,
     parameter                ENABLE_JTAG_DBG               = "FALSE",
@@ -33,7 +33,7 @@ module pcie_top_gtx #(
     parameter                TX_MARGIN_LOW_4               = 7'b1000000,
 
     parameter REF_CLK_FREQ = 0,  // 0 - 100 MHz, 1 - 125 MHz, 2 - 250 MHz
-    parameter USER_CLK_FREQ = 1,
+    parameter USER_CLK_FREQ = 0,
     parameter USER_CLK2_DIV2 = "FALSE",
     parameter AXISTEN_IF_EXT_512_INTFC_RAM_STYLE = "BRAM",
     parameter FPGA_FAMILY = "USM",
@@ -141,6 +141,12 @@ module pcie_top_gtx #(
   localparam APP_STRB_WIDTH = APP_DATA_WIDTH / 8;
   localparam APP_KEEP_WIDTH = APP_STRB_WIDTH;
   localparam APP_USER_WIDTH = 5;
+
+
+  assign led_0 = phy_rxdata_valid;
+  assign led_1 = phy_phystatus_rst;
+  assign led_2 = phy_txdata_valid;
+  assign led_3 = link_up;
 
 
   // ICAP interface - wire up to user app if ICAP access required
@@ -1290,8 +1296,8 @@ module pcie_top_gtx #(
       .pipe_tx7_compliance   (32'h0),
       .pipe_tx7_char_is_k    (32'h0),
       .pipe_tx7_data         (32'h0),
-      .pipe_tx7_elec_idle    (32'h1),
-      .pipe_tx7_powerdown    (32'h1),
+      .pipe_tx7_elec_idle    (32'h0),
+      .pipe_tx7_powerdown    (32'h0),
 
       // PCI Express Signals
       .pci_exp_txn(pci_exp_txn),

@@ -69,8 +69,11 @@ create_clock -name sys_clk_p -period 10.0 [get_ports sys_clk_p]
 ################################################################################
 # False path constraints
 ################################################################################
-set_property LOC GTXE2_CHANNEL_X0Y7 [get_cells {pipe_wrapper_i/gtpe2_channell_i}]
+set_property LOC GTXE2_CHANNEL_X0Y7 [get_cells {gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtx_channel.gtxe2_channel_i}]
 
+set_property LOC GTXE2_COMMON_X0Y1 [get_cells  {gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_quad.gt_common_enabled.gt_common_int.gt_common_i/qpll_wrapper_i/gtx_common.gtpex_common_i}]
+
+# set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
 # set_false_path -quiet -through [get_nets -hierarchical -filter {mr_ff == TRUE}]
 
