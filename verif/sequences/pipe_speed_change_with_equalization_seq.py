@@ -5,7 +5,7 @@
 #
 #!  Project:   Open-Source PCIe Endpoint Controller.
 #   File:      pipe_speed_change_with_equalization_seq.py
-#   Author:    HALO
+#   Author:    HAL-O
 #   Created:   10/1/25
 #
 #!  Description:
