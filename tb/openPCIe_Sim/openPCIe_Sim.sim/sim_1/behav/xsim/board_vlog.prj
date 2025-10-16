@@ -1,0 +1,101 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  --include "../../../../../../src/pcie_cfg" --include "../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports" --include "../../../../openPCIe_Sim.gen/sources_1/ip/clk_wiz_0" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/EP_MEM.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP_MEM_ACCESS.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_RX_ENGINE.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TO_CTRL.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TX_ENGINE.v" \
+"../../../../../../src/verilog-pcie/rtl/arbiter.v" \
+"../../../../../../src/verilog-axis/rtl/axis_adapter.v" \
+"../../../../../../src/verilog-pcie/rtl/axis_arb_mux.v" \
+"../../../../../../src/verilog-axis/rtl/axis_async_fifo.v" \
+"../../../../../../src/verilog-axis/rtl/axis_fifo.v" \
+"../../../../../../src/verilog-axis/rtl/axis_register.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_cfg.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_com.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_pl.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_rx.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_tx.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_2_1_rport_7x.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gt_common.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gt_top_temp.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gt_wrapper.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gtp_cpllpd_ovrd.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gtp_pipe_drp.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gtp_pipe_rate.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gtp_pipe_reset.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_gtx_cpllpd_ovrd.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_drp.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_eq.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_rate.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_reset.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_sync.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_user.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_pipe_wrapper.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_qpll_drp.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_qpll_reset.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_qpll_wrapper.v" \
+"../../../../../../example/gt_pipe_wrapper/source/pcie_7x_0_rxeq_scan.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_app_7x.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_axi_trn_bridge.v" \
+"../../../../../../src/crc/pcie_dllp_crc8.v" \
+"../../../../../../example/pcie_top_gtx.v" \
+"../../../../../../src/verilog-pcie/rtl/priority_encoder.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen_ds.v" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_2_1_rport_7x.v" \
+"../../../../../../example/pcie_pipe_wrapper/xilinx_pcie_mmcm.v" \
+
+sv xil_defaultlib  --include "../../../../../../src/pcie_cfg" --include "../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports" --include "../../../../openPCIe_Sim.gen/sources_1/ip/clk_wiz_0" \
+"../../../../../../src/packages/pcie_datalink_pkg.sv" \
+"../../../../../../src/dllp/axis_retry_fifo.sv" \
+"../../../../../../src/dllp/axis_user_demux.sv" \
+"../../../../../../src/packages/pcie_phy_pkg.sv" \
+"../../../../../../src/pcie_phy_core/block_alignment.sv" \
+"../../../../../../src/scrambler/byte_scramble.sv" \
+"../../../../../../src/pcie_phy_core/data_handler.sv" \
+"../../../../../../src/dllp/dllp2tlp.sv" \
+"../../../../../../src/dllp/dllp_fc_update.sv" \
+"../../../../../../src/dllp/dllp_handler.sv" \
+"../../../../../../src/pcie_cfg/pcie_config_reg_pkg.sv" \
+"../../../../../../src/dllp/dllp_receive.sv" \
+"../../../../../../src/dllp/dllp_transmit.sv" \
+"../../../../../../src/pcie_phy_core/frame_symbols.sv" \
+"../../../../../../src/scrambler/gen1_scramble.sv" \
+"../../../../../../src/scrambler/gen3_byte_scramble.sv" \
+"../../../../../../src/scrambler/gen3_scramble.sv" \
+"../../../../../../src/pcie_phy_core/lane_management.sv" \
+"../../../../../../src/pcie_phy_core/ordered_set_handler.sv" \
+"../../../../../../src/pcie_phy_core/os_generator.sv" \
+"../../../../../../src/pcie_phy_core/pack_data.sv" \
+"../../../../../../src/packages/pcie_tlp_pkg.sv" \
+"../../../../../../src/pcie_cfg/pcie_cfg_wrapper.sv" \
+"../../../../../../src/pcie_cfg/pcie_config_decode.sv" \
+"../../../../../../src/pcie_cfg/pcie_config_handler.sv" \
+"../../../../../../src/pcie_cfg/pcie_config_mux.sv" \
+"../../../../../../src/pcie_cfg/pcie_config_reg.sv" \
+"../../../../../../src/crc/pcie_datalink_crc.sv" \
+"../../../../../../src/dllp/pcie_datalink_init.sv" \
+"../../../../../../src/dllp/pcie_datalink_layer.sv" \
+"../../../../../../src/dllp/pcie_flow_ctrl_init.sv" \
+"../../../../../../src/crc/pcie_lcrc16.sv" \
+"../../../../../../src/crc/pcie_lcrc32.sv" \
+"../../../../../../src/ltssm/pcie_ltssm_downstream.sv" \
+"../../../../../../src/pcie_phy_core/pcie_phy_top.sv" \
+"../../../../../../src/pcie_phy_core/phy_receive.sv" \
+"../../../../../../src/pcie_phy_core/phy_transmit.sv" \
+"../../../../../../src/dllp/retry_management.sv" \
+"../../../../../../src/dllp/retry_transmit.sv" \
+"../../../../../../src/scrambler/scrambler.sv" \
+"../../../../../../src/dllp/tlp2dllp.sv" \
+
+verilog xil_defaultlib  --include "../../../../../../src/pcie_cfg" --include "../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports" --include "../../../../openPCIe_Sim.gen/sources_1/ip/clk_wiz_0" \
+"../../../../../vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/board.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

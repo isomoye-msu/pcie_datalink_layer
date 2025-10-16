@@ -22,20 +22,20 @@ set_property LOC M6 [get_ports {pci_exp_rxp[0]}]
 set_property LOC M5 [get_ports {pci_exp_rxn[0]}]
 
 # user_led:0
-set_property LOC AB8 [get_ports {user_led0}]
-set_property IOSTANDARD LVCMOS15 [get_ports {user_led0}]
+set_property LOC AB8 [get_ports {led_0}]
+set_property IOSTANDARD LVCMOS15 [get_ports {led_0}]
 
 # user_led:1
-set_property LOC AA8 [get_ports {user_led1}]
-set_property IOSTANDARD LVCMOS15 [get_ports {user_led1}]
+set_property LOC AA8 [get_ports {led_1}]
+set_property IOSTANDARD LVCMOS15 [get_ports {led_1}]
 
 # user_led:2
-set_property LOC AC9 [get_ports {user_led2}]
-set_property IOSTANDARD LVCMOS15 [get_ports {user_led2}]
+set_property LOC AC9 [get_ports {led_2}]
+set_property IOSTANDARD LVCMOS15 [get_ports {led_2}]
 
 # user_led:3
-set_property LOC AB9 [get_ports {user_led3}]
-set_property IOSTANDARD LVCMOS15 [get_ports {user_led3}]
+set_property LOC AB9 [get_ports {led_3}]
+set_property IOSTANDARD LVCMOS15 [get_ports {led_3}]
 
 
 set_property IOSTANDARD LVCMOS25 [get_ports sys_rst_n]
@@ -60,25 +60,29 @@ set_property CONFIG_VOLTAGE 2.5 [current_design]
 ################################################################################
 
 
-create_clock -name sys_clk_p -period 5.0 [get_ports sys_clk_p]
+create_clock -name sys_clk_p -period 10.0 [get_ports sys_clk_p]
 
-create_clock -name tx_clk -period 20.0 [get_nets tx_clk]
+# create_clock -name tx_clk -period 20.0 [get_nets tx_clk]
 
-create_clock -name rx_clk -period 20.0 [get_nets rx_clk]
+# create_clock -name rx_clk -period 20.0 [get_nets rx_clk]
 
 ################################################################################
 # False path constraints
 ################################################################################
+set_property LOC GTXE2_CHANNEL_X0Y7 [get_cells {gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtx_channel.gtxe2_channel_i}]
 
+set_property LOC GTXE2_COMMON_X0Y1 [get_cells  {gt_top_i/pipe_wrapper_i/pipe_lane[0].pipe_quad.gt_common_enabled.gt_common_int.gt_common_i/qpll_wrapper_i/gtx_common.gtpex_common_i}]
 
-set_false_path -quiet -through [get_nets -hierarchical -filter {mr_ff == TRUE}]
+# set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {inst/gt_top_i/pipe_wrapper_i/pipe_lane[0].gt_wrapper_i/gtp_channel.gtpe2_channel_i}]
 
-set_false_path -quiet -to [get_pins -filter {REF_PIN_NAME == PRE} -of_objects [get_cells -hierarchical -filter {ars_ff1 == TRUE || ars_ff2 == TRUE}]]
+# set_false_path -quiet -through [get_nets -hierarchical -filter {mr_ff == TRUE}]
 
-set_max_delay 2 -quiet -from [get_pins -filter {REF_PIN_NAME == C} -of_objects [get_cells -hierarchical -filter {ars_ff1 == TRUE}]] -to [get_pins -filter {REF_PIN_NAME == D} -of_objects [get_cells -hierarchical -filter {ars_ff2 == TRUE}]]
+# set_false_path -quiet -to [get_pins -filter {REF_PIN_NAME == PRE} -of_objects [get_cells -hierarchical -filter {ars_ff1 == TRUE || ars_ff2 == TRUE}]]
 
-set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets tx_clk]] -group [get_clocks -include_generated_clocks -of [get_nets rx_clk]] -asynchronous
+# set_max_delay 2 -quiet -from [get_pins -filter {REF_PIN_NAME == C} -of_objects [get_cells -hierarchical -filter {ars_ff1 == TRUE}]] -to [get_pins -filter {REF_PIN_NAME == D} -of_objects [get_cells -hierarchical -filter {ars_ff2 == TRUE}]]
 
-set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets sys_clk]] -group [get_clocks -include_generated_clocks -of [get_nets tx_clk]] -asynchronous
+# set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets tx_clk]] -group [get_clocks -include_generated_clocks -of [get_nets rx_clk]] -asynchronous
 
-set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets sys_clk]] -group [get_clocks -include_generated_clocks -of [get_nets rx_clk]] -asynchronous
+# set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets sys_clk]] -group [get_clocks -include_generated_clocks -of [get_nets tx_clk]] -asynchronous
+
+# set_clock_groups -group [get_clocks -include_generated_clocks -of [get_nets sys_clk]] -group [get_clocks -include_generated_clocks -of [get_nets rx_clk]] -asynchronous

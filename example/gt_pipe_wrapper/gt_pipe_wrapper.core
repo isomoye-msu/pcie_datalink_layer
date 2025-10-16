@@ -15,6 +15,7 @@ filesets:
       - source/pcie_7x_0_core_top.v
       - source/pcie_7x_0_gt_common.v
       - source/pcie_7x_0_gt_rx_valid_filter_7x.v
+      - source/pcie_7x_0_gt_top_temp.v
       - source/pcie_7x_0_gt_top.v
       - source/pcie_7x_0_gt_wrapper.v
       - source/pcie_7x_0_gtp_cpllpd_ovrd.v

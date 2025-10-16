@@ -1,0 +1,70 @@
+CAPI=2:
+name: fusesoc:pcie:surf:1.0.0
+description: pcie surf pipe wrapper
+
+filesets:
+  rtl:
+    files:
+      - base/general/rtl/Arbiter.vhd
+      - base/general/rtl/ArbiterPkg.vhd
+      - base/general/rtl/AsyncGearbox.vhd
+      - base/general/rtl/ClockDivider.vhd
+      - base/general/rtl/Debouncer.vhd
+      - base/general/rtl/Gearbox.vhd
+      - base/general/rtl/Heartbeat.vhd
+      - base/general/rtl/Mux.vhd
+      - base/general/rtl/OneShot.vhd
+      - base/general/rtl/PrbsPkg.vhd
+      - base/general/rtl/PwrUpRst.vhd
+      - base/general/rtl/RegisterVector.vhd
+      - base/general/rtl/RstPipeline.vhd
+      - base/general/rtl/RstPipelineVector.vhd
+      - base/general/rtl/Scrambler.vhd
+      - base/general/rtl/StdRtlPkg.vhd
+      - base/general/rtl/TextUtilPkg.vhd
+      - base/general/rtl/WatchDogRst.vhd
+      - surf.core
+      - xilinx/7Series/gtx7/rtl/Gtx7AutoPhaseAligner.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7CfgPkg.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7Core.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7QuadPll.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7RecClkMonitor.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7RxFixedLatPhaseAligner.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7RxRst.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7TxManualPhaseAligner.vhd
+      - xilinx/7Series/gtx7/rtl/Gtx7TxRst.vhd
+      - xilinx/7Series/gtx7/rtl/Gtxe2ChannelDummy.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7AutoPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7CfgPkg.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7Core.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7QuadPll.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RecClkMonitor.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxFixedLatPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxRst.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7RxRstSeq.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7TxManualPhaseAligner.vhd
+      - xilinx/7Series/gtp7/rtl/Gtp7TxRst.vhd
+      - xilinx/7Series/gtp7/rtl/Gtpe2ChannelDummy.vhd
+    file_type: vhdlSource
+
+
+targets:
+  default:
+    flow: sim
+    flow_options:
+      tool : icarus
+      iverilog_options:
+        - -g2012 -DCOCOTB_SIM # Use SystemVerilog-2012
+      cocotb_module : test_pcie_core
+      timescale: 1ns/1ns
+    filesets : [rtl]
+    toplevel : [pcie_7x_0_pipe_wrapper]
+
+
+  synth:
+    default_tool : vivado
+    filesets : [rtl]
+    tools:
+      vivado:
+        part : xc7k325tffg900-2
+    toplevel : pcie_7x_0_pipe_wrapper

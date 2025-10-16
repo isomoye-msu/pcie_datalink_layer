@@ -1,0 +1,39 @@
+[            60481000] : Config Read Type 0 Frame 
+
+	 Traffic Class: 0x0
+	 TD: 0
+	 EP: 0
+	 Attributes: 0x0
+	 Length: 0x001
+	 Requester Id: 0x01af
+	 Tag: 0x00
+	 Last and First Byte Enables: 0x0f
+	 Completer Id: 0x01a0
+	 Register Address: 0x070 
+
+[            68529000] : Config Read Type 0 Frame 
+
+	 Traffic Class: 0x0
+	 TD: 0
+	 EP: 0
+	 Attributes: 0x0
+	 Length: 0x001
+	 Requester Id: 0x01af
+	 Tag: 0x00
+	 Last and First Byte Enables: 0x0f
+	 Completer Id: 0x01a0
+	 Register Address: 0x000 
+
+[            76577000] : Config Read Type 0 Frame 
+
+	 Traffic Class: 0x0
+	 TD: 0
+	 EP: 0
+	 Attributes: 0x0
+	 Length: 0x001
+	 Requester Id: 0x01af
+	 Tag: 0x00
+	 Last and First Byte Enables: 0x0f
+	 Completer Id: 0x01a0
+	 Register Address: 0x064 
+

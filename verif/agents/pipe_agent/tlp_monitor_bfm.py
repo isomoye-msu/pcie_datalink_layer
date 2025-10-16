@@ -46,6 +46,7 @@ from cocotbext.axi import AxiStreamFrame, AxiStreamBus, AxiStreamSource, AxiStre
 from cocotbext.pcie.core import RootComplex, MemoryEndpoint, Device, Switch
 from cocotbext.pcie.core.dllp import Dllp, DllpType, FcScale
 from cocotbext.pcie.core.tlp import Tlp, TlpType
+from cocotb.log import SimLog
 
 
 
@@ -54,7 +55,7 @@ class tlp_monitor_bfm():
         self.dut = cocotb.top
         self.sink_tlp = AxiStreamSink(AxiStreamBus.from_prefix(
             self.dut, "m_tlp_axis"), self.dut.clk_i, self.dut.rst_i)
-        self.sink_tlp.log = uvm_root().logger
+        self.sink_tlp.log = SimLog("cocotb.tb")
 
     async def start(self):
         while True:

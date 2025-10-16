@@ -1,12 +1,12 @@
-# PCIe Endpoint Controller (Open-Source)
+# (Open-Source) PCIe Endpoint Controller (WORK IN PROGESS)
 
-This repository provides an open-source PCIe 1.0 Endpoint Controller implemented in RTL.  
+This repository provides an open-source PCIe 1.0 Endpoint Controller implemented in SystemVerilog RTL.  
 The project is intended to serve as a research and educational platform for high-speed interconnect design, as well as a practical solution for FPGA-based PCIe endpoint integration.
 
 ---
 
 ## Features
-- Fully open-source PCIe 1.0 Endpoint Controller written in synthesizable RTL.
+- PCIe 1.0 Endpoint Controller written in synthesizable RTL.
 - Implements key layers of the PCIe stack:
   - PIPE interface for PHY connectivity.
   - Data Link Layer with sequencing, LCRC, ACK/NAK, and retry logic.
@@ -14,15 +14,15 @@ The project is intended to serve as a research and educational platform for high
 - Example implementations of high-speed interconnect design patterns:
   - Scramblers
   - CRCs
-  - Pipelining
-- Designed for integration with Xilinx and open-source FPGA toolchains.
+  - Flow Control
+- Designed for integration with open-source FPGA toolchains.
 - Provides an educational example of PCIe design for teaching and research.
-- Performance evaluation compared with alternative solutions.
 - Lightweight FPGA resource utilization (validated on Xilinx ZCU102).
 
 ---
 
 ## Repository Structure
+```
 ├── src/ # Synthesizable RTL source code
 ├── tb/ # Individual level testbenches and cocotb-based verification
 ├── verif/ #PyUVM based top-level pipe-based constrained ramdom verification 
@@ -30,6 +30,7 @@ The project is intended to serve as a research and educational platform for high
 ├── examples/ # Example reference designs and integration scripts
 ├── scripts/ # Build and synthesis scripts
 └── README.md # Project overview (this file)
+```
 
 
 
@@ -38,7 +39,8 @@ The project is intended to serve as a research and educational platform for high
 ### Prerequisites
 - [FuseSoC](https://github.com/olofk/fusesoc) installed and configured.
 - Cocotb and Python for simulation-based verification.
-- FPGA development environment (Xilinx Vivado or Intel Quartus) if synthesizing.
+- [Verilator] (https://github.com/verilator/verilator) installed and configured.
+- FPGA development environment (Xilinx Vivado,openXC7, or Intel Quartus) if synthesizing.
 - Git for version control.
 
 ### Cloning the Repository
@@ -54,8 +56,8 @@ git submodule init && git submodule update
 ```
   pip install setuptools>=64
   pip install wheel --user
-  pip install git+https://github.com/olofk/edalize --user
-  pip install git+https://github.com/olofk/fusesoc --user
+  pip install edalize --user
+  pip install fusesoc>=2.4.4 --user
   pip install -r requirements.txt --user
 ```
 
@@ -96,15 +98,8 @@ Performance evaluation
 
 ##  Research and Educational Contributions
 
-This work contributes to the open-source hardware ecosystem by:
-
-Providing the first open-source PCIe endpoint controller targeting research and education.
-
-Enabling experiments with high-speed interconnect design in RTL.
-
-Demonstrating integration of cocotb and Python for modern hardware verification.
-
-Supporting RISC-V and open hardware communities where PCIe remains a missing peripheral.
+This work contributes to the open-source hardware ecosystem by, providing the first open-source PCIe endpoint controller targeting research and education.
+Enabling experiments with high-speed interconnect design in RTL. Demonstrating integration of cocotb and Python for modern hardware verification. Supporting RISC-V and open hardware communities where PCIe remains a missing peripheral.
 
 
 License
