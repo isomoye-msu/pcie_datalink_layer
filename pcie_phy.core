@@ -107,7 +107,7 @@ targets:
 
   agilex5_dk:
     default_tool : quartus
-    filesets : [rtl, synth]
+    filesets : [rtl]
     tools:
       quartus:
         family : Agilex
