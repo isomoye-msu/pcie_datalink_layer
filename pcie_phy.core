@@ -103,7 +103,16 @@ targets:
     tools:
       vivado:
         part : xczu5ev-sfvc784-1-e
-    toplevel : pcie_top
+    toplevel : pcie_phy_top
+
+  agilex5_dk:
+    default_tool : quartus
+    filesets : [rtl, synth]
+    tools:
+      quartus:
+        family : Agilex
+        device : A5ED065BB32AE6SR0
+    toplevel: pcie_phy_top
 
 scripts:
   iceprog:
