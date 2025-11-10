@@ -17,7 +17,7 @@ The project is intended to serve as a research and educational platform for high
   - Flow Control
 - Designed for integration with open-source FPGA toolchains.
 - Provides an educational example of PCIe design for teaching and research.
-- Lightweight FPGA resource utilization (validated on Xilinx ZCU102).
+- Lightweight FPGA resource utilization (validated on Xilinx KC705 and AC701).
 
 ---
 

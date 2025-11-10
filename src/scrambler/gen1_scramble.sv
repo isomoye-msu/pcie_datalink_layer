@@ -45,12 +45,12 @@ module gen1_scramble
   typedef struct {
     logic [15:0]                        lfsr_in;
     logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
-    logic [3:0]                         scramble_reset;
-    logic [3:0]                         disable_scrambling;
-    logic [3:0]                         stop_scrambling;
-    logic [3:0]                         skp_os;
+    logic [4:0]                         scramble_reset;
+    logic [4:0]                         disable_scrambling;
+    logic [4:0]                         stop_scrambling;
+    logic [4:0]                         skp_os;
     logic [NumPipelines-1:0][31:0]      data;
-    logic [NumPipelines-1:0][3:0]       data_k;
+    logic [NumPipelines-1:0][4:0]       data_k;
     logic [NumPipelines-1:0]            data_valid;
     // logic [NumPipelines-1:0][4:0][15:0] lfsr_out;
     logic [31:0]                        byte_cnt;
