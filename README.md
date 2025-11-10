@@ -78,7 +78,11 @@ Run the cocotb-based testbench via FuseSoC:
 
 ### GTP/GTH Simulation with Vivado
 
-``` fusesoc run --target=synth fusesoc:pcie:pcie_kc705:1.0.0```
+``` fusesoc run --target=synth fusesoc:pcie:pcie_gtp:1.0.0```
+
+``` fusesoc run --target=synth fusesoc:pcie:pcie_gtx:1.0.0```
+
+
 
 ## Documentation
 
