@@ -105,14 +105,16 @@ module pcie_top_gtp #(
   //------------------------------------------------------------------------------
   // Instance IBUFDS of IBUFDS Module.
   //------------------------------------------------------------------------------
-  IBUFDS IBUFDS (
-      // Inputs.
-      .I (sys_clk_p),
-      .IB(sys_clk_n),
+  // IBUFDS IBUFDS (
+  //     // Inputs.
+  //     .I (sys_clk_p),
+  //     .IB(sys_clk_n),
 
-      // Outputs.
-      .O(sys_clk)
-  );
+  //     // Outputs.
+  //     .O(sys_clk)
+  // );
+  IBUFDS_GTE2 refclk_ibuf (.O(sys_clk), .ODIV2(), .I(sys_clk_p), .CEB(1'b0), .IB(sys_clk_n));
+
 
   // Parameters
   localparam CLK_RATE = 100;
