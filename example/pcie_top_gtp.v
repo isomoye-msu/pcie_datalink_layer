@@ -728,63 +728,63 @@ module pcie_top_gtp #(
   wire        clkfbstopped_unused;
   wire        clkinstopped_unused;
   wire        reset_high;
-  wire gt_clk;
+  wire sys_clk;
 
-  MMCME2_ADV
-  #(.BANDWIDTH            ("OPTIMIZED"),
-    .CLKOUT4_CASCADE      ("FALSE"),
-    .COMPENSATION         ("ZHOLD"),
-    .STARTUP_WAIT         ("FALSE"),
-    .DIVCLK_DIVIDE        (1),
-    .CLKFBOUT_MULT_F      (10.000),
-    .CLKFBOUT_PHASE       (0.000),
-    .CLKFBOUT_USE_FINE_PS ("FALSE"),
-    .CLKOUT0_DIVIDE_F     (10.000),
-    .CLKOUT0_PHASE        (0.000),
-    .CLKOUT0_DUTY_CYCLE   (0.500),
-    .CLKOUT0_USE_FINE_PS  ("FALSE"),
-    .CLKIN1_PERIOD        (10.000))
-  mmcm_adv_inst
-    // Output clocks
-   (
-    .CLKFBOUT            (clkfbout_clk_wiz_0),
-    .CLKFBOUTB           (clkfboutb_unused),
-    .CLKOUT0             (gt_clk),
-    .CLKOUT0B            (clkout0b_unused),
-    .CLKOUT1             (clkout1_unused),
-    .CLKOUT1B            (clkout1b_unused),
-    .CLKOUT2             (clkout2_unused),
-    .CLKOUT2B            (clkout2b_unused),
-    .CLKOUT3             (clkout3_unused),
-    .CLKOUT3B            (clkout3b_unused),
-    .CLKOUT4             (clkout4_unused),
-    .CLKOUT5             (clkout5_unused),
-    .CLKOUT6             (clkout6_unused),
-     // Input clock control
-    .CLKFBIN             (clkfbout_buf_clk_wiz_0),
-    .CLKIN1              (sys_clk),
-    .CLKIN2              (1'b0),
-     // Tied to always select the primary input clock
-    .CLKINSEL            (1'b1),
-    // Ports for dynamic reconfiguration
-    .DADDR               (7'h0),
-    .DCLK                (1'b0),
-    .DEN                 (1'b0),
-    .DI                  (16'h0),
-    .DO                  (do_unused),
-    .DRDY                (drdy_unused),
-    .DWE                 (1'b0),
-    // Ports for dynamic phase shift
-    .PSCLK               (1'b0),
-    .PSEN                (1'b0),
-    .PSINCDEC            (1'b0),
-    .PSDONE              (psdone_unused),
-    // Other control and status signals
-    .LOCKED              (locked_int),
-    .CLKINSTOPPED        (clkinstopped_unused),
-    .CLKFBSTOPPED        (clkfbstopped_unused),
-    .PWRDWN              (1'b0),
-    .RST                 (!sys_rst_n));
+  // MMCME2_ADV
+  // #(.BANDWIDTH            ("OPTIMIZED"),
+  //   .CLKOUT4_CASCADE      ("FALSE"),
+  //   .COMPENSATION         ("ZHOLD"),
+  //   .STARTUP_WAIT         ("FALSE"),
+  //   .DIVCLK_DIVIDE        (1),
+  //   .CLKFBOUT_MULT_F      (10.000),
+  //   .CLKFBOUT_PHASE       (0.000),
+  //   .CLKFBOUT_USE_FINE_PS ("FALSE"),
+  //   .CLKOUT0_DIVIDE_F     (10.000),
+  //   .CLKOUT0_PHASE        (0.000),
+  //   .CLKOUT0_DUTY_CYCLE   (0.500),
+  //   .CLKOUT0_USE_FINE_PS  ("FALSE"),
+  //   .CLKIN1_PERIOD        (10.000))
+  // mmcm_adv_inst
+  //   // Output clocks
+  //  (
+  //   .CLKFBOUT            (clkfbout_clk_wiz_0),
+  //   .CLKFBOUTB           (clkfboutb_unused),
+  //   .CLKOUT0             (sys_clk),
+  //   .CLKOUT0B            (clkout0b_unused),
+  //   .CLKOUT1             (clkout1_unused),
+  //   .CLKOUT1B            (clkout1b_unused),
+  //   .CLKOUT2             (clkout2_unused),
+  //   .CLKOUT2B            (clkout2b_unused),
+  //   .CLKOUT3             (clkout3_unused),
+  //   .CLKOUT3B            (clkout3b_unused),
+  //   .CLKOUT4             (clkout4_unused),
+  //   .CLKOUT5             (clkout5_unused),
+  //   .CLKOUT6             (clkout6_unused),
+  //    // Input clock control
+  //   .CLKFBIN             (clkfbout_buf_clk_wiz_0),
+  //   .CLKIN1              (sys_clk),
+  //   .CLKIN2              (1'b0),
+  //    // Tied to always select the primary input clock
+  //   .CLKINSEL            (1'b1),
+  //   // Ports for dynamic reconfiguration
+  //   .DADDR               (7'h0),
+  //   .DCLK                (1'b0),
+  //   .DEN                 (1'b0),
+  //   .DI                  (16'h0),
+  //   .DO                  (do_unused),
+  //   .DRDY                (drdy_unused),
+  //   .DWE                 (1'b0),
+  //   // Ports for dynamic phase shift
+  //   .PSCLK               (1'b0),
+  //   .PSEN                (1'b0),
+  //   .PSINCDEC            (1'b0),
+  //   .PSDONE              (psdone_unused),
+  //   // Other control and status signals
+  //   .LOCKED              (locked_int),
+  //   .CLKINSTOPPED        (clkinstopped_unused),
+  //   .CLKFBSTOPPED        (clkfbstopped_unused),
+  //   .PWRDWN              (1'b0),
+  //   .RST                 (!sys_rst_n));
 
 
 //      assign reset_high = reset; 
@@ -879,7 +879,7 @@ module pcie_top_gtp #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
-      .PIPE_CLK    (gt_clk),
+      .PIPE_CLK    (sys_clk),
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------

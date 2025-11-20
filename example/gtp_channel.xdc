@@ -2,34 +2,47 @@
 # IO constraints
 ################################################################################
 # SYSCLK
-set_property PACKAGE_PIN R3 [get_ports sys_clk_p]
-set_property PACKAGE_PIN P3 [get_ports sys_clk_n]
+set_property PACKAGE_PIN F6 [get_ports sys_clk_p]
+set_property PACKAGE_PIN E6 [get_ports sys_clk_n]
 set_property IOSTANDARD LVDS_25 [get_ports sys_clk_p]
 set_property IOSTANDARD LVDS_25 [get_ports sys_clk_n]
 
+set_property LOC IBUFDS_GTE2_X0Y0 [get_cells refclk_ibuf]
 
-set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {pipe_wrapper_i/gtpe2_channell_i}]
+# set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {pipe_wrapper_i/gtpe2_channell_i}]
 # pcie_tx:0.p
-set_property LOC D10 [get_ports {pci_exp_txp[0]}]
+# set_property LOC D10 [get_ports {pci_exp_txp[0]}]
 
-# pcie_tx:0.n
-set_property LOC C10 [get_ports {pci_exp_txn[0]}]
+# # pcie_tx:0.n
+# set_property LOC C10 [get_ports {pci_exp_txn[0]}]
 
-# pcie_rx:0.p
-set_property LOC D12 [get_ports {pci_exp_rxp[0]}]
+# # pcie_rx:0.p
+# set_property LOC D12 [get_ports {pci_exp_rxp[0]}]
 
-# pcie_rx:0.n
-set_property LOC C12 [get_ports {pci_exp_rxn[0]}]
+# # pcie_rx:0.n
+# set_property LOC C12 [get_ports {pci_exp_rxn[0]}]
 
 # led_s
-set_property PACKAGE_PIN M26 [get_ports led_0]
+set_property PACKAGE_PIN J22 [get_ports led_0]
 set_property IOSTANDARD LVCMOS33 [get_ports led_0]
 
-set_property PACKAGE_PIN T24 [get_ports led_1]
+set_property PACKAGE_PIN K22 [get_ports led_1]
 set_property IOSTANDARD LVCMOS33 [get_ports led_1]
 
-set_property PACKAGE_PIN T25 [get_ports led_2]
+set_property PACKAGE_PIN AB6 [get_ports led_2]
 set_property IOSTANDARD LVCMOS33 [get_ports led_2]
+
+
+set_property PACKAGE_PIN A8 [get_ports pci_exp_rxn[0]]
+set_property PACKAGE_PIN B8 [get_ports pci_exp_rxp[0]]
+set_property PACKAGE_PIN A4 [get_ports pci_exp_txn[0]]
+set_property PACKAGE_PIN B4 [get_ports pci_exp_txp[0]]
+set_property CFGBVS VCCO [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property BITSTREAM.GENERAL.COMPRESS true [current_design]
+set_property BITSTREAM.CONFIG.UNUSEDPIN pullup [current_design]
+set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 2 [current_design]
+set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
 
 # # led_:3
 # set_property LOC AB9 [get_ports {led_3}]
