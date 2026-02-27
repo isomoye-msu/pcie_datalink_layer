@@ -844,7 +844,7 @@ module pcie_top_gtp #(
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
   pipe_wrapper #(
-      .PCIE_SIM_MODE             ("TRUE"),
+      .PCIE_SIM_MODE             ("FALSE"),
       // synthesis translate_off
       .PCIE_SIM_SPEEDUP          ("TRUE"),
       // synthesis translate_on
