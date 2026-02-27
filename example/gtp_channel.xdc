@@ -7,8 +7,10 @@ set_property PACKAGE_PIN P3 [get_ports sys_clk_n]
 set_property IOSTANDARD LVDS_25 [get_ports sys_clk_p]
 set_property IOSTANDARD LVDS_25 [get_ports sys_clk_n]
 
+set_property PACKAGE_PIN F11 [get_ports pcie_refclk_p]
+set_property PACKAGE_PIN E11 [get_ports pcie_refclk_n]
+create_clock -name pcie_refclk -period 10.0 [get_ports pcie_refclk_p]
 
-set_property LOC GTPE2_CHANNEL_X0Y7 [get_cells {pipe_wrapper_i/gtpe2_channell_i}]
 # pcie_tx:0.p
 set_property PACKAGE_PIN D10 [get_ports {pci_exp_txp[0]}]
 
@@ -37,7 +39,7 @@ set_property PACKAGE_PIN C12 [get_ports {pci_exp_rxn[0]}]
 
 
 set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
-set_property LOC M20 [get_ports sys_rst_n]
+set_property PACKAGE_PIN M20 [get_ports sys_rst_n]
 # set_property PULLUP true [get_ports sys_rst_n]
 
 ################################################################################

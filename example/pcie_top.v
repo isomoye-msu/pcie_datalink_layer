@@ -93,7 +93,9 @@ module pcie_top #(
 
     input sys_clk_p,
     input sys_clk_n,
-    input sys_rst_n
+    input sys_rst_n,
+    input pcie_refclk_p,
+    input pcie_refclk_n
 
 );
 
@@ -112,6 +114,17 @@ module pcie_top #(
 
       // Outputs.
       .O(sys_clk)
+  );
+
+  wire gt_refclk;
+  wire gt_refclk_div2_unused;
+
+  IBUFDS_GTE2 i_pcie_refclk (
+      .I     (pcie_refclk_p),
+      .IB    (pcie_refclk_n),
+      .CEB   (1'b0),
+      .O     (gt_refclk),
+      .ODIV2 (gt_refclk_div2_unused)
   );
 
   // Parameters
@@ -720,7 +733,7 @@ module pcie_top #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
-      .PIPE_CLK    (sys_clk),
+      .PIPE_CLK    (gt_refclk),
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------
