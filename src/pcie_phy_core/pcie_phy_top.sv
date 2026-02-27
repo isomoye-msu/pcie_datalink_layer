@@ -11,7 +11,7 @@ module pcie_phy_top
     parameter int KEEP_WIDTH    = STRB_WIDTH,
     parameter int USER_WIDTH    = 5,
     // TLP keep width
-    parameter int IS_ROOT_PORT  = 1,
+    parameter int IS_ROOT_PORT = 0,
     parameter int LINK_NUM      = 0,
     parameter int IS_UPSTREAM   = 0,               //downstream by default
     parameter int CROSSLINK_EN  = 0,               //crosslink not supported

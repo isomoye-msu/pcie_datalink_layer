@@ -18,7 +18,7 @@ module pcie_ltssm_downstream
     parameter int USER_WIDTH    = $bits(phy_user_t),
     parameter int SIM_FAST_LINK = 1,
 
-    parameter int          IS_ROOT_PORT       = 1,
+    parameter int          IS_ROOT_PORT = 0,
     parameter int          LINK_NUM           = 0,
     parameter int          IS_UPSTREAM        = 0,    //downstream by default
     parameter int          CROSSLINK_EN       = 0,    //crosslink not supported

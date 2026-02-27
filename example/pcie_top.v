@@ -122,7 +122,7 @@ module pcie_top #(
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
-  localparam IS_ROOT_PORT = 1;
+  localparam IS_ROOT_PORT = 0;
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;
