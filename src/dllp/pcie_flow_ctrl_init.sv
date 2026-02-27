@@ -286,7 +286,7 @@ module pcie_flow_ctrl_init
             fc_axis_tvalid = '1;
             fc_axis_tlast  = '0;
             seq_count_c    = '0;
-            next_state     = ST_FC2_CRC;
+            next_state     = ST_FC2_CRC_WAIT;
           end
         end
       end
