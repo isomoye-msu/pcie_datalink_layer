@@ -648,15 +648,15 @@ module pipe_wrapper # (
         .RSVD_ATTR0                     (16'd0),
         .RSVD_ATTR1                     (16'd0)
     ) gtpe2_common_i (
-        //Clock 
-        //.GTGREFCLK0                     ( 1'd0),
-        //.GTGREFCLK1                     ( 1'd0),
+        //Clock
+        .GTGREFCLK0                     ( 1'd0),
+        .GTGREFCLK1                     ( 1'd0),
         .GTREFCLK0                      (PIPE_CLK),
-        //.GTREFCLK1                      ( 1'd0),
-        //.GTEASTREFCLK0                  ( 1'd0),
-        //.GTEASTREFCLK1                  ( 1'd0),
-        //.GTWESTREFCLK0                  ( 1'd0),
-        //.GTWESTREFCLK1                  ( 1'd0),
+        .GTREFCLK1                      ( 1'd0),
+        .GTEASTREFCLK0                  ( 1'd0),
+        .GTEASTREFCLK1                  ( 1'd0),
+        .GTWESTREFCLK0                  ( 1'd0),
+        .GTWESTREFCLK1                  ( 1'd0),
         .PLL0LOCKDETCLK                 (1'd0),
         .PLL1LOCKDETCLK                 (1'd0),
         .PLL0LOCKEN                     ( 1'd1),
