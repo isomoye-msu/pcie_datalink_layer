@@ -85,11 +85,11 @@ module pcie_phy_top
 
     // Debug output
 
-    (* mark_debug *) output wire [20:0] ltssm_debug_state,
+    output wire [20:0] ltssm_debug_state,
 
     // Bringup Control Inputs
-    (* mark_debug *) input wire tx_elec_idle,
-    (* mark_debug *) input wire phy_ready_en,
+    input wire tx_elec_idle,
+    input wire phy_ready_en,
 
 
     output logic link_up_o,
