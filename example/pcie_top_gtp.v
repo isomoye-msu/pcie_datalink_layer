@@ -11,7 +11,7 @@ module pcie_top_gtp #(
     parameter         [11:0] RBAR_CAP_NEXTPTR              = 12'h000,
     parameter         [ 3:0] RBAR_CAP_VERSION              = 4'h1,
     parameter                PCIE_USE_MODE                 = "1.0",
-    parameter                PCIE_GT_DEVICE                = "GTX",
+    parameter                PCIE_GT_DEVICE                = "GTP",
     parameter                PL_AUTO_CONFIG                = 0,
     parameter                ENABLE_JTAG_DBG               = "FALSE",
     parameter                PL_FAST_TRAIN                 = "FALSE",
@@ -157,7 +157,7 @@ module pcie_top_gtp #(
   //   reg clk_i;
   //   reg rst_i;
   //   reg en_i;
-  wire                                    fc_initialized_o;
+  (* mark_debug = "true", keep = "true" *) wire                                    fc_initialized_o;
   wire [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata;
   wire [               MAX_NUM_LANES-1:0] phy_txdata_valid;
   wire [           (4*MAX_NUM_LANES)-1:0] phy_txdatak;
@@ -198,9 +198,22 @@ module pcie_top_gtp #(
   wire [                           8-1:0] pipe_width_o;
   wire                                    as_mac_in_detect;
   wire                                    as_cdr_hold_req;
-  wire [                             7:0] debug_state;
-  wire                                    tx_elec_idle;
-  wire                                    phy_ready_en;
+  (* mark_debug = "true", keep = "true" *) wire [20:0] debug_state;
+  (* mark_debug = "true", keep = "true" *) wire tx_elec_idle = 1'b0;
+  (* mark_debug = "true", keep = "true" *) wire phy_ready_en = 1'b1;
+
+  // PIPE debug alias wires (top-level for ILA visibility)
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txdetectrx  = phy_txdetectrx;
+  (* mark_debug = "true", keep = "true" *) wire [2:0]  dbg_rxstatus    = phy_rxstatus[2:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_phystatus   = phy_phystatus[0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_rxelecidle  = phy_rxelecidle[0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_rxvalid     = phy_rxvalid[0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_rxdata      = phy_rxdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_rxdatak     = phy_rxdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_txdata      = phy_txdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_txdatak     = phy_txdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txelecidle  = phy_txelecidle[0];
+  (* mark_debug = "true", keep = "true" *) wire [1:0]  dbg_powerdown   = phy_powerdown;
 
 
   wire [                  DATA_WIDTH-1:0] s_tlp_axis_tdata;
@@ -340,7 +353,7 @@ module pcie_top_gtp #(
   // Flow Control
   wire [2:0] fc_sel;
 
-  wire       link_up;
+  (* mark_debug = "true", keep = "true" *) wire       link_up;
 
   wire       PIPE_TXOUTCLK_OUT;
   wire       PIPE_DCLK_IN;
