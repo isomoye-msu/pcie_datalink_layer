@@ -40,7 +40,7 @@ set_property PACKAGE_PIN C12 [get_ports {pci_exp_rxn[0]}]
 
 set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
 set_property PACKAGE_PIN M20 [get_ports sys_rst_n]
-# set_property PULLUP true [get_ports sys_rst_n]
+set_property PULLUP true [get_ports sys_rst_n]
 
 ################################################################################
 # Design constraints
