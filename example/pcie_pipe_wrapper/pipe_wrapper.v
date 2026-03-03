@@ -260,7 +260,7 @@ module pipe_wrapper # (
     //---------- GTX Wrapper Output ------------------------
     wire             gt_txresetdone;
     wire             gt_rxresetdone;
-    wire        [PCIE_LANE-1:0]     gt_rxvalid;
+    (* mark_debug = "true", keep = "true" *) wire        [PCIE_LANE-1:0]     gt_rxvalid;
     wire        [PCIE_LANE-1:0]     gt_phystatus;
     wire        [PCIE_LANE-1:0]     gt_txratedone;
     wire        [PCIE_LANE-1:0]     gt_rxratedone;
@@ -562,11 +562,11 @@ module pipe_wrapper # (
 	// TODO: check on real hw
 	wire gt_txresetdone_reg;
 	wire gt_rxresetdone_reg;
-	wire rst_idle_reg;
+	(* mark_debug = "true", keep = "true" *) wire rst_idle_reg;
 	two_beats #(.BEATS(2), .RSTVAL(0)) gt_txresetdone_beats (.clk(PIPE_PCLK_IN), .rst(rst_cpllreset), .sig(gt_txresetdone), .out(gt_txresetdone_reg));
 	two_beats #(.BEATS(2), .RSTVAL(0)) gt_rxresetdone_beats (.clk(PIPE_PCLK_IN), .rst(rst_cpllreset), .sig(gt_rxresetdone), .out(gt_rxresetdone_reg));
 	two_beats #(.BEATS(2), .RSTVAL(0)) pipe_rxusrclk_in_beats (.clk(PIPE_RXUSRCLK_IN), .rst(rst_rxusrclk_reset), .sig(rst_idle), .out(rst_idle_reg));
-	reg [4:0]rxvalid_cnt = 5'h0;
+	(* mark_debug = "true", keep = "true" *) reg [4:0]rxvalid_cnt = 5'h0;
 	always @(posedge PIPE_RXUSRCLK_IN) begin
 		if (gt_rxvalid[0] && !rst_rxusrclk_reset)
 			rxvalid_cnt <= rxvalid_cnt[4] ? 5'h10 : rxvalid_cnt + 4'h1;

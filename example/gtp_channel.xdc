@@ -97,7 +97,7 @@ set_property C_INPUT_PIPE_STAGES 0 [get_debug_cores u_ila_0]
 set_property C_TRIGIN_EN false [get_debug_cores u_ila_0]
 set_property C_TRIGOUT_EN false [get_debug_cores u_ila_0]
 set_property port_width 1 [get_debug_ports u_ila_0/clk]
-connect_debug_port u_ila_0/clk [get_nets [list sys_clk_BUFG]]
+connect_debug_port u_ila_0/clk [get_nets [list PIPE_PCLK_IN]]
 
 # probe0: LTSSM state (7 bits surviving synthesis: bits 0,1,2,5,6,7,8)
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe0]
@@ -194,8 +194,26 @@ set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe15]
 set_property port_width 1 [get_debug_ports u_ila_0/probe15]
 connect_debug_port u_ila_0/probe15 [get_nets [list tx_elec_idle]]
 
+# probe16: raw GT_RXVALID (1 bit) - before pipe_wrapper filter
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
+set_property port_width 1 [get_debug_ports u_ila_0/probe16]
+connect_debug_port u_ila_0/probe16 [get_nets [list pipe_wrapper_i/gt_rxvalid]]
+
+# probe17: rst_idle_reg (1 bit) - pipe_wrapper FSM idle state
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe17]
+set_property port_width 1 [get_debug_ports u_ila_0/probe17]
+connect_debug_port u_ila_0/probe17 [get_nets [list pipe_wrapper_i/rst_idle_reg]]
+
+# probe18: rxvalid_cnt[4] (1 bit) - gt_rxvalid held 16 cycles
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
+set_property port_width 1 [get_debug_ports u_ila_0/probe18]
+connect_debug_port u_ila_0/probe18 [get_nets [list {pipe_wrapper_i/rxvalid_cnt[4]}]]
+
 # Debug hub
 set_property C_CLK_INPUT_FREQ_HZ 100000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
-connect_debug_port dbg_hub/clk [get_nets sys_clk_BUFG]
+connect_debug_port dbg_hub/clk [get_nets PIPE_PCLK_IN]
