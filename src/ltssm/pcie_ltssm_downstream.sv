@@ -39,6 +39,7 @@ module pcie_ltssm_downstream
     input  logic [    MAX_NUM_LANES-1:0] ts1_valid_i,
     input  logic [    MAX_NUM_LANES-1:0] ts2_valid_i,
     input  logic [    MAX_NUM_LANES-1:0] idle_valid_i,
+    input  logic [    MAX_NUM_LANES-1:0] polarity_inverted_i,
     input  logic [(MAX_NUM_LANES*3)-1:0] phy_rxstatus_i,
     input  logic [    MAX_NUM_LANES-1:0] phy_phystatus_i,
     input  logic                         phy_phystatus_rst_i,
@@ -48,7 +49,7 @@ module pcie_ltssm_downstream
     output logic                     phy_txdeemph_o,
     output logic [              1:0] phy_powerdown_o,
     output logic                     phy_txcompliance_o,
-    output logic                     phy_rxpolarity_o,
+    output logic [MAX_NUM_LANES-1:0] phy_rxpolarity_o,
     output logic [              2:0] phy_txmargin_o,
     // input  logic [      MAX_NUM_LANES-1:0] lane_active_i,
     input  logic [MAX_NUM_LANES-1:0] lanes_ts2_satisfied_i,
@@ -223,6 +224,8 @@ module pcie_ltssm_downstream
   logic              [     MAX_NUM_LANES-1:0] lane_status_r;
   logic              [     MAX_NUM_LANES-1:0] lanes_detected_c;
   logic              [     MAX_NUM_LANES-1:0] lanes_detected_r;
+  logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_c;
+  logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_r;
 
 
   logic              [     MAX_NUM_LANES-1:0] single_idle_received;
@@ -258,6 +261,7 @@ module pcie_ltssm_downstream
   assign active_lanes_o         = lane_active_r;
   assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
+  assign phy_rxpolarity_o       = phy_rxpolarity_r;
 
 
   always_ff @(posedge clk_i) begin : gen_link_number
@@ -325,6 +329,7 @@ module pcie_ltssm_downstream
       successful_speed_negotiation_r <= '0;
       idle_to_rlock_transitioned_r   <= '0;
       max_supported_rate_r           <= gen1;
+      phy_rxpolarity_r               <= '0;
       gen_os_ctrl_r                  <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
@@ -358,6 +363,7 @@ module pcie_ltssm_downstream
       successful_speed_negotiation_r <= successful_speed_negotiation_c;
       idle_to_rlock_transitioned_r   <= idle_to_rlock_transitioned_c;
       max_supported_rate_r           <= max_supported_rate_c;
+      phy_rxpolarity_r               <= phy_rxpolarity_c;
       gen_os_ctrl_r                  <= gen_os_ctrl_c;
     end
     //non-resetable
@@ -427,7 +433,7 @@ module pcie_ltssm_downstream
     phy_powerdown_o                = '0;
     phy_txdeemph_o                 = '1;
     phy_txcompliance_o             = '0;
-    phy_rxpolarity_o               = '0;
+    phy_rxpolarity_c               = phy_rxpolarity_r;
     phy_txmargin_o                 = '0;
     // gen_os_ctrl_c                  = '0;
     case (curr_state)
@@ -567,6 +573,10 @@ module pcie_ltssm_downstream
         //check if last packet in frame
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
+
+          if (|polarity_inverted_i) begin
+            phy_rxpolarity_c = phy_rxpolarity_r ^ polarity_inverted_i;
+          end
 
           if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
             //reset counts

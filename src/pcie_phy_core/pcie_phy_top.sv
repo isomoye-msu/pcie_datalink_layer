@@ -124,6 +124,7 @@ module pcie_phy_top
   logic              [    MAX_NUM_LANES-1:0] ts1_valid;
   logic              [    MAX_NUM_LANES-1:0] ts2_valid;
   logic              [    MAX_NUM_LANES-1:0] idle_valid;
+  logic              [    MAX_NUM_LANES-1:0] polarity_inverted;
   training_ctrl_t    [    MAX_NUM_LANES-1:0] training_ctrl;
   rate_speed_e                               curr_data_rate;
   pcie_ordered_set_t                         ordered_set;
@@ -202,6 +203,7 @@ module pcie_phy_top
       .ts1_valid_o       (ts1_valid),
       .ts2_valid_o       (ts2_valid),
       .idle_valid_o      (idle_valid),
+      .polarity_inverted_o(polarity_inverted),
       .ordered_set_o     (rx_ordered_set),
       .curr_data_rate_i  (curr_data_rate),
       .m_dllp_axis_tdata (m_dllp_axis_tdata),
@@ -269,6 +271,7 @@ module pcie_phy_top
       .ts1_valid_i        (ts1_valid),
       .ts2_valid_i        (ts2_valid),
       .idle_valid_i       (idle_valid),
+      .polarity_inverted_i(polarity_inverted),
       .phy_rxstatus_i     (phy_rxstatus),
       .phy_phystatus_i    (phy_phystatus),
       .phy_phystatus_rst_i(phy_phystatus_rst),

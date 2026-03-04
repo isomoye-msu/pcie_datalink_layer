@@ -29,6 +29,8 @@ package pcie_phy_pkg;
   typedef enum logic [7:0] {
             TS1      = 8'h4A,
             TS2      = 8'h45,
+            TS1_INV  = 8'hB5,
+            TS2_INV  = 8'hBA,
             SDS      = 8'hE1,
             PAD_     = 8'hf7,  // K23.7
             SDS_BODY = 8'h55,
