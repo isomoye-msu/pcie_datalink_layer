@@ -212,7 +212,13 @@ module ordered_set_handler
             for (int i = 0; i < 4; i++) begin
               if (i < byte_shift) begin
                 if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                  ordered_set_c[31:0] = data_in_i >> 8 * i;
+                  for (int j = 0; j < 4; j++) begin
+                    if (i + j < byte_shift) begin
+                      int sum_idx;
+                      sum_idx = (i + j) % 4; // Bounded for synthesis
+                      ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                    end
+                  end
                   next_state = ST_RX_GEN1;
                   axis_pkt_cnt_c = byte_shift - i;
                 end else if ((!data_k_in_i[i]) && data_in_i[i*8+:8] == '0) begin
@@ -276,7 +282,13 @@ module ordered_set_handler
                 next_state          = ST_IDLE;
               end
               if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                ordered_set_c[7:0] = data_in_i >> 8 * i;
+                for (int j = 0; j < 4; j++) begin
+                  if (i + j < byte_shift) begin
+                    int sum_idx;
+                    sum_idx = (i + j) % 4; // Bounded for synthesis
+                    ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                  end
+                end
                 next_state = ST_RX_GEN1;
                 axis_pkt_cnt_c = byte_shift - i;
               end
@@ -364,18 +376,18 @@ module ordered_set_handler
       // idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
-        if (ordered_set_r[8*7+:8] == TS1) begin
+        if (ordered_set_r[8*6+:8] == TS1 && ordered_set_r[8*7+:8] == TS1 && ordered_set_r[8*8+:8] == TS1 && ordered_set_r[8*9+:8] == TS1) begin
           ts1_valid = '1;
-        end else if (ordered_set_r[8*7+:8] == TS1_INV) begin
+        end else if (ordered_set_r[8*6+:8] == TS1_INV && ordered_set_r[8*7+:8] == TS1_INV && ordered_set_r[8*8+:8] == TS1_INV && ordered_set_r[8*9+:8] == TS1_INV) begin
           ts1_valid           = '1;
           polarity_inverted_c = '1;
         end else begin
           ts1_valid = '0;
         end
 
-        if (ordered_set_r[8*7+:8] == TS2) begin
+        if (ordered_set_r[8*6+:8] == TS2 && ordered_set_r[8*7+:8] == TS2 && ordered_set_r[8*8+:8] == TS2 && ordered_set_r[8*9+:8] == TS2) begin
           ts2_valid = '1;
-        end else if (ordered_set_r[8*7+:8] == TS2_INV) begin
+        end else if (ordered_set_r[8*6+:8] == TS2_INV && ordered_set_r[8*7+:8] == TS2_INV && ordered_set_r[8*8+:8] == TS2_INV && ordered_set_r[8*9+:8] == TS2_INV) begin
           ts2_valid           = '1;
           polarity_inverted_c = '1;
         end else begin
