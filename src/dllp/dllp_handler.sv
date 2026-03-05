@@ -44,10 +44,14 @@ module dllp_handler
   localparam int UserIsDllp = 0;
 
   //tlp to dllp fsm emum
-  typedef enum logic [2:0] {
+  typedef enum logic [4:0] {
     ST_IDLE,
     ST_CHECK_CRC,
     ST_PROCESS_DLLP,
+    ST_ACK_NACK,
+    ST_PM_ENTER,
+    ST_INIT,
+    ST_UPDATE,
     ST_DLL_RX_DATA,
     ST_TLP_EOP
   } dll_rx_st_e;
@@ -106,7 +110,7 @@ module dllp_handler
   logic                         fc2_p_stored_r;
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
-  logic                [          15:0] crc_reversed;
+  logic        [          15:0] crc_reversed;
 
   assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
@@ -208,9 +212,24 @@ module dllp_handler
         if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
           if (crc_reversed == skid_s_axis_tdata[15:0]) begin
             //process tlp
-            next_state = ST_PROCESS_DLLP;
-          end
-          else begin
+            casez (dll_packet_r.generic.dllp_type)
+              Ack, Nak: begin
+                next_state = ST_ACK_NACK;
+              end
+              PM_Enter_L1, PM_Enter_L23, PM_Actv_St_Req_L1, PM_Request_Ack, Vendor_Specific: begin
+                next_state = ST_PM_ENTER;
+              end
+              InitFC1_P, InitFC1_NP, InitFC1_Cpl, InitFC2_P, InitFC2_NP, InitFC2_Cpl: begin
+                next_state = ST_INIT;
+              end
+              UpdateFC_P, UpdateFC_NP, UpdateFC_Cpl: begin
+                next_state = ST_UPDATE;
+              end
+              default: begin
+                next_state = ST_IDLE;
+              end
+            endcase
+          end else begin
             next_state = ST_IDLE;
           end
         end
@@ -218,6 +237,25 @@ module dllp_handler
       ST_PROCESS_DLLP: begin
         //drop ready and process tlp... a little inefficient since we reduce bandwidth
         //but this should not be a bottleneck
+        casez (dll_packet_r.generic.dllp_type)
+          Ack, Nak: begin
+            next_state = ST_ACK_NACK;
+          end
+          PM_Enter_L1, PM_Enter_L23, PM_Actv_St_Req_L1, PM_Request_Ack, Vendor_Specific: begin
+            next_state = ST_PM_ENTER;
+          end
+          InitFC1_P, InitFC1_NP, InitFC1_Cpl, InitFC2_P, InitFC2_NP, InitFC2_Cpl: begin
+            next_state = ST_INIT;
+          end
+          UpdateFC_P, UpdateFC_NP, UpdateFC_Cpl: begin
+            next_state = ST_UPDATE;
+          end
+          default: begin
+            next_state = ST_IDLE;
+          end
+        endcase
+      end
+      ST_ACK_NACK: begin
         casez (dll_packet_r.generic.dllp_type)
           Ack: begin
             seq_num_o         = get_ack_nack_seq(dll_packet_r.ack_nack);
@@ -228,6 +266,13 @@ module dllp_handler
             seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
             seq_num_vld_o = '1;
           end
+          default: begin
+          end
+        endcase
+        next_state = ST_IDLE;
+      end
+      ST_PM_ENTER: begin
+        casez (dll_packet_r.generic.dllp_type)
           PM_Enter_L1: begin
             //not implemented
           end
@@ -243,6 +288,13 @@ module dllp_handler
           Vendor_Specific: begin
             //not implemented
           end
+          default: begin
+          end
+        endcase
+        next_state = ST_IDLE;
+      end
+      ST_INIT: begin
+        casez (dll_packet_r.generic.dllp_type)
           InitFC1_P: begin
             get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
             fc1_p_stored_c = '1;
@@ -267,6 +319,13 @@ module dllp_handler
             get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
             fc2_c_stored_c = '1;
           end
+          default: begin
+          end
+        endcase
+        next_state = ST_IDLE;
+      end
+      ST_UPDATE: begin
+        casez (dll_packet_r.generic.dllp_type)
           UpdateFC_P: begin
             get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
             update_fc_c = '1;

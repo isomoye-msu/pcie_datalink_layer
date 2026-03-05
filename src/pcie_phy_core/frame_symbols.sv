@@ -40,6 +40,7 @@ module frame_symbols
     ST_FRAME_STREAM,
     ST_FRAME_GEN_3_TLP,
     ST_FRAME_GEN_3_DLLP,
+    ST_FRAME_GEN_3_TLP_CRC,
     ST_FRAME_GEN_3_TLP_SDS,
     ST_FRAME_GEN_3_STREAM,
     ST_FRAME_LAST,
@@ -85,8 +86,10 @@ module frame_symbols
 
   logic      [          15:0] tlp_length_c;
   logic      [          15:0] tlp_length_r;
-  logic      [           3:0] fcrc;
-  logic                       fp;
+  logic      [           3:0] fcrc_c;
+  logic      [           3:0] fcrc_r;
+  logic                       fp_c;
+  logic                       fp_r;
   logic                       fifo_ready;
   logic                       fifo_valid;
   logic                       is_tlp_c;
@@ -104,6 +107,8 @@ module frame_symbols
     tlp_length_r <= tlp_length_c;
     is_tlp_r     <= is_tlp_c;
     is_dllp_r    <= is_dllp_c;
+    fcrc_r       <= fcrc_c;
+    fp_r         <= fp_c;
   end
 
 
@@ -120,6 +125,8 @@ module frame_symbols
     is_tlp_c        = is_tlp_r;
     is_dllp_c       = is_dllp_r;
     tlp_length_c    = tlp_length_r;
+    fcrc_c          = fcrc_r;
+    fp_c            = fp_r;
 
     if (!mux_axis_buffer) begin
       mux_axis_tdata  = s_axis_tdata;
@@ -139,14 +146,15 @@ module frame_symbols
       //store packet, because we're shifting the data to fit in
       //the seq number, we'll need to save 2 bytes of this packet
       ST_IDLE: begin
+        s_axis_tready = phy_axis_tready || !s_axis_tvalid;
         if (phy_axis_tready && s_axis_tvalid) begin
           phy_axis_tvalid = '1;
           phy_axis_tkeep  = '1;
           if (curr_data_rate_i < gen3) begin
-            s_axis_tready = '1;
+            s_axis_tready  = '1;
             phy_axis_tdata = {s_axis_tdata[23:0], s_axis_tuser[0] ? SDP : STP};
             phy_axis_tuser = 4'b0001;
-            next_state = ST_FRAME_STREAM;
+            next_state     = ST_FRAME_STREAM;
           end else begin
             if (s_axis_tuser[0]) begin
               is_dllp_c      = '1;
@@ -166,7 +174,7 @@ module frame_symbols
         end
       end
       ST_FRAME_STREAM: begin
-        s_axis_tready   = phy_axis_tready;
+        s_axis_tready = phy_axis_tready;
         if (s_axis_tready && s_axis_tvalid) begin
           s_axis_tready   = '1;
           phy_axis_tvalid = '1;
@@ -209,7 +217,7 @@ module frame_symbols
               end
               default: begin
                 phy_axis_tlast = '0;
-                next_state = ST_FRAME_LAST_DLLP;
+                next_state     = ST_FRAME_LAST_DLLP;
               end
             endcase
           end
@@ -221,7 +229,7 @@ module frame_symbols
         if (fifo_ready && s_axis_tvalid) begin
           tlp_length_c = tlp_length_r + 1'b1;
           if (s_axis_tlast) begin
-            next_state = ST_FRAME_GEN_3_TLP_SDS;
+            next_state = ST_FRAME_GEN_3_TLP_CRC;
             if (s_axis_tkeep != 4'b0011) begin
               //this is bad.. misalliged tlp. goto idle
               next_state = ST_IDLE;
@@ -229,14 +237,17 @@ module frame_symbols
           end
         end
       end
+      ST_FRAME_GEN_3_TLP_CRC: begin
+        gen_fcrc_parity(fcrc_c, fp_c, tlp_length_r);
+        next_state = ST_FRAME_GEN_3_TLP_SDS;
+      end
       ST_FRAME_GEN_3_TLP_SDS: begin
         fifo_axis_tready = phy_axis_tready;
         mux_axis_buffer  = '1;
         if (phy_axis_tready && fifo_axis_tvalid) begin
           phy_axis_tvalid = '1;
           phy_axis_tuser  = '1;
-          gen_fcrc_parity(fcrc, fp, tlp_length_r);
-          gen_stp_gen3(phy_axis_tdata, fp, fcrc, tlp_length_r, {
+          gen_stp_gen3(phy_axis_tdata, fp_r, fcrc_r, tlp_length_r, {
                        fifo_axis_tdata[15:8], fifo_axis_tdata[3:0]});
           next_state = ST_FRAME_GEN_3_STREAM;
         end
@@ -281,7 +292,7 @@ module frame_symbols
       end
       ST_FRAME_LAST_DLLP: begin  //unreachable in current design
         if (phy_axis_tready) begin
-          next_state = ST_IDLE;
+          next_state      = ST_IDLE;
           phy_axis_tvalid = '1;
           case (buffer_axis_tkeep)
             4'b0111: begin
@@ -325,71 +336,71 @@ module frame_symbols
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_buffer_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(mux_axis_tdata),
-      .s_axis_tkeep(mux_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (mux_axis_tdata),
+      .s_axis_tkeep (mux_axis_tkeep),
       .s_axis_tvalid(mux_axis_tvalid),
       .s_axis_tready(),
-      .s_axis_tlast(mux_axis_tlast),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .s_axis_tuser(mux_axis_tuser),
-      .m_axis_tdata(buffer_axis_tdata),
-      .m_axis_tkeep(buffer_axis_tkeep),
+      .s_axis_tlast (mux_axis_tlast),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .s_axis_tuser (mux_axis_tuser),
+      .m_axis_tdata (buffer_axis_tdata),
+      .m_axis_tkeep (buffer_axis_tkeep),
       .m_axis_tvalid(buffer_axis_tvalid),
       .m_axis_tready(phy_axis_tready && mux_axis_tvalid),
-      .m_axis_tlast(buffer_axis_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(buffer_axis_tuser)
+      .m_axis_tlast (buffer_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (buffer_axis_tuser)
   );
 
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_output_register_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(phy_axis_tdata),
-      .s_axis_tkeep(phy_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (phy_axis_tdata),
+      .s_axis_tkeep (phy_axis_tkeep),
       .s_axis_tvalid(phy_axis_tvalid),
       .s_axis_tready(phy_axis_tready),
-      .s_axis_tlast(phy_axis_tlast),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .s_axis_tuser(phy_axis_tuser),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
+      .s_axis_tlast (phy_axis_tlast),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .s_axis_tuser (phy_axis_tuser),
+      .m_axis_tdata (m_axis_tdata),
+      .m_axis_tkeep (m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .m_axis_tuser(m_axis_tuser)
+      .m_axis_tlast (m_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (m_axis_tuser)
   );
 
 
@@ -397,51 +408,51 @@ module frame_symbols
   //and storing to confirm proper tlp seq num and crc..
   //before sending to the transaction layer
   axis_fifo #(
-      .DEPTH(RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
-      .DATA_WIDTH(DATA_WIDTH),
-      .KEEP_ENABLE(KEEP_WIDTH > 0),
-      .KEEP_WIDTH(KEEP_WIDTH),
-      .LAST_ENABLE(1),
-      .ID_ENABLE(0),
-      .DEST_ENABLE(0),
-      .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
+      .DEPTH               (RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
+      .DATA_WIDTH          (DATA_WIDTH),
+      .KEEP_ENABLE         (KEEP_WIDTH > 0),
+      .KEEP_WIDTH          (KEEP_WIDTH),
+      .LAST_ENABLE         (1),
+      .ID_ENABLE           (0),
+      .DEST_ENABLE         (0),
+      .USER_ENABLE         ('1),
+      .USER_WIDTH          (USER_WIDTH),
       // .PIPELINE_OUTPUT(2),
-      .FRAME_FIFO(1),
+      .FRAME_FIFO          (1),
       .USER_BAD_FRAME_VALUE('1),
-      .USER_BAD_FRAME_MASK('1),
+      .USER_BAD_FRAME_MASK ('1),
       // .PIPELINE_OUTPUT(),
-      .DROP_BAD_FRAME(1),
-      .DROP_WHEN_FULL(0)
+      .DROP_BAD_FRAME      (1),
+      .DROP_WHEN_FULL      (0)
   ) dllp2tlp_fifo_inst (
-      .clk(clk_i),
-      .rst(rst_i),
+      .clk                (clk_i),
+      .rst                (rst_i),
       // AXI input
-      .s_axis_tdata(s_axis_tdata),
-      .s_axis_tkeep(s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid && fifo_valid),
-      .s_axis_tready(fifo_ready),
-      .s_axis_tlast(s_axis_tlast),
-      .s_axis_tuser(s_axis_tuser),
-      .s_axis_tid(),
-      .s_axis_tdest(),
+      .s_axis_tdata       (s_axis_tdata),
+      .s_axis_tkeep       (s_axis_tkeep),
+      .s_axis_tvalid      (s_axis_tvalid && fifo_valid),
+      .s_axis_tready      (fifo_ready),
+      .s_axis_tlast       (s_axis_tlast),
+      .s_axis_tuser       (s_axis_tuser),
+      .s_axis_tid         (),
+      .s_axis_tdest       (),
       // AXI output
-      .m_axis_tdata(fifo_axis_tdata),
-      .m_axis_tkeep(fifo_axis_tkeep),
-      .m_axis_tvalid(fifo_axis_tvalid),
-      .m_axis_tready(fifo_axis_tready),
-      .m_axis_tlast(fifo_axis_tlast),
-      .m_axis_tuser(fifo_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest(),
-      .pause_ack(),
-      .pause_req(),
-      .status_depth(),
+      .m_axis_tdata       (fifo_axis_tdata),
+      .m_axis_tkeep       (fifo_axis_tkeep),
+      .m_axis_tvalid      (fifo_axis_tvalid),
+      .m_axis_tready      (fifo_axis_tready),
+      .m_axis_tlast       (fifo_axis_tlast),
+      .m_axis_tuser       (fifo_axis_tuser),
+      .m_axis_tid         (),
+      .m_axis_tdest       (),
+      .pause_ack          (),
+      .pause_req          (),
+      .status_depth       (),
       .status_depth_commit(),
       // Status
-      .status_overflow(),
-      .status_bad_frame(),
-      .status_good_frame()
+      .status_overflow    (),
+      .status_bad_frame   (),
+      .status_good_frame  ()
   );
 
 endmodule

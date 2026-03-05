@@ -358,6 +358,13 @@ module pcie_top_gtp #(
   assign s_tlp_axis_byte_swap_tdata[23:16] = s_tlp_axis_tdata[15:8];
   assign s_tlp_axis_byte_swap_tdata[31:24] = s_tlp_axis_tdata[7:0];
 
+
+  assign led_0 = fc_initialized_o;
+  assign led_1 = phy_powerdown;
+  assign led_2 = link_up;
+  assign led_3 = phy_ready_en;
+
+
   pcie_phy_top #(
       .CLK_RATE     (CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
@@ -728,7 +735,6 @@ module pcie_top_gtp #(
   wire        clkfbstopped_unused;
   wire        clkinstopped_unused;
   wire        reset_high;
-  wire sys_clk;
 
   // MMCME2_ADV
   // #(.BANDWIDTH            ("OPTIMIZED"),
