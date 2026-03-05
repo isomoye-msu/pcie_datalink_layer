@@ -16,7 +16,7 @@ module pcie_ltssm_downstream
     // TLP keep width
     parameter int KEEP_WIDTH    = DATA_WIDTH / 8,
     parameter int USER_WIDTH    = $bits(phy_user_t),
-    parameter int SIM_FAST_LINK = 1,
+    parameter int SIM_FAST_LINK = 0,
 
     parameter int          IS_ROOT_PORT = 0,
     parameter int          LINK_NUM           = 0,
@@ -93,16 +93,16 @@ module pcie_ltssm_downstream
 );
 
   localparam int ClockPeriodNs = ((10 ** 3) / CLK_RATE);
-  localparam longint TwentyFourMsTimeOut = (24 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint FourtyEightMsTimeOut = (48 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint TwentyFourMsTimeOut = (24 * (10 ** 6)) / ClockPeriodNs;
+  localparam longint FourtyEightMsTimeOut = (48 * (10 ** 6)) / ClockPeriodNs;
   localparam longint TwelveMsTimeOut = SIM_FAST_LINK ? (12 * (10 ** 4)) / (ClockPeriodNs *10): 
-  (12 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint TwoMsTimeOut = (2 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint OneMsTimeOut = SIM_FAST_LINK ? (1 * (10 ** 4)) / (ClockPeriodNs *10): (1 * (10 ** 4)) / ClockPeriodNs;
+  (12 * (10 ** 6)) / ClockPeriodNs;
+  localparam longint TwoMsTimeOut = (2 * (10 ** 6)) / ClockPeriodNs;
+  localparam longint OneMsTimeOut = SIM_FAST_LINK ? (1 * (10 ** 4)) / (ClockPeriodNs *10): (1 * (10 ** 6)) / ClockPeriodNs;
   localparam int SixUsTimeOut = (6 * (10 ** 3)) / ClockPeriodNs;
   localparam int EigthHundredNanoSecondTimeOut = (800) / ClockPeriodNs;
   localparam int TwentyNanoSeconds = 20* (10 **0)/ ClockPeriodNs;  //(20 * (10** -9)); //)) / int'((1 / (CLK_RATE * $pow(10, 6))));
-  localparam int MinTS1sPolling = 48;  //24;  //1024
+  localparam int MinTS1sPolling = 1024;  //24;  //1024
 
   typedef enum logic [19:0] {
     ST_IDLE                           = 20'b00000000000000000000,
@@ -226,6 +226,8 @@ module pcie_ltssm_downstream
   logic              [     MAX_NUM_LANES-1:0] lanes_detected_r;
   logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_c;
   logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_r;
+  logic              [                15:0] polarity_lockout_timer_c;
+  logic              [                15:0] polarity_lockout_timer_r;
 
 
   logic              [     MAX_NUM_LANES-1:0] single_idle_received;
@@ -330,6 +332,7 @@ module pcie_ltssm_downstream
       idle_to_rlock_transitioned_r   <= '0;
       max_supported_rate_r           <= gen1;
       phy_rxpolarity_r               <= '0;
+      polarity_lockout_timer_r       <= '0;
       gen_os_ctrl_r                  <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
@@ -364,6 +367,7 @@ module pcie_ltssm_downstream
       idle_to_rlock_transitioned_r   <= idle_to_rlock_transitioned_c;
       max_supported_rate_r           <= max_supported_rate_c;
       phy_rxpolarity_r               <= phy_rxpolarity_c;
+      polarity_lockout_timer_r       <= polarity_lockout_timer_c;
       gen_os_ctrl_r                  <= gen_os_ctrl_c;
     end
     //non-resetable
@@ -434,6 +438,7 @@ module pcie_ltssm_downstream
     phy_txdeemph_o                 = '1;
     phy_txcompliance_o             = '0;
     phy_rxpolarity_c               = phy_rxpolarity_r;
+    polarity_lockout_timer_c       = (polarity_lockout_timer_r > 0) ? polarity_lockout_timer_r - 1 : 0;
     phy_txmargin_o                 = '0;
     // gen_os_ctrl_c                  = '0;
     case (curr_state)
@@ -573,12 +578,14 @@ module pcie_ltssm_downstream
         //check if last packet in frame
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
+        end
 
-          if (|polarity_inverted_i) begin
-            phy_rxpolarity_c = phy_rxpolarity_r ^ polarity_inverted_i;
-          end
+        if (|polarity_inverted_i && (polarity_lockout_timer_r == 0)) begin
+          phy_rxpolarity_c = phy_rxpolarity_r ^ polarity_inverted_i;
+          polarity_lockout_timer_c = 16'd1000; // ~10us lockout
+        end
 
-          if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+        if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
             //reset counts
             // timer_c                = '0;
             ordered_set_sent_cnt_c = '0;
@@ -598,7 +605,6 @@ module pcie_ltssm_downstream
             end
           end
         end
-      end
       //*********************************************************
       // Polling.Compliance: NOT IMPLEMENTED
       //*********************************************************

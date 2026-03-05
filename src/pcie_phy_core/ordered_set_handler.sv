@@ -376,18 +376,18 @@ module ordered_set_handler
       // idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
-        if (ordered_set_r[8*6+:8] == TS1 && ordered_set_r[8*7+:8] == TS1 && ordered_set_r[8*8+:8] == TS1 && ordered_set_r[8*9+:8] == TS1) begin
+        if (ordered_set_out_r[8*6+:8] == TS1 && ordered_set_out_r[8*7+:8] == TS1 && ordered_set_out_r[8*8+:8] == TS1 && ordered_set_out_r[8*9+:8] == TS1) begin
           ts1_valid = '1;
-        end else if (ordered_set_r[8*6+:8] == TS1_INV && ordered_set_r[8*7+:8] == TS1_INV && ordered_set_r[8*8+:8] == TS1_INV && ordered_set_r[8*9+:8] == TS1_INV) begin
+        end else if (ordered_set_out_r[8*6+:8] == TS1_INV && ordered_set_out_r[8*7+:8] == TS1_INV && ordered_set_out_r[8*8+:8] == TS1_INV && ordered_set_out_r[8*9+:8] == TS1_INV) begin
           ts1_valid           = '1;
           polarity_inverted_c = '1;
         end else begin
           ts1_valid = '0;
         end
 
-        if (ordered_set_r[8*6+:8] == TS2 && ordered_set_r[8*7+:8] == TS2 && ordered_set_r[8*8+:8] == TS2 && ordered_set_r[8*9+:8] == TS2) begin
+        if (ordered_set_out_r[8*6+:8] == TS2 && ordered_set_out_r[8*7+:8] == TS2 && ordered_set_out_r[8*8+:8] == TS2 && ordered_set_out_r[8*9+:8] == TS2) begin
           ts2_valid = '1;
-        end else if (ordered_set_r[8*6+:8] == TS2_INV && ordered_set_r[8*7+:8] == TS2_INV && ordered_set_r[8*8+:8] == TS2_INV && ordered_set_r[8*9+:8] == TS2_INV) begin
+        end else if (ordered_set_out_r[8*6+:8] == TS2_INV && ordered_set_out_r[8*7+:8] == TS2_INV && ordered_set_out_r[8*8+:8] == TS2_INV && ordered_set_out_r[8*9+:8] == TS2_INV) begin
           ts2_valid           = '1;
           polarity_inverted_c = '1;
         end else begin

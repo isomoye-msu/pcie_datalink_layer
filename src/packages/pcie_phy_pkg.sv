@@ -409,7 +409,6 @@ package pcie_phy_pkg;
       temp_os.n_fts      = '1;//8'h04;
       temp_os.ts_s6      =  ts_symbol6_union_t'(TSOS_);
       temp_os.ts_s7      =  ts_symbol6_union_t'(TSOS_);
-      temp_os.ts_s7      =  ts_symbol6_union_t'(TSOS_);
       temp_os.ts_s8      =  ts_symbol6_union_t'(TSOS_);
       temp_os.ts_s9      =  ts_symbol6_union_t'(TSOS_);
       for (int tsos_i = 0; tsos_i < 6; tsos_i++)
