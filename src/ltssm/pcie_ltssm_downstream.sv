@@ -783,11 +783,10 @@ module pcie_ltssm_downstream
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check exit scenario
-          if (&lane_num_formed && (ordered_set_sent_cnt_r >= 8'h8)) begin
+          if (&lane_num_formed && (ordered_set_sent_cnt_r >= 8'd32)) begin
             //decrement counts
             ordered_set_sent_cnt_c = '0;
 
-            // timer_c                = '0;
             //build idle ordered set
             transmit_ordered_set   = '1;
             ordered_set_c = gen_zeros();
