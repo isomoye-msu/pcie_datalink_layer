@@ -211,7 +211,7 @@ module pcie_ltssm_downstream
   logic              [     MAX_NUM_LANES-1:0] lane_num_satisfied;
 
   logic              [                  15:0] ordered_set_sent_cnt_c;
-  logic              [                  15:0] ordered_set_sent_cnt_r;
+  (* mark_debug = "true" *) logic              [                  15:0] ordered_set_sent_cnt_r;
 
   logic              [     MAX_NUM_LANES-1:0] link_lanes_nums_match;
   logic              [     MAX_NUM_LANES-1:0] link_lane_reconfig;
@@ -230,8 +230,8 @@ module pcie_ltssm_downstream
   logic              [                15:0] polarity_lockout_timer_r;
 
 
-  logic              [     MAX_NUM_LANES-1:0] single_idle_received;
-  logic              [     MAX_NUM_LANES-1:0] link_idle_satisfied;
+  (* mark_debug = "true" *) logic              [     MAX_NUM_LANES-1:0] single_idle_received;
+  (* mark_debug = "true" *) logic              [     MAX_NUM_LANES-1:0] link_idle_satisfied;
 
   //training sequence satisfy signals
   logic              [     MAX_NUM_LANES-1:0] lanes_ts1_satisfied;
@@ -816,9 +816,8 @@ module pcie_ltssm_downstream
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
           end
           //check if number of idle OS received and idle OS sent
-          if (link_idle_satisfied && (ordered_set_sent_cnt_r >= 16)) begin
-            //assert success.. tells ltssm hierarchy to move to its next state
-            success_c                    = '1;
+          if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 16)) begin
+            //assert success.. tells ltssm hierarchy to move to its next state            success_c                    = '1;
             //reset counters
             ordered_set_sent_cnt_c       = '0;
             gen_os_ctrl_c.gen_ts1        = '0;
@@ -1330,7 +1329,7 @@ module pcie_ltssm_downstream
   //-----------------------------------------------------------
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_cnt_ts1
     //local helper counters
-    logic              [7:0] ts1_cnt;
+    (* mark_debug = "true" *) logic              [7:0] ts1_cnt;
     logic              [7:0] ts2_cnt;
     logic              [7:0] idle_cnt;
 

@@ -55,7 +55,7 @@ module ordered_set_handler
   } os_decode_state_e;
 
 
-  os_decode_state_e                   curr_state;
+  (* mark_debug = "true" *) os_decode_state_e curr_state;
   os_decode_state_e                   next_state;
 
   logic              [           7:0] axis_pkt_cnt_c;
