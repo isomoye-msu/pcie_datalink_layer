@@ -17,7 +17,9 @@ filesets:
       - fusesoc:pcie:phy_scrambler
       - fusesoc:pcie:axis
       - fusesoc:pcie:lint
-
+  synth:
+    files:
+      - phy_transmit.xdc : {file_type : xdc}
 
 targets:
   default:
@@ -58,7 +60,7 @@ targets:
 
   synth:
     default_tool : vivado
-    filesets : [rtl]
+    filesets : [rtl, synth]
     tools:
       vivado:
         part : xc7a100tcsg324-1
