@@ -677,7 +677,39 @@ module tlp2dllp
       .m_axis_tdest()
   );
 
-
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH(1),
+      .USER_ENABLE('1),
+      .USER_WIDTH(3),
+      .REG_TYPE(SkidBuffer)
+  ) axis_transition_register_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(tlp_axis_tdata),
+      .s_axis_tkeep(tlp_axis_tkeep),
+      .s_axis_tvalid(tlp_axis_tvalid),
+      .s_axis_tready(tlp_axis_tready),
+      .s_axis_tlast(tlp_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(tlp_axis_tuser),
+      .m_axis_tdata(trans_axis_tdata),
+      .m_axis_tkeep(trans_axis_tkeep),
+      .m_axis_tvalid(trans_axis_tvalid),
+      .m_axis_tready(trans_axis_tready),
+      .m_axis_tlast(trans_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(trans_axis_tuser)
+  );
 
   //axis skid buffer
   axis_register #(
@@ -695,14 +727,14 @@ module tlp2dllp
   ) axis_output_register_inst (
       .clk(clk_i),
       .rst(rst_i),
-      .s_axis_tdata(tlp_axis_tdata),
-      .s_axis_tkeep(tlp_axis_tkeep),
-      .s_axis_tvalid(tlp_axis_tvalid),
-      .s_axis_tready(tlp_axis_tready),
-      .s_axis_tlast(tlp_axis_tlast),
+      .s_axis_tdata(trans_axis_tdata),
+      .s_axis_tkeep(trans_axis_tkeep),
+      .s_axis_tvalid(trans_axis_tvalid),
+      .s_axis_tready(trans_axis_tready),
+      .s_axis_tlast(trans_axis_tlast),
       .s_axis_tid('0),
       .s_axis_tdest('0),
-      .s_axis_tuser(tlp_axis_tuser),
+      .s_axis_tuser(trans_axis_tuser),
       .m_axis_tdata(m_axis_tdata),
       .m_axis_tkeep(m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
