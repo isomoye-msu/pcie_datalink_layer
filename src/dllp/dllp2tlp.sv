@@ -55,12 +55,16 @@ module dllp2tlp
   localparam int MinRxBufferSize = MaxTlpTotalSizeDW * (RX_FIFO_SIZE);
   localparam int RamDataWidth = DATA_WIDTH;
   localparam int RamAddrWidth = $clog2(MinRxBufferSize);
-
+  localparam int PipelineStages = 2;
   //dllp to tlp fsm emum
   typedef enum logic [4:0] {
     ST_IDLE,
+    ST_CRC_IDLE,
     ST_CHECK_TLP_TYPE,
+    ST_CRC_CHECK_TYPE,
+    ST_CRC_PRE_STREAM,
     ST_TLP_STREAM,
+    ST_CRC_TLP_STREAM,
     ST_TLP_LAST,
     ST_CHECK_CRC,
     ST_SEND_ACK,
@@ -115,13 +119,14 @@ module dllp2tlp
   logic                                  tlp_is_pd_r;
   logic                                  tlp_is_cpld_c;
   logic                                  tlp_is_cpld_r;
+  logic                                  advance_tlp;
   //skid buffer axis signals
-  logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
-  logic                 [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  logic                                  skid_axis_tvalid;
-  logic                                  skid_axis_tlast;
-  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
-  logic                                  skid_axis_tready;
+  logic              [PipelineStages-1:0]   [DATA_WIDTH-1:0] skid_axis_tdata ;
+  logic              [PipelineStages-1:0]   [KEEP_WIDTH-1:0] skid_axis_tkeep ;
+  logic              [PipelineStages-1:0]                    skid_axis_tvalid;
+  logic              [PipelineStages-1:0]                    skid_axis_tlast ;
+  logic              [PipelineStages-1:0]   [USER_WIDTH-1:0] skid_axis_tuser ;
+  logic              [PipelineStages-1:0]                    skid_axis_tready;
   // tlp pipeline axis bus
   logic                 [DATA_WIDTH-1:0] pipeline_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] pipeline_axis_tkeep;
@@ -150,6 +155,19 @@ module dllp2tlp
   logic                                  tlp_axis_tlast;
   logic                 [USER_WIDTH-1:0] tlp_axis_tuser;
   logic                                  tlp_axis_tready;
+
+
+  logic                 [DATA_WIDTH-1:0] tlp_buffer_axis_tdata;
+  logic                 [KEEP_WIDTH-1:0] tlp_buffer_axis_tkeep;
+  logic                                  tlp_buffer_axis_tvalid;
+  logic                                  tlp_buffer_axis_tlast;
+  logic                 [USER_WIDTH-1:0] tlp_buffer_axis_tuser;
+  logic                                  tlp_buffer_axis_tready;
+
+
+  logic                 [DATA_WIDTH-1:0] tlp_buffer_axis_tdata_c;
+  logic                 [DATA_WIDTH-1:0] tlp_buffer_axis_tdata_r;
+
   //credits tracking signals
   logic                 [          15:0] tlp_header_offset;
   logic                 [           7:0] ph_credits_consumed_c;
@@ -205,6 +223,7 @@ module dllp2tlp
     tlp_is_npd_r   <= tlp_is_npd_c;
     tlp_is_pd_r    <= tlp_is_pd_c;
     crc_from_tlp_r <= crc_from_tlp_c;
+    tlp_buffer_axis_tdata_r <= tlp_buffer_axis_tdata_c;
   end
 
 
@@ -267,7 +286,7 @@ module dllp2tlp
     tlp_is_cpld_c           = tlp_is_cpld_r;
     tlp_is_npd_c            = tlp_is_npd_r;
     tlp_is_pd_c             = tlp_is_pd_r;
-    skid_axis_tready        = '0;
+    skid_axis_tready[1]        = '0;
     tlp_dw0                 = '0;
     dll_packet              = '0;
     tlp_header_offset       = '0;
@@ -279,6 +298,9 @@ module dllp2tlp
     tlp_axis_tvalid         = '0;
     tlp_axis_tlast          = '0;
     tlp_axis_tuser          = '0;
+    // tlp_buffer_axis_tready  = '1;
+    tlp_buffer_axis_tdata_c = tlp_buffer_axis_tdata_r;
+    advance_tlp             = tlp_axis_tvalid;
     ph_credits_consumed_c   = ph_credits_consumed_r;
     pd_credits_consumed_c   = pd_credits_consumed_r;
     nph_credits_consumed_c  = nph_credits_consumed_r;
@@ -289,37 +311,43 @@ module dllp2tlp
     next_expected_seq_num_c = next_expected_seq_num_r;
     case (curr_state)
       ST_IDLE: begin
-        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE) && s_axis_tvalid;
-        if (skid_axis_tready && skid_axis_tvalid && !skid_axis_tlast) begin
+        skid_axis_tready[1] = tlp_axis_tready && (link_status_i == DL_ACTIVE);
+        if (skid_axis_tready[1] && skid_axis_tvalid[1] && !skid_axis_tlast[1]) begin
           //store incoming sequence number
-          next_transmit_seq_c = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
-          tlp_axis_tdata      = skid_axis_tdata[15:0];
-          crc_byte_select     = 2'b11;
-          crc_calculated_c    = crc_output_16;
+          next_transmit_seq_c     = {skid_axis_tdata[1][7:0], skid_axis_tdata[1][15:8]};
+          tlp_axis_tdata          = skid_axis_tdata[1][15:0];
+          tlp_buffer_axis_tdata_c = tlp_axis_tdata;
           //tlp type
-          tlp_is_nph_c        = '0;
-          tlp_is_pd_c         = '0;
-          tlp_is_ph_c         = '0;
-          tlp_is_npd_c        = '0;
-          tlp_is_cplh_c       = '0;
-          tlp_is_cpld_c       = '0;
+          tlp_is_nph_c            = '0;
+          tlp_is_pd_c             = '0;
+          tlp_is_ph_c             = '0;
+          tlp_is_npd_c            = '0;
+          tlp_is_cplh_c           = '0;
+          tlp_is_cpld_c           = '0;
+          advance_tlp             = '1;
           // crc_calculated_c    = '1;
-          word_count_c        = '0;
+          word_count_c            = '0;
           //state control
-          next_state          = ST_CHECK_TLP_TYPE;
+          next_state              = ST_CHECK_TLP_TYPE;
         end
       end
+      // ST_CRC_IDLE: begin
+      //   crc_byte_select  = 2'b11;
+      //   crc_calculated_c = crc_output_16;
+      //   next_state       = ST_CHECK_TLP_TYPE;
+      // end
       ST_CHECK_TLP_TYPE: begin
-        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
-        crc_byte_select  = 2'b11;
-        if (skid_axis_tready) begin
-          crc_calculated_c = crc_output_32;
+        skid_axis_tready[1] = tlp_axis_tready ;
+        if (skid_axis_tready[1] && skid_axis_tvalid[1]) begin
+          crc_byte_select         = 2'b11;
+          crc_calculated_c        = crc_output_16;
           //shift data_in to account for seq_num offset
-          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
-          tlp_axis_tkeep   = '1;
-          tlp_axis_tvalid  = '1;
-          tlp_dw0          = tlp_axis_tdata;
-          word_count_c     = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+          tlp_axis_tdata          = {skid_axis_tdata[1][15:0], pipeline_axis_tdata[31:16]};
+          tlp_axis_tkeep          = '1;
+          tlp_axis_tvalid         = '1;
+          tlp_dw0                 = tlp_axis_tdata;
+          word_count_c            = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+          tlp_buffer_axis_tdata_c = tlp_axis_tdata;
           //handle posted request
           if (tlp_dw0.byte0 inside {MRd, MRdLk, IORd, CfgRd0, CfgRd1, TCfgRd}) begin
             tlp_is_nph_c = '1;
@@ -339,49 +367,37 @@ module dllp2tlp
           next_state = ST_TLP_STREAM;
         end
       end
+      // ST_CRC_CHECK_TYPE: begin
+      //    crc_byte_select  = 2'b11;
+      //    crc_calculated_c = crc_output_32;
+      //    next_state = ST_TLP_STREAM;
+      // end
       ST_TLP_STREAM: begin
-        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
+        skid_axis_tready[1] = tlp_axis_tready && skid_axis_tvalid[0];
         crc_byte_select  = 2'b11;
-        if (tlp_axis_tready && s_axis_tvalid) begin
+        if (skid_axis_tready[1] && skid_axis_tvalid[1]) begin
+          crc_byte_select = 2'b11;
           crc_calculated_c = crc_output_32;
-          tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
-          tlp_axis_tkeep   = skid_axis_tkeep;
-          tlp_axis_tvalid  = '1;
-          if (s_axis_tlast) begin
+          tlp_axis_tdata = {skid_axis_tdata[1][15:0], pipeline_axis_tdata[31:16]};
+          tlp_axis_tkeep = skid_axis_tkeep[1];
+          tlp_axis_tvalid = '1;
+          tlp_buffer_axis_tdata_c = tlp_axis_tdata;
+          if (skid_axis_tlast[0]) begin
+            crc_from_tlp_c  = {skid_axis_tdata[0][15:0], skid_axis_tdata[1][31:16]};
             word_count_c    = word_count_r;
             tlp_axis_tvalid = '0;
+            // advance_tlp     = '1;
             next_state      = ST_TLP_LAST;
-            crc_from_tlp_c   = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
-            //if last packet of tlp, store crc from phy
-            // case (s_axis_tkeep)
-            //   4'b0001: begin
-            //     // crc_byte_select = '1;
-            //     crc_calculated_c = crc_output_16;
-            //     tlp_axis_tvalid  = '1;
-            //     crc_from_tlp_c   = {s_axis_tdata[7:0], skid_axis_tdata[31:8]};
-            //   end
-            //   4'b0011: begin
-            //     crc_calculated_c = crc_output_16;
-            //     crc_byte_select  = 2'b11;
-            //     crc_from_tlp_c   = {s_axis_tdata[15:0], skid_axis_tdata[31:16]};
-            //   end
-            //   4'b0111: begin
-            //     crc_byte_select = 2'b11;
-            //     crc_from_tlp_c  = {s_axis_tdata[23:0], skid_axis_tdata[31:24]};
-            //   end
-            //   4'b1111: begin
-            //     crc_byte_select = '1;
-            //     crc_from_tlp_c  = s_axis_tdata;
-            //   end
-            //   default: begin
-            //   end
-            // endcase
           end
         end
       end
+      // ST_CRC_TLP_STREAM: begin
+
+      // end
       ST_TLP_LAST: begin
-        crc_byte_select = 2'b11;
-        next_state = ST_CHECK_CRC;
+        crc_byte_select  = 2'b11;
+        next_state       = ST_CHECK_CRC;
+        crc_calculated_c = crc_output_32;
         // if (tlp_axis_tready) begin
         //   crc_calculated_c = crc_output_32;
         //   next_state = ST_CHECK_CRC;
@@ -406,14 +422,15 @@ module dllp2tlp
         // end
       end
       ST_CHECK_CRC: begin
-        tlp_axis_tdata   = {pipeline_axis_tdata[15:0], pipeline_stg2_axis_tdata[31:16]};
-        tlp_axis_tvalid  = '1;
-        tlp_axis_tlast   = '1;
-        crc_calculated_c = '1;
+        tlp_axis_tdata          = {pipeline_axis_tdata[15:0], pipeline_stg2_axis_tdata[31:16]};
+        tlp_axis_tvalid         = '1;
+        tlp_axis_tlast          = '1;
+        crc_calculated_c        = '1;
+        tlp_buffer_axis_tdata_c = tlp_axis_tdata;
         //default to dllp ack state
-        next_state       = ST_SEND_ACK;
-        fc_start_c       = '1;
-        tlp_axis_tkeep = 4'b1111;
+        next_state              = ST_SEND_ACK;
+        fc_start_c              = '1;
+        tlp_axis_tkeep          = 4'b1111;
         //assign tkeep based on last keep and alignement
         // case (skid_axis_tkeep)
         //   4'b0001: begin
@@ -482,6 +499,80 @@ module dllp2tlp
     endcase
   end
 
+
+  //axis input skid buffer
+  for (genvar i = 0; i < PipelineStages; i++) begin : gen_axis_pipelines
+    if (i == 0) begin: gen_axis_pipelines_0
+      //axis input skid buffer
+      axis_register #(
+          .DATA_WIDTH (DATA_WIDTH),
+          .KEEP_ENABLE('1),
+          .KEEP_WIDTH (KEEP_WIDTH),
+          .LAST_ENABLE('1),
+          .ID_ENABLE  ('0),
+          .ID_WIDTH   (1),
+          .DEST_ENABLE('0),
+          .DEST_WIDTH (1),
+          .USER_ENABLE('1),
+          .USER_WIDTH (USER_WIDTH),
+          .REG_TYPE   (SkidBuffer)
+      ) axis_register_pipeline_inst (
+          .clk          (clk_i),
+          .rst          (rst_i),
+          .s_axis_tdata (s_axis_tdata),
+          .s_axis_tkeep (s_axis_tkeep),
+          .s_axis_tvalid(s_axis_tvalid),
+          .s_axis_tready(s_axis_tready),
+          .s_axis_tlast (s_axis_tlast),
+          .s_axis_tuser (s_axis_tuser),
+          .s_axis_tid   ('0),
+          .s_axis_tdest ('0),
+          .m_axis_tdata (skid_axis_tdata [0]),
+          .m_axis_tkeep (skid_axis_tkeep [0]),
+          .m_axis_tvalid(skid_axis_tvalid[0]),
+          .m_axis_tready(skid_axis_tready[0]),
+          .m_axis_tlast (skid_axis_tlast [0]),
+          .m_axis_tuser (skid_axis_tuser [0]),
+          .m_axis_tid   (),
+          .m_axis_tdest ()
+      );
+    end else begin: gen_axis_pipelines_loop
+      //axis input skid buffer
+      axis_register #(
+          .DATA_WIDTH (DATA_WIDTH),
+          .KEEP_ENABLE('1),
+          .KEEP_WIDTH (KEEP_WIDTH),
+          .LAST_ENABLE('1),
+          .ID_ENABLE  ('0),
+          .ID_WIDTH   (1),
+          .DEST_ENABLE('0),
+          .DEST_WIDTH (1),
+          .USER_ENABLE('1),
+          .USER_WIDTH (USER_WIDTH),
+          .REG_TYPE   (SkidBuffer)
+      ) axis_register_pipeline_inst (
+          .clk          (clk_i),
+          .rst          (rst_i),
+          .s_axis_tdata (skid_axis_tdata [i-1]),
+          .s_axis_tkeep (skid_axis_tkeep [i-1]),
+          .s_axis_tvalid(skid_axis_tvalid[i-1]),
+          .s_axis_tready(skid_axis_tready[i-1]),
+          .s_axis_tlast (skid_axis_tlast [i-1]),
+          .s_axis_tuser (skid_axis_tuser [i-1]),
+          .s_axis_tid   ('0),
+          .s_axis_tdest ('0),
+          .m_axis_tdata (skid_axis_tdata [i]),
+          .m_axis_tkeep (skid_axis_tkeep [i]),
+          .m_axis_tvalid(skid_axis_tvalid[i]),
+          .m_axis_tready(skid_axis_tready[i]),
+          .m_axis_tlast (skid_axis_tlast [i]),
+          .m_axis_tuser (skid_axis_tuser [i]),
+          .m_axis_tid   (),
+          .m_axis_tdest ()
+      );
+    end
+
+  end
   //dllp2tlp fifo.. allows for processing tlp
   //and storing to confirm proper tlp seq num and crc..
   //before sending to the transaction layer
@@ -533,39 +624,6 @@ module dllp2tlp
       .status_good_frame  ()
   );
 
-  //axis input skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_register_pipeline_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (s_axis_tdata),
-      .s_axis_tkeep (s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid),
-      .s_axis_tready(s_axis_tready),
-      .s_axis_tlast (s_axis_tlast),
-      .s_axis_tuser (s_axis_tuser),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .m_axis_tdata (skid_axis_tdata),
-      .m_axis_tkeep (skid_axis_tkeep),
-      .m_axis_tvalid(skid_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast (skid_axis_tlast),
-      .m_axis_tuser (skid_axis_tuser),
-      .m_axis_tid   (),
-      .m_axis_tdest ()
-  );
 
   //axis pipeline skid buffer
   axis_register #(
@@ -583,18 +641,18 @@ module dllp2tlp
   ) axis_register_inst (
       .clk          (clk_i),
       .rst          (rst_i),
-      .s_axis_tdata (skid_axis_tdata),
-      .s_axis_tkeep (skid_axis_tkeep),
-      .s_axis_tvalid(skid_axis_tvalid),
+      .s_axis_tdata (skid_axis_tdata[1]),
+      .s_axis_tkeep (skid_axis_tkeep[1]),
+      .s_axis_tvalid(skid_axis_tvalid[1]),
       .s_axis_tready(),
-      .s_axis_tlast (skid_axis_tlast),
-      .s_axis_tuser (skid_axis_tuser),
+      .s_axis_tlast (skid_axis_tlast[1]),
+      .s_axis_tuser (skid_axis_tuser[1]),
       .s_axis_tid   ('0),
       .s_axis_tdest ('0),
       .m_axis_tdata (pipeline_axis_tdata),
       .m_axis_tkeep (pipeline_axis_tkeep),
       .m_axis_tvalid(pipeline_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
+      .m_axis_tready(skid_axis_tready[1] && skid_axis_tvalid[1]),
       .m_axis_tlast (pipeline_axis_tlast),
       .m_axis_tid   (),
       .m_axis_tdest (),
@@ -602,7 +660,7 @@ module dllp2tlp
   );
 
 
-  //axis pipeline skid buffer
+  // //axis pipeline skid buffer
   axis_register #(
       .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
@@ -629,7 +687,7 @@ module dllp2tlp
       .m_axis_tdata (pipeline_stg2_axis_tdata),
       .m_axis_tkeep (pipeline_stg2_axis_tkeep),
       .m_axis_tvalid(pipeline_stg2_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
+      .m_axis_tready(skid_axis_tready[1] && skid_axis_tvalid[1]),
       .m_axis_tlast (pipeline_stg2_axis_tlast),
       .m_axis_tid   (),
       .m_axis_tdest (),
@@ -638,14 +696,14 @@ module dllp2tlp
 
   //tlp crc instance
   pcie_lcrc16 tlp_crc16_inst (
-      .data  (tlp_axis_tdata[16:0]),
+      .data  (tlp_buffer_axis_tdata_r[16:0]),
       .crcIn (crc_calculated_r),
       .crcOut(crc_output_16)
   );
 
   pcie_lcrc32 pcie_lcrc32_inst (
       .crcIn (crc_calculated_r),
-      .data  (tlp_axis_tdata),
+      .data  (tlp_buffer_axis_tdata_r),
       .crcOut(crc_output_32)
   );
 

@@ -4,8 +4,8 @@
 # SYSCLK
 set_property PACKAGE_PIN F6 [get_ports sys_clk_p]
 set_property PACKAGE_PIN E6 [get_ports sys_clk_n]
-set_property IOSTANDARD LVDS_25 [get_ports sys_clk_p]
-set_property IOSTANDARD LVDS_25 [get_ports sys_clk_n]
+# set_property IOSTANDARD LVDS_25 [get_ports sys_clk_p]
+# set_property IOSTANDARD LVDS_25 [get_ports sys_clk_n]
 
 set_property LOC IBUFDS_GTE2_X0Y0 [get_cells refclk_ibuf]
 
@@ -23,14 +23,14 @@ set_property LOC IBUFDS_GTE2_X0Y0 [get_cells refclk_ibuf]
 # set_property LOC C12 [get_ports {pci_exp_rxn[0]}]
 
 # led_s
-set_property PACKAGE_PIN J22 [get_ports led_0]
-set_property IOSTANDARD LVCMOS33 [get_ports led_0]
+set_property PACKAGE_PIN J22 [get_ports {led_0}]
+# set_property IOSTANDARD LVCMOS33 [get_ports led_0]
 
-set_property PACKAGE_PIN K22 [get_ports led_1]
-set_property IOSTANDARD LVCMOS33 [get_ports led_1]
+set_property PACKAGE_PIN K22 [get_ports {led_1}]
+# set_property IOSTANDARD LVCMOS33 [get_ports led_1]
 
-set_property PACKAGE_PIN AB6 [get_ports led_2]
-set_property IOSTANDARD LVCMOS33 [get_ports led_2]
+set_property PACKAGE_PIN AB6 [get_ports {led_2}]
+# set_property IOSTANDARD LVCMOS33 [get_ports led_2]
 
 
 set_property PACKAGE_PIN A8 [get_ports pci_exp_rxn[0]]
@@ -72,7 +72,10 @@ set_property LOC M20 [get_ports sys_rst_n]
 
 
 create_clock -name sys_clk_p -period 10.0 [get_ports sys_clk_p]
-
+create_clock -add -name pcie_100mhz_txout -period 10 [get_nets PIPE_TXOUTCLK_OUT]
+create_clock -add -name pcie_125mhz_d_rxusr_oob_p -period 8 [get_nets in_module_mmcm.pipe_clock_i/clk_125mhz]
+create_clock -add -name pcie_250mhz_gen2 -period 4 [get_nets in_module_mmcm.pipe_clock_i/clk_250mhz]
+create_clock -add -name pcie_62d5mhz_user1_user2 -period 16 [get_nets in_module_mmcm.pipe_clock_i/userclk1]
 # create_clock -name tx_clk -period 20.0 [get_nets tx_clk]
 
 # create_clock -name rx_clk -period 20.0 [get_nets rx_clk]
@@ -81,6 +84,13 @@ create_clock -name sys_clk_p -period 10.0 [get_ports sys_clk_p]
 # False path constraints
 ################################################################################
 
+# set_false_path -from [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/idle_count_r_reg*"  }] -to [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/FSM_sequential_curr_state_reg*" && DIRECTION == "IN" }]
+# set_multicycle_path -reset_path -from [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_datalink_init_inst/soft_reset_r_reg*" && DIRECTION == "IN" }] -to [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/pcie_cfg_wrapper_inst/pcie_config_decode_inst/*" && DIRECTION == "IN" }] 1
+set_false_path -reset_path -from [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/idle_count_r_reg*"  }] -to [get_pins -hierarchical -filter { NAME =~  "*pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst*"  }]
+
+# o=2create_generated_clock -name pll_clk -source [get_pins ref_clk_pin] -multiply_by 3 [get_pins pll_out_pin]
+# create_generated_clock -name clk_250mhz -source [get_ports sys_clk_p]  -multiply_by 5 -divide_by 2  [get_nets { in_module_mmcm.pipe_clock_i/clk_250mhz }]
+# create_clock -name clk_250mhz -period 4.0 [get_pins { in_module_mmcm.pipe_clock_i/clk_250mhz }]
 
 # set_false_path -quiet -through [get_nets -hierarchical -filter {mr_ff == TRUE}]
 

@@ -66,6 +66,9 @@ filesets:
   synth:
     files:
       - example/gtp_channel.xdc : {file_type : xdc}
+      - example/axis_fifo_constraints/dllp_rx_axis_async_fifo_timing.xdc : {file_type : xdc}
+      - example/axis_fifo_constraints/dllp_tx_axis_async_fifo_timing.xdc : {file_type : xdc}
+
 
   cocotb:
     files:
@@ -168,3 +171,12 @@ targets:
 scripts:
   iceprog:
     cmd : [MODULE=pcie_top]
+  run_post_script:
+    filesets:
+      - synth
+    cmd:
+      - vivado
+      - -mode
+      - batch
+      - -source
+      - async_fifo_constraints.tcl

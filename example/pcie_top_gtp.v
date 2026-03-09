@@ -64,10 +64,10 @@ module pcie_top_gtp #(
     // input  logic [           (2*MAX_NUM_LANES)-1:0] phy_rxsync_header,
 
     // synthesis translate_off
-    output led_0,
-    output led_1,
-    output led_2,
-    output led_3,
+    output wire led_0,
+    output wire led_1,
+    output wire led_2,
+    output wire led_3,
 
     //TLP AXIS output
     // output logic [DATA_WIDTH-1:0] m_tlp_axis_tdata,
@@ -99,6 +99,10 @@ module pcie_top_gtp #(
 
 
   wire sys_clk;
+  (* KEEP = "TRUE" *) wire led_0;
+  (* KEEP = "TRUE" *) wire led_1;
+  (* KEEP = "TRUE" *) wire led_2;
+  (* KEEP = "TRUE" *) wire led_3;
 
 
 

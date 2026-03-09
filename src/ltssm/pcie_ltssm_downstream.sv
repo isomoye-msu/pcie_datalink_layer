@@ -57,7 +57,7 @@ module pcie_ltssm_downstream
     input  logic [MAX_NUM_LANES-1:0] receiver_detected_i,
     input  logic [MAX_NUM_LANES-1:0] phy_rxelecidle_i,
     output logic [MAX_NUM_LANES-1:0] tx_enter_elec_idle_o,
-    output logic [              19:0] ltssm_state_o,
+    output logic [             19:0] ltssm_state_o,
     output logic                     goto_cfg_o,
     output logic                     goto_detect_o,
     input  logic                     ordered_set_tranmitted_i,
@@ -104,46 +104,64 @@ module pcie_ltssm_downstream
   localparam int MinTS1sPolling = 48;  //24;  //1024
 
   typedef enum logic [19:0] {
-    ST_IDLE                           = 20'b00000000000000000000,
-    ST_DETECT                         = 20'b00000000000000000001,
-    ST_POLLING                        = 20'b00000000000000000010,
-    ST_CONFIGURATION                  = 20'b00000000000000000011,
-    ST_RECOVERY                       = 20'b00000000000000000100,
-    ST_L0                             = 20'b00000000000000000101,
-    ST_L0s                            = 20'b00000000000000000110,
-    ST_L1                             = 20'b00000000000000000111,
-    ST_L2                             = 20'b00000000000000001000,
-    ST_DISABLED                       = 20'b00000000000000001001,
-    ST_LOOPBACK                       = 20'b00000000000000001010,
-    ST_HOT_RESET                      = 20'b00000000000000001011,
-    ST_DETECT_WAIT_ONE_MS             = 20'b00000000000000100001,
-    ST_DETECT_QUIET                   = 20'b00000000000001000001,
-    ST_DETECT_ACTIVE                  = 20'b00000000000001100001,
-    ST_DETECT_RX                      = 20'b00000000000010000001,
-    ST_POLLING_ACTIVE                 = 20'b00000000000000100010,
-    ST_POLLING_CONFIGURATION          = 20'b00000000000001000010,
-    ST_POLLING_COMPLIANCE             = 20'b00000000000001100010,
-    ST_CONFIGURATION_LINKWIDTH_START  = 20'b00000000000000100011,
-    ST_CONFIGURATION_LINKWIDTH_ACCEPT = 20'b00000000000001000011,
-    ST_CONFIGURATION_LANENUM_ACCEPT   = 20'b00000000000001100011,
-    ST_CONFIGURATION_LANENUM_WAIT     = 20'b00000000000010000011,
-    ST_CONFIGURATION_COMPLETE         = 20'b00000000000010100011,
-    ST_CONFIGURATION_IDLE             = 20'b00000000000011100011,
-    ST_RECOVERY_RCVR_LOCK             = 20'b00000000000000100100,
-    ST_RECOVERY_RCVR_LOCK_TIMEOUT     = 20'b00000000000001000100,
-    ST_RECOVERY_EQUAL                 = 20'b00000000000001100100,
-    ST_RECOVERY_SPEED                 = 20'b00000000000010000100,
-    ST_RECOVERY_SPEED_WAIT            = 20'b00000000000010100100,
-    ST_RECOVERY_SPEED_EIEOS           = 20'b00000000000011000100,
-    ST_RECOVERY_RCVR_CFG              = 20'b00000000000011100100,
-    ST_RECOVERY_IDLE                  = 20'b00000000000100000100,
-    ST_RECOVERY_COMPLETE              = 20'b00000000000100100100,
-    ST_RECOVERY_EXT_SYNCH             = 20'b00000000000101000100,
-    ST_RECOVERY_SEND_SDS              = 20'b00000000000101100100,
-    ST_RECOVERY_EQUAL_PHASE_0         = 20'b00000000000110000100,
-    ST_RECOVERY_EQUAL_PHASE_1         = 20'b00000000000110100100,
-    ST_RECOVERY_EQUAL_PHASE_2         = 20'b00000000000111000100,
-    ST_RECOVERY_EQUAL_PHASE_3         = 20'b00000000000111100100
+    ST_IDLE                                  = 20'b00000000000000000000,
+    ST_DETECT                                = 20'b00000000000000000001,
+    ST_POLLING                               = 20'b00000000000000000010,
+    ST_CONFIGURATION                         = 20'b00000000000000000011,
+    ST_RECOVERY                              = 20'b00000000000000000100,
+    ST_L0                                    = 20'b00000000000000000101,
+    ST_L0s                                   = 20'b00000000000000000110,
+    ST_L1                                    = 20'b00000000000000000111,
+    ST_L2                                    = 20'b00000000000000001000,
+    ST_DISABLED                              = 20'b00000000000000001001,
+    ST_LOOPBACK                              = 20'b00000000000000001010,
+    ST_HOT_RESET                             = 20'b00000000000000001011,
+    ST_DETECT_WAIT_ONE_MS                    = 20'b00000000000000100001,
+    ST_DETECT_QUIET                          = 20'b00000000000001000001,
+    ST_DETECT_ACTIVE                         = 20'b00000000000001100001,
+    ST_DETECT_RX                             = 20'b00000000000010000001,
+    ST_POLLING_ACTIVE                        = 20'b00000000000000100010,
+    ST_POLLING_CONFIGURATION                 = 20'b00000000000001000010,
+    ST_POLLING_COMPLIANCE                    = 20'b00000000000001100010,
+    ST_CONFIGURATION_LINKWIDTH_START         = 20'b00000000000000100011,
+    ST_CONFIGURATION_LINKWIDTH_ACCEPT        = 20'b00000000000001000011,
+    ST_CONFIGURATION_LANENUM_ACCEPT          = 20'b00000000000001100011,
+    ST_CONFIGURATION_LANENUM_WAIT            = 20'b00000000000010000011,
+    ST_CONFIGURATION_COMPLETE                = 20'b00000000000010100011,
+    ST_CONFIGURATION_IDLE                    = 20'b00000000000011100011,
+    ST_RECOVERY_RCVR_LOCK                    = 20'b00000000000000100100,
+    ST_RECOVERY_RCVR_LOCK_TIMEOUT            = 20'b00000000000001000100,
+    ST_RECOVERY_EQUAL                        = 20'b00000000000001100100,
+    ST_RECOVERY_SPEED                        = 20'b00000000000010000100,
+    ST_RECOVERY_SPEED_WAIT                   = 20'b00000000000010100100,
+    ST_RECOVERY_SPEED_EIEOS                  = 20'b00000000000011000100,
+    ST_RECOVERY_RCVR_CFG                     = 20'b00000000000011100100,
+    ST_RECOVERY_IDLE                         = 20'b00000000000100000100,
+    ST_RECOVERY_COMPLETE                     = 20'b00000000000100100100,
+    ST_RECOVERY_EXT_SYNCH                    = 20'b00000000000101000100,
+    ST_RECOVERY_SEND_SDS                     = 20'b00000000000101100100,
+    ST_RECOVERY_EQUAL_PHASE_0                = 20'b00000000000110000100,
+    ST_RECOVERY_EQUAL_PHASE_1                = 20'b00000000000110100100,
+    ST_RECOVERY_EQUAL_PHASE_2                = 20'b00000000000111000100,
+    ST_RECOVERY_EQUAL_PHASE_3                = 20'b00000000000111100100,
+    ST_POLLING_ACTIVE_GEN_OS,
+    ST_CONFIGURATION_LANENUM_WAIT_GEN_OS,
+    ST_CONFIGURATION_LINKWIDTH_START_GEN_OS,
+    ST_POLLING_CONFIGURATION_GEN_OS,
+    ST_CONFIGURATION_LINKWIDTH_ACCEPT_GEN_OS,
+    ST_CONFIGURATION_LANENUM_ACCEPT_GEN_OS,
+    ST_RECOVERY_EQUAL_PHASE_2_GEN_OS,
+    ST_RECOVERY_SPEED_WAIT_GEN_EIEOS,
+    ST_RECOVERY_SPEED_WAIT_GEN_OS,
+    ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS2_GEN_OS,
+    ST_RECOVERY_EQUAL_PHASE_1_GEN_EIOS,
+    ST_RECOVERY_EQUAL_PHASE_1_GEN_OS,
+    ST_RECOVERY_RCVR_LOCK_TS1_GEN_OS,
+    ST_RECOVERY_RCVR_LOCK_TS2_GEN_OS,
+    ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS1_GEN_OS,
+    ST_CONFIGURATION_COMPLETE_GEN_OS,
+    ST_RECOVERY_GEN_OS,
+    ST_RECOVERY_EQUAL_PHASE_1_GEN_EIEOS
   } ltssm_state_e;
 
   typedef struct packed {
@@ -255,6 +273,8 @@ module pcie_ltssm_downstream
   equal_t                                     equal_status_c;
   equal_t                                     equal_status_r;
 
+  logic                                       ordered_set_tranmitted_r;
+
   assign active_lanes_o         = lane_active_r;
   assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
@@ -361,6 +381,7 @@ module pcie_ltssm_downstream
       gen_os_ctrl_r                  <= gen_os_ctrl_c;
     end
     //non-resetable
+    ordered_set_tranmitted_r <= ordered_set_tranmitted_i;
   end
 
 
@@ -371,7 +392,7 @@ module pcie_ltssm_downstream
       timer_c = '0;
       // ordered_set_sent_cnt_c = '0;
     end else begin
-      // if (ordered_set_tranmitted_i) begin
+      // if (ordered_set_tranmitted_r) begin
       //   ordered_set_sent_cnt_c = ordered_set_sent_cnt_r;
       // end
       timer_c = (timer_r >= FourtyEightMsTimeOut) ? FourtyEightMsTimeOut : timer_r + 1;
@@ -444,7 +465,7 @@ module pcie_ltssm_downstream
           phy_txelecidle_o             = '1;
           phy_powerdown_o              = 2'b10;
           transmit_ordered_set         = '1;
-          ordered_set_c = gen_zeros();
+          ordered_set_c                = gen_zeros();
           if (curr_data_rate_r.rate != gen1) begin
             next_state = ST_DETECT_WAIT_ONE_MS;
           end else begin
@@ -477,7 +498,7 @@ module pcie_ltssm_downstream
         phy_txelecidle_o = '1;
         phy_powerdown_o  = 2'b10;
         phy_txdeemph_o   = '0;
-        if (((|lane_status_i) || (timer_r >= TwelveMsTimeOut)) && (ordered_set_tranmitted_i) 
+        if (((|lane_status_i) || (timer_r >= TwelveMsTimeOut)) && (ordered_set_tranmitted_r) 
         && (!phy_phystatus_rst_i)) begin
           //reset counts
           // timer_c       = '0;
@@ -496,7 +517,7 @@ module pcie_ltssm_downstream
         gen_os_ctrl_c.valid = '1;
         phy_txdetectrx_o = '1;
         phy_txelecidle_o = '1;
-        if ((ordered_set_tranmitted_i)) begin
+        if ((ordered_set_tranmitted_r)) begin
           if (&lane_status_i) begin
             success_c        = '1;
             // timer_c          = '0;
@@ -526,7 +547,7 @@ module pcie_ltssm_downstream
         phy_txdetectrx_o = '1;
         phy_txelecidle_o = '1;
         if (timer_r >= TwoMsTimeOut) begin
-          if ((ordered_set_tranmitted_i)) begin
+          if ((ordered_set_tranmitted_r)) begin
             if ((lane_status_i == '1) || (lane_status_i == lane_status_r)) begin
               success_c        = '1;
               lanes_detected_c = lane_status_i;
@@ -552,7 +573,7 @@ module pcie_ltssm_downstream
         gen_os_ctrl_c.valid    = '1;
         gen_os_ctrl_c.gen_ts1  = '1;
         transmit_ordered_set   = '1;
-        ordered_set_c = gen_ts_os( gen1, TS1);
+        ordered_set_c          = gen_ts_os(gen1, TS1);
       end
       //*********************************************************
       // Polling.Active
@@ -565,28 +586,32 @@ module pcie_ltssm_downstream
         // Phy transmitter handles common mode settling, will throttle with tready
         //check if timer reached or TSOS sent count met
         //check if last packet in frame
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
 
           if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
             //reset counts
-            // timer_c                = '0;
-            ordered_set_sent_cnt_c = '0;
-            //check if ts1 reqs satisfied
-            if (&lanes_ts1_satisfied) begin
-              //build ts2 ordered set
-              gen_os_ctrl_c.gen_ts1 = '0;
-              gen_os_ctrl_c.gen_ts2 = '1;
-              // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
-              ordered_set_c = gen_ts_os( gen1, TS2);
-              transmit_ordered_set = '1;
-              //goto cofig
-              next_state = ST_POLLING_CONFIGURATION;
-            end else begin
-              //goto compliance
-              next_state = ST_POLLING_COMPLIANCE;
-            end
+            next_state = ST_POLLING_ACTIVE_GEN_OS;
           end
+        end
+      end
+      ST_POLLING_ACTIVE_GEN_OS: begin
+        //reset counts
+        // timer_c                = '0;
+        ordered_set_sent_cnt_c = '0;
+        //check if ts1 reqs satisfied
+        if (&lanes_ts1_satisfied) begin
+          //build ts2 ordered set
+          gen_os_ctrl_c.gen_ts1 = '0;
+          gen_os_ctrl_c.gen_ts2 = '1;
+          // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+          ordered_set_c = gen_ts_os(gen1, TS2);
+          transmit_ordered_set = '1;
+          //goto cofig
+          next_state = ST_POLLING_CONFIGURATION;
+        end else begin
+          //goto compliance
+          next_state = ST_POLLING_COMPLIANCE;
         end
       end
       //*********************************************************
@@ -603,20 +628,10 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       ST_POLLING_CONFIGURATION: begin
         //bounded timeout counter
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           if (&lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h8) begin
-            //assert success
-            success_c = '1;
-            //reset counts
-            // timer_c    = '0;
-            ordered_set_sent_cnt_c = '0;
-            gen_os_ctrl_c.gen_ts1 = '1;
-            gen_os_ctrl_c.gen_ts2 = '0;
-            transmit_ordered_set = '1;
-            ordered_set_c = gen_ts_os( gen1, TS1);
-            //goto wait low
-            next_state = ST_CONFIGURATION;
+            next_state = ST_POLLING_CONFIGURATION_GEN_OS;
           end  //check timeout count
           else if (timer_r >= TwentyFourMsTimeOut)
           begin
@@ -628,11 +643,24 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_POLLING_CONFIGURATION_GEN_OS: begin
+        //assert success
+        success_c = '1;
+        //reset counts
+        // timer_c    = '0;
+        ordered_set_sent_cnt_c = '0;
+        gen_os_ctrl_c.gen_ts1 = '1;
+        gen_os_ctrl_c.gen_ts2 = '0;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(gen1, TS1);
+        //goto wait low
+        next_state = ST_CONFIGURATION;
+      end
       //-----------------------------------------------------------
       //  Configuration
       //-----------------------------------------------------------
       ST_CONFIGURATION: begin
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           if (ordered_set_sent_cnt_r >= 4) begin
             gen_os_ctrl_c.gen_ts1  = '1;
@@ -651,17 +679,11 @@ module pcie_ltssm_downstream
         // end
         // gen_os_ctrl_c.valid = '1;
         // gen_os_ctrl_c.gen_ts1 = '1;
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if pcie state continue scenario satisfied
           if ((|link_width_satisfied) && (ordered_set_sent_cnt_r >= 8'h08)) begin
-            //reset ordered set sent counter
-            ordered_set_sent_cnt_c = '0;
-            transmit_ordered_set   = '1;
-            //build next ordered set
-            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
-            //goto next pcie ltssm state
-            next_state = ST_CONFIGURATION_LINKWIDTH_ACCEPT;
+            next_state = ST_CONFIGURATION_LINKWIDTH_START_GEN_OS;
           end  //check timeout counter
           else if (timer_r >= TwentyFourMsTimeOut)
           begin
@@ -672,6 +694,15 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_CONFIGURATION_LINKWIDTH_START_GEN_OS: begin
+        //reset ordered set sent counter
+        ordered_set_sent_cnt_c = '0;
+        transmit_ordered_set = '1;
+        //build next ordered set
+        ordered_set_c = gen_ts_os(gen1, TS1, train_seq_e'(link_number_selected));
+        //goto next pcie ltssm state
+        next_state = ST_CONFIGURATION_LINKWIDTH_ACCEPT;
+      end
       //-----------------------------------------------------------
       //  Configuration.Linkwidth.Accept
       //-----------------------------------------------------------
@@ -679,20 +710,14 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.gen_ts1 = '1;
         //bounded counter for timeout scenario
         gen_os_ctrl_c.valid = '1;
-        if ((ordered_set_tranmitted_i)) begin
+        if ((ordered_set_tranmitted_r)) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if pcie state continue scenario satisfied
           //link lane formed xor was put for some spec reason, removing for single lane test as it
           //fails to proceed
-          if ((|link_lanes_formed) && /*(!(^link_lanes_formed)) &&*/
-          ordered_set_sent_cnt_r >= 8'h08)
-          begin
-            ordered_set_sent_cnt_c = '0;
-            gen_os_ctrl_c.gen_ts1  = '1;
-            gen_os_ctrl_c.gen_ts2  = '0;
-            transmit_ordered_set   = '1;
-            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
-            next_state = ST_CONFIGURATION_LANENUM_WAIT;
+          if ((|link_lanes_formed) &&  /*(!(^link_lanes_formed)) &&*/
+              ordered_set_sent_cnt_r >= 8'h08) begin
+            next_state = ST_CONFIGURATION_LINKWIDTH_ACCEPT_GEN_OS;
           end  //check timeout counter
           else if (timer_r >= TwoMsTimeOut)
           begin
@@ -701,23 +726,24 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_CONFIGURATION_LINKWIDTH_ACCEPT_GEN_OS: begin
+        ordered_set_sent_cnt_c = '0;
+        gen_os_ctrl_c.gen_ts1 = '1;
+        gen_os_ctrl_c.gen_ts2 = '0;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(gen1, TS1, train_seq_e'(link_number_selected));
+        next_state = ST_CONFIGURATION_LANENUM_WAIT;
+      end
       //-----------------------------------------------------------
       // Configuration.Lanenum.Accept
       //-----------------------------------------------------------
       ST_CONFIGURATION_LANENUM_ACCEPT: begin
         //bounded counter for timeout scenario
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if lanes can be formed
           if (|link_lanes_nums_match && ordered_set_sent_cnt_r >= 8'h8) begin
-            //build ts2 ordered set
-            transmit_ordered_set  = '1;
-            gen_os_ctrl_c.gen_ts1 = '0;
-            gen_os_ctrl_c.gen_ts2 = '1;
-            ordered_set_c = gen_ts_os( gen1, TS2, train_seq_e'(link_number_selected), train_seq_e'(0));
-            ordered_set_sent_cnt_c = '0;
-            //goto config complete
-            next_state = ST_CONFIGURATION_COMPLETE;
+            next_state = ST_CONFIGURATION_LANENUM_ACCEPT_GEN_OS;
           end  //check reconfiguration scenario
           else if (|link_lane_reconfig && ordered_set_sent_cnt_r >= 8'h8)
           begin
@@ -733,23 +759,25 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_CONFIGURATION_LANENUM_ACCEPT_GEN_OS: begin
+        //build ts2 ordered set
+        transmit_ordered_set = '1;
+        gen_os_ctrl_c.gen_ts1 = '0;
+        gen_os_ctrl_c.gen_ts2 = '1;
+        ordered_set_c = gen_ts_os(gen1, TS2, train_seq_e'(link_number_selected), train_seq_e'(0));
+        ordered_set_sent_cnt_c = '0;
+        //goto config complete
+        next_state = ST_CONFIGURATION_COMPLETE;
+      end
       //-----------------------------------------------------------
       //  Configuration.Lanenum.Wait
       //-----------------------------------------------------------
       ST_CONFIGURATION_LANENUM_WAIT: begin
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           //check if lane wait exit scenario satisfied
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           if ((|ts1_lanenum_wait_satisfied) && (ordered_set_sent_cnt_r >= 8'h8)) begin
-            // timer_c = '0;
-            ordered_set_sent_cnt_c = 0;
-            gen_os_ctrl_c.gen_ts1  = '0;
-            gen_os_ctrl_c.gen_ts2  = '1;
-            transmit_ordered_set   = '1;
-            gen_os_ctrl_c.set_lane = '1;
-            ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
-            //goto lanenum accept
-            next_state = ST_CONFIGURATION_LANENUM_ACCEPT;
+            next_state = ST_CONFIGURATION_LANENUM_WAIT_GEN_OS;
           end  //check timeout counter
           else if (timer_r >= TwoMsTimeOut)
           begin
@@ -760,26 +788,26 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_CONFIGURATION_LANENUM_WAIT_GEN_OS: begin
+        // timer_c = '0;
+        ordered_set_sent_cnt_c = 0;
+        gen_os_ctrl_c.gen_ts1 = '0;
+        gen_os_ctrl_c.gen_ts2 = '1;
+        transmit_ordered_set = '1;
+        gen_os_ctrl_c.set_lane = '1;
+        ordered_set_c = gen_ts_os(gen1, TS1, train_seq_e'(link_number_selected));
+        //goto lanenum accept
+        next_state = ST_CONFIGURATION_LANENUM_ACCEPT;
+      end
       //-----------------------------------------------------------
       //  Configuration.Complete
       //-----------------------------------------------------------
       ST_CONFIGURATION_COMPLETE: begin
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check exit scenario
           if (&lane_num_formed && (ordered_set_sent_cnt_r >= 8'h8)) begin
-            //decrement counts
-            ordered_set_sent_cnt_c = '0;
-
-            // timer_c                = '0;
-            //build idle ordered set
-            transmit_ordered_set   = '1;
-            ordered_set_c = gen_zeros();
-            gen_os_ctrl_c.gen_ts2  = '0;
-            gen_os_ctrl_c.gen_ts1  = '0;
-            gen_os_ctrl_c.gen_idle = '1;
-            //goto config idle
-            next_state             = ST_CONFIGURATION_IDLE;
+            next_state = ST_CONFIGURATION_COMPLETE_GEN_OS;
           end  //check timeout counter
           else if (timer_r >= TwoMsTimeOut)
           begin
@@ -790,11 +818,25 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_CONFIGURATION_COMPLETE_GEN_OS: begin
+        //decrement counts
+        ordered_set_sent_cnt_c = '0;
+
+        // timer_c                = '0;
+        //build idle ordered set
+        transmit_ordered_set   = '1;
+        ordered_set_c          = gen_zeros();
+        gen_os_ctrl_c.gen_ts2  = '0;
+        gen_os_ctrl_c.gen_ts1  = '0;
+        gen_os_ctrl_c.gen_idle = '1;
+        //goto config idle
+        next_state             = ST_CONFIGURATION_IDLE;
+      end
       //-----------------------------------------------------------
       //  Configuration.Idle
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           //check if idle received
           if (|single_idle_received) begin
             //start counting idle OS sent
@@ -830,8 +872,8 @@ module pcie_ltssm_downstream
       //  L0
       //-----------------------------------------------------------
       ST_L0: begin
-        link_up_o = '1;
-        transmit_ordered_set         = '1;
+        link_up_o            = '1;
+        transmit_ordered_set = '1;
         if (|ts1_valid_i || |ts2_valid_i || (directed_speed_change_i && !changed_speed_recovery_r))
         begin
           next_state = ST_RECOVERY;
@@ -856,15 +898,23 @@ module pcie_ltssm_downstream
             last_data_rate_c.speed_change = '1;
             temp_rate_id.speed_change = '1;
           end
-          transmit_ordered_set = '1;
-          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                   train_seq_e'(0), last_data_rate_c);
-          ordered_set_sent_cnt_c = '0;
-          // if (recovery_i && !is_timeout_i) begin
-          // ordered_set_c.rate_id[6] = '1;
-          // end
-          next_state             = ST_RECOVERY_RCVR_LOCK;
+          next_state = ST_RECOVERY_GEN_OS;
         end
+      end
+      ST_RECOVERY_GEN_OS: begin
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r
+        );
+        ordered_set_sent_cnt_c = '0;
+        // if (recovery_i && !is_timeout_i) begin
+        // ordered_set_c.rate_id[6] = '1;
+        // end
+        next_state = ST_RECOVERY_RCVR_LOCK;
       end
       //-----------------------------------------------------------
       //  Recovery.Lock
@@ -877,9 +927,7 @@ module pcie_ltssm_downstream
         end
         if (|speed_change_bit_set && !changed_speed_recovery_r) begin
           last_data_rate_c.speed_change = '1;
-          transmit_ordered_set = '1;
-          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                   train_seq_e'(0), last_data_rate_c);
+          next_state = ST_RECOVERY_RCVR_LOCK_TS1_GEN_OS;
         end
         if (&(ts1_cnt_satisfied | ts2_cnt_satisfied)) begin
           //deassert valid and reset counter
@@ -889,23 +937,46 @@ module pcie_ltssm_downstream
             //goto next pcie ltssm state
             next_state = ST_RECOVERY_EXT_SYNCH;
           end else begin
-            //build next ordered set
-            if (max_rate >= gen3) begin
-              ts2_symbol6.req_equal = '1;
-            end
-            gen_os_ctrl_c.gen_ts1 = '0;
-            gen_os_ctrl_c.gen_ts2 = '1;
-            transmit_ordered_set  = '1;
-            ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS2, train_seq_e'(link_number_selected),
-                     train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
             //goto next pcie ltssm state
-            next_state = ST_RECOVERY_RCVR_CFG;
+            next_state = ST_RECOVERY_RCVR_LOCK_TS2_GEN_OS;
           end
         end  //check timeout counter
         else if (timer_r >= TwentyFourMsTimeOut)
         begin
           next_state = ST_RECOVERY_RCVR_LOCK_TIMEOUT;
         end
+      end
+      ST_RECOVERY_RCVR_LOCK_TS1_GEN_OS: begin
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r
+        );
+        //goto next pcie ltssm state
+        next_state = ST_RECOVERY_RCVR_CFG;
+      end
+      ST_RECOVERY_RCVR_LOCK_TS2_GEN_OS: begin
+        //build next ordered set
+        if (max_rate >= gen3) begin
+          ts2_symbol6.req_equal = '1;
+        end
+        gen_os_ctrl_c.gen_ts1 = '0;
+        gen_os_ctrl_c.gen_ts2 = '1;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS2,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r,
+          '0,
+          ts2_symbol6
+        );
+        //goto next pcie ltssm state
+        next_state = ST_RECOVERY_RCVR_CFG;
       end
       //-----------------------------------------------------------
       //  Recovery.Rcvr.Lock.Timeout
@@ -916,23 +987,12 @@ module pcie_ltssm_downstream
             curr_data_rate_r.rate != gen1 ||
             max_rate != gen1 || last_data_rate_r.rate != gen1)
         begin
-          //build next ordered set
-          ts2_symbol6 = '0;
-          if (max_rate >= gen3) begin
-            // ts2_symbol6.req_equal = '1;
-          end
-          transmit_ordered_set = '1;
-          ordered_set_c = gen_ts_os( rate_speed_e'(last_data_rate_r.rate), TS2, train_seq_e'(LINK_NUM),
-                   train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
           //goto next pcie ltssm state
-          next_state = ST_RECOVERY_RCVR_CFG;
+          next_state = ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS1_GEN_OS;
         end else begin
           if (!changed_speed_recovery_r && curr_data_rate_r.rate != gen1) begin
-            transmit_ordered_set = '1;
-            ordered_set_c = gen_ts_os( rate_speed_e'(last_data_rate_r.rate), TS2,
-                     train_seq_e'(LINK_NUM), train_seq_e'(0), last_data_rate_r, '0, ts2_symbol6);
             //goto next pcie ltssm state
-            next_state = ST_RECOVERY_SPEED;
+            next_state = ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS2_GEN_OS;
           end else if (changed_speed_recovery_r) begin
             //goto next pcie ltssm state
             next_state = ST_RECOVERY_SPEED;
@@ -951,41 +1011,70 @@ module pcie_ltssm_downstream
           end
         end
       end
+      ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS1_GEN_OS: begin
+        //build next ordered set
+        ts2_symbol6 = '0;
+        if (max_rate >= gen3) begin
+          // ts2_symbol6.req_equal = '1;
+        end
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          rate_speed_e'(last_data_rate_r.rate),
+          TS2,
+          train_seq_e'(LINK_NUM),
+          train_seq_e'(0),
+          last_data_rate_r,
+          '0,
+          ts2_symbol6
+        );
+        //goto next pcie ltssm state
+        next_state = ST_RECOVERY_RCVR_CFG;
+      end
+      ST_RECOVERY_RCVR_LOCK_TIMEOUT_TS2_GEN_OS: begin
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          rate_speed_e'(last_data_rate_r.rate),
+          TS2,
+          train_seq_e'(LINK_NUM),
+          train_seq_e'(0),
+          last_data_rate_r,
+          '0,
+          ts2_symbol6
+        );
+        //goto next pcie ltssm state
+        next_state = ST_RECOVERY_SPEED;
+      end
       ST_RECOVERY_EQUAL: begin
         ts1_symbol6_t temp_ts6;
         ordered_set_sent_cnt_c = '0;
-        equal_status_c         = '0;
+        equal_status_c = '0;
         // gen_os_ctrl_c          = '0;
-        gen_os_ctrl_c.valid    = '1;
-        gen_os_ctrl_c.gen_ts2  = '0;
-        gen_os_ctrl_c.gen_ts1  = '1;
+        gen_os_ctrl_c.valid = '1;
+        gen_os_ctrl_c.gen_ts2 = '0;
+        gen_os_ctrl_c.gen_ts1 = '1;
         // last_data_rate_c.speed_change = '1;
-        temp_ts6.ec            = 2'b01;
-        transmit_ordered_set   = '1;
-        ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                 train_seq_e'(0), last_data_rate_c,, temp_ts6);
+        temp_ts6.ec = 2'b01;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_c,
+          ,
+          temp_ts6
+        );
         next_state = ST_RECOVERY_EQUAL_PHASE_1;
       end
       ST_RECOVERY_EQUAL_PHASE_1: begin
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           if (ordered_set_sent_cnt_r == 32'd31) begin
-            gen_os_ctrl_c.gen_ts1    = '0;
-            gen_os_ctrl_c.gen3_eieos = '1;
-            transmit_ordered_set = '1;
-            gen_eieos(ordered_set_c, max_supported_rate_r);
-            ordered_set_sent_cnt_c = '0;
-            curr_data_rate_c.rate  = gen3;
+            next_state = ST_RECOVERY_EQUAL_PHASE_1_GEN_EIOS;
           end
           if (ordered_set_sent_cnt_r == '0) begin
-            ts1_symbol6_t temp_ts6;
-            temp_ts6                 = '0;
-            gen_os_ctrl_c.gen3_eieos = '0;
-            gen_os_ctrl_c.gen_ts1    = '1;
-            temp_ts6.ec              = 2'b01;
-            transmit_ordered_set     = '1;
-            ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                     train_seq_e'(0), last_data_rate_c,, temp_ts6);
+            next_state = ST_RECOVERY_EQUAL_PHASE_1_GEN_OS;
+
           end
         end
         if (&(ts1_lanenum_wait_satisfied ^ ~lane_active_r)) begin
@@ -999,21 +1088,58 @@ module pcie_ltssm_downstream
           // timer_c = '0;
         end
       end
+      ST_RECOVERY_EQUAL_PHASE_1_GEN_EIEOS: begin
+        gen_os_ctrl_c.gen_ts1    = '0;
+        gen_os_ctrl_c.gen3_eieos = '1;
+        transmit_ordered_set = '1;
+        gen_eieos(ordered_set_c, max_supported_rate_r);
+        ordered_set_sent_cnt_c = '0;
+        curr_data_rate_c.rate = gen3;
+        next_state = ST_RECOVERY_EQUAL_PHASE_1;
+      end
+      ST_RECOVERY_EQUAL_PHASE_1_GEN_OS: begin
+        ts1_symbol6_t temp_ts6;
+        temp_ts6 = '0;
+        gen_os_ctrl_c.gen3_eieos = '0;
+        gen_os_ctrl_c.gen_ts1 = '1;
+        temp_ts6.ec = 2'b01;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r,
+          ,
+          temp_ts6
+        );
+        next_state = ST_RECOVERY_EQUAL_PHASE_1;
+      end
       ST_RECOVERY_EQUAL_PHASE_2: begin
         // timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         if (ts1_cnt_satisfied) begin
-          ts1_symbol6_t temp_ts6;
-          temp_ts6.ec = 2'b11;
-          transmit_ordered_set = '1;
-          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                   train_seq_e'(0), last_data_rate_c,, temp_ts6);
-          // next_state = ST_RECOVERY_EQUAL;
-          // timer_c = '0;
-          next_state = ST_RECOVERY_EQUAL_PHASE_3;
+          next_state = ST_RECOVERY_EQUAL_PHASE_2_GEN_OS;
         end else if (timer_r >= TwentyFourMsTimeOut) begin
           next_state = ST_RECOVERY_SPEED;
           // timer_c = '0;
         end
+      end
+      ST_RECOVERY_EQUAL_PHASE_2_GEN_OS: begin
+        ts1_symbol6_t temp_ts6;
+        temp_ts6.ec = 2'b11;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          curr_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_c,
+          ,
+          temp_ts6
+        );
+        // next_state = ST_RECOVERY_EQUAL;
+        // timer_c = '0;
+        next_state = ST_RECOVERY_EQUAL_PHASE_3;
       end
       ST_RECOVERY_EQUAL_PHASE_3: begin
         if (ts1_cnt_satisfied) begin
@@ -1032,7 +1158,7 @@ module pcie_ltssm_downstream
         gen_os_ctrl_c.gen_ts1 = '1;
         gen_os_ctrl_c.set_lane = '1;
         //check if last packet in frame
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
         end
         //check if pcie state continue scenario satisfied
@@ -1066,13 +1192,14 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.set_lane = '1;
         // timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         // gen_os_ctrl_c.valid = '1;
-        if (ordered_set_tranmitted_i && at_least_one_ts1_ts2) begin
+        gen_eios(ordered_set_c, curr_data_rate_r.rate);
+        if (ordered_set_tranmitted_r && at_least_one_ts1_ts2) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
         end
         //recovery idle scenario
         if((|(ts2_cnt_satisfied & lane_active_r)
             && (speed_change_bit_set=='0)
-            && ordered_set_sent_cnt_r >= 8'd4) && ordered_set_tranmitted_i)
+            && ordered_set_sent_cnt_r >= 8'd4) && ordered_set_tranmitted_r)
         begin
           successful_speed_negotiation_c = '0;
           gen_os_ctrl_c                  = '0;
@@ -1082,7 +1209,7 @@ module pcie_ltssm_downstream
           ordered_set_sent_cnt_c         = '0;
           next_state                     = ST_RECOVERY_IDLE;
           transmit_ordered_set           = '1;
-          gen_eios(ordered_set_c, curr_data_rate_r.rate);
+          // gen_eios(ordered_set_c, curr_data_rate_r.rate);
         end
         if((|((ts1_cnt_satisfied || ts2_cnt_satisfied) & lane_active_r)) &&
             (|speed_change_bit_set) &&  (curr_data_rate_r.rate < gen3) &&
@@ -1114,7 +1241,7 @@ module pcie_ltssm_downstream
           gen_os_ctrl_c.gen_eios = '1;
           ordered_set_sent_cnt_c = '0;
           transmit_ordered_set   = '1;
-          gen_eios(ordered_set_c, curr_data_rate_r.rate);
+          // gen_eios(ordered_set_c, curr_data_rate_r.rate);
         end
         else if(&(ts1_cnt_satisfied | ts2_cnt_satisfied) && curr_data_rate_r.rate >= gen3
                 && (&(speed_change_bit_set ^ lane_active_r)) && ordered_set_sent_cnt_r >= 32'd128)
@@ -1136,8 +1263,8 @@ module pcie_ltssm_downstream
           gen_os_ctrl_c.gen_eios         = '1;
           successful_speed_negotiation_c = max_supported_rate_c != gen1;
           transmit_ordered_set           = '1;
-          gen_eios(ordered_set_c, curr_data_rate_r.rate);
-          next_state = ST_RECOVERY_SPEED;
+          // gen_eios(ordered_set_c, curr_data_rate_r.rate);
+          next_state                     = ST_RECOVERY_SPEED;
         end
         if (timer_r >= FourtyEightMsTimeOut) begin
           // timer_c = '0;
@@ -1155,7 +1282,7 @@ module pcie_ltssm_downstream
         //bounded counter for timeout scenario
         // timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         gen_os_ctrl_c.valid = '1;
-        // if (ordered_set_tranmitted_i) begin
+        // if (ordered_set_tranmitted_r) begin
         //   ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
         // end
 
@@ -1178,7 +1305,7 @@ module pcie_ltssm_downstream
         //     next_state = ST_RECOVERY_SPEED_WAIT;
         //   end
         // end
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
         end
         if (&(phy_rxelecidle_i | ~lane_active_r) && ordered_set_sent_cnt_r >= 2) begin
@@ -1204,28 +1331,36 @@ module pcie_ltssm_downstream
             last_data_rate_c.rate    = max_supported_rate_r;
             changed_speed_recovery_c = '1;
             if (max_supported_rate_r >= gen3) begin
-              gen_os_ctrl_c.valid      = '1;
-              gen_os_ctrl_c.gen3_eieos = '1;
-              next_state               = ST_RECOVERY_SPEED_EIEOS;
-              transmit_ordered_set     = '1;
-              gen_eieos(ordered_set_c, max_supported_rate_r);
-              ordered_set_sent_cnt_c = '0;
+              next_state = ST_RECOVERY_SPEED_WAIT_GEN_EIEOS;
             end else begin
-              next_state = ST_RECOVERY_RCVR_LOCK;
-              transmit_ordered_set = '1;
-              ordered_set_c = gen_ts_os( last_data_rate_c.rate, TS1,
-                       train_seq_e'(link_number_selected), train_seq_e'(0), last_data_rate_c);
+              next_state = ST_RECOVERY_SPEED_WAIT_GEN_OS;
             end
           end
         end else if (timer_r >= SixUsTimeOut) begin
           changed_speed_recovery_c = '0;
-          curr_data_rate_c         = curr_data_rate_r;
-          last_data_rate_c         = curr_data_rate_r.rate;
-          transmit_ordered_set     = '1;
-          ordered_set_c = gen_ts_os( last_data_rate_c.rate, TS1, train_seq_e'(link_number_selected),
-                   train_seq_e'(0), last_data_rate_c);
-          next_state = ST_RECOVERY_RCVR_LOCK;
+          curr_data_rate_c = curr_data_rate_r;
+          last_data_rate_c = curr_data_rate_r.rate;
+          next_state = ST_RECOVERY_SPEED_WAIT_GEN_OS;
         end
+      end
+      ST_RECOVERY_SPEED_WAIT_GEN_EIEOS: begin
+        gen_os_ctrl_c.valid      = '1;
+        gen_os_ctrl_c.gen3_eieos = '1;
+        next_state               = ST_RECOVERY_SPEED_EIEOS;
+        transmit_ordered_set     = '1;
+        gen_eieos(ordered_set_c, max_supported_rate_r);
+        ordered_set_sent_cnt_c = '0;
+      end
+      ST_RECOVERY_SPEED_WAIT_GEN_OS: begin
+        next_state = ST_RECOVERY_RCVR_LOCK;
+        transmit_ordered_set = '1;
+        ordered_set_c = gen_ts_os(
+          last_data_rate_c.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r
+        );
       end
       //-----------------------------------------------------------
       //  Recovery.Speed.Eieos
@@ -1234,14 +1369,19 @@ module pcie_ltssm_downstream
       ST_RECOVERY_SPEED_EIEOS: begin
         gen_os_ctrl_c = '0;
         gen_os_ctrl_c.valid = '1;
-        if (ordered_set_tranmitted_i) begin
+        ordered_set_c = gen_ts_os(
+          last_data_rate_r.rate,
+          TS1,
+          train_seq_e'(link_number_selected),
+          train_seq_e'(0),
+          last_data_rate_r
+        );
+        if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
         end
         if (ordered_set_sent_cnt_r >= 8'h8) begin
           next_state = ST_RECOVERY_RCVR_LOCK;
           transmit_ordered_set = '1;
-          ordered_set_c = gen_ts_os( last_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
-                   train_seq_e'(0), last_data_rate_r);
         end
       end
       //-----------------------------------------------------------
@@ -1251,7 +1391,8 @@ module pcie_ltssm_downstream
         //bounded counter for timeout scenario
         // timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
         gen_os_ctrl_c.valid = '1;
-        if (ordered_set_tranmitted_i) begin
+        gen_sds_os(ordered_set_c);
+        if (ordered_set_tranmitted_r) begin
           if (single_idle_received) begin
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           end
@@ -1261,7 +1402,6 @@ module pcie_ltssm_downstream
             gen_os_ctrl_c.valid  = '1;
             next_state           = ST_RECOVERY_SEND_SDS;
             transmit_ordered_set = '1;
-            gen_sds_os(ordered_set_c);
           end else if (at_least_one_ts1_ts2) begin
             // timer_c                = '0;
             gen_os_ctrl_c.valid    = '0;
@@ -1275,8 +1415,7 @@ module pcie_ltssm_downstream
               ordered_set_sent_cnt_c = '0;
               //check data rate for retry options
               if (curr_data_rate_r.rate == gen1) begin
-                idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r == '1 ?
-                '1 : idle_to_rlock_transitioned_r + 1'b1;
+                idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1'b1;
               end
               if (curr_data_rate_r.rate == gen2) begin
                 idle_to_rlock_transitioned_c = '1;
@@ -1298,7 +1437,7 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       ST_RECOVERY_SEND_SDS: begin
         gen_os_ctrl_c.valid = '1;
-        if (ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_r) begin
           idle_to_rlock_transitioned_c = '0;
           gen_os_ctrl_c.valid          = '0;
           next_state                   = ST_L0;

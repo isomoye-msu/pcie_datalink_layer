@@ -113,6 +113,14 @@ module pcie_datalink_layer
   logic                               phy_tlp_axis_tready;
 
 
+  logic            [(DATA_WIDTH)-1:0] phy_arb_axis_tdata;
+  logic            [(KEEP_WIDTH)-1:0] phy_arb_axis_tkeep;
+  logic                               phy_arb_axis_tvalid;
+  logic                               phy_arb_axis_tlast;
+  logic            [  USER_WIDTH-1:0] phy_arb_axis_tuser;
+  logic                               phy_arb_axis_tready;
+
+
   logic            [  DATA_WIDTH-1:0] cpl_from_cfg_tdata;
   logic            [  KEEP_WIDTH-1:0] cpl_from_cfg_tkeep;
   logic                               cpl_from_cfg_tvalid;
@@ -293,9 +301,9 @@ module pcie_datalink_layer
       .update_fc_o           (update_fc)
   );
 
-
+ //Use two arbiters to help timing
   axis_arb_mux #(
-      .S_COUNT              (3),
+      .S_COUNT              (2),
       .DATA_WIDTH           (DATA_WIDTH),
       .KEEP_ENABLE          (KEEP_ENABLE),
       .KEEP_WIDTH           (KEEP_WIDTH),
@@ -308,18 +316,55 @@ module pcie_datalink_layer
       .LAST_ENABLE          (LAST_ENABLE),
       .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
       .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
-  ) arbiter_mux_inst (
+  ) phy_arbiter_mux_inst_0 (
       .clk          (clk_i),
       .rst          (rst_i || soft_reset),
       // AXI inputs
-      .s_axis_tdata ({phy_rx_axis_tdata, phy_fc_axis_tdata, phy_tlp_axis_tdata}),
-      .s_axis_tkeep ({phy_rx_axis_tkeep, phy_fc_axis_tkeep, phy_tlp_axis_tkeep}),
-      .s_axis_tvalid({phy_rx_axis_tvalid, phy_fc_axis_tvalid, phy_tlp_axis_tvalid}),
-      .s_axis_tready({phy_rx_axis_tready, phy_fc_axis_tready, phy_tlp_axis_tready}),
-      .s_axis_tlast ({phy_rx_axis_tlast, phy_fc_axis_tlast, phy_tlp_axis_tlast}),
+      .s_axis_tdata ({phy_rx_axis_tdata,  phy_fc_axis_tdata }),
+      .s_axis_tkeep ({phy_rx_axis_tkeep,  phy_fc_axis_tkeep }),
+      .s_axis_tvalid({phy_rx_axis_tvalid, phy_fc_axis_tvalid}),
+      .s_axis_tready({phy_rx_axis_tready, phy_fc_axis_tready}),
+      .s_axis_tlast ({phy_rx_axis_tlast,  phy_fc_axis_tlast }),
       .s_axis_tid   (),
       .s_axis_tdest (),
-      .s_axis_tuser ({phy_rx_axis_tuser, phy_fc_axis_tuser, phy_tlp_axis_tuser}),
+      .s_axis_tuser ({phy_rx_axis_tuser, phy_fc_axis_tuser}),
+      // AXI output
+      .m_axis_tdata (phy_arb_axis_tdata),
+      .m_axis_tkeep (phy_arb_axis_tkeep),
+      .m_axis_tvalid(phy_arb_axis_tvalid),
+      .m_axis_tready(phy_arb_axis_tready),
+      .m_axis_tlast (phy_arb_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (phy_arb_axis_tuser)
+  );
+
+   axis_arb_mux #(
+      .S_COUNT              (2),
+      .DATA_WIDTH           (DATA_WIDTH),
+      .KEEP_ENABLE          (KEEP_ENABLE),
+      .KEEP_WIDTH           (KEEP_WIDTH),
+      .ID_ENABLE            (ID_ENABLE),
+      .S_ID_WIDTH           (ID_WIDTH),
+      .DEST_ENABLE          (DEST_ENABLE),
+      .DEST_WIDTH           (DEST_WIDTH),
+      .USER_ENABLE          (USER_ENABLE),
+      .USER_WIDTH           (USER_WIDTH),
+      .LAST_ENABLE          (LAST_ENABLE),
+      .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
+      .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
+  ) phy_arbiter_mux_inst_1 (
+      .clk          (clk_i),
+      .rst          (rst_i || soft_reset),
+      // AXI inputs
+      .s_axis_tdata ({phy_arb_axis_tdata,   phy_tlp_axis_tdata}),
+      .s_axis_tkeep ({phy_arb_axis_tkeep,   phy_tlp_axis_tkeep}),
+      .s_axis_tvalid({phy_arb_axis_tvalid,  phy_tlp_axis_tvalid}),
+      .s_axis_tready({phy_arb_axis_tready,  phy_tlp_axis_tready}),
+      .s_axis_tlast ({phy_arb_axis_tlast,   phy_tlp_axis_tlast}),
+      .s_axis_tid   (),
+      .s_axis_tdest (),
+      .s_axis_tuser ({phy_arb_axis_tuser,   phy_tlp_axis_tuser}),
       // AXI output
       .m_axis_tdata (m_phy_axis_tdata),
       .m_axis_tkeep (m_phy_axis_tkeep),

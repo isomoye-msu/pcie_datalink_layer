@@ -93,17 +93,17 @@ module dllp_fc_update
   // Initialize to idle state
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
-      curr_state <= ST_IDLE;
+      curr_state   <= ST_IDLE;
       dll_packet_r <= '0;
-      timer_r <= '0;
-      dllp_lcrc_r <= '0;
-      start_ack_r <= '0;
+      timer_r      <= '0;
+      dllp_lcrc_r  <= '0;
+      start_ack_r  <= '0;
     end else begin
-      curr_state <= next_state;
+      curr_state   <= next_state;
       dll_packet_r <= dll_packet_c;
-      timer_r <= timer_c;
-      dllp_lcrc_r <= dllp_lcrc_c;
-      start_ack_r <= start_ack_c;
+      timer_r      <= timer_c;
+      dllp_lcrc_r  <= dllp_lcrc_c;
+      start_ack_r  <= start_ack_c;
 
     end
   end
@@ -208,8 +208,7 @@ module dllp_fc_update
       //send np
       ST_UPDATE_CPL: begin
         //build dllp fc update for crc
-        fc_axis_tdata =
-            send_fc_init(UpdateFC_Cpl, '0, '0, '0);
+        fc_axis_tdata = send_fc_init(UpdateFC_Cpl, '0, '0, '0);
         dllp_lcrc_c = crc_out;
         //build axis master output
         fc_axis_tkeep = '1;
@@ -245,36 +244,36 @@ module dllp_fc_update
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH(DATA_WIDTH),
+      .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH(KEEP_WIDTH),
+      .KEEP_WIDTH (KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE('0),
-      .ID_WIDTH(1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH(1),
+      .DEST_WIDTH (1),
       .USER_ENABLE('1),
-      .USER_WIDTH(USER_WIDTH),
-      .REG_TYPE(SkidBuffer)
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
   ) axis_register_pipeline_inst (
-      .clk(clk_i),
-      .rst(rst_i),
-      .s_axis_tdata(fc_axis_tdata),
-      .s_axis_tkeep(fc_axis_tkeep),
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (fc_axis_tdata),
+      .s_axis_tkeep (fc_axis_tkeep),
       .s_axis_tvalid(fc_axis_tvalid),
       .s_axis_tready(fc_axis_tready),
-      .s_axis_tlast(fc_axis_tlast),
-      .s_axis_tuser(fc_axis_tuser),
-      .s_axis_tid('0),
-      .s_axis_tdest('0),
-      .m_axis_tdata(m_axis_tdata),
-      .m_axis_tkeep(m_axis_tkeep),
+      .s_axis_tlast (fc_axis_tlast),
+      .s_axis_tuser (fc_axis_tuser),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .m_axis_tdata (m_axis_tdata),
+      .m_axis_tkeep (m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast(m_axis_tlast),
-      .m_axis_tuser(m_axis_tuser),
-      .m_axis_tid(),
-      .m_axis_tdest()
+      .m_axis_tlast (m_axis_tlast),
+      .m_axis_tuser (m_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest ()
   );
 
   pcie_datalink_crc dllp_crc_inst (
