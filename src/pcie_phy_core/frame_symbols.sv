@@ -46,7 +46,6 @@ module frame_symbols
     ST_FRAME_GEN_3_TLP_SDS,
     ST_FRAME_GEN_3_STREAM,
     ST_FRAME_LAST,
-    ST_FRAME_LAST_KEEP,
     ST_FRAME_LAST_TLP,
     ST_FRAME_LAST_DLLP,
     ST_FRAME_LAST_DLLP_ALLIGN
@@ -79,6 +78,16 @@ module frame_symbols
   logic      [USER_WIDTH-1:0] buffer_axis_tuser;
   logic                       buffer_axis_tready;
 
+
+  logic      [DATA_WIDTH-1:0] second_buffer_axis_tdata;
+  logic      [KEEP_WIDTH-1:0] second_buffer_axis_tkeep;
+  logic                       second_buffer_axis_tvalid;
+  logic                       second_buffer_axis_tlast;
+  logic      [USER_WIDTH-1:0] second_buffer_axis_tuser;
+  logic                       second_buffer_axis_tready;
+
+
+
   //flow buffer axis stage1 signals
   logic      [DATA_WIDTH-1:0] fifo_axis_tdata;
   logic      [KEEP_WIDTH-1:0] fifo_axis_tkeep;
@@ -110,11 +119,6 @@ module frame_symbols
   logic                       mux_axis_buffer;
   logic                       assert_buffer;
 
-
-  logic      [KEEP_WIDTH-1:0] keep_c;
-  logic      [KEEP_WIDTH-1:0] keep_r;
-
-
   always @(posedge clk_i) begin
     if (rst_i) begin
       curr_state <= ST_IDLE;
@@ -126,7 +130,6 @@ module frame_symbols
     is_dllp_r    <= is_dllp_c;
     fcrc_r       <= fcrc_c;
     fp_r         <= fp_c;
-    keep_r       <= keep_c;
   end
 
 
@@ -146,7 +149,6 @@ module frame_symbols
     fcrc_c           = fcrc_r;
     fp_c             = fp_r;
     assert_buffer    = '0;
-    keep_c           = keep_r;
 
     // if (!mux_axis_buffer) begin
     //   mux_axis_tdata  = skid_axis_tdata;
@@ -217,59 +219,12 @@ module frame_symbols
           assert_buffer = '1;
           phy_axis_tdata = {skid_axis_tdata[23:0], buffer_axis_tdata[31:24]};
           phy_axis_tkeep = {skid_axis_tkeep[2:0], buffer_axis_tkeep[3]};
-          keep_c = skid_axis_tkeep;
           if (skid_axis_tlast) begin
-            next_state = ST_IDLE;
-            phy_axis_tvalid = '0;
-            // phy_axis_tlast = '1;
-            case (skid_axis_tkeep)
-              4'b0001, 4'b0011: begin
-                next_state    = ST_FRAME_LAST_KEEP;
-                assert_buffer = '0;
-                skid_axis_tready = '0;
-                //   phy_axis_tdata[23:16] = ENDP;
-                //   phy_axis_tkeep[2]     = '1;
-                //   phy_axis_tuser        = 4'b0100;
-                //   phy_axis_tlast        = '1;
-                // end
-                // 4'b0011: begin
-                //   phy_axis_tdata[31:24] = ENDP;
-                //   phy_axis_tuser        = 4'b1000;
-                //   phy_axis_tlast        = '1;
-                //   phy_axis_tkeep[3]     = '1;
-              end
-              default: begin
-                // assert_buffer = '1;
-                next_state    = ST_FRAME_LAST;
-              end
-            endcase
+            // next_state = ST_IDLE;
+            phy_axis_tvalid = 0;
+            next_state = ST_FRAME_LAST;
+            // endcase
           end
-        end
-      end
-      ST_FRAME_LAST_KEEP: begin
-        phy_axis_tdata = {skid_axis_tdata[23:0], buffer_axis_tdata[31:24]};
-        if (phy_axis_tready) begin
-          phy_axis_tvalid = '1;
-           next_state    = ST_IDLE;
-          case (keep_r)
-            4'b0001: begin
-              assert_buffer         = '0;
-              phy_axis_tdata[23:16] = ENDP;
-              phy_axis_tkeep[2]     = '1;
-              phy_axis_tuser        = 4'b0100;
-              phy_axis_tlast        = '1;
-            end
-            4'b0011: begin
-              phy_axis_tdata[31:24] = ENDP;
-              phy_axis_tuser        = 4'b1000;
-              phy_axis_tlast        = '1;
-              phy_axis_tkeep[3]     = '1;
-            end
-            default: begin
-              assert_buffer = '1;
-              next_state    = ST_IDLE;
-            end
-          endcase
         end
       end
       // ST_FRAME_GEN_3_DLLP: begin
@@ -343,7 +298,20 @@ module frame_symbols
         if (phy_axis_tready) begin
           next_state = ST_IDLE;
           phy_axis_tvalid = '1;
+          phy_axis_tdata = {buffer_axis_tdata[23:0], second_buffer_axis_tdata[31:24]};
           case (buffer_axis_tkeep)
+            4'b0001: begin
+              phy_axis_tdata[23:16] = ENDP;
+              phy_axis_tkeep[2]     = '1;
+              phy_axis_tuser        = 4'b0100;
+              phy_axis_tlast        = '1;
+            end
+            4'b0011: begin
+              phy_axis_tdata[31:24] = ENDP;
+              phy_axis_tuser        = 4'b1000;
+              phy_axis_tlast        = '1;
+              phy_axis_tkeep[3]     = '1;
+            end
             4'b0111: begin
               phy_axis_tuser      = 4'b0001;
               phy_axis_tdata[7:0] = ENDP;
@@ -351,7 +319,7 @@ module frame_symbols
             end
             4'b1111: begin
               phy_axis_tuser = 4'b0010;
-              phy_axis_tdata = {ENDP, buffer_axis_tdata[31:24]};
+              phy_axis_tdata = {ENDP, second_buffer_axis_tdata[31:24]};
               phy_axis_tkeep = 4'b0011;
             end
             default: begin
@@ -474,6 +442,42 @@ module frame_symbols
       .m_axis_tuser (buffer_axis_tuser)
   );
 
+
+
+
+  //axis skid buffer
+  axis_register #(
+      .DATA_WIDTH (DATA_WIDTH),
+      .KEEP_ENABLE('1),
+      .KEEP_WIDTH (KEEP_WIDTH),
+      .LAST_ENABLE('1),
+      .ID_ENABLE  ('0),
+      .ID_WIDTH   (1),
+      .DEST_ENABLE('0),
+      .DEST_WIDTH (1),
+      .USER_ENABLE('1),
+      .USER_WIDTH (USER_WIDTH),
+      .REG_TYPE   (SkidBuffer)
+  ) axis_second_buffer_register_inst (
+      .clk          (clk_i),
+      .rst          (rst_i),
+      .s_axis_tdata (buffer_axis_tdata),
+      .s_axis_tkeep (buffer_axis_tkeep),
+      .s_axis_tvalid(buffer_axis_tvalid),
+      .s_axis_tready(),
+      .s_axis_tlast (buffer_axis_tlast),
+      .s_axis_tid   ('0),
+      .s_axis_tdest ('0),
+      .s_axis_tuser (buffer_axis_tuser),
+      .m_axis_tdata (second_buffer_axis_tdata),
+      .m_axis_tkeep (second_buffer_axis_tkeep),
+      .m_axis_tvalid(second_buffer_axis_tvalid),
+      .m_axis_tready(assert_buffer),
+      .m_axis_tlast (second_buffer_axis_tlast),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+      .m_axis_tuser (second_buffer_axis_tuser)
+  );
 
   //axis skid buffer
   axis_register #(
