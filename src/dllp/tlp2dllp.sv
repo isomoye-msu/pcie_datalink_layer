@@ -60,6 +60,7 @@ module tlp2dllp
   //tlp to dllp fsm emum
   typedef enum logic [3:0] {
     ST_IDLE,
+    ST_CHECK_TYPE,
     ST_CHECK_CREDITS_NPH,
     ST_CHECK_CREDITS_NPH_NPD,
     ST_CHECK_CREDITS_PH,
@@ -266,24 +267,36 @@ module tlp2dllp
       //store packet, because we're shifting the data to fit in
       //the seq number, we'll need to save 2 bytes of this packet
       ST_IDLE: begin
+        static logic has_cplh_credit;
+        static logic has_cpld_credit;
+        static logic [15:0] data_length;
+        static logic [15:0] data_credits_required;
+        tlp_dw0 = skid_axis_tdata;
+        has_cplh_credit = '0;
+        has_cpld_credit = '0;
+        data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+        data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
+        incr_c.data_credits_required = data_credits_required;
         if (tlp_axis_tready && skid_axis_tvalid) begin
-          tlp_dw0  = skid_axis_tdata;
-          crc_in_c = '1;
-          //handle posted request
-          if (tlp_dw0.byte0 inside {MRd, MRdLk, IORd, CfgRd0, CfgRd1, TCfgRd}) begin
-            next_state = ST_CHECK_CREDITS_NPH;
-          end else if (tlp_dw0.byte0 inside {MWr, MsgD}) begin
-            next_state = ST_CHECK_CREDITS_PH_PD;
-          end else if (tlp_dw0.byte0 inside {Msg}) begin
-            next_state = ST_CHECK_CREDITS_PH;
-          end else if (tlp_dw0.byte0 inside {IOWr, CfgWr0, CfgWr1,TCfgWr,FetchAdd,
-          Swap,CAS}) begin
-            next_state = ST_CHECK_CREDITS_NPH_NPD;
-          end else if (tlp_dw0.byte0 inside {Cpl, CplLk}) begin
-            next_state = ST_CHECK_CREDITS_CPLH;
-          end else if (tlp_dw0.byte0 inside {CplD, CplDLk}) begin
-            next_state = ST_CHECK_CREDITS_CPLH_CPLD;
-          end
+          next_state = ST_CHECK_TYPE;
+        end
+      end
+      ST_CHECK_TYPE: begin
+        tlp_dw0  = skid_axis_tdata;
+        crc_in_c = '1;
+        //handle posted request
+        if (tlp_dw0.byte0 inside {MRd, MRdLk, IORd, CfgRd0, CfgRd1, TCfgRd}) begin
+          next_state = ST_CHECK_CREDITS_NPH;
+        end else if (tlp_dw0.byte0 inside {MWr, MsgD}) begin
+          next_state = ST_CHECK_CREDITS_PH_PD;
+        end else if (tlp_dw0.byte0 inside {Msg}) begin
+          next_state = ST_CHECK_CREDITS_PH;
+        end else if (tlp_dw0.byte0 inside {IOWr, CfgWr0, CfgWr1, TCfgWr, FetchAdd, Swap, CAS}) begin
+          next_state = ST_CHECK_CREDITS_NPH_NPD;
+        end else if (tlp_dw0.byte0 inside {Cpl, CplLk}) begin
+          next_state = ST_CHECK_CREDITS_CPLH;
+        end else if (tlp_dw0.byte0 inside {CplD, CplDLk}) begin
+          next_state = ST_CHECK_CREDITS_CPLH_CPLD;
         end
       end
       ST_CHECK_CREDITS_NPH: begin
@@ -312,13 +325,11 @@ module tlp2dllp
         end
         if (has_nph_credit) begin
           // crc_in_c         = crc_out_32;
-          tlp_axis_tvalid              = skid_axis_tvalid;
-          skid_axis_tready             = '1;
-          incr_c.npd_credits_consumed  = '1;
-          // incr_c.data_credits_required = data_credits_required;
-          tlp_axis_tdata_c             = tlp_axis_tdata;
-          next_state                   = ST_TLP_STREAM;
+          incr_c.npd_credits_consumed = '1;
         end
+        skid_axis_tready = '1;
+        tlp_axis_tvalid  = '1;
+        next_state       = ST_TLP_STREAM;
       end
       ST_CHECK_CREDITS_NPH_NPD: begin
         static logic has_nph_credit;
@@ -364,12 +375,11 @@ module tlp2dllp
           incr_c.npd_credits_consumed  = '1;
           incr_c.nph_credits_consumed  = '1;
           incr_c.data_credits_required = data_credits_required;
-          // crc_in_c               = crc_out_32;
-          tlp_axis_tvalid              = skid_axis_tvalid;
           tlp_axis_tdata_c             = tlp_axis_tdata;
-          skid_axis_tready             = '1;
-          next_state                   = ST_TLP_STREAM;
         end
+        skid_axis_tready = '1;
+        tlp_axis_tvalid  = '1;
+        next_state       = ST_TLP_STREAM;
       end
       ST_CHECK_CREDITS_PH: begin
         static logic has_ph_credit;
@@ -397,13 +407,13 @@ module tlp2dllp
         //check next_state criteria
         if (has_ph_credit) begin
           // crc_in_c         = crc_out_32;
-          tlp_axis_tvalid              = skid_axis_tvalid;
-          tlp_axis_tdata_c             = tlp_axis_tdata;
-          incr_c.ph_credits_consumed   = '1;
+          tlp_axis_tdata_c           = tlp_axis_tdata;
+          incr_c.ph_credits_consumed = '1;
           // incr_c.data_credits_required = data_credits_required;
-          skid_axis_tready             = '1;
-          next_state                   = ST_TLP_STREAM;
         end
+        skid_axis_tready = '1;
+        tlp_axis_tvalid  = '1;
+        next_state       = ST_TLP_STREAM;
       end
       ST_CHECK_CREDITS_PH_PD: begin
         static logic has_ph_credit;
@@ -413,8 +423,8 @@ module tlp2dllp
         tlp_dw0 = skid_axis_tdata;
         has_ph_credit = '0;
         has_pd_credit = '0;
-        data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
-        data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
+        // data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+        // data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
@@ -436,12 +446,12 @@ module tlp2dllp
         end
         //check that posted data credit is available
         if (pd_credit_limit_r >= pd_credits_consumed_r) begin
-          if ((pd_credit_limit_r - pd_credits_consumed_r) >= data_credits_required) begin
+          if ((pd_credit_limit_r - pd_credits_consumed_r) >= incr_r.data_credits_required) begin
             has_pd_credit = '1;
           end
         end  //account for wrap around
         else begin
-          if ((pd_credits_consumed_r - pd_credit_limit_r) >= data_credits_required) begin
+          if ((pd_credits_consumed_r - pd_credit_limit_r) >= incr_r.data_credits_required) begin
             has_pd_credit = '1;
           end
         end
@@ -451,13 +461,12 @@ module tlp2dllp
           // ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
           incr_c.ph_credits_consumed   = '1;
           incr_c.pd_credits_consumed   = '1;
-          incr_c.data_credits_required = data_credits_required;
-          // crc_in_c              = crc_out_32;
-          tlp_axis_tvalid              = skid_axis_tvalid;
+          incr_c.data_credits_required = incr_r.data_credits_required;
           tlp_axis_tdata_c             = tlp_axis_tdata;
-          skid_axis_tready             = '1;
-          next_state                   = ST_TLP_STREAM;
         end
+        skid_axis_tready = '1;
+        tlp_axis_tvalid  = '1;
+        next_state       = ST_TLP_STREAM;
       end
       ST_CHECK_CREDITS_CPLH: begin
         static logic has_cplh_credit;
@@ -492,22 +501,22 @@ module tlp2dllp
         if (has_cplh_credit) begin
           // crc_in_c         = crc_out_32;
           // incr_c.data_credits_required = data_credits_required;
-          tlp_axis_tvalid              = skid_axis_tvalid;
-          tlp_axis_tdata_c             = tlp_axis_tdata;
-          skid_axis_tready             = '1;
-          next_state                   = ST_TLP_STREAM;
+          tlp_axis_tdata_c = tlp_axis_tdata;
         end
+        skid_axis_tready = '1;
+        tlp_axis_tvalid  = '1;
+        next_state       = ST_TLP_STREAM;
       end
       ST_CHECK_CREDITS_CPLH_CPLD: begin
         static logic has_cplh_credit;
         static logic has_cpld_credit;
-        static logic [15:0] data_length;
-        static logic [15:0] data_credits_required;
-        tlp_dw0 = skid_axis_tdata;
+        // static logic [15:0] data_length;
+        // static logic [15:0] data_credits_required;
+        // tlp_dw0 = skid_axis_tdata;
         has_cplh_credit = '0;
         has_cpld_credit = '0;
-        data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
-        data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
+        // data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
+        // data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
@@ -533,7 +542,7 @@ module tlp2dllp
         end
         //check that posted data credit is available
         if (cpld_credit_limit_r >= cpld_credits_consumed_r) begin
-          if ((cpld_credit_limit_r - cpld_credits_consumed_r) >= data_credits_required) begin
+          if ((cpld_credit_limit_r - cpld_credits_consumed_r) >= incr_r.data_credits_required) begin
             has_cpld_credit = '1;
           end
           //account for unlimited completion credit limit
@@ -542,7 +551,7 @@ module tlp2dllp
           end
         end  //account for wrap around
         else begin
-          if ((cpld_credits_consumed_r - cpld_credit_limit_r) >= data_credits_required) begin
+          if ((cpld_credits_consumed_r - cpld_credit_limit_r) >= incr_r.data_credits_required) begin
             has_cpld_credit = '1;
           end
         end
@@ -552,14 +561,12 @@ module tlp2dllp
           // cpld_credits_consumed_c = cpld_credits_consumed_r + data_credits_required;
           incr_c.cpld_credits_consumed = '1;
           incr_c.cplh_credits_consumed = '1;
-          incr_c.data_credits_required = data_credits_required;
-
-          // crc_in_c                = crc_out_32;
-          tlp_axis_tvalid              = skid_axis_tvalid;
+          incr_c.data_credits_required = incr_r.data_credits_required;
           tlp_axis_tdata_c             = tlp_axis_tdata;
-          skid_axis_tready             = '1;
-          next_state                   = ST_TLP_STREAM;
         end
+          skid_axis_tready             = '1;
+          tlp_axis_tvalid             = '1;
+        next_state                   = ST_TLP_STREAM;
       end
       //wait until pipeline is full and upstream ready
       //bypass if current packet is last

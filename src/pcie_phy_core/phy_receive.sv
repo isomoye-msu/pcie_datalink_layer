@@ -315,14 +315,14 @@ module phy_receive
 
       .m_clk        (clk_i),
       .m_rst        (rst_i),
-      .m_axis_tdata (m_buffer_dllp_axis_tdata),
-      .m_axis_tkeep (m_buffer_dllp_axis_tkeep),
-      .m_axis_tvalid(m_buffer_dllp_axis_tvalid),
-      .m_axis_tready(m_buffer_dllp_axis_tready),
-      .m_axis_tlast (m_buffer_dllp_axis_tlast),
+      .m_axis_tdata (m_dllp_axis_tdata),
+      .m_axis_tkeep (m_dllp_axis_tkeep),
+      .m_axis_tvalid(m_dllp_axis_tvalid),
+      .m_axis_tready(m_dllp_axis_tready),
+      .m_axis_tlast (m_dllp_axis_tlast),
       .m_axis_tid   (),
       .m_axis_tdest (),
-      .m_axis_tuser (m_buffer_dllp_axis_tuser),
+      .m_axis_tuser (m_dllp_axis_tuser),
 
       .s_pause_req          ('0),
       .s_pause_ack          (),
@@ -342,38 +342,38 @@ module phy_receive
 
 
 //axis skid buffer
-axis_register #(
-    .DATA_WIDTH (DATA_WIDTH),
-    .KEEP_ENABLE('1),
-    .KEEP_WIDTH (KEEP_WIDTH),
-    .LAST_ENABLE('1),
-    .ID_ENABLE  ('0),
-    .ID_WIDTH   (1),
-    .DEST_ENABLE('0),
-    .DEST_WIDTH (1),
-    .USER_ENABLE('1),
-    .USER_WIDTH (USER_WIDTH),
-    .REG_TYPE   (SkidBuffer)
-) axis_output_register_inst (
-    .clk          (clk_i),
-    .rst          (rst_i),
-    .s_axis_tdata (m_buffer_dllp_axis_tdata),
-    .s_axis_tkeep (m_buffer_dllp_axis_tkeep),
-    .s_axis_tvalid(m_buffer_dllp_axis_tvalid),
-    .s_axis_tready(m_buffer_dllp_axis_tready),
-    .s_axis_tlast (m_buffer_dllp_axis_tlast),
-    .s_axis_tid   ('0),
-    .s_axis_tdest ('0),
-    .s_axis_tuser (m_buffer_dllp_axis_tuser),
-    .m_axis_tdata (m_dllp_axis_tdata),
-    .m_axis_tkeep (m_dllp_axis_tkeep),
-    .m_axis_tvalid(m_dllp_axis_tvalid),
-    .m_axis_tready(m_dllp_axis_tready),
-    .m_axis_tlast (m_dllp_axis_tlast),
-    .m_axis_tid   (),
-    .m_axis_tdest (),
-    .m_axis_tuser (m_dllp_axis_tuser)
-);
+// axis_register #(
+//     .DATA_WIDTH (DATA_WIDTH),
+//     .KEEP_ENABLE('1),
+//     .KEEP_WIDTH (KEEP_WIDTH),
+//     .LAST_ENABLE('1),
+//     .ID_ENABLE  ('0),
+//     .ID_WIDTH   (1),
+//     .DEST_ENABLE('0),
+//     .DEST_WIDTH (1),
+//     .USER_ENABLE('1),
+//     .USER_WIDTH (USER_WIDTH),
+//     .REG_TYPE   (SkidBuffer)
+// ) axis_output_register_inst (
+//     .clk          (clk_i),
+//     .rst          (rst_i),
+//     .s_axis_tdata (m_buffer_dllp_axis_tdata),
+//     .s_axis_tkeep (m_buffer_dllp_axis_tkeep),
+//     .s_axis_tvalid(m_buffer_dllp_axis_tvalid),
+//     .s_axis_tready(m_buffer_dllp_axis_tready),
+//     .s_axis_tlast (m_buffer_dllp_axis_tlast),
+//     .s_axis_tid   ('0),
+//     .s_axis_tdest ('0),
+//     .s_axis_tuser (m_buffer_dllp_axis_tuser),
+//     .m_axis_tdata (m_dllp_axis_tdata),
+//     .m_axis_tkeep (m_dllp_axis_tkeep),
+//     .m_axis_tvalid(m_dllp_axis_tvalid),
+//     .m_axis_tready(m_dllp_axis_tready),
+//     .m_axis_tlast (m_dllp_axis_tlast),
+//     .m_axis_tid   (),
+//     .m_axis_tdest (),
+//     .m_axis_tuser (m_dllp_axis_tuser)
+// );
 
 
 endmodule

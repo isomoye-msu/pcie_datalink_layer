@@ -23,13 +23,13 @@ set_property LOC IBUFDS_GTE2_X0Y0 [get_cells refclk_ibuf]
 # set_property LOC C12 [get_ports {pci_exp_rxn[0]}]
 
 # led_s
-set_property PACKAGE_PIN J22 [get_ports {led_0}]
+# set_property PACKAGE_PIN J22 [get_ports {led_0}]
 # set_property IOSTANDARD LVCMOS33 [get_ports led_0]
 
-set_property PACKAGE_PIN K22 [get_ports {led_1}]
+# set_property PACKAGE_PIN K22 [get_ports {led_1}]
 # set_property IOSTANDARD LVCMOS33 [get_ports led_1]
 
-set_property PACKAGE_PIN AB6 [get_ports {led_2}]
+# set_property PACKAGE_PIN AB6 [get_ports {led_2}]
 # set_property IOSTANDARD LVCMOS33 [get_ports led_2]
 
 
@@ -77,6 +77,9 @@ create_clock -add -name pcie_125mhz_d_rxusr_oob_p -period 8 [get_nets in_module_
 create_clock -add -name pcie_250mhz_gen2 -period 4 [get_nets in_module_mmcm.pipe_clock_i/clk_250mhz]
 create_clock -add -name pcie_62d5mhz_user1_user2 -period 16 [get_nets in_module_mmcm.pipe_clock_i/userclk1]
 # create_clock -name tx_clk -period 20.0 [get_nets tx_clk]
+set_false_path -from [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]] -to [get_clocks sys_clk_p]
+# set_false_path -from [get_pins {pipe_wrapper_i/pipe_rxusrclk_in_beats/out_reg[0]_replica/C}] -to [get_pins pcie_phy_top_inst/phy_transmit_inst/ordered_set_axis_async_fifo_inst/s_rst_sync1_reg_reg/PRE]
+# set_false_path -from [get_pins {pipe_wrapper_i/pipe_rxusrclk_in_beats/out_reg[0]_replica/C}] -to [get_pins pcie_phy_top_inst/phy_transmit_inst/dllp_tx_axis_async_fifo_inst/m_rst_sync1_reg_reg/PRE]
 
 # create_clock -name rx_clk -period 20.0 [get_nets rx_clk]
 

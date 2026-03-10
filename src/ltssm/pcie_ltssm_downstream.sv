@@ -274,6 +274,8 @@ module pcie_ltssm_downstream
   equal_t                                     equal_status_r;
 
   logic                                       ordered_set_tranmitted_r;
+  logic                                       reset_timer_c;
+  logic                                       reset_timer_r;
 
   assign active_lanes_o         = lane_active_r;
   assign ltssm_state_o          = curr_state;
@@ -346,6 +348,7 @@ module pcie_ltssm_downstream
       idle_to_rlock_transitioned_r   <= '0;
       max_supported_rate_r           <= gen1;
       gen_os_ctrl_r                  <= '0;
+      reset_timer_r                  <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
       //   tx_preset <=
@@ -379,6 +382,7 @@ module pcie_ltssm_downstream
       idle_to_rlock_transitioned_r   <= idle_to_rlock_transitioned_c;
       max_supported_rate_r           <= max_supported_rate_c;
       gen_os_ctrl_r                  <= gen_os_ctrl_c;
+      reset_timer_r                  <= reset_timer_c;
     end
     //non-resetable
     ordered_set_tranmitted_r <= ordered_set_tranmitted_i;
@@ -388,7 +392,7 @@ module pcie_ltssm_downstream
   always_comb begin : timer_and_ordered_set_counter
     timer_c = timer_r;
     // ordered_set_sent_cnt_c = ordered_set_sent_cnt_r;
-    if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
+    if (reset_timer_r) begin
       timer_c = '0;
       // ordered_set_sent_cnt_c = '0;
     end else begin
@@ -450,6 +454,7 @@ module pcie_ltssm_downstream
     phy_txcompliance_o             = '0;
     phy_rxpolarity_o               = '0;
     phy_txmargin_o                 = '0;
+    reset_timer_c                  = '0;
     // gen_os_ctrl_c                  = '0;
     case (curr_state)
       //*********************************************************
@@ -1446,6 +1451,9 @@ module pcie_ltssm_downstream
       default: begin
       end
     endcase
+    if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
+      reset_timer_c = '1;
+    end
   end
 
 
