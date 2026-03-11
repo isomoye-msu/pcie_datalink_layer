@@ -1,47 +1,49 @@
 module phy_receive
   import pcie_phy_pkg::*;
 #(
-    parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100
-    parameter int MAX_NUM_LANES = 16,              //! Maximum number of lanes module can support
+    parameter int CLK_RATE = 100,  //!Clock speed in MHz, Defualt is 100
+    parameter int MAX_NUM_LANES = 16,  //! Maximum number of lanes module can support
     // TLP data width
-    parameter int DATA_WIDTH    = 32,              //! AXIS data width
+    parameter int DATA_WIDTH = 32,  //! AXIS data width
     // TLP strobe width
-    parameter int STRB_WIDTH    = DATA_WIDTH / 8,
-    parameter int KEEP_WIDTH    = STRB_WIDTH,
-    parameter int USER_WIDTH    = 5
+    parameter int STRB_WIDTH = DATA_WIDTH / 8,
+    parameter int KEEP_WIDTH = STRB_WIDTH,
+    parameter int USER_WIDTH = 5
 ) (
     input logic clk_i,  // 100MHz clock signal
     input logic rst_i,  // Reset signal
 
     //Control
-    input  logic                                                 en_i,
-    input  logic                                                 link_up_i,
-    input  logic                                                 pipe_rx_usr_clk_i,
-    input  logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
-    input  logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
-    input  logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
-    input  logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
-    input  logic              [             (MAX_NUM_LANES)-1:0] pipe_block_start_i,
-    input  logic              [                             5:0] pipe_width_i,
-    input  logic              [                             5:0] num_active_lanes_i,
+    input  logic                                                           en_i,
+    input  logic                                                           link_up_i,
+    input  logic                                                           pipe_rx_usr_clk_i,
+    input  logic        [( MAX_NUM_LANES* DATA_WIDTH)-1:0]                 pipe_data_i,
+    input  logic        [               MAX_NUM_LANES-1:0]                 pipe_data_valid_i,
+    input  logic        [           (4*MAX_NUM_LANES)-1:0]                 pipe_data_k_i,
+    input  logic        [           (2*MAX_NUM_LANES)-1:0]                 pipe_sync_header_i,
+    input  logic        [             (MAX_NUM_LANES)-1:0]                 pipe_block_start_i,
+    input  logic        [                             5:0]                 pipe_width_i,
+    input  logic        [                             5:0]                 num_active_lanes_i,
     //training set configuration signals
-    output pcie_ordered_set_t [               MAX_NUM_LANES-1:0] ordered_set_o,
-    output logic              [               MAX_NUM_LANES-1:0] ts1_valid_o,
-    output logic              [               MAX_NUM_LANES-1:0] ts2_valid_o,
-    output logic              [               MAX_NUM_LANES-1:0] idle_valid_o,
+    output logic        [               MAX_NUM_LANES-1:0][OsDataSize-1:0] m_os_axis_tdata,
+    output logic        [               MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] m_os_axis_tkeep,
+    output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tvalid,
+    output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tlast,
+    output logic        [               MAX_NUM_LANES-1:0][USER_WIDTH-1:0] m_os_axis_tuser,
+    input  logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tready,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] link_num_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] lane_num_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] symbol6_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] training_ctrl_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] rate_id_o,
-    input  rate_speed_e                                          curr_data_rate_i,
+    input  rate_speed_e                                                    curr_data_rate_i,
     //pcie dllp outputs
-    output logic              [                  DATA_WIDTH-1:0] m_dllp_axis_tdata,
-    output logic              [                  KEEP_WIDTH-1:0] m_dllp_axis_tkeep,
-    output logic                                                 m_dllp_axis_tvalid,
-    output logic                                                 m_dllp_axis_tlast,
-    output logic              [                  USER_WIDTH-1:0] m_dllp_axis_tuser,
-    input  logic                                                 m_dllp_axis_tready
+    output logic        [                  DATA_WIDTH-1:0]                 m_dllp_axis_tdata,
+    output logic        [                  KEEP_WIDTH-1:0]                 m_dllp_axis_tkeep,
+    output logic                                                           m_dllp_axis_tvalid,
+    output logic                                                           m_dllp_axis_tlast,
+    output logic        [                  USER_WIDTH-1:0]                 m_dllp_axis_tuser,
+    input  logic                                                           m_dllp_axis_tready
 );
 
 
@@ -63,6 +65,7 @@ module phy_receive
   //   logic              [               MAX_NUM_LANES-1:0] ts2_valid;
   //   logic              [               MAX_NUM_LANES-1:0] idle_valid;
   //   logic                                                 link_up;
+
 
   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] descrambler_data;
   logic [               MAX_NUM_LANES-1:0] descrambler_data_valid;
@@ -110,12 +113,12 @@ module phy_receive
   localparam int PcieLaneDataSize = 1 + DATA_WIDTH + 4 + 2 + 1;
 
 
-    logic              [                  DATA_WIDTH-1:0] m_buffer_dllp_axis_tdata;
-    logic              [                  KEEP_WIDTH-1:0] m_buffer_dllp_axis_tkeep;
-    logic                                                 m_buffer_dllp_axis_tvalid;
-    logic                                                 m_buffer_dllp_axis_tlast;
-    logic              [                  USER_WIDTH-1:0] m_buffer_dllp_axis_tuser;
-    logic                                                 m_buffer_dllp_axis_tready;
+  logic [DATA_WIDTH-1:0] m_buffer_dllp_axis_tdata;
+  logic [KEEP_WIDTH-1:0] m_buffer_dllp_axis_tkeep;
+  logic                  m_buffer_dllp_axis_tvalid;
+  logic                  m_buffer_dllp_axis_tlast;
+  logic [USER_WIDTH-1:0] m_buffer_dllp_axis_tuser;
+  logic                  m_buffer_dllp_axis_tready;
 
   logic [DATA_WIDTH-1:0] tlp_axis_tdata;
   logic [KEEP_WIDTH-1:0] tlp_axis_tkeep;
@@ -172,13 +175,16 @@ module phy_receive
         .data_in_i       (descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
         .data_k_in_i     (descrambler_data_k[4*lane+:4]),
         .sync_header_i   (descrambler_sync_header[2*lane+:2]),
-        .ordered_set_o   (ordered_set_o[lane]),
-        .idle_valid_o    (idle_valid_o[lane]),
-        .ts1_valid_o     (ts1_valid_o[lane]),
-        .ts2_valid_o     (ts2_valid_o[lane]),
-        .eieos_valid_o   ()
+        .m_os_axis_tdata (m_os_axis_tdata[lane]),
+        .m_os_axis_tkeep (m_os_axis_tkeep[lane]),
+        .m_os_axis_tvalid(m_os_axis_tvalid[lane]),
+        .m_os_axis_tlast (m_os_axis_tlast[lane]),
+        .m_os_axis_tuser (m_os_axis_tuser[lane]),
+        .m_os_axis_tready(m_os_axis_tready[lane])
     );
   end
+
+
 
   block_alignment #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -341,39 +347,39 @@ module phy_receive
   );
 
 
-//axis skid buffer
-// axis_register #(
-//     .DATA_WIDTH (DATA_WIDTH),
-//     .KEEP_ENABLE('1),
-//     .KEEP_WIDTH (KEEP_WIDTH),
-//     .LAST_ENABLE('1),
-//     .ID_ENABLE  ('0),
-//     .ID_WIDTH   (1),
-//     .DEST_ENABLE('0),
-//     .DEST_WIDTH (1),
-//     .USER_ENABLE('1),
-//     .USER_WIDTH (USER_WIDTH),
-//     .REG_TYPE   (SkidBuffer)
-// ) axis_output_register_inst (
-//     .clk          (clk_i),
-//     .rst          (rst_i),
-//     .s_axis_tdata (m_buffer_dllp_axis_tdata),
-//     .s_axis_tkeep (m_buffer_dllp_axis_tkeep),
-//     .s_axis_tvalid(m_buffer_dllp_axis_tvalid),
-//     .s_axis_tready(m_buffer_dllp_axis_tready),
-//     .s_axis_tlast (m_buffer_dllp_axis_tlast),
-//     .s_axis_tid   ('0),
-//     .s_axis_tdest ('0),
-//     .s_axis_tuser (m_buffer_dllp_axis_tuser),
-//     .m_axis_tdata (m_dllp_axis_tdata),
-//     .m_axis_tkeep (m_dllp_axis_tkeep),
-//     .m_axis_tvalid(m_dllp_axis_tvalid),
-//     .m_axis_tready(m_dllp_axis_tready),
-//     .m_axis_tlast (m_dllp_axis_tlast),
-//     .m_axis_tid   (),
-//     .m_axis_tdest (),
-//     .m_axis_tuser (m_dllp_axis_tuser)
-// );
+//   axis skid buffer
+//   axis_register #(
+//       .DATA_WIDTH (DATA_WIDTH),
+//       .KEEP_ENABLE('1),
+//       .KEEP_WIDTH (KEEP_WIDTH),
+//       .LAST_ENABLE('1),
+//       .ID_ENABLE  ('0),
+//       .ID_WIDTH   (1),
+//       .DEST_ENABLE('0),
+//       .DEST_WIDTH (1),
+//       .USER_ENABLE('1),
+//       .USER_WIDTH (USER_WIDTH),
+//       .REG_TYPE   (SkidBuffer)
+//   ) axis_output_register_inst (
+//       .clk          (clk_i),
+//       .rst          (rst_i),
+//       .s_axis_tdata (m_buffer_dllp_axis_tdata),
+//       .s_axis_tkeep (m_buffer_dllp_axis_tkeep),
+//       .s_axis_tvalid(m_buffer_dllp_axis_tvalid),
+//       .s_axis_tready(m_buffer_dllp_axis_tready),
+//       .s_axis_tlast (m_buffer_dllp_axis_tlast),
+//       .s_axis_tid   ('0),
+//       .s_axis_tdest ('0),
+//       .s_axis_tuser (m_buffer_dllp_axis_tuser),
+//       .m_axis_tdata (m_dllp_axis_tdata),
+//       .m_axis_tkeep (m_dllp_axis_tkeep),
+//       .m_axis_tvalid(m_dllp_axis_tvalid),
+//       .m_axis_tready(m_dllp_axis_tready),
+//       .m_axis_tlast (m_dllp_axis_tlast),
+//       .m_axis_tid   (),
+//       .m_axis_tdest (),
+//       .m_axis_tuser (m_dllp_axis_tuser)
+//   );
 
 
 endmodule

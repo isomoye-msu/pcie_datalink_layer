@@ -152,7 +152,7 @@ class pcie_enumeration_seq(pipe_base_seq, crv.Randomized):
         
         self.dev.functions[0].pcie_id = PcieId(1,0,0)
         self.dev.functions[0].configure_bar(0, len(self.regions[0]))
-        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),5000,'ns')
+        await with_timeout(self.pipe_agent_config.fc_initialized.wait(),10000,'ns')
         await with_timeout(self.rc.enumerate(),100000,'ns')
         dev = self.rc.find_device(self.dev.functions[0].pcie_id)
         await dev.enable_device()

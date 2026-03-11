@@ -117,21 +117,49 @@ module pcie_phy_top
   parameter int MAX_PAYLOAD_SIZE = 256;
 
 
-  logic                                      link_up;
-  ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
-  logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
-  logic              [(MAX_NUM_LANES*8)-1:0] link_number;
-  logic              [    MAX_NUM_LANES-1:0] ts1_valid;
-  logic              [    MAX_NUM_LANES-1:0] ts2_valid;
-  logic              [    MAX_NUM_LANES-1:0] idle_valid;
-  training_ctrl_t    [    MAX_NUM_LANES-1:0] training_ctrl;
-  rate_speed_e                               curr_data_rate;
-  pcie_ordered_set_t                         ordered_set;
-  logic                                      ordered_set_tranmitted;
-  logic                                      send_ordered_set;
-  rate_id_t          [    MAX_NUM_LANES-1:0] rate_id;
-  logic              [                  5:0] pipe_width;
-  logic              [                  5:0] num_active_lanes_i;
+  parameter int DEPTH = 2;
+  parameter int ID_ENABLE = 0;
+  parameter int ID_WIDTH = 8;
+  parameter int DEST_ENABLE = 0;
+  parameter int DEST_WIDTH = 8;
+  parameter int USER_ENABLE = 1;
+  parameter int LAST_ENABLE = 1;
+  parameter int KEEP_ENABLE = 0;
+
+  logic                                                      link_up;
+  ts_symbol6_union_t [    MAX_NUM_LANES-1:0]                 symbol6;
+  logic              [(MAX_NUM_LANES*8)-1:0]                 lane_number;
+  logic              [(MAX_NUM_LANES*8)-1:0]                 link_number;
+  logic              [    MAX_NUM_LANES-1:0]                 ts1_valid;
+  logic              [    MAX_NUM_LANES-1:0]                 ts2_valid;
+  logic              [    MAX_NUM_LANES-1:0]                 idle_valid;
+  training_ctrl_t    [    MAX_NUM_LANES-1:0]                 training_ctrl;
+  rate_speed_e                                               curr_data_rate;
+  pcie_ordered_set_t                                         ordered_set;
+  logic                                                      ordered_set_tranmitted;
+  logic                                                      send_ordered_set;
+  rate_id_t          [    MAX_NUM_LANES-1:0]                 rate_id;
+  logic              [                  5:0]                 pipe_width;
+  logic              [                  5:0]                 num_active_lanes_i;
+
+
+
+  //training set configuration signals
+  logic              [    MAX_NUM_LANES-1:0][OsDataSize-1:0] os_axis_tdata;
+  logic              [    MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] os_axis_tkeep;
+  logic              [    MAX_NUM_LANES-1:0]                 os_axis_tvalid;
+  logic              [    MAX_NUM_LANES-1:0]                 os_axis_tlast;
+  logic              [    MAX_NUM_LANES-1:0][USER_WIDTH-1:0] os_axis_tuser;
+  logic              [    MAX_NUM_LANES-1:0]                 os_axis_tready;
+
+  //training async fifo set configuration signals
+  logic              [    MAX_NUM_LANES-1:0][OsDataSize-1:0] os_fifo_axis_tdata;
+  logic              [    MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] os_fifo_axis_tkeep;
+  logic              [    MAX_NUM_LANES-1:0]                 os_fifo_axis_tvalid;
+  logic              [    MAX_NUM_LANES-1:0]                 os_fifo_axis_tlast;
+  logic              [    MAX_NUM_LANES-1:0][USER_WIDTH-1:0] os_fifo_axis_tuser;
+  logic              [    MAX_NUM_LANES-1:0]                 os_fifo_axis_tready;
+
 
   assign pipe_width_o = pipe_width;
   // assign phy_txelecidle = '0;
@@ -199,10 +227,13 @@ module pcie_phy_top
       .pipe_block_start_i(phy_rxstart_block),
       .pipe_width_i      (pipe_width),
       .num_active_lanes_i(num_active_lanes_i),
-      .ts1_valid_o       (ts1_valid),
-      .ts2_valid_o       (ts2_valid),
-      .idle_valid_o      (idle_valid),
-      .ordered_set_o     (rx_ordered_set),
+      //training set configuration signals
+      .m_os_axis_tdata   (os_axis_tdata),
+      .m_os_axis_tkeep   (os_axis_tkeep),
+      .m_os_axis_tvalid  (os_axis_tvalid),
+      .m_os_axis_tlast   (os_axis_tlast),
+      .m_os_axis_tuser   (os_axis_tuser),
+      .m_os_axis_tready  (os_axis_tready),
       .curr_data_rate_i  (curr_data_rate),
       .m_dllp_axis_tdata (m_dllp_axis_tdata),
       .m_dllp_axis_tkeep (m_dllp_axis_tkeep),
@@ -249,6 +280,61 @@ module pcie_phy_top
   );
 
 
+  for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_os_async_fifo
+    axis_async_fifo #(
+        .DEPTH      (DEPTH),
+        .DATA_WIDTH (DATA_WIDTH),
+        .KEEP_ENABLE(KEEP_ENABLE),
+        .KEEP_WIDTH (KEEP_WIDTH),
+        .LAST_ENABLE(LAST_ENABLE),
+        .ID_ENABLE  (ID_ENABLE),
+        .ID_WIDTH   (ID_WIDTH),
+        .DEST_ENABLE(DEST_ENABLE),
+        .DEST_WIDTH (DEST_WIDTH),
+        .USER_ENABLE(USER_ENABLE),
+        .USER_WIDTH (USER_WIDTH)
+    ) rx_ordered_set_axis_async_fifo_inst (
+        .s_clk        (pipe_rx_usr_clk_i),
+        .s_rst        (rst_i),
+        .s_axis_tdata (os_axis_tdata[i]),
+        .s_axis_tkeep (os_axis_tkeep[i]),
+        .s_axis_tvalid(os_axis_tvalid[i]),
+        .s_axis_tready(os_axis_tready[i]),
+        .s_axis_tlast (os_axis_tlast[i]),
+        .s_axis_tuser (os_axis_tuser[i]),
+        .s_axis_tid   (),
+        .s_axis_tdest (),
+
+
+
+        .m_clk        (clk_i),
+        .m_rst        (rst_i),
+        .m_axis_tdata (os_fifo_axis_tdata[i]),
+        .m_axis_tkeep (os_fifo_axis_tkeep[i]),
+        .m_axis_tvalid(os_fifo_axis_tvalid[i]),
+        .m_axis_tready(os_fifo_axis_tready[i]),
+        .m_axis_tlast (os_fifo_axis_tlast[i]),
+        .m_axis_tuser (os_fifo_axis_tuser[i]),
+        .m_axis_tid   (),
+        .m_axis_tdest (),
+
+        .s_pause_req          ('0),
+        .s_pause_ack          (),
+        .m_pause_req          ('0),
+        .m_pause_ack          (),
+        .s_status_depth       (),
+        .s_status_depth_commit(),
+        .s_status_overflow    (),
+        .s_status_bad_frame   (),
+        .s_status_good_frame  (),
+        .m_status_depth       (),
+        .m_status_depth_commit(),
+        .m_status_overflow    (),
+        .m_status_bad_frame   (),
+        .m_status_good_frame  ()
+    );
+  end
+
   pcie_ltssm_downstream #(
       .CLK_RATE     (CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
@@ -266,9 +352,6 @@ module pcie_phy_top
       .success_o          (),
       .error_loopback_o   (),
       .error_disable_o    (),
-      .ts1_valid_i        (ts1_valid),
-      .ts2_valid_i        (ts2_valid),
-      .idle_valid_i       (idle_valid),
       .phy_rxstatus_i     (phy_rxstatus),
       .phy_phystatus_i    (phy_phystatus),
       .phy_phystatus_rst_i(phy_phystatus_rst),
@@ -298,13 +381,19 @@ module pcie_phy_top
       .lane_status_i           (lane_status),
       .curr_data_rate_o        (curr_data_rate),
       .data_rate_o             (),
+      .ordered_set_tranmitted_i(ordered_set_tranmitted),
       .ltssm_state_o           (ltssm_debug_state),
       //   .gen_os_o(ordered_set),
-      .ordered_set_i           (rx_ordered_set),
-      .ordered_set_tranmitted_i(ordered_set_tranmitted),
       .ordered_set_o           (ordered_set),
       .send_ordered_set_o      (send_ordered_set),
-      .changed_speed_recovery_o()
+      .changed_speed_recovery_o(),
+
+      .s_os_axis_tdata (os_fifo_axis_tdata),
+      .s_os_axis_tkeep (os_fifo_axis_tkeep),
+      .s_os_axis_tvalid(os_fifo_axis_tvalid),
+      .s_os_axis_tready(os_fifo_axis_tready),
+      .s_os_axis_tlast (os_fifo_axis_tlast),
+      .s_os_axis_tuser (os_fifo_axis_tuser)
   );
 
   pcie_datalink_layer #(
