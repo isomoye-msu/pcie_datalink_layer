@@ -678,6 +678,18 @@ package pcie_phy_pkg;
   localparam int OsDataSize = $size(os_holder_t);
 
 
+  typedef struct packed {
+    logic [5:0]        num_active_lanes;
+    logic              send_ordered_set;
+    pcie_ordered_set_t ordered_set;
+    rate_speed_e       curr_data_rate;
+    // logic              ordered_set_tranmitted;
+    gen_os_struct_t    gen_os_ctrl;
+  } os_tx_holder_t;
+
+  localparam int TxOsDataSize = $size(os_tx_holder_t);
+
+
 
   /* verilator lint_on WIDTHTRUNC */
 endpackage

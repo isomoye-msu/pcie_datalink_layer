@@ -17,26 +17,31 @@ module phy_transmit
     input logic rst_i,  //! Reset signal
 
 
-    input  logic                                                 en_i,
-    input  logic                                                 link_up_i,
-    output logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
-    output logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
-    output logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
-    output logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
-    output logic              [               MAX_NUM_LANES-1:0] pipe_txstart_block_o,
-    output logic              [                             5:0] pipe_width_o,
-    input  logic              [                             5:0] num_active_lanes_i,
-    input  logic                                                 send_ordered_set_i,
-    input  pcie_ordered_set_t                                    ordered_set_i,
-    input  rate_speed_e                                          curr_data_rate_i,
-    output logic                                                 ordered_set_tranmitted_o,
-    input  gen_os_struct_t                                       gen_os_ctrl_i,
-    input  logic              [                  DATA_WIDTH-1:0] s_dllp_axis_tdata,
-    input  logic              [                  KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
-    input  logic                                                 s_dllp_axis_tvalid,
-    input  logic                                                 s_dllp_axis_tlast,
-    input  logic              [                  USER_WIDTH-1:0] s_dllp_axis_tuser,
-    output logic                                                 s_dllp_axis_tready
+    input  logic                                    en_i,
+    input  logic                                    link_up_i,
+    output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
+    output logic [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
+    output logic [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
+    output logic [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
+    output logic [               MAX_NUM_LANES-1:0] pipe_txstart_block_o,
+    output logic [                             5:0] pipe_width_o,
+    output logic                                    ordered_set_tranmitted_o,
+    input  logic [                             5:0] num_active_lanes_i,
+
+    input  logic [TxOsDataSize-1:0] s_tx_os_axis_tdata,
+    input  logic [  KEEP_WIDTH-1:0] s_tx_os_axis_tkeep,
+    input  logic                    s_tx_os_axis_tvalid,
+    input  logic                    s_tx_os_axis_tlast,
+    input  logic [  USER_WIDTH-1:0] s_tx_os_axis_tuser,
+    output logic                    s_tx_os_axis_tready,
+
+
+    input  logic [DATA_WIDTH-1:0] s_dllp_axis_tdata,
+    input  logic [KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
+    input  logic                  s_dllp_axis_tvalid,
+    input  logic                  s_dllp_axis_tlast,
+    input  logic [USER_WIDTH-1:0] s_dllp_axis_tuser,
+    output logic                  s_dllp_axis_tready
 );
   parameter int DEPTH = 20;
   parameter int ID_ENABLE = 0;
@@ -128,6 +133,13 @@ module phy_transmit
   gen_os_struct_t                                       gen_os_ctrl;
 
 
+//   logic              [                             5:0] num_active_lanes_i;
+  logic                                                 send_ordered_set_i;
+  pcie_ordered_set_t                                    ordered_set_i;
+  rate_speed_e                                          curr_data_rate_i;
+  gen_os_struct_t                                       gen_os_ctrl_i;
+
+
   //   assign m_axis_tready   = phy_axis_tready;
   assign pipe_width_o = lm_pipe_width;
 
@@ -139,6 +151,30 @@ module phy_transmit
   ) + $size(
       pcie_ordered_set_t
   );
+
+  os_tx_holder_t os_holder;
+  assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
+
+  always_ff @(posedge pipe_tx_usr_clk_i) begin : axis_signals
+
+    // for (int i = 0; i < MAX_NUM_LANES; i++) begin
+    s_tx_os_axis_tready <= '1;
+    // num_active_lanes_i  <= '0;
+    // send_ordered_set_i  <= '0;
+    // ordered_set_i       <= '0;
+    // curr_data_rate_i    <= '0;
+    // gen_os_ctrl_i       <= '0;
+    // ordered_set_in_c[i]<= '0;
+    if (s_tx_os_axis_tvalid) begin
+    //   num_active_lanes_i <= os_holder.num_active_lanes_i;
+      send_ordered_set_i <= os_holder.send_ordered_set;
+      ordered_set_i      <= os_holder.ordered_set;
+      curr_data_rate_i   <= os_holder.curr_data_rate;
+      gen_os_ctrl_i      <= os_holder.gen_os_ctrl;
+    end
+    // end
+
+  end
 
 
   //axis skid buffer

@@ -117,7 +117,7 @@ module pcie_phy_top
   parameter int MAX_PAYLOAD_SIZE = 256;
 
 
-  parameter int DEPTH = 2;
+  parameter int DEPTH = 100;
   parameter int ID_ENABLE = 0;
   parameter int ID_WIDTH = 8;
   parameter int DEST_ENABLE = 0;
@@ -180,6 +180,22 @@ module pcie_phy_top
   logic                                  s_dllp_axis_tlast;
   logic              [   USER_WIDTH-1:0] s_dllp_axis_tuser;
   logic                                  s_dllp_axis_tready;
+
+
+  logic              [ TxOsDataSize-1:0] tx_os_axis_tdata;
+  logic              [   KEEP_WIDTH-1:0] tx_os_axis_tkeep;
+  logic                                  tx_os_axis_tvalid;
+  logic                                  tx_os_axis_tlast;
+  logic              [   USER_WIDTH-1:0] tx_os_axis_tuser;
+  logic                                  tx_os_axis_tready;
+
+  logic              [ TxOsDataSize-1:0] tx_os_fifo_axis_tdata;
+  logic              [   KEEP_WIDTH-1:0] tx_os_fifo_axis_tkeep;
+  logic                                  tx_os_fifo_axis_tvalid;
+  logic                                  tx_os_fifo_axis_tlast;
+  logic              [   USER_WIDTH-1:0] tx_os_fifo_axis_tuser;
+  logic                                  tx_os_fifo_axis_tready;
+
   gen_os_struct_t                        gen_os_ctrl;
   logic              [MAX_NUM_LANES-1:0] active_lanes;
   logic              [MAX_NUM_LANES-1:0] lane_status;
@@ -264,12 +280,18 @@ module pcie_phy_top
       .pipe_sync_header_o      (phy_txsync_header),
       .pipe_txstart_block_o    (phy_txstart_block),
       .pipe_width_o            (pipe_width),
-      .gen_os_ctrl_i           (gen_os_ctrl),
-      //   .num_active_lanes_o(num_active_lanes_o),
+      .s_tx_os_axis_tdata      (tx_os_fifo_axis_tdata),
+      .s_tx_os_axis_tkeep      (tx_os_fifo_axis_tkeep),
+      .s_tx_os_axis_tvalid     (tx_os_fifo_axis_tvalid),
+      .s_tx_os_axis_tlast      (tx_os_fifo_axis_tlast),
+      .s_tx_os_axis_tuser      (tx_os_fifo_axis_tuser),
+      .s_tx_os_axis_tready     (tx_os_fifo_axis_tready),
+      // .gen_os_ctrl_i           (gen_os_ctrl),
+      // //   .num_active_lanes_o(num_active_lanes_o),
       .num_active_lanes_i      (num_active_lanes_i),
-      .send_ordered_set_i      (send_ordered_set),
-      .ordered_set_i           (ordered_set),
-      .curr_data_rate_i        (curr_data_rate),
+      // .send_ordered_set_i      (send_ordered_set),
+      // .ordered_set_i           (ordered_set),
+      // .curr_data_rate_i        (curr_data_rate),
       .ordered_set_tranmitted_o(ordered_set_tranmitted),
       .s_dllp_axis_tdata       (s_dllp_axis_tdata),
       .s_dllp_axis_tkeep       (s_dllp_axis_tkeep),
@@ -277,6 +299,59 @@ module pcie_phy_top
       .s_dllp_axis_tlast       (s_dllp_axis_tlast),
       .s_dllp_axis_tuser       (s_dllp_axis_tuser),
       .s_dllp_axis_tready      (s_dllp_axis_tready)
+  );
+
+  axis_async_fifo #(
+      .DEPTH      (DEPTH),
+      .DATA_WIDTH (TxOsDataSize),
+      .KEEP_ENABLE(KEEP_ENABLE),
+      .KEEP_WIDTH (KEEP_WIDTH),
+      .LAST_ENABLE(LAST_ENABLE),
+      .ID_ENABLE  (ID_ENABLE),
+      .ID_WIDTH   (ID_WIDTH),
+      .DEST_ENABLE(DEST_ENABLE),
+      .DEST_WIDTH (DEST_WIDTH),
+      .USER_ENABLE(USER_ENABLE),
+      .USER_WIDTH (USER_WIDTH)
+  ) tx_ordered_set_axis_async_fifo_inst (
+      .s_clk        (clk_i),
+      .s_rst        (rst_i),
+      .s_axis_tdata (tx_os_axis_tdata),
+      .s_axis_tkeep (tx_os_axis_tkeep),
+      .s_axis_tvalid(tx_os_axis_tvalid),
+      .s_axis_tready(tx_os_axis_tready),
+      .s_axis_tlast (tx_os_axis_tlast),
+      .s_axis_tuser (tx_os_axis_tuser),
+      .s_axis_tid   (),
+      .s_axis_tdest (),
+
+
+
+      .m_clk        (pipe_tx_usr_clk_i),
+      .m_rst        (rst_i),
+      .m_axis_tdata (tx_os_fifo_axis_tdata),
+      .m_axis_tkeep (tx_os_fifo_axis_tkeep),
+      .m_axis_tvalid(tx_os_fifo_axis_tvalid),
+      .m_axis_tready(tx_os_fifo_axis_tready),
+      .m_axis_tlast (tx_os_fifo_axis_tlast),
+      .m_axis_tuser (tx_os_fifo_axis_tuser),
+      .m_axis_tid   (),
+      .m_axis_tdest (),
+
+      .s_pause_req          ('0),
+      .s_pause_ack          (),
+      .m_pause_req          ('0),
+      .m_pause_ack          (),
+      .s_status_depth       (),
+      .s_status_depth_commit(),
+      .s_status_overflow    (),
+      .s_status_bad_frame   (),
+      .s_status_good_frame  (),
+      .m_status_depth       (),
+      .m_status_depth_commit(),
+      .m_status_overflow    (),
+      .m_status_bad_frame   (),
+      .m_status_good_frame  ()
   );
 
 
@@ -342,7 +417,7 @@ module pcie_phy_top
       .KEEP_WIDTH   (KEEP_WIDTH),
       .USER_WIDTH   (USER_WIDTH)
   ) pcie_ltssm_downstream_inst (
-      .clk_i              (pipe_rx_usr_clk_i),
+      .clk_i              (clk_i),
       .rst_i              (rst_i || phy_phystatus_rst),
       .en_i               (en_i),
       .link_up_o          (link_up),
@@ -373,20 +448,29 @@ module pcie_phy_top
       .tx_enter_elec_idle_o    (),
       .goto_cfg_o              (),
       .goto_detect_o           (),
-      .gen_os_ctrl_o           (gen_os_ctrl),
+      // .gen_os_ctrl_o           (gen_os_ctrl),
       .preset_coeff_o          (),
       //   .rate_id_i(rate_id),
       .extended_synch_i        (),
       .directed_speed_change_i ('0),
       .lane_status_i           (lane_status),
-      .curr_data_rate_o        (curr_data_rate),
+      // .curr_data_rate_o        (curr_data_rate),
       .data_rate_o             (),
       .ordered_set_tranmitted_i(ordered_set_tranmitted),
       .ltssm_state_o           (ltssm_debug_state),
       //   .gen_os_o(ordered_set),
-      .ordered_set_o           (ordered_set),
-      .send_ordered_set_o      (send_ordered_set),
+      // .ordered_set_o           (ordered_set),
+      // .send_ordered_set_o      (send_ordered_set),
       .changed_speed_recovery_o(),
+      .idle_valid_o            (idle_valid),
+
+      .m_os_axis_tdata (tx_os_axis_tdata),
+      .m_os_axis_tkeep (tx_os_axis_tkeep),
+      .m_os_axis_tvalid(tx_os_axis_tvalid),
+      .m_os_axis_tlast (tx_os_axis_tlast),
+      .m_os_axis_tuser (tx_os_axis_tuser),
+      .m_os_axis_tready(tx_os_axis_tready),
+
 
       .s_os_axis_tdata (os_fifo_axis_tdata),
       .s_os_axis_tkeep (os_fifo_axis_tkeep),

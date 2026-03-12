@@ -104,9 +104,9 @@ class pipe_driver_bfm():
         uvm_root().logger.info(name + " initiated") 
         
     async def start(self):
-        cocotb.start_soon(Clock(self.dut.clk_i, 5, units="ns").start())
-        cocotb.start_soon(Clock(self.dut.pipe_rx_usr_clk_i, 5, units="ns").start())
-        cocotb.start_soon(Clock(self.dut.pipe_tx_usr_clk_i, 5, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.clk_i, 10, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_rx_usr_clk_i, 4, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_tx_usr_clk_i, 4, units="ns").start())
         # super().body()
         uvm_root().logger.info(self.name + " body initiated") 
         

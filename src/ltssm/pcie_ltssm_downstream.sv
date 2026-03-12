@@ -43,6 +43,7 @@ module pcie_ltssm_downstream
     input  logic [    MAX_NUM_LANES-1:0] phy_phystatus_i,
     input  logic                         phy_phystatus_rst_i,
     output logic                         phy_txdetectrx_o,
+    output logic                         idle_valid_o,
 
     output logic [MAX_NUM_LANES-1:0] phy_txelecidle_o,
     output logic                     phy_txdeemph_o,
@@ -61,40 +62,39 @@ module pcie_ltssm_downstream
     output logic                     goto_cfg_o,
     output logic                     goto_detect_o,
     input  logic                     ordered_set_tranmitted_i,
-    output logic                     send_ordered_set_o,
     output logic [MAX_NUM_LANES-1:0] active_lanes_o,
 
-    output gen_os_struct_t                        gen_os_ctrl_o,
+    // output gen_os_struct_t                        gen_os_ctrl_o,
     //training set configuration signals
     // input  pcie_tsos_t        [MAX_NUM_LANES-1:0] ordered_set_i,
-    output presets_coeff_t    [MAX_NUM_LANES-1:0] preset_coeff_o,
-    output pcie_ordered_set_t                     ordered_set_o,
+    output presets_coeff_t [MAX_NUM_LANES-1:0] preset_coeff_o,
+    // output pcie_ordered_set_t                     ordered_set_o,
     // input  ts_symbol6_union_t [MAX_NUM_LANES-1:0] symbol6_i,
     // input  training_ctrl_t    [MAX_NUM_LANES-1:0] training_ctrl_i,
     // input  rate_id_t          [MAX_NUM_LANES-1:0] rate_id_i,
-    input  logic                                  extended_synch_i,
+    input  logic                               extended_synch_i,
     // output logic                                  gen_os_o,
     //TODO: this needs to be computed from ts1's/ ts2's with
     //speed change bit or sw active
-    input  logic                                  directed_speed_change_i,
-    input  logic              [MAX_NUM_LANES-1:0] lane_status_i,
-    output rate_speed_e                           curr_data_rate_o,
-    output rate_id_t                              data_rate_o,
-    output logic                                  changed_speed_recovery_o,
+    input  logic                               directed_speed_change_i,
+    input  logic           [MAX_NUM_LANES-1:0] lane_status_i,
+    // output rate_speed_e                           curr_data_rate_o,
+    output rate_id_t                           data_rate_o,
+    output logic                               changed_speed_recovery_o,
 
     input  logic [MAX_NUM_LANES-1:0][OsDataSize-1:0] s_os_axis_tdata,
     input  logic [MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] s_os_axis_tkeep,
     input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tvalid,
     output logic [MAX_NUM_LANES-1:0]                 s_os_axis_tready,
     input  logic [MAX_NUM_LANES-1:0][USER_WIDTH-1:0] s_os_axis_tlast,
-    input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tuser
+    input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tuser,
     // //! @virtualbus master_axis_bus @dir out
-    // output logic              [   DATA_WIDTH-1:0] m_axis_tdata,
-    // output logic              [   KEEP_WIDTH-1:0] m_axis_tkeep,
-    // output logic                                  m_axis_tvalid,
-    // output logic                                  m_axis_tlast,
-    // output logic              [   USER_WIDTH-1:0] m_axis_tuser,
-    // input  logic                                  m_axis_tready
+    output logic [ TxOsDataSize-1:0]                 m_os_axis_tdata,
+    output logic [   KEEP_WIDTH-1:0]                 m_os_axis_tkeep,
+    output logic                                     m_os_axis_tvalid,
+    output logic                                     m_os_axis_tlast,
+    output logic [   USER_WIDTH-1:0]                 m_os_axis_tuser,
+    input  logic                                     m_os_axis_tready
     //! @end
 );
 
@@ -220,13 +220,10 @@ module pcie_ltssm_downstream
   logic                                       equalization_done_8gb_r;
   logic                                       start_equalization_w_preset_c;
   logic                                       start_equalization_w_preset_r;
-  //! internal_axis_signals
-  // logic              [   DATA_WIDTH-1:0] ltssm_axis_tdata;
-  // logic              [   KEEP_WIDTH-1:0] ltssm_axis_tkeep;
-  // logic                                  ltssm_axis_tvalid;
-  // logic                                  ltssm_axis_tlast;
-  // logic              [   USER_WIDTH-1:0] ltssm_axis_tuser;
-  // logic                                  ltssm_axis_tready;
+
+
+  logic                                       send_ordered_set_r;
+
 
   //!link training helper signals
   logic              [     MAX_NUM_LANES-1:0] link_width_satisfied;
@@ -301,6 +298,7 @@ module pcie_ltssm_downstream
   assign active_lanes_o         = lane_active_r;
   assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
+  assign idle_valid_o           = idle_valid_r;
 
 
   always_ff @(posedge clk_i) begin : gen_link_number
@@ -363,7 +361,7 @@ module pcie_ltssm_downstream
       curr_data_rate_r               <= gen1_basic;
       preset_coeff_r                 <= '0;
       equal_status_r                 <= '0;
-      send_ordered_set_o             <= '0;
+      send_ordered_set_r             <= '0;
       ordered_set_r                  <= pcie_ordered_set_t'('0);
       successful_speed_negotiation_r <= '0;
       idle_to_rlock_transitioned_r   <= '0;
@@ -404,7 +402,7 @@ module pcie_ltssm_downstream
       ordered_set_tx_in_process_r    <= ordered_set_tx_in_process_c;
       equal_status_r                 <= equal_status_c;
       start_equalization_w_preset_r  <= start_equalization_w_preset_c;
-      send_ordered_set_o             <= transmit_ordered_set;
+      send_ordered_set_r             <= transmit_ordered_set;
       ordered_set_r                  <= ordered_set_c;
       successful_speed_negotiation_r <= successful_speed_negotiation_c;
       idle_to_rlock_transitioned_r   <= idle_to_rlock_transitioned_c;
@@ -458,7 +456,7 @@ module pcie_ltssm_downstream
       ts1_valid_c[i] = '0;
       ts2_valid_c[i] = '0;
       idle_valid_c[i] = '0;
-      ordered_set_in_c[i] = '0;
+      // ordered_set_in_c[i] = '0;
       if (s_os_axis_tvalid[i]) begin
         os_holder_t os_holder;
         os_holder           = os_holder_t'(s_os_axis_tdata[i]);
@@ -471,6 +469,30 @@ module pcie_ltssm_downstream
 
   end
 
+  // os_tx_holder_t os_holder;
+  // assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
+
+  always_comb begin
+    os_tx_holder_t os_holder;
+    os_holder                  = '0;
+    m_os_axis_tvalid           = '0;
+    m_os_axis_tkeep            = '1;
+    m_os_axis_tuser            = '1;
+    m_os_axis_tlast            = '1;
+
+    // os_holder.num_active_lanes = ordered_set_out_r;
+    os_holder.send_ordered_set = send_ordered_set_r;
+    os_holder.ordered_set      = ordered_set_r;
+    os_holder.curr_data_rate   = curr_data_rate_r.rate;
+    os_holder.gen_os_ctrl      = gen_os_ctrl_r;
+    m_os_axis_tvalid           = '1;
+    m_os_axis_tdata            = os_holder;
+    // // os_out_c.
+    // if (send_ordered_set_r || ts2_valid_r || idle_valid_r || eieos_valid_r) begin
+    //   m_os_axis_tdata  = os_holder;
+    //   m_os_axis_tvalid = '1;
+    // end
+  end
 
 
   always_comb begin : ltssm_combo
@@ -1836,8 +1858,8 @@ module pcie_ltssm_downstream
     end
   end
 
-  assign ordered_set_o    = ordered_set_r;
-  assign curr_data_rate_o = curr_data_rate_r.rate;
-  assign gen_os_ctrl_o    = gen_os_ctrl_r;
+  // assign ordered_set_o    = ordered_set_r;
+  // assign curr_data_rate_o = curr_data_rate_r.rate;
+  // assign gen_os_ctrl_o    = gen_os_ctrl_r;
 
 endmodule
