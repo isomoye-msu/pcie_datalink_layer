@@ -255,8 +255,6 @@ module phy_transmit
   end
 
 
-
-
   lane_management #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
@@ -267,18 +265,18 @@ module phy_transmit
       .clk_i             (pipe_tx_usr_clk_i),
       .rst_i             (rst_i),
       .phy_link_up_i     (),
-      .s_dllp_axis_tdata (fifo_framed_axis_tdata),
-      .s_dllp_axis_tkeep (fifo_framed_axis_tkeep),
-      .s_dllp_axis_tvalid(fifo_framed_axis_tvalid),
-      .s_dllp_axis_tlast (fifo_framed_axis_tlast),
-      .s_dllp_axis_tuser (fifo_framed_axis_tuser),
-      .s_dllp_axis_tready(fifo_framed_axis_tready),
-      .s_phy_axis_tdata  (fifo_phy_axis_tdata),
-      .s_phy_axis_tkeep  (fifo_phy_axis_tkeep),
-      .s_phy_axis_tvalid (fifo_phy_axis_tvalid),
-      .s_phy_axis_tlast  (fifo_phy_axis_tlast),
-      .s_phy_axis_tuser  (fifo_phy_axis_tuser),
-      .s_phy_axis_tready (fifo_phy_axis_tready),
+      .s_dllp_axis_tdata (fifo_buffer_framed_axis_tdata),
+      .s_dllp_axis_tkeep (fifo_buffer_framed_axis_tkeep),
+      .s_dllp_axis_tvalid(fifo_buffer_framed_axis_tvalid),
+      .s_dllp_axis_tlast (fifo_buffer_framed_axis_tlast),
+      .s_dllp_axis_tuser (fifo_buffer_framed_axis_tuser),
+      .s_dllp_axis_tready(fifo_buffer_framed_axis_tready),
+      .s_phy_axis_tdata  (phy_axis_tdata),
+      .s_phy_axis_tkeep  (phy_axis_tkeep),
+      .s_phy_axis_tvalid (phy_axis_tvalid),
+      .s_phy_axis_tlast  (phy_axis_tlast),
+      .s_phy_axis_tuser  (phy_axis_tuser),
+      .s_phy_axis_tready (phy_axis_tready),
       .curr_data_rate_i  (curr_data_rate_i),
       .lane_reverse_i    ('0),
       .data_out_o        (lm_data_out),
@@ -384,62 +382,62 @@ module phy_transmit
       .m_axis_tready   (phy_axis_tready)
   );
 
+//   axis_async_fifo #(
+//       .DEPTH      (DEPTH),
+//       .DATA_WIDTH (DATA_WIDTH),
+//       .KEEP_ENABLE(KEEP_ENABLE),
+//       .KEEP_WIDTH (KEEP_WIDTH),
+//       .LAST_ENABLE(LAST_ENABLE),
+//       .ID_ENABLE  (ID_ENABLE),
+//       .ID_WIDTH   (ID_WIDTH),
+//       .DEST_ENABLE(DEST_ENABLE),
+//       .DEST_WIDTH (DEST_WIDTH),
+//       .USER_ENABLE(USER_ENABLE),
+//       .USER_WIDTH (USER_WIDTH)
+//   ) ordered_set_axis_async_fifo_inst (
+//       .s_clk        (pipe_rx_usr_clk_i),
+//       .s_rst        (rst_i),
+//       .s_axis_tdata (phy_axis_tdata),
+//       .s_axis_tkeep (phy_axis_tkeep),
+//       .s_axis_tvalid(phy_axis_tvalid),
+//       .s_axis_tready(phy_axis_tready),
+//       .s_axis_tlast (phy_axis_tlast),
+//       .s_axis_tid   (),
+//       .s_axis_tdest (),
+//       .s_axis_tuser (phy_axis_tuser),
+
+
+
+//       .m_clk        (pipe_tx_usr_clk_i),
+//       .m_rst        (rst_i),
+//       .m_axis_tdata (fifo_phy_axis_tdata),
+//       .m_axis_tkeep (fifo_phy_axis_tkeep),
+//       .m_axis_tvalid(fifo_phy_axis_tvalid),
+//       .m_axis_tready(fifo_phy_axis_tready),
+//       .m_axis_tlast (fifo_phy_axis_tlast),
+//       .m_axis_tid   (),
+//       .m_axis_tdest (),
+//       .m_axis_tuser (fifo_phy_axis_tuser),
+
+//       .s_pause_req          ('0),
+//       .s_pause_ack          (),
+//       .m_pause_req          ('0),
+//       .m_pause_ack          (),
+//       .s_status_depth       (),
+//       .s_status_depth_commit(),
+//       .s_status_overflow    (),
+//       .s_status_bad_frame   (),
+//       .s_status_good_frame  (),
+//       .m_status_depth       (),
+//       .m_status_depth_commit(),
+//       .m_status_overflow    (),
+//       .m_status_bad_frame   (),
+//       .m_status_good_frame  ()
+//   );
+
+
   axis_async_fifo #(
-      .DEPTH      (DEPTH),
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE(KEEP_ENABLE),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE(LAST_ENABLE),
-      .ID_ENABLE  (ID_ENABLE),
-      .ID_WIDTH   (ID_WIDTH),
-      .DEST_ENABLE(DEST_ENABLE),
-      .DEST_WIDTH (DEST_WIDTH),
-      .USER_ENABLE(USER_ENABLE),
-      .USER_WIDTH (USER_WIDTH)
-  ) ordered_set_axis_async_fifo_inst (
-      .s_clk        (pipe_rx_usr_clk_i),
-      .s_rst        (rst_i),
-      .s_axis_tdata (phy_axis_tdata),
-      .s_axis_tkeep (phy_axis_tkeep),
-      .s_axis_tvalid(phy_axis_tvalid),
-      .s_axis_tready(phy_axis_tready),
-      .s_axis_tlast (phy_axis_tlast),
-      .s_axis_tid   (),
-      .s_axis_tdest (),
-      .s_axis_tuser (phy_axis_tuser),
-
-
-
-      .m_clk        (pipe_tx_usr_clk_i),
-      .m_rst        (rst_i),
-      .m_axis_tdata (fifo_phy_axis_tdata),
-      .m_axis_tkeep (fifo_phy_axis_tkeep),
-      .m_axis_tvalid(fifo_phy_axis_tvalid),
-      .m_axis_tready(fifo_phy_axis_tready),
-      .m_axis_tlast (fifo_phy_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (fifo_phy_axis_tuser),
-
-      .s_pause_req          ('0),
-      .s_pause_ack          (),
-      .m_pause_req          ('0),
-      .m_pause_ack          (),
-      .s_status_depth       (),
-      .s_status_depth_commit(),
-      .s_status_overflow    (),
-      .s_status_bad_frame   (),
-      .s_status_good_frame  (),
-      .m_status_depth       (),
-      .m_status_depth_commit(),
-      .m_status_overflow    (),
-      .m_status_bad_frame   (),
-      .m_status_good_frame  ()
-  );
-
-
-  axis_async_fifo #(
-      .DEPTH      (DEPTH),
+      .DEPTH      (8),
       .DATA_WIDTH (DATA_WIDTH),
       .KEEP_ENABLE(KEEP_ENABLE),
       .KEEP_WIDTH (KEEP_WIDTH),
@@ -466,14 +464,14 @@ module phy_transmit
 
       .m_clk        (pipe_tx_usr_clk_i),
       .m_rst        (rst_i),
-      .m_axis_tdata (fifo_buffer_framed_axis_tdata),
-      .m_axis_tkeep (fifo_buffer_framed_axis_tkeep),
-      .m_axis_tvalid(fifo_buffer_framed_axis_tvalid),
-      .m_axis_tready(fifo_buffer_framed_axis_tready),
-      .m_axis_tlast (fifo_buffer_framed_axis_tlast),
+      .m_axis_tdata (fifo_framed_axis_tdata),
+      .m_axis_tkeep (fifo_framed_axis_tkeep),
+      .m_axis_tvalid(fifo_framed_axis_tvalid),
+      .m_axis_tready(fifo_framed_axis_tready),
+      .m_axis_tlast (fifo_framed_axis_tlast),
       .m_axis_tid   (),
       .m_axis_tdest (),
-      .m_axis_tuser (fifo_buffer_framed_axis_tuser),
+      .m_axis_tuser (fifo_framed_axis_tuser),
 
       .s_pause_req          ('0),
       .s_pause_ack          (),
@@ -492,39 +490,88 @@ module phy_transmit
   );
 
 
-  //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_output_register_inst (
-      .clk          (pipe_tx_usr_clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (fifo_buffer_framed_axis_tdata),
-      .s_axis_tkeep (fifo_buffer_framed_axis_tkeep),
-      .s_axis_tvalid(fifo_buffer_framed_axis_tvalid),
-      .s_axis_tready(fifo_buffer_framed_axis_tready),
-      .s_axis_tlast (fifo_buffer_framed_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (fifo_buffer_framed_axis_tuser),
-      .m_axis_tdata (fifo_framed_axis_tdata),
-      .m_axis_tkeep (fifo_framed_axis_tkeep),
-      .m_axis_tvalid(fifo_framed_axis_tvalid),
-      .m_axis_tready(fifo_framed_axis_tready),
-      .m_axis_tlast (fifo_framed_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (fifo_framed_axis_tuser)
+   axis_fifo #(
+      .DEPTH               (30),
+      .DATA_WIDTH          (DATA_WIDTH),
+      .KEEP_ENABLE         (KEEP_WIDTH > 0),
+      .KEEP_WIDTH          (KEEP_WIDTH),
+      .LAST_ENABLE         (1),
+      .ID_ENABLE           (0),
+      .DEST_ENABLE         (0),
+      .USER_ENABLE         ('1),
+      .USER_WIDTH          (USER_WIDTH),
+      // .PIPELINE_OUTPUT(2),
+      .FRAME_FIFO          (1),
+      .USER_BAD_FRAME_VALUE('1),
+      .USER_BAD_FRAME_MASK ('1),
+      // .PIPELINE_OUTPUT(),
+      .DROP_BAD_FRAME      (1),
+      .DROP_WHEN_FULL      (0)
+   ) phy_frame_fifo_inst (
+      .clk                (pipe_tx_usr_clk_i),
+      .rst                (rst_i),
+      // AXI input
+      .s_axis_tdata       (fifo_framed_axis_tdata),
+      .s_axis_tkeep       (fifo_framed_axis_tkeep),
+      .s_axis_tvalid      (fifo_framed_axis_tvalid),
+      .s_axis_tready      (fifo_framed_axis_tready),
+      .s_axis_tlast       (fifo_framed_axis_tlast),
+      .s_axis_tuser       (fifo_framed_axis_tuser),
+      .s_axis_tid         (),
+      .s_axis_tdest       (),
+      // AXI output
+      .m_axis_tdata       (fifo_buffer_framed_axis_tdata),
+      .m_axis_tkeep       (fifo_buffer_framed_axis_tkeep),
+      .m_axis_tvalid      (fifo_buffer_framed_axis_tvalid),
+      .m_axis_tready      (fifo_buffer_framed_axis_tready),
+      .m_axis_tlast       (fifo_buffer_framed_axis_tlast),
+      .m_axis_tuser       (fifo_buffer_framed_axis_tuser),
+      .m_axis_tid         (),
+      .m_axis_tdest       (),
+      .pause_ack          (),
+      .pause_req          (),
+      .status_depth       (),
+      .status_depth_commit(),
+      // Status
+      .status_overflow    (),
+      .status_bad_frame   (),
+      .status_good_frame  ()
   );
+
+
+//   //axis skid buffer
+//   axis_register #(
+//       .DATA_WIDTH (DATA_WIDTH),
+//       .KEEP_ENABLE('1),
+//       .KEEP_WIDTH (KEEP_WIDTH),
+//       .LAST_ENABLE('1),
+//       .ID_ENABLE  ('0),
+//       .ID_WIDTH   (1),
+//       .DEST_ENABLE('0),
+//       .DEST_WIDTH (1),
+//       .USER_ENABLE('1),
+//       .USER_WIDTH (USER_WIDTH),
+//       .REG_TYPE   (SkidBuffer)
+//   ) axis_output_register_inst (
+//       .clk          (pipe_tx_usr_clk_i),
+//       .rst          (rst_i),
+//       .s_axis_tdata (fifo_buffer_framed_axis_tdata),
+//       .s_axis_tkeep (fifo_buffer_framed_axis_tkeep),
+//       .s_axis_tvalid(fifo_buffer_framed_axis_tvalid),
+//       .s_axis_tready(fifo_buffer_framed_axis_tready),
+//       .s_axis_tlast (fifo_buffer_framed_axis_tlast),
+//       .s_axis_tid   ('0),
+//       .s_axis_tdest ('0),
+//       .s_axis_tuser (fifo_buffer_framed_axis_tuser),
+//       .m_axis_tdata (fifo_framed_axis_tdata),
+//       .m_axis_tkeep (fifo_framed_axis_tkeep),
+//       .m_axis_tvalid(fifo_framed_axis_tvalid),
+//       .m_axis_tready(fifo_framed_axis_tready),
+//       .m_axis_tlast (fifo_framed_axis_tlast),
+//       .m_axis_tid   (),
+//       .m_axis_tdest (),
+//       .m_axis_tuser (fifo_framed_axis_tuser)
+//   );
 
   //always #5  clk = ! clk ;
 

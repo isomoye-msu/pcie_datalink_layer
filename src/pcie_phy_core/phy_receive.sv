@@ -133,7 +133,7 @@ module phy_receive
     logic read_ready_reg;
 
 
-    always_ff @(posedge clk_i) begin
+    always_ff @(posedge pipe_rx_usr_clk_i) begin
       if (rst_i) begin
         read_ready_reg <= '0;
       end else begin

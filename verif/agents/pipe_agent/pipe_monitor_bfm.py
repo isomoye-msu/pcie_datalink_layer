@@ -97,7 +97,7 @@ class pipe_monitor_bfm():
         # super().body()
 
         for _ in range(10):
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
         
         cocotb.start_soon(self.test())
         # cocotb.start_soon(self.receive_tses_gen3())
@@ -162,12 +162,12 @@ class pipe_monitor_bfm():
         while not self.build_connect_finished_e.is_set():
             ...
         while True:
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             await self.proxy.detect_link_up()
 
     async def clock_wait(self):
         while True:
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             self.proxy.detect_posedge_clk_i.set()
 
 
@@ -180,7 +180,7 @@ class pipe_monitor_bfm():
             # print(int((int(new_width)/8)-1))
             # assert 1 == 0
             self.proxy.notify_width_changed(int((int(new_width)/8)-1))
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 # 
     async def clk_i_rate_changed(self):
         await self.build_connect_finished_e.wait()
@@ -199,7 +199,7 @@ class pipe_monitor_bfm():
             # self.proxy.notify_PCLKRate_changed(new_PCLKRate)
     async def flow_control_initialized(self):
         while(True):
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             if self.dut.fc_initialized_o == 1:
                 self.proxy.notify_fc_initialized()
                 break
@@ -219,7 +219,7 @@ class pipe_monitor_bfm():
             # print(new_Rate)
             # assert 1 == 0
             self.proxy.notify_Rate_changed(int(new_Rate))
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
 # # -----------------------------------------------------------
 # # TxDeemph changed
@@ -240,7 +240,7 @@ class pipe_monitor_bfm():
         await self.build_connect_finished_e.wait()
         while True:
             while not all( LogicArray(self.dut.phy_txelecidle.value)[i] ==0b1 for i in range(int(self.dut.MAX_NUM_LANES))):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             self.proxy.notify_phy_txelecidle_and_RxStandby_asserted.set()
             while not all( LogicArray(self.dut.phy_txelecidle.value)[i]==0b0 for i in range(int(self.dut.MAX_NUM_LANES))):
                 ...
@@ -269,7 +269,7 @@ class pipe_monitor_bfm():
 
             ts.link_number = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]
             for symbol_count in range(2,16,2):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 2:
                     ts.lane_number = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0) : (start_lane*32+0)+8]
                     ts.n_fts       = LogicArray(self.dut.phy_txdata.value)[(start_lane*32+8):(start_lane*32+8)+8]
@@ -301,7 +301,7 @@ class pipe_monitor_bfm():
             ts.n_fts=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+24):(start_lane*32+24)+8]  # number of fast training sequnces
 
             for symbol_count in range(4,16,4):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 4:
                     if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
                          ts.max_gen_supported= gen_t.GEN5
@@ -325,7 +325,7 @@ class pipe_monitor_bfm():
             for i in range(int(self.dut.MAX_NUM_LANES)):
                 self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             for symbol_count in range(1,16):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 1:
                     ts.link_number=LogicArray(self.dut.phy_txdata.value)[(start_lane*32+0): (start_lane*32+0)+8]   #link number
                 if symbol_count == 2:
@@ -354,13 +354,13 @@ class pipe_monitor_bfm():
     async def reset_scenario(self):
         while True:
             await FallingEdge(self.dut.rst_i)
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for i in range(int(self.dut.MAX_NUM_LANES)):
                 self.monitor_tx_scrambler[i].reset_lfsr(self.current_gen)
             
             await RisingEdge(self.dut.rst_i)
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             flag = 0
             while all(self.dut.pipe_phy_status_i[i] == 1 for i in range(len(self.dut.pipe_phy_status_i))):
@@ -377,25 +377,25 @@ class pipe_monitor_bfm():
 
             # for i in range(len(self.dut.phy_txdetectrx)):
             #     flag = self.dut.phy_txdetectrx[i] == 1
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             # await FallingEdge(self.dut.rst_i)
-            # await RisingEdge(self.dut.clk_i)
+            # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             # while(self.dut.phy_txdetectrx.value == 0):
-            #     await RisingEdge(self.dut.clk_i)
+            #     await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             # assert 1 == 0
 
             flag = 0
             while flag == 0:
                 flag = 1
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range(int(self.dut.MAX_NUM_LANES)):
                     if LogicArray(self.dut.phy_phystatus.value)[i] != Logic(1):
                         flag = 0 
 
 
             # while not all( LogicArray(self.dut.phy_phystatus.value)[i] == Logic(1) for i in range(int(self.dut.MAX_NUM_LANES))):
-            #     await RisingEdge(self.dut.clk_i)
+            #     await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # # print(LogicArray(self.dut.phy_phystatus.value))
                 # # print(LogicArray(self.dut.phy_phystatus.value)[0])
                 # if(LogicArray(self.dut.phy_phystatus.value)[0] == Logic(0)):
@@ -410,19 +410,19 @@ class pipe_monitor_bfm():
             # for i in range(int(self.dut.MAX_NUM_LANES)):
             #     assert self.dut.phy_rxstatus.value[(i*3):(i*3)+3]==0b011
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             while all( not self.dut.phy_phystatus.value[i] == 0b0 for i in range(int(self.dut.MAX_NUM_LANES))):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             assert  self.dut.phy_rxstatus == 0
             # for i in range(NUM_OF_LANES):
             #         assert self.dut.phy_rxstatus[(i*3) : (i*3)+3]==0b000
 
             while not self.dut.phy_txdetectrx == 0b0:
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             self.proxy.notify_receiver_detected()
 
 
@@ -441,7 +441,7 @@ class pipe_monitor_bfm():
         # # print(self.dut.pipe_width)
         # assert 1 == 0
         while self.dut.pipe_width_o== 0:
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
         if self.dut.pipe_width_o== 16:
             # assert 1 == 0
@@ -464,7 +464,7 @@ class pipe_monitor_bfm():
                         and LogicArray(datak)[(4*lane)+byte_] ):
                             comma_detected = 1
                             comma_idx = lane * byte_
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             
             if(comma_idx == 0):
@@ -473,11 +473,11 @@ class pipe_monitor_bfm():
                     ts_bytearray[lane].append(LogicArray(data)[(32*lane)+15: (32*lane)+8].to_BinaryValue())
                     ts_karray[lane].append(LogicArray(datak)[(4*lane)+0])
                     ts_karray[lane].append(LogicArray(datak)[(4*lane)+1])
-                # await RisingEdge(self.dut.clk_i)
+                # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # assert 1 == 0
             else:
                 ts_bytearray.append(LogicArray(data)[(32*i)+15: (32*i)+8].to_BinaryValue())
-                # await RisingEdge(self.dut.clk_i)
+                # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             
             data = self.dut.phy_txdata.value
@@ -491,7 +491,7 @@ class pipe_monitor_bfm():
                     ts_bytearray[lane].append(LogicArray(data)[(32*lane)+15: (32*lane)+8].to_BinaryValue())
                     ts_karray[lane].append(LogicArray(datak)[(4*lane)+0])
                     ts_karray[lane].append(LogicArray(datak)[(4*lane)+1])
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 data = self.dut.phy_txdata.value
                 # print(comma_idx)
                 comma_idx += (end_lane-start_lane) * 2           
@@ -570,10 +570,10 @@ class pipe_monitor_bfm():
             # data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             # while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 for i in range(int(self.dut.MAX_NUM_LANES)-1)):
-            #     await RisingEdge(self.dut.clk_i)
+            #     await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             while not all((LogicArray(self.dut.phy_txdata.value)[(32*i)+7: (32*i)].to_BinaryValue() == 0b101_11100 and LogicArray(self.dut.phy_txdatak.value)[4*i] and LogicArray(self.dut.phy_txdata_valid.value)[i]) for i in range(start_lane,end_lane)):
             # while not all(data[4*i] == 0b101_11100 for i in range(start_lane, end_lane)):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # data = bytearray(self.dut.phy_txdata)
 
             self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
@@ -596,10 +596,10 @@ class pipe_monitor_bfm():
             for i in range(start_lane, end_lane):
                 ts[i].nfts = LogicArray(self.dut.phy_txdata.value)[(32*i)+24+7: (32*i)+24].to_BinaryValue()
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(4,16,4):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 4:
                     for i in range(start_lane, end_lane):
                         if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]):
@@ -634,16 +634,16 @@ class pipe_monitor_bfm():
             # uvm_root().logger.info(self.name + " " + "pipe width 8")
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 for i in range(int(self.dut.MAX_NUM_LANES)-1)):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # # print(LogicArray(self.dut.phy_txdata.value)[(32*0)+7:(32*0)].to_BinaryValue())
             
             # uvm_root().logger.info(self.name + " " + "pipe width still 8")
 
             self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
-            # await RisingEdge(self.dut.clk_i)
+            # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(1,15):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # data = bytearray(self.dut.phy_txdata.value)
                 # # print(hex(self.dut.phy_txdata.value))
                 if symbol_count == 1:
@@ -729,14 +729,14 @@ class pipe_monitor_bfm():
                 data = self.dut.phy_txdata.value
                 datak = self.dut.phy_txdatak.value
                 dataValid = self.dut.phy_txdata_valid.value
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             
             for i in range(start_lane,end_lane): #symbol 1 idl sumbol
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+8) : (i*32+8) + 8]!= 0b011_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+1]!=1):
                     assert 1 == 0
                     return
-            await RisingEdge(self.dut.clk_i)
-            await RisingEdge(self.dut.clk_i)    
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)    
             for i in range(start_lane,end_lane): #symbol 2,3 idl symbols
                 if (LogicArray(self.dut.phy_txdata.value)[(i*32+0): (i*32+0)+8]!= 0b011_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+0]!=1):
                     return       
@@ -747,7 +747,7 @@ class pipe_monitor_bfm():
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             #com   
             while not all ((LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8] == 0b101_11100) and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]==1) and (LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)): #wait to see a COM charecter
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             for i in range(start_lane,end_lane): #sumbol 1 ,2,3 idl symbols
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+8):(i*32+8)+8]!= 0b011_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+1]!=1):
                     return 
@@ -760,18 +760,18 @@ class pipe_monitor_bfm():
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)            
             #com 
             while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]) and (LogicArray(self.dut.phy_txdata_valid.value)[i]) for i in range(int(self.dut.MAX_NUM_LANES)-1)):
-                # await RisingEdge(self.dut.clk_i)
+                # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             # while not all ((LogicArray(self.dut.phy_txdata.value)[(i*32+0+7): (i*32+0)] == 0b101_11100) and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]==1) and (LogicArray(self.dut.phy_txdata_valid.value)[i]==1) for i in range(start_lane,end_lane)): #wait to see a COM charecter
                 # for i in range(start_lane,end_lane):
                 #     print(str(i) + " " + str(LogicArray(self.dut.phy_txdata.value)[(i*32+0+7): (i*32+0)]))
                 #     print(LogicArray(self.dut.phy_txdatak.value)[4*i+0])
                 #     print(LogicArray(self.dut.phy_txdata_valid.value)[i])
-                await RisingEdge(self.dut.clk_i)    
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)    
             # assert 1 == 0
-            await RisingEdge(self.dut.clk_i) 
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i) 
             for symbol_count in range (1,4):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range (start_lane,end_lane):
                     if((LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() != 0b011_11100) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+0])): #idle symbols
                         # print(str(i) + " " + str(LogicArray(self.dut.phy_txdata.value)[(i*32+0+7): (i*32+0)]))
@@ -791,16 +791,16 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] == 0x66 and
                     LogicArray(self.dut.phy_txdata_valid.value)[i] == 1
                 ):
-                    await RisingEdge(self.dut.clk_i)
+                    await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for i in range(start_lane, end_lane):  # symbol 1
                 if LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0x66:
                     return
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(2, 15, 2):  # symbols 2 -> 15
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range(start_lane, end_lane ):
                     if LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] != 0x66 or \
                     LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0x66:
@@ -814,7 +814,7 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] == 0x66 and
                     LogicArray(self.dut.phy_txdata_valid.value)[i] == 1
                 ):
-                    await RisingEdge(self.dut.clk_i)
+                    await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for i in range(start_lane, end_lane ):  # symbol 1, 2, 3
                 if LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0x66 or \
@@ -822,10 +822,10 @@ class pipe_monitor_bfm():
                 LogicArray(self.dut.phy_txdata.value)[(i * 32 + 24):(i * 32 + 32)] != 0x66:
                     return
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(4, 15, 4):  # symbols 4 -> 15
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range(start_lane, end_lane ):
                     if LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] != 0x66 or \
                     LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0x66 or \
@@ -840,12 +840,12 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] == 0x66 and
                     LogicArray(self.dut.phy_txdata_valid.value)[i] == 1
                 ):
-                    await RisingEdge(self.dut.clk_i)
+                    await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(1, 16):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range(start_lane, end_lane ):
                     if LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] != 0x66:
                         return
@@ -865,14 +865,14 @@ class pipe_monitor_bfm():
                 data = self.dut.phy_txdata.value
                 datak = self.dut.phy_txdatak.value
                 dataValid = self.dut.phy_txdata_valid.value
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             
             for i in range(start_lane,end_lane): #symbol 1 idl sumbol
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+8) : (i*32+8) + 8]!= 0b111_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+1]!=1):
                     assert 1 == 0
                     return
-            await RisingEdge(self.dut.clk_i)
-            # await RisingEdge(self.dut.clk_i)    
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            # await RisingEdge(self.dut.pipe_rx_usr_clk_i)    
             for symbol in range(2,15,2):
                 if symbol == 14:
                     for i in range(start_lane,end_lane): #symbol 2,3 idl symbols
@@ -891,10 +891,10 @@ class pipe_monitor_bfm():
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)
             #com   
             while not all ((LogicArray(self.dut.phy_txdata.value)[(i*32+0):(i*32+0)+8] == 0b101_11100) and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]==1) and (LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)): #wait to see a COM charecter
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             
             for i in range(start_lane,end_lane): #sumbol 1 ,2,3 idl symbols
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+8):(i*32+8)+8]!= 0b111_11100) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+1]):
                     return 
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+16): (i*32+16)+8]!=0b111_11100) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+2]):
@@ -902,10 +902,10 @@ class pipe_monitor_bfm():
                 if(LogicArray(self.dut.phy_txdata.value)[(i*32+24): (i*32+24)+8]!=0b111_11100) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+3]):
                     return
                 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol in range(4,15,4):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol == 14:
                     for i in range(start_lane,end_lane): #symbol 2,3 idl symbols
                         if (LogicArray(self.dut.phy_txdata.value)[(i*32+0): (i*32+0)+8]!= 0b111_11100) or (LogicArray(self.dut.phy_txdatak.value)[4*i+0]!=1):
@@ -931,11 +931,11 @@ class pipe_monitor_bfm():
             #`uvm_info("pipe_monitor_bfm", "Waiting for COM character", UVM_NONE)            
             #com 
             while not all(LogicArray(self.dut.phy_txdata.value)[(32*i)+7:(32*i)].to_BinaryValue() == 0b101_11100 and (LogicArray(self.dut.phy_txdatak.value)[4*i+0]) and (LogicArray(self.dut.phy_txdata_valid.value)[i]) for i in range(int(self.dut.MAX_NUM_LANES)-1)):
-                await RisingEdge(self.dut.clk_i)    
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)    
             # assert 1 == 0
-            await RisingEdge(self.dut.clk_i) 
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i) 
             for symbol_count in range (1,15):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range (start_lane,end_lane):
                     if((LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() != 0b111_11100) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+0])): #idle symbols
                         # print(str(i) + " " + str(LogicArray(self.dut.phy_txdata.value)[(i*32+0+7): (i*32+0)]))
@@ -943,7 +943,7 @@ class pipe_monitor_bfm():
                         # assert 1 == 0
                         return
             assert 1 == 0
-            await RisingEdge(self.dut.clk_i)  
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)  
             for i in range (start_lane,end_lane):
                     if((LogicArray(self.dut.phy_txdata.value)[(i*32+0)+7:(i*32+0)].to_BinaryValue() != 0b010_01010) or not (LogicArray(self.dut.phy_txdatak.value)[4*i+0])): #idle symbols
                         # print(str(i) + " " + str(LogicArray(self.dut.phy_txdata.value)[(i*32+0+7): (i*32+0)]))
@@ -963,16 +963,16 @@ class pipe_monitor_bfm():
                     LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] == 0x00 and
                     LogicArray(self.dut.phy_txdata_valid.value)[i] == 1
                 ):
-                    await RisingEdge(self.dut.clk_i)
+                    await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for i in range(start_lane, end_lane ):  # symbol 1
                 if LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0xFF:
                     return
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(2, 15, 2):  # symbols 2 -> 15
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 for i in range(start_lane, end_lane ):
                     if LogicArray(self.dut.phy_txdata.value)[(i * 32):(i * 32 + 8)] != 0x00 or \
                     LogicArray(self.dut.phy_txdata.value)[(i * 32 + 8):(i * 32 + 16)] != 0xFF:
@@ -991,7 +991,7 @@ class pipe_monitor_bfm():
                         # print(LogicArray(self.dut.phy_txdata.value)[(i * 32)+7:(i * 32 )].to_BinaryValue())
                         # print(LogicArray(self.dut.phy_txdata_valid.value)[i])
                         # print("")
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             # assert 1 == 0
             for i in range(start_lane, end_lane ):  # symbol 1, 2, 3
                 if  LogicArray(self.dut.phy_txdata.value)[(i * 32 + 15):(i * 32 + 8)].to_BinaryValue() != 0x00 or \
@@ -1004,11 +1004,11 @@ class pipe_monitor_bfm():
                     # assert 1 == 0
                     return
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             # assert 1 == 0
 
         else:
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             return
         # assert 1 == 0
         self.proxy.notify_eieos_gen3_received()
@@ -1027,7 +1027,7 @@ class pipe_monitor_bfm():
             data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             while not all(((data[4*i] == 0x4A or data[4*i] == 0x45) and  LogicArray(self.dut.phy_txsync_header.value)[4*i+0]==0b1 and  LogicArray(self.dut.phy_txdata_valid)[i]==0b1) for i in range(start_lane,end_lane)):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 data = bytearray(self.dut.phy_txdata)
 
             for i in range(start_lane,end_lane):
@@ -1044,10 +1044,10 @@ class pipe_monitor_bfm():
                 else:
                     ts[i].use_link_number = 1
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(2,16,2):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 2:
                     for i in range(start_lane,end_lane):
                         ts[i].lane_number = LogicArray(self.dut.phy_txdata)[(i*32+0):(i*32+0)+8]
@@ -1095,7 +1095,7 @@ class pipe_monitor_bfm():
             data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             while not all(data[4*i] == 0b101_11100 for i in range(start_lane, end_lane)):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 data = bytearray(self.dut.phy_txdata)
 
             self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
@@ -1110,10 +1110,10 @@ class pipe_monitor_bfm():
             for i in range(start_lane, end_lane):
                 ts[i].nfts = data[(i*4) + 3]
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(4,16,4):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 if symbol_count == 4:
                     for i in range(start_lane, end_lane):
                         if(LogicArray(self.dut.phy_txdata.value)[start_lane*32+5]==0b1):
@@ -1142,13 +1142,13 @@ class pipe_monitor_bfm():
             data = bytearray(self.dut.phy_txdata)
             #  [bytes_obj[i:i+1] for i in range(len(bytes_obj))]
             while not all(data[4*i] == 0b101_11100 for i in range(len(data))):
-               await RisingEdge(self.dut.clk_i)
+               await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             self.monitor_tx_scrambler = reset_lfsr(self.monitor_tx_scrambler, self.current_gen)
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
             for symbol_count in range(1,16):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 data = bytearray(self.dut.phy_txdata)
                 if symbol_count == 1:
                     for i in range(start_lane, end_lane):
@@ -1198,12 +1198,12 @@ class pipe_monitor_bfm():
 
         while True:
             while not all( LogicArray(self.dut.phy_txelecidle.value)[i] for i in range(self.dut.phy_txelecidle.value)):
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # uvm_root().logger.info(self.name + " " + "waiting3")
             self.proxy.notify_TxElecIdle_and_RxStandby_asserted()
             while not all( not LogicArray(self.dut.phy_txelecidle.value)[i] for i in range(self.dut.phy_txelecidle.value)):
-                await RisingEdge(self.dut.clk_i)
-            await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
 
 
@@ -1221,19 +1221,19 @@ class pipe_monitor_bfm():
 
 
         # while not all( LogicArray(self.dut.phy_phystatus.value)[i] ==1 for i in range(len(self.dut.phy_phystatus.value))):
-        #     await RisingEdge(self.dut.clk_i)
+        #     await RisingEdge(self.dut.pipe_rx_usr_clk_i)
         #     uvm_root().logger.info(self.name + " " + "waiting1")
             # print(LogicArray(self.dut.phy_phystatus.value))
             # print(LogicArray(self.dut.phy_phystatus.value)[0])
 
-        await RisingEdge(self.dut.clk_i)
+        await RisingEdge(self.dut.pipe_rx_usr_clk_i)
         while self.dut.phy_phystatus.value != 0:
             print(f"phystatus: {self.dut.phy_phystatus.value}")
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             uvm_root().logger.info(self.name + " " + "waiting2")
 
         while self.dut.phy_txelecidle.value != 0:
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             uvm_root().logger.info(self.name + " " + "waiting3")
 
         self.proxy.DUT_polling_state_start()
@@ -1311,7 +1311,7 @@ class pipe_monitor_bfm():
                             reset_next_byte = 1
                             self.driver_scrambler[0].reset_lfsr(self.current_gen)
 
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             if(len(bytes_stored)) >= 4:
                 await self.process_tx_data_gen_1_2(bytes_stored,datak_stored)
                 datak_stored = []
@@ -1408,7 +1408,7 @@ class pipe_monitor_bfm():
             self.proxy.notify_tlp_received(self.tlp_received)
 
     async def receive_dllp_gen_1_2(self, start_lane = 0 , end_lane = 1):
-        # await RisingEdge(self.dut.clk_i)
+        # await RisingEdge(self.dut.pipe_rx_usr_clk_i)
         while self.dllp_done == 0:
             data = self.dut.phy_txdata.value
             datak = self.dut.phy_txdatak.value
@@ -1452,7 +1452,7 @@ class pipe_monitor_bfm():
                             self.driver_scrambler[0].reset_lfsr(self.current_gen)
                             # bytes_stored = []
                             # datak_stored = []
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
         # print(f"dllp data first {[hex(q) for q in self.dllp_q]}")
         if self.dllp_done:
             self.start_dllp = 0
@@ -1463,4 +1463,4 @@ class pipe_monitor_bfm():
             await self.proxy.notify_dllp_received(self.dllp_received)
             self.dllp_q = []
             self.dllp_received = []
-            # await RisingEdge(self.dut.clk_i)
+            # await RisingEdge(self.dut.pipe_rx_usr_clk_i)

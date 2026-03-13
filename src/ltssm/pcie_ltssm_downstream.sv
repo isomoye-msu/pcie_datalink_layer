@@ -463,7 +463,9 @@ module pcie_ltssm_downstream
         ts1_valid_c[i]      = os_holder.ts1_valid;
         ts2_valid_c[i]      = os_holder.ts2_valid;
         idle_valid_c[i]     = os_holder.idle_valid;
-        ordered_set_in_c[i] = pcie_tsos_t'(os_holder.ordered_set);
+        if(os_holder.ts1_valid || os_holder.ts2_valid) begin
+          ordered_set_in_c[i] = pcie_tsos_t'(os_holder.ordered_set);
+        end
       end
     end
 
@@ -1803,8 +1805,8 @@ module pcie_ltssm_downstream
           end
           ST_CONFIGURATION_LANENUM_WAIT: begin
             if (ts1_valid_r[lane] || ts2_valid_r[lane]) begin
-              if (((ordered_set_in_r[lane].link_num != PAD)
-                   && (ordered_set_in_r[lane].lane_num != lane_in_save)))
+              if (((ordered_set_in_r[lane].link_num != PAD) //&& (ordered_set_in_r[lane].lane_num != lane_in_save)
+                   ))
               begin
                 ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
               end else begin
