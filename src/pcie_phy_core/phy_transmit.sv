@@ -491,7 +491,7 @@ module phy_transmit
 
 
    axis_fifo #(
-      .DEPTH               (30),
+      .DEPTH               (128),
       .DATA_WIDTH          (DATA_WIDTH),
       .KEEP_ENABLE         (KEEP_WIDTH > 0),
       .KEEP_WIDTH          (KEEP_WIDTH),
