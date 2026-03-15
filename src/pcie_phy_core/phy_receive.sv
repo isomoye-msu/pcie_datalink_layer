@@ -31,11 +31,6 @@ module phy_receive
     output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tlast,
     output logic        [               MAX_NUM_LANES-1:0][USER_WIDTH-1:0] m_os_axis_tuser,
     input  logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tready,
-    // output logic        [         (MAX_NUM_LANES * 8)-1:0] link_num_o,
-    // output logic        [         (MAX_NUM_LANES * 8)-1:0] lane_num_o,
-    // output logic        [         (MAX_NUM_LANES * 8)-1:0] symbol6_o,
-    // output logic        [         (MAX_NUM_LANES * 8)-1:0] training_ctrl_o,
-    // output logic        [         (MAX_NUM_LANES * 8)-1:0] rate_id_o,
     input  rate_speed_e                                                    curr_data_rate_i,
     //pcie dllp outputs
     output logic        [                  DATA_WIDTH-1:0]                 m_dllp_axis_tdata,
@@ -47,7 +42,7 @@ module phy_receive
 );
 
 
-  parameter int DEPTH = 20;
+  parameter int DEPTH = 1000;
   parameter int ID_ENABLE = 0;
   parameter int ID_WIDTH = 8;
   parameter int DEST_ENABLE = 0;
@@ -55,16 +50,6 @@ module phy_receive
   parameter int USER_ENABLE = 1;
   parameter int LAST_ENABLE = 1;
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
-  //link values
-  //   logic              [         (MAX_NUM_LANES * 8)-1:0] link_num;
-  //   logic              [         (MAX_NUM_LANES * 8)-1:0] lane_num;
-  //   ts_symbol6_union_t [               MAX_NUM_LANES-1:0] symbol6;
-  //   training_ctrl_t    [               MAX_NUM_LANES-1:0] training_ctrl;
-  //   rate_id_t          [               MAX_NUM_LANES-1:0] rate_id;
-  //   logic              [               MAX_NUM_LANES-1:0] ts1_valid;
-  //   logic              [               MAX_NUM_LANES-1:0] ts2_valid;
-  //   logic              [               MAX_NUM_LANES-1:0] idle_valid;
-  //   logic                                                 link_up;
 
 
   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] descrambler_data;
@@ -93,12 +78,6 @@ module phy_receive
   logic                                    wr_en;
   logic                                    rd_en;
 
-
-  //   logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] fifo_pipe_data;
-  //   logic [               MAX_NUM_LANES-1:0] fifo_pipe_data_valid;
-  //   logic [           (4*MAX_NUM_LANES)-1:0] fifo_pipe_data_k;
-  //   logic [           (2*MAX_NUM_LANES)-1:0] fifo_pipe_sync_header;
-  //   logic [             (MAX_NUM_LANES)-1:0] fifo_pipe_block_start;
 
   localparam int PcieDataSize = $size(
       descrambler_data
@@ -229,41 +208,6 @@ module phy_receive
       .num_active_lanes_i(num_active_lanes_i)
   );
 
-
-  // async_fifo #(
-  //     .DSIZE(PcieDataSize),
-  //     .ASIZE(10)
-  // ) async_fifo_inst (
-  //     .wclk(pipe_rx_usr_clk_i),
-  //     .wrst_n(!rst_i || link_up_i),
-  //     .winc(wr_en),
-  //     .wdata({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
-  //     .wfull(fifo_full),
-  //     .awfull(),
-  //     .rclk(clk_i),
-  //     .rrst_n(!rst_i),
-  //     .rinc(read_ready_reg),
-  //     .rdata({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
-  //     .rempty(fifo_empty),
-  //     .arempty()
-  // );
-
-
-  //packed data storage fifo
-  //   synchronous_fifo #(
-  //       .DEPTH(20),
-  //       .DATA_WIDTH(PcieDataSize)
-  //   ) synchronous_fifo_inst (
-  //       .clk_i   (clk_i),
-  //       .rst_i   (rst_i || !link_up_i),
-  //       .w_en_i  (wr_en),
-  //       .r_en_i  (rd_en),
-  //       .data_in ({packer_data, packer_data_k, packer_data_valid, packer_sync_header}),
-  //       .data_out({fifo_data, fifo_data_k, fifo_data_valid, fifo_sync_header}),
-  //       .full_o  (fifo_full),
-  //       .empty_o (fifo_empty)
-  //   );
-
   data_handler #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
@@ -345,41 +289,5 @@ module phy_receive
       .m_status_bad_frame   (),
       .m_status_good_frame  ()
   );
-
-
-//   axis skid buffer
-//   axis_register #(
-//       .DATA_WIDTH (DATA_WIDTH),
-//       .KEEP_ENABLE('1),
-//       .KEEP_WIDTH (KEEP_WIDTH),
-//       .LAST_ENABLE('1),
-//       .ID_ENABLE  ('0),
-//       .ID_WIDTH   (1),
-//       .DEST_ENABLE('0),
-//       .DEST_WIDTH (1),
-//       .USER_ENABLE('1),
-//       .USER_WIDTH (USER_WIDTH),
-//       .REG_TYPE   (SkidBuffer)
-//   ) axis_output_register_inst (
-//       .clk          (clk_i),
-//       .rst          (rst_i),
-//       .s_axis_tdata (m_buffer_dllp_axis_tdata),
-//       .s_axis_tkeep (m_buffer_dllp_axis_tkeep),
-//       .s_axis_tvalid(m_buffer_dllp_axis_tvalid),
-//       .s_axis_tready(m_buffer_dllp_axis_tready),
-//       .s_axis_tlast (m_buffer_dllp_axis_tlast),
-//       .s_axis_tid   ('0),
-//       .s_axis_tdest ('0),
-//       .s_axis_tuser (m_buffer_dllp_axis_tuser),
-//       .m_axis_tdata (m_dllp_axis_tdata),
-//       .m_axis_tkeep (m_dllp_axis_tkeep),
-//       .m_axis_tvalid(m_dllp_axis_tvalid),
-//       .m_axis_tready(m_dllp_axis_tready),
-//       .m_axis_tlast (m_dllp_axis_tlast),
-//       .m_axis_tid   (),
-//       .m_axis_tdest (),
-//       .m_axis_tuser (m_dllp_axis_tuser)
-//   );
-
 
 endmodule

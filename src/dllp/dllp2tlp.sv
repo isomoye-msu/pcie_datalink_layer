@@ -286,7 +286,7 @@ module dllp2tlp
     tlp_is_cpld_c           = tlp_is_cpld_r;
     tlp_is_npd_c            = tlp_is_npd_r;
     tlp_is_pd_c             = tlp_is_pd_r;
-    skid_axis_tready[1]        = '0;
+    skid_axis_tready[1]     = '0;
     tlp_dw0                 = '0;
     dll_packet              = '0;
     tlp_header_offset       = '0;
