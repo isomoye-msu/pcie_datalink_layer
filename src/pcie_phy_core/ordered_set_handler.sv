@@ -23,13 +23,7 @@ module ordered_set_handler
     input  logic        [           3:0] data_k_in_i,
     input  logic        [           5:0] pipe_width_i,
     //training set configuration signals
-    output logic        [OsDataSize-1:0] m_os_axis_tdata,
-    output logic        [KEEP_WIDTH-1:0] m_os_axis_tkeep,
-    output logic                         m_os_axis_tvalid,
-    output logic                         m_os_axis_tlast,
-    output logic        [USER_WIDTH-1:0] m_os_axis_tuser,
-    input  logic                         m_os_axis_tready
-
+    output os_holder_t                     os_holder_o
 
 );
 
@@ -445,23 +439,23 @@ module ordered_set_handler
 
 
   always_comb begin
-    os_holder_t os_holder;
-    os_holder             = '0;
-    m_os_axis_tvalid      = '0;
-    m_os_axis_tkeep       = '1;
-    m_os_axis_tuser       = '1;
-    m_os_axis_tlast       = '1;
+    // os_holder_t os_holder;
+    // os_holder             = '0;
+    // m_os_axis_tvalid      = '0;
+    // m_os_axis_tkeep       = '1;
+    // m_os_axis_tuser       = '1;
+    // m_os_axis_tlast       = '1;
 
-    os_holder.ordered_set = ordered_set_out_r;
-    os_holder.ts1_valid   = ts1_valid_r;
-    os_holder.ts2_valid   = ts2_valid_r;
-    os_holder.idle_valid  = idle_valid_r;
-    os_holder.eieos_valid = eieos_valid_r;
-    // os_out_c.
-    if (ts1_valid_r || ts2_valid_r || idle_valid_r || eieos_valid_r) begin
-      m_os_axis_tdata  = os_holder;
-      m_os_axis_tvalid = '1;
-    end
+    os_holder_o.ordered_set = ordered_set_out_r;
+    os_holder_o.ts1_valid   = ts1_valid_r;
+    os_holder_o.ts2_valid   = ts2_valid_r;
+    os_holder_o.idle_valid  = idle_valid_r;
+    os_holder_o.eieos_valid = eieos_valid_r;
+    // // os_out_c.
+    // if (ts1_valid_r || ts2_valid_r || idle_valid_r || eieos_valid_r) begin
+    //   m_os_axis_tdata  = os_holder;
+    //   m_os_axis_tvalid = '1;
+    // end
   end
 
 

@@ -64,6 +64,8 @@ module pcie_ltssm_downstream
     input  logic                     ordered_set_tranmitted_i,
     output logic [MAX_NUM_LANES-1:0] active_lanes_o,
 
+    output os_tx_holder_t os_holder_o,
+
     // output gen_os_struct_t                        gen_os_ctrl_o,
     //training set configuration signals
     // input  pcie_tsos_t        [MAX_NUM_LANES-1:0] ordered_set_i,
@@ -82,19 +84,20 @@ module pcie_ltssm_downstream
     output rate_id_t                           data_rate_o,
     output logic                               changed_speed_recovery_o,
 
-    input  logic [MAX_NUM_LANES-1:0][OsDataSize-1:0] s_os_axis_tdata,
-    input  logic [MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] s_os_axis_tkeep,
-    input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tvalid,
-    output logic [MAX_NUM_LANES-1:0]                 s_os_axis_tready,
-    input  logic [MAX_NUM_LANES-1:0][USER_WIDTH-1:0] s_os_axis_tlast,
-    input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tuser,
+    // input  logic [MAX_NUM_LANES-1:0][OsDataSize-1:0] s_os_axis_tdata,
+    // input  logic [MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] s_os_axis_tkeep,
+    // input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tvalid,
+    // output logic [MAX_NUM_LANES-1:0]                 s_os_axis_tready,
+    // input  logic [MAX_NUM_LANES-1:0][USER_WIDTH-1:0] s_os_axis_tlast,
+    // input  logic [MAX_NUM_LANES-1:0]                 s_os_axis_tuser
+    input os_holder_t [MAX_NUM_LANES-1:0] os_holder_i
     // //! @virtualbus master_axis_bus @dir out
-    output logic [ TxOsDataSize-1:0]                 m_os_axis_tdata,
-    output logic [   KEEP_WIDTH-1:0]                 m_os_axis_tkeep,
-    output logic                                     m_os_axis_tvalid,
-    output logic                                     m_os_axis_tlast,
-    output logic [   USER_WIDTH-1:0]                 m_os_axis_tuser,
-    input  logic                                     m_os_axis_tready
+    // output logic [ TxOsDataSize-1:0]                 m_os_axis_tdata,
+    // output logic [   KEEP_WIDTH-1:0]                 m_os_axis_tkeep,
+    // output logic                                     m_os_axis_tvalid,
+    // output logic                                     m_os_axis_tlast,
+    // output logic [   USER_WIDTH-1:0]                 m_os_axis_tuser,
+    // input  logic                                     m_os_axis_tready
     //! @end
 );
 
@@ -452,20 +455,13 @@ module pcie_ltssm_downstream
   always_comb begin : axis_signals
 
     for (int i = 0; i < MAX_NUM_LANES; i++) begin
-      s_os_axis_tready[i] = '1;
-      ts1_valid_c[i] = '0;
-      ts2_valid_c[i] = '0;
-      idle_valid_c[i] = '0;
-      // ordered_set_in_c[i] = '0;
-      if (s_os_axis_tvalid[i]) begin
-        os_holder_t os_holder;
-        os_holder           = os_holder_t'(s_os_axis_tdata[i]);
-        ts1_valid_c[i]      = os_holder.ts1_valid;
-        ts2_valid_c[i]      = os_holder.ts2_valid;
-        idle_valid_c[i]     = os_holder.idle_valid;
-        if(os_holder.ts1_valid || os_holder.ts2_valid) begin
-          ordered_set_in_c[i] = pcie_tsos_t'(os_holder.ordered_set);
-        end
+      os_holder_t os_holder;
+      os_holder       = os_holder_t'(os_holder_i[i]);
+      ts1_valid_c[i]  = os_holder.ts1_valid;
+      ts2_valid_c[i]  = os_holder.ts2_valid;
+      idle_valid_c[i] = os_holder.idle_valid;
+      if (os_holder.ts1_valid || os_holder.ts2_valid) begin
+        ordered_set_in_c[i] = pcie_tsos_t'(os_holder.ordered_set);
       end
     end
 
@@ -475,20 +471,20 @@ module pcie_ltssm_downstream
   // assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
 
   always_comb begin
-    os_tx_holder_t os_holder;
-    os_holder                  = '0;
-    m_os_axis_tvalid           = '0;
-    m_os_axis_tkeep            = '1;
-    m_os_axis_tuser            = '1;
-    m_os_axis_tlast            = '1;
+    // os_tx_holder_t os_holder;
+    os_holder_o                  = '0;
+    // m_os_axis_tvalid           = '0;
+    // m_os_axis_tkeep            = '1;
+    // m_os_axis_tuser            = '1;
+    // m_os_axis_tlast            = '1;
 
     // os_holder.num_active_lanes = ordered_set_out_r;
-    os_holder.send_ordered_set = send_ordered_set_r;
-    os_holder.ordered_set      = ordered_set_r;
-    os_holder.curr_data_rate   = curr_data_rate_r.rate;
-    os_holder.gen_os_ctrl      = gen_os_ctrl_r;
-    m_os_axis_tvalid           = '1;
-    m_os_axis_tdata            = os_holder;
+    os_holder_o.send_ordered_set = send_ordered_set_r;
+    os_holder_o.ordered_set      = ordered_set_r;
+    os_holder_o.curr_data_rate   = curr_data_rate_r.rate;
+    os_holder_o.gen_os_ctrl      = gen_os_ctrl_r;
+    // m_os_axis_tvalid           = '1;
+    // m_os_axis_tdata            = os_holder;
     // // os_out_c.
     // if (send_ordered_set_r || ts2_valid_r || idle_valid_r || eieos_valid_r) begin
     //   m_os_axis_tdata  = os_holder;
@@ -1806,8 +1802,7 @@ module pcie_ltssm_downstream
           ST_CONFIGURATION_LANENUM_WAIT: begin
             if (ts1_valid_r[lane] || ts2_valid_r[lane]) begin
               if (((ordered_set_in_r[lane].link_num != PAD) //&& (ordered_set_in_r[lane].lane_num != lane_in_save)
-                   ))
-              begin
+                  )) begin
                 ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
               end else begin
                 ts1_cnt <= '0;

@@ -28,12 +28,13 @@ module phy_transmit
     output logic                                    ordered_set_tranmitted_o,
     input  logic [                             5:0] num_active_lanes_i,
 
-    input  logic [TxOsDataSize-1:0] s_tx_os_axis_tdata,
-    input  logic [  KEEP_WIDTH-1:0] s_tx_os_axis_tkeep,
-    input  logic                    s_tx_os_axis_tvalid,
-    input  logic                    s_tx_os_axis_tlast,
-    input  logic [  USER_WIDTH-1:0] s_tx_os_axis_tuser,
-    output logic                    s_tx_os_axis_tready,
+    // input  logic [TxOsDataSize-1:0] s_tx_os_axis_tdata,
+    // input  logic [  KEEP_WIDTH-1:0] s_tx_os_axis_tkeep,
+    // input  logic                    s_tx_os_axis_tvalid,
+    // input  logic                    s_tx_os_axis_tlast,
+    // input  logic [  USER_WIDTH-1:0] s_tx_os_axis_tuser,
+    // output logic                    s_tx_os_axis_tready,
+    input os_tx_holder_t tx_os_data_i,
 
 
     input  logic [DATA_WIDTH-1:0] s_dllp_axis_tdata,
@@ -51,7 +52,7 @@ module phy_transmit
   parameter int USER_ENABLE = 1;
   parameter int LAST_ENABLE = 1;
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
-  parameter int FRAME_DEPTH = 1000;
+  parameter int FRAME_DEPTH = 100;
 
 
   logic              [                  DATA_WIDTH-1:0] s_buffer_dllp_axis_tdata;
@@ -141,19 +142,15 @@ module phy_transmit
       pcie_ordered_set_t
   );
 
-  os_tx_holder_t os_holder;
-  assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
+  //   os_tx_holder_t os_holder;
+  //   assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
 
   always_ff @(posedge pipe_tx_usr_clk_i) begin : axis_signals
-    s_tx_os_axis_tready <= '1;
-    if (s_tx_os_axis_tvalid) begin
-      send_ordered_set_i <= os_holder.send_ordered_set;
-      ordered_set_i      <= os_holder.ordered_set;
-      curr_data_rate_i   <= os_holder.curr_data_rate;
-      gen_os_ctrl_i      <= os_holder.gen_os_ctrl;
-    end
+    send_ordered_set_i <= tx_os_data_i.send_ordered_set;
+    ordered_set_i      <= tx_os_data_i.ordered_set;
+    curr_data_rate_i   <= tx_os_data_i.curr_data_rate;
+    gen_os_ctrl_i      <= tx_os_data_i.gen_os_ctrl;
     // end
-
   end
 
 
@@ -276,7 +273,7 @@ module phy_transmit
       .USER_WIDTH(USER_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) os_generator_inst (
-      .clk_i           (pipe_rx_usr_clk_i),
+      .clk_i           (pipe_tx_usr_clk_i),
       .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
       .link_up_i       (link_up_i),
@@ -292,6 +289,7 @@ module phy_transmit
       .m_axis_tuser    (phy_axis_tuser),
       .m_axis_tready   (phy_axis_tready)
   );
+
 
 
   axis_async_fifo #(

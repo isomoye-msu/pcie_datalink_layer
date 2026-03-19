@@ -14,31 +14,32 @@ module phy_receive
     input logic rst_i,  // Reset signal
 
     //Control
-    input  logic                                                           en_i,
-    input  logic                                                           link_up_i,
-    input  logic                                                           pipe_rx_usr_clk_i,
-    input  logic        [( MAX_NUM_LANES* DATA_WIDTH)-1:0]                 pipe_data_i,
-    input  logic        [               MAX_NUM_LANES-1:0]                 pipe_data_valid_i,
-    input  logic        [           (4*MAX_NUM_LANES)-1:0]                 pipe_data_k_i,
-    input  logic        [           (2*MAX_NUM_LANES)-1:0]                 pipe_sync_header_i,
-    input  logic        [             (MAX_NUM_LANES)-1:0]                 pipe_block_start_i,
-    input  logic        [                             5:0]                 pipe_width_i,
-    input  logic        [                             5:0]                 num_active_lanes_i,
+    input  logic                                           en_i,
+    input  logic                                           link_up_i,
+    input  logic                                           pipe_rx_usr_clk_i,
+    input  logic        [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_i,
+    input  logic        [               MAX_NUM_LANES-1:0] pipe_data_valid_i,
+    input  logic        [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_i,
+    input  logic        [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_i,
+    input  logic        [             (MAX_NUM_LANES)-1:0] pipe_block_start_i,
+    input  logic        [                             5:0] pipe_width_i,
+    input  logic        [                             5:0] num_active_lanes_i,
     //training set configuration signals
-    output logic        [               MAX_NUM_LANES-1:0][OsDataSize-1:0] m_os_axis_tdata,
-    output logic        [               MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] m_os_axis_tkeep,
-    output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tvalid,
-    output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tlast,
-    output logic        [               MAX_NUM_LANES-1:0][USER_WIDTH-1:0] m_os_axis_tuser,
-    input  logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tready,
-    input  rate_speed_e                                                    curr_data_rate_i,
+    // output logic        [               MAX_NUM_LANES-1:0][OsDataSize-1:0] m_os_axis_tdata,
+    // output logic        [               MAX_NUM_LANES-1:0][KEEP_WIDTH-1:0] m_os_axis_tkeep,
+    // output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tvalid,
+    // output logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tlast,
+    // output logic        [               MAX_NUM_LANES-1:0][USER_WIDTH-1:0] m_os_axis_tuser,
+    // input  logic        [               MAX_NUM_LANES-1:0]                 m_os_axis_tready,
+    output os_holder_t                        [MAX_NUM_LANES-1:0]             os_holder_o,
+    input  rate_speed_e                                    curr_data_rate_i,
     //pcie dllp outputs
-    output logic        [                  DATA_WIDTH-1:0]                 m_dllp_axis_tdata,
-    output logic        [                  KEEP_WIDTH-1:0]                 m_dllp_axis_tkeep,
-    output logic                                                           m_dllp_axis_tvalid,
-    output logic                                                           m_dllp_axis_tlast,
-    output logic        [                  USER_WIDTH-1:0]                 m_dllp_axis_tuser,
-    input  logic                                                           m_dllp_axis_tready
+    output logic        [                  DATA_WIDTH-1:0] m_dllp_axis_tdata,
+    output logic        [                  KEEP_WIDTH-1:0] m_dllp_axis_tkeep,
+    output logic                                           m_dllp_axis_tvalid,
+    output logic                                           m_dllp_axis_tlast,
+    output logic        [                  USER_WIDTH-1:0] m_dllp_axis_tuser,
+    input  logic                                           m_dllp_axis_tready
 );
 
 
@@ -154,12 +155,7 @@ module phy_receive
         .data_in_i       (descrambler_data[DATA_WIDTH*lane+:DATA_WIDTH]),
         .data_k_in_i     (descrambler_data_k[4*lane+:4]),
         .sync_header_i   (descrambler_sync_header[2*lane+:2]),
-        .m_os_axis_tdata (m_os_axis_tdata[lane]),
-        .m_os_axis_tkeep (m_os_axis_tkeep[lane]),
-        .m_os_axis_tvalid(m_os_axis_tvalid[lane]),
-        .m_os_axis_tlast (m_os_axis_tlast[lane]),
-        .m_os_axis_tuser (m_os_axis_tuser[lane]),
-        .m_os_axis_tready(m_os_axis_tready[lane])
+        .os_holder_o     (os_holder_o[lane])
     );
   end
 
