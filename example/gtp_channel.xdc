@@ -173,3 +173,7 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe18]
 set_property port_width 1 [get_debug_ports u_ila_0/probe18]
 connect_debug_port u_ila_0/probe18 [get_nets [list pcie_phy_top_inst/pcie_ltssm_downstream_inst/single_idle_received]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe19]
+set_property port_width 1 [get_debug_ports u_ila_0/probe19]
+connect_debug_port u_ila_0/probe19 [get_nets [list pcie_phy_top_inst/ordered_set_tranmitted]]
