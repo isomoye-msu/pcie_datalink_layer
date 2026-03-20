@@ -163,6 +163,7 @@ targets:
     tools:
       vivado:
         part : xc7a200tfbg676-2
+        synth_options: --flatten_hierarchy none
     toplevel : pcie_top_gtp
 
 scripts:

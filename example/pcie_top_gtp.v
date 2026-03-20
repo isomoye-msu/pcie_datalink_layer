@@ -157,7 +157,7 @@ module pcie_top_gtp #(
   //   reg clk_i;
   //   reg rst_i;
   //   reg en_i;
-  (* mark_debug = "true", keep = "true" *) wire                                    fc_initialized_o;
+  wire                                    fc_initialized_o;
   wire [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata;
   wire [               MAX_NUM_LANES-1:0] phy_txdata_valid;
   wire [           (4*MAX_NUM_LANES)-1:0] phy_txdatak;
@@ -200,20 +200,20 @@ module pcie_top_gtp #(
   wire                                    as_cdr_hold_req;
   (* mark_debug = "true", keep = "true" *) wire [20:0] debug_state;
   (* mark_debug = "true", keep = "true" *) wire tx_elec_idle = 1'b0;
-  (* mark_debug = "true", keep = "true" *) wire phy_ready_en = 1'b1;
+  wire phy_ready_en = 1'b1;
 
   // PIPE debug alias wires (top-level for ILA visibility)
   (* mark_debug = "true", keep = "true" *) wire        dbg_txdetectrx  = phy_txdetectrx;
   (* mark_debug = "true", keep = "true" *) wire [2:0]  dbg_rxstatus    = phy_rxstatus[2:0];
   (* mark_debug = "true", keep = "true" *) wire        dbg_phystatus   = phy_phystatus[0];
   (* mark_debug = "true", keep = "true" *) wire        dbg_rxelecidle  = phy_rxelecidle[0];
-  (* mark_debug = "true", keep = "true" *) wire        dbg_rxvalid     = phy_rxvalid[0];
+  wire        dbg_rxvalid     = phy_rxvalid[0];
   (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_rxdata      = phy_rxdata[31:0];
   (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_rxdatak     = phy_rxdatak[3:0];
   (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_txdata      = phy_txdata[31:0];
   (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_txdatak     = phy_txdatak[3:0];
   (* mark_debug = "true", keep = "true" *) wire        dbg_txelecidle  = phy_txelecidle[0];
-  (* mark_debug = "true", keep = "true" *) wire [1:0]  dbg_powerdown   = phy_powerdown;
+  wire [1:0]  dbg_powerdown   = phy_powerdown;
 
 
   wire [                  DATA_WIDTH-1:0] s_tlp_axis_tdata;

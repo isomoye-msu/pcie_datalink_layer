@@ -84,8 +84,8 @@ module pcie_cfg_top
     (* mark_debug *) output wire [7:0] debug_state,
 
     // Bringup Control Inputs
-    (* mark_debug *) input wire tx_elec_idle,
-    (* mark_debug *) input wire phy_ready_en,
+    input wire tx_elec_idle,
+    input wire phy_ready_en,
 
 
     output logic link_up_o,
