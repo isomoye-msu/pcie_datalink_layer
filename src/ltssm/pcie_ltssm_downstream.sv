@@ -107,29 +107,33 @@ module pcie_ltssm_downstream
   typedef enum logic [19:0] {
     ST_IDLE                           = 20'b00000000000000000000,
     ST_DETECT                         = 20'b00000000000000000001,
-    ST_POLLING                        = 20'b00000000000000000010,
+    ST_POLLING                        = 20'b00000000000000000010, // 02
     ST_CONFIGURATION                  = 20'b00000000000000000011,
     ST_RECOVERY                       = 20'b00000000000000000100,
-    ST_L0                             = 20'b00000000000000000101,
+    ST_L0                             = 20'b00000000000000000101, // 05
     ST_L0s                            = 20'b00000000000000000110,
     ST_L1                             = 20'b00000000000000000111,
     ST_L2                             = 20'b00000000000000001000,
     ST_DISABLED                       = 20'b00000000000000001001,
     ST_LOOPBACK                       = 20'b00000000000000001010,
     ST_HOT_RESET                      = 20'b00000000000000001011,
-    ST_DETECT_WAIT_ONE_MS             = 20'b00000000000000100001,
-    ST_DETECT_QUIET                   = 20'b00000000000001000001,
+
+    ST_DETECT_WAIT_ONE_MS             = 20'b00000000000000100001, // 21
+    ST_DETECT_QUIET                   = 20'b00000000000001000001, // 41
     ST_DETECT_ACTIVE                  = 20'b00000000000001100001,
     ST_DETECT_RX                      = 20'b00000000000010000001,
-    ST_POLLING_ACTIVE                 = 20'b00000000000000100010,
-    ST_POLLING_CONFIGURATION          = 20'b00000000000001000010,
-    ST_POLLING_COMPLIANCE             = 20'b00000000000001100010,
+
+    ST_POLLING_ACTIVE                 = 20'b00000000000000100010, // 22
+    ST_POLLING_CONFIGURATION          = 20'b00000000000001000010, // 42
+    ST_POLLING_COMPLIANCE             = 20'b00000000000001100010, // 62
+
     ST_CONFIGURATION_LINKWIDTH_START  = 20'b00000000000000100011,
     ST_CONFIGURATION_LINKWIDTH_ACCEPT = 20'b00000000000001000011,
     ST_CONFIGURATION_LANENUM_ACCEPT   = 20'b00000000000001100011,
     ST_CONFIGURATION_LANENUM_WAIT     = 20'b00000000000010000011,
     ST_CONFIGURATION_COMPLETE         = 20'b00000000000010100011,
-    ST_CONFIGURATION_IDLE             = 20'b00000000000011100011,
+    ST_CONFIGURATION_IDLE             = 20'b00000000000011100011, // E3
+
     ST_RECOVERY_RCVR_LOCK             = 20'b00000000000000100100,
     ST_RECOVERY_RCVR_LOCK_TIMEOUT     = 20'b00000000000001000100,
     ST_RECOVERY_EQUAL                 = 20'b00000000000001100100,
@@ -445,6 +449,7 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Idle
       //*********************************************************
+      // This is actually ST_DETECT?
       ST_IDLE: begin
         if (en_i) begin
           // timer_c                      = '0;
@@ -466,6 +471,7 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Detect.Wait.One.Ms
       //*********************************************************
+      // Only necessary if data rate is greater than Gen1. This should also set datarate to gen1.
       ST_DETECT_WAIT_ONE_MS: begin
         // gen_os_ctrl_c.gen_idle = '1;
         //bounded timeout counter
@@ -585,12 +591,10 @@ module pcie_ltssm_downstream
           polarity_lockout_timer_c = 16'd1000; // ~10us lockout
         end
 
-        if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
-            //reset counts
-            // timer_c                = '0;
-            ordered_set_sent_cnt_c = '0;
-            //check if ts1 reqs satisfied
+
+        if ((ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
             if (&lanes_ts1_satisfied) begin
+              ordered_set_sent_cnt_c = '0;
               //build ts2 ordered set
               gen_os_ctrl_c.gen_ts1 = '0;
               gen_os_ctrl_c.gen_ts2 = '1;
@@ -599,12 +603,35 @@ module pcie_ltssm_downstream
               transmit_ordered_set = '1;
               //goto cofig
               next_state = ST_POLLING_CONFIGURATION;
-            end else begin
-              //goto compliance
-              next_state = ST_POLLING_COMPLIANCE;
             end
+        end
+
+
+        if ((timer_r >= TwentyFourMsTimeOut) && (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+          //reset counts
+          // timer_c                = '0;
+          ordered_set_sent_cnt_c = '0;
+          //check if ts1 reqs satisfied
+          if (&lanes_ts1_satisfied) begin
+            //build ts2 ordered set
+            gen_os_ctrl_c.gen_ts1 = '0;
+            gen_os_ctrl_c.gen_ts2 = '1;
+            // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+            ordered_set_c = gen_ts_os( gen1, TS2);
+            transmit_ordered_set = '1;
+            //goto cofig
+            next_state = ST_POLLING_CONFIGURATION;
+          end else if (|lanes_ts1_satisfied) begin
+            // TODO: This should be entered when a 24 ms timeout is reached, 1024 TS1s were sent and 
+            // Any lane received 8 consecutive TS1s with the copmbliance rceive bit of symbol 5 == 1 and loopback bit == 0
+            next_state = ST_POLLING_COMPLIANCE;
           end
         end
+        if (timer_r >= TwentyFourMsTimeOut) begin
+            // If neither are met we go to ST_IDLE (Detect State...)
+            next_state = ST_IDLE;
+        end
+      end
       //*********************************************************
       // Polling.Compliance: NOT IMPLEMENTED
       //*********************************************************
@@ -621,7 +648,7 @@ module pcie_ltssm_downstream
         //bounded timeout counter
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
-          if (&lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h8) begin
+          if (&lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h10) begin
             //assert success
             success_c = '1;
             //reset counts
@@ -632,9 +659,9 @@ module pcie_ltssm_downstream
             transmit_ordered_set = '1;
             ordered_set_c = gen_ts_os( gen1, TS1);
             //goto wait low
-            next_state = ST_CONFIGURATION;
+            next_state = ST_CONFIGURATION_LINKWIDTH_START;
           end  //check timeout count
-          else if (timer_r >= TwentyFourMsTimeOut)
+          else if (timer_r >= FourtyEightMsTimeOut)
           begin
             // timer_c    = '0;
             //assert error.
@@ -670,7 +697,9 @@ module pcie_ltssm_downstream
         if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           //check if pcie state continue scenario satisfied
-          if ((|link_width_satisfied) && (ordered_set_sent_cnt_r >= 8'h08)) begin
+          // TODO: Either only wait for two consecutive TS1s with correct link number (|link_width_satisfied)
+          // Or send 16-32 TS1s to support crosslink??? ((|link_width_satisfied) && (ordered_set_sent_cnt_r >= 8'h10))
+          if ((|link_width_satisfied)) begin
             //reset ordered set sent counter
             ordered_set_sent_cnt_c = '0;
             transmit_ordered_set   = '1;
@@ -816,7 +845,7 @@ module pcie_ltssm_downstream
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
           end
           //check if number of idle OS received and idle OS sent
-          if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 16)) begin
+          if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 8'd16)) begin
             //assert success.. tells ltssm hierarchy to move to its next state            success_c                    = '1;
             //reset counters
             ordered_set_sent_cnt_c       = '0;
@@ -1154,8 +1183,14 @@ module pcie_ltssm_downstream
           next_state = ST_RECOVERY_SPEED;
         end
         if (timer_r >= FourtyEightMsTimeOut) begin
-          // timer_c = '0;
-          next_state = ST_RECOVERY_RCVR_LOCK_TIMEOUT;
+          if (curr_data_rate_r.rate == gen1 || curr_data_rate_r.rate == gen2) begin
+            next_state = ST_IDLE;
+          end else if (idle_to_rlock_transitioned_r < 8'hFF && curr_data_rate_r.rate >= gen3) begin
+            changed_speed_recovery_c = '0;
+            next_state = ST_RECOVERY_IDLE;
+          end else begin
+            next_state = ST_IDLE;
+          end;
         end
       end
       //-----------------------------------------------------------
