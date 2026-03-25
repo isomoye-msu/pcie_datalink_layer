@@ -66,6 +66,7 @@ filesets:
   synth:
     files:
       - example/gtp_channel.xdc : {file_type : xdc}
+      - example/ila_debug.xdc : {file_type: xdc}
       - example/axis_fifo_constraints/dllp_rx_axis_async_fifo_timing.xdc : {file_type : xdc}
       - example/axis_fifo_constraints/dllp_tx_axis_async_fifo_timing.xdc : {file_type : xdc}
       - example/async_fifo_constraints.tcl: {file_type: user}

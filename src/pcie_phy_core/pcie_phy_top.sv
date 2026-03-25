@@ -3,6 +3,7 @@ module pcie_phy_top
   import pcie_phy_pkg::*;
 #(
     parameter int CLK_RATE      = 100,             //!Clock speed in MHz, Defualt is 100
+    parameter int PHY_CLK_RATE = 250,             //! PHY Clock speed in MHz, Default is 250 for Gen1/Gen2 and 250/4 for Gen3;
     parameter int MAX_NUM_LANES = 1,               //! Maximum number of lanes module can support
     // TLP data width
     parameter int DATA_WIDTH    = 32,              //! AXIS data width
@@ -27,11 +28,11 @@ module pcie_phy_top
     // input  logic [               MAX_NUM_LANES-1:0] lane_status_i,
     output logic                                    fc_initialized_o,
     //pipe interface output
-    output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata,
-    output logic [               MAX_NUM_LANES-1:0] phy_txdata_valid,
-    output logic [           (4*MAX_NUM_LANES)-1:0] phy_txdatak,
-    output logic [               MAX_NUM_LANES-1:0] phy_txstart_block,
-    output logic [           (2*MAX_NUM_LANES)-1:0] phy_txsync_header,
+    (* syn_keep = "true", mark_debug = "true" *) output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_txdata,
+    (* syn_keep = "true", mark_debug = "true" *) output logic [               MAX_NUM_LANES-1:0] phy_txdata_valid,
+    (* syn_keep = "true", mark_debug = "true" *) output logic [           (4*MAX_NUM_LANES)-1:0] phy_txdatak,
+    (* syn_keep = "true", mark_debug = "true" *) output logic [               MAX_NUM_LANES-1:0] phy_txstart_block,
+    (* syn_keep = "true", mark_debug = "true" *) output logic [           (2*MAX_NUM_LANES)-1:0] phy_txsync_header,
     //pipe interface input
     input  logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] phy_rxdata,
     input  logic [               MAX_NUM_LANES-1:0] phy_rxdata_valid,
@@ -48,11 +49,11 @@ module pcie_phy_top
 
 
     // PHY Status
-    input  wire [     MAX_NUM_LANES-1:0] phy_rxvalid,
-    input  wire [     MAX_NUM_LANES-1:0] phy_phystatus,
-    input  wire                          phy_phystatus_rst,
-    input  wire [     MAX_NUM_LANES-1:0] phy_rxelecidle,
-    input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+    (* syn_keep = "true", mark_debug = "true" *) input  wire [     MAX_NUM_LANES-1:0] phy_rxvalid,
+    (* syn_keep = "true", mark_debug = "true" *) input  wire [     MAX_NUM_LANES-1:0] phy_phystatus,
+    (* syn_keep = "true", mark_debug = "true" *) input  wire                          phy_phystatus_rst,
+    (* syn_keep = "true", mark_debug = "true" *) input  wire [     MAX_NUM_LANES-1:0] phy_rxelecidle,
+    (* syn_keep = "true", mark_debug = "true" *) input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
     // TX Driver
     output wire [                   2:0] phy_txmargin,
     output wire                          phy_txswing,
@@ -296,7 +297,7 @@ module pcie_phy_top
   end
 
   phy_receive #(
-      .CLK_RATE     (CLK_RATE),
+      .CLK_RATE     (PHY_CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
       .DATA_WIDTH   (DATA_WIDTH),
       .STRB_WIDTH   (STRB_WIDTH),
@@ -328,7 +329,7 @@ module pcie_phy_top
 
 
   phy_transmit #(
-      .CLK_RATE     (CLK_RATE),
+      .CLK_RATE     (PHY_CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
       .DATA_WIDTH   (DATA_WIDTH),
       .STRB_WIDTH   (STRB_WIDTH),
@@ -586,7 +587,7 @@ module pcie_phy_top
   // end
 
   pcie_ltssm_downstream #(
-      .CLK_RATE     (CLK_RATE),
+      .CLK_RATE     (PHY_CLK_RATE),
       .MAX_NUM_LANES(MAX_NUM_LANES),
       .DATA_WIDTH   (DATA_WIDTH),
       .KEEP_WIDTH   (KEEP_WIDTH),
