@@ -23,7 +23,7 @@ module pcie_ltssm_downstream
     parameter int          IS_UPSTREAM        = 0,    //downstream by default
     parameter int          CROSSLINK_EN       = 0,    //crosslink not supported
     parameter int          UPCONFIG_EN        = 0,    //upconfig not supported
-    parameter rate_speed_e MAX_SUPPORTED_RATE = gen3
+    parameter rate_speed_e MAX_SUPPORTED_RATE = gen1
 ) (
     input  logic                         clk_i,                //! 100MHz clock signal
     input  logic                         rst_i,                //! Reset signal
@@ -326,7 +326,7 @@ module pcie_ltssm_downstream
       equalization_done_8gb_r        <= '0;
       gen_os_ctrl_r.valid            <= '0;
       start_equalization_w_preset_r  <= '1;
-      last_data_rate_r               <= gen3_basic;
+      last_data_rate_r               <= gen1_basic;
       curr_data_rate_r               <= gen1_basic;
       preset_coeff_r                 <= '0;
       equal_status_r                 <= '0;
@@ -788,8 +788,8 @@ module pcie_ltssm_downstream
           if ((|ts1_lanenum_wait_satisfied) && (ordered_set_sent_cnt_r >= 8'h8)) begin
             // timer_c = '0;
             ordered_set_sent_cnt_c = 0;
-            gen_os_ctrl_c.gen_ts1  = '0;
-            gen_os_ctrl_c.gen_ts2  = '1;
+            gen_os_ctrl_c.gen_ts1  = '1;
+            gen_os_ctrl_c.gen_ts2  = '0;
             transmit_ordered_set   = '1;
             gen_os_ctrl_c.set_lane = '1;
             ordered_set_c = gen_ts_os( gen1, TS1, train_seq_e'(link_number_selected));
@@ -838,6 +838,7 @@ module pcie_ltssm_downstream
       //  Configuration.Idle
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
+        link_up_o = '1; 
         if (ordered_set_tranmitted_i) begin
           //check if idle received
           if (|single_idle_received) begin
@@ -984,7 +985,7 @@ module pcie_ltssm_downstream
             error_c    = '1;
             goto_cfg_c = '1;
             //goto detect
-            next_state = ST_CONFIGURATION;
+            next_state = ST_IDLE;
           end else begin
             //assert error
             error_c       = '1;
@@ -1115,17 +1116,20 @@ module pcie_ltssm_downstream
         //recovery idle scenario
         if((|(ts2_cnt_satisfied & lane_active_r)
             && (speed_change_bit_set=='0)
-            && ordered_set_sent_cnt_r >= 8'd4) && ordered_set_tranmitted_i)
+            && ordered_set_sent_cnt_r >= 8'd16) && ordered_set_tranmitted_i)
         begin
           successful_speed_negotiation_c = '0;
           gen_os_ctrl_c                  = '0;
           gen_os_ctrl_c.valid            = '1;
-          gen_os_ctrl_c.gen_eios         = '1;
+          gen_os_ctrl_c.gen_eios         = '0;
+          gen_os_ctrl_c.gen_idle         = '1;
+          gen_os_ctrl_c.gen_ts1          = '0;
+          gen_os_ctrl_c.gen_ts2          = '0;
           // timer_c                        = '0;
           ordered_set_sent_cnt_c         = '0;
           next_state                     = ST_RECOVERY_IDLE;
           transmit_ordered_set           = '1;
-          gen_eios(ordered_set_c, curr_data_rate_r.rate);
+          ordered_set_c = gen_zeros();
         end
         if((|((ts1_cnt_satisfied || ts2_cnt_satisfied) & lane_active_r)) &&
             (|speed_change_bit_set) &&  (curr_data_rate_r.rate < gen3) &&
@@ -1307,15 +1311,17 @@ module pcie_ltssm_downstream
           //recovery idle scenario
           if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
             gen_os_ctrl_c        = '0;
-            gen_os_ctrl_c.valid  = '1;
-            next_state           = ST_RECOVERY_SEND_SDS;
-            transmit_ordered_set = '1;
-            gen_sds_os(ordered_set_c);
+            gen_os_ctrl_c.valid  = '0;
+            next_state           = ST_L0;
+            idle_to_rlock_transitioned_c = '0;
           end else if (at_least_one_ts1_ts2) begin
             // timer_c                = '0;
-            gen_os_ctrl_c.valid    = '0;
+            gen_os_ctrl_c.valid    = '1;
             ordered_set_sent_cnt_c = '0;
-            next_state             = ST_CONFIGURATION;
+            gen_os_ctrl_c.gen_ts1          = '1;
+            gen_os_ctrl_c.gen_ts2          = '0;
+            ordered_set_c = gen_ts_os(gen1, TS1);
+            next_state             = ST_CONFIGURATION_LINKWIDTH_START;
           end else if (timer_r >= TwoMsTimeOut) begin
             //goto recovery scenario
             if (idle_to_rlock_transitioned_r != '1) begin
