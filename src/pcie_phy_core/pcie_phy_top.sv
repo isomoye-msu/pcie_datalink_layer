@@ -118,6 +118,7 @@ module pcie_phy_top
 
 
   logic                                      link_up;
+  logic                                      link_up_100MHz;
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
   logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
   logic              [(MAX_NUM_LANES*8)-1:0] link_number;
@@ -156,6 +157,24 @@ module pcie_phy_top
   gen_os_struct_t                        gen_os_ctrl;
   logic              [MAX_NUM_LANES-1:0] active_lanes;
   logic              [MAX_NUM_LANES-1:0] lane_status;
+
+  async_fifo #(
+        .DSIZE(1),
+        .ASIZE(2)
+  ) os_transmitted_async_fifo_inst (
+      .wclk(pipe_rx_usr_clk_i),
+      .wrst_n(!rst_i ),
+      .winc('1),
+      .wdata(link_up),
+      .wfull(),
+      .awfull(),
+      .rclk(clk_i),
+      .rrst_n(!rst_i),
+      .rinc('1),
+      .rdata(link_up_100MHz),
+      .rempty(),
+      .arempty()
+  );
 
   assign phy_rate  = curr_data_rate - 1'b1;
   // assign phy_powerdown = '0;
@@ -348,7 +367,7 @@ module pcie_phy_top
       .cfg_bus_number_o       (cfg_bus_number_o),
       .cfg_device_number_o    (cfg_device_number_o),
       .cfg_function_number_o  (cfg_function_number_o),
-      .phy_link_up_i          (link_up),
+      .phy_link_up_i          (link_up_100MHz),
       .fc_initialized_o       (fc_initialized_o),
       .idle_valid_i           (idle_valid),
       .ext_tag_enable_o       (),

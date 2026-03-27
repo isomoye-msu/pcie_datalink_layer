@@ -234,6 +234,10 @@ module pcie_ltssm_downstream
   logic              [                15:0] polarity_lockout_timer_r;
 
 
+  logic                                       link_up_c;
+  logic                                       link_up_r;
+
+
   (* mark_debug = "true" *) logic              [     MAX_NUM_LANES-1:0] single_idle_received;
   (* mark_debug = "true" *) logic              [     MAX_NUM_LANES-1:0] single_ts1_received;
   (* mark_debug = "true" *) logic              [     MAX_NUM_LANES-1:0] single_ts2_received;
@@ -270,6 +274,7 @@ module pcie_ltssm_downstream
   assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
   assign phy_rxpolarity_o       = phy_rxpolarity_r;
+  assign link_up_o              = link_up_r;
 
 
   always_ff @(posedge clk_i) begin : gen_link_number
@@ -321,6 +326,7 @@ module pcie_ltssm_downstream
       changed_speed_recovery_r       <= '0;
       goto_detect_o                  <= '0;
       goto_cfg_o                     <= '0;
+      link_up_r                      <= '0;
       lane_status_r                  <= '0;
       lanes_detected_r               <= '0;
       ordered_set_tx_in_process_r    <= '0;
@@ -359,6 +365,7 @@ module pcie_ltssm_downstream
       changed_speed_recovery_r       <= changed_speed_recovery_c;
       goto_detect_o                  <= goto_detect_c;
       goto_cfg_o                     <= goto_cfg_c;
+      link_up_r                      <= link_up_c;
       lane_status_r                  <= lane_status_c;
       lanes_detected_r               <= lanes_detected_c;
       curr_data_rate_r               <= curr_data_rate_c;
@@ -414,7 +421,7 @@ module pcie_ltssm_downstream
     next_state                     = curr_state;
     // timer_c                        = timer_r;
     error_c                        = error_r;
-    success_c                      = success_r;
+    success_c                      = '0;
     lane_status_c                  = lane_status_r;
     lanes_detected_c               = lanes_detected_r;
     ordered_set_sent_cnt_c         = ordered_set_sent_cnt_r;
@@ -425,7 +432,7 @@ module pcie_ltssm_downstream
     tx_enter_elec_idle_o           = '0;
     curr_data_rate_c               = curr_data_rate_r;
     ts2_symbol6                    = '0;
-    link_up_o                      = '0;
+    link_up_c                      = '0;
     //ordered set
     ordered_set_c                  = ordered_set_r;
     changed_speed_recovery_c       = changed_speed_recovery_r;
@@ -846,7 +853,7 @@ module pcie_ltssm_downstream
       //  Configuration.Idle
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
-        link_up_o = '1;
+        link_up_c = '1;
         if (ordered_set_tranmitted_i) begin
           //check if idle received
           if (|single_idle_received) begin
@@ -855,7 +862,8 @@ module pcie_ltssm_downstream
           end
           //check if number of idle OS received and idle OS sent
           if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 8'd16)) begin
-            //assert success.. tells ltssm hierarchy to move to its next state            success_c                    = '1;
+            //assert success.. tells ltssm hierarchy to move to its next state            
+            success_c                    = '1;
             //reset counters
             ordered_set_sent_cnt_c       = '0;
             gen_os_ctrl_c.gen_ts1        = '0;
@@ -889,7 +897,8 @@ module pcie_ltssm_downstream
       //  L0
       //-----------------------------------------------------------
       ST_L0: begin
-        link_up_o = '1;
+        link_up_c = '1;
+        success_c = '1;
         transmit_ordered_set         = '1;
         idle_to_rlock_transitioned_c = '0;
         if (|ts1_valid_i || |ts2_valid_i || (directed_speed_change_i && !changed_speed_recovery_r))
