@@ -591,21 +591,35 @@ module pcie_ltssm_downstream
         // Phy transmitter handles common mode settling, will throttle with tready
         //check if timer reached or TSOS sent count met
         //check if last packet in frame
-
-        // Only start counting after receiving one TS1
-        if (|single_ts1_received && ordered_set_tranmitted_i) begin
+        if (ordered_set_tranmitted_i) begin
+          // Only start counting after receiving one TS1
+          if (|single_ts1_received ) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
-        end
+          end
+          if (|polarity_inverted_i && (polarity_lockout_timer_r == 0)) begin
+            phy_rxpolarity_c = phy_rxpolarity_r ^ polarity_inverted_i;
+            polarity_lockout_timer_c = 16'd1000; // ~10us lockout
+          end
 
-        if (|polarity_inverted_i && (polarity_lockout_timer_r == 0)) begin
-          phy_rxpolarity_c = phy_rxpolarity_r ^ polarity_inverted_i;
-          polarity_lockout_timer_c = 16'd1000; // ~10us lockout
-        end
-
-
-        if ((ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
-            if (&lanes_ts1_satisfied || &lanes_ts2_satisfied) begin
-              ordered_set_sent_cnt_c = '0;
+          if ((ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+              if (&lanes_ts1_satisfied || &lanes_ts2_satisfied) begin
+                ordered_set_sent_cnt_c = '0;
+                //build ts2 ordered set
+                gen_os_ctrl_c.gen_ts1 = '0;
+                gen_os_ctrl_c.gen_ts2 = '1;
+                // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+                ordered_set_c = gen_ts_os( gen1, TS2);
+                transmit_ordered_set = '1;
+                //goto cofig
+                next_state = ST_POLLING_CONFIGURATION;
+              end
+          end
+          if ((timer_r >= TwentyFourMsTimeOut) && (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+            //reset counts
+            // timer_c                = '0;
+            ordered_set_sent_cnt_c = '0;
+            //check if ts1 reqs satisfied
+            if (|lanes_ts1_satisfied || |lanes_ts2_satisfied) begin
               //build ts2 ordered set
               gen_os_ctrl_c.gen_ts1 = '0;
               gen_os_ctrl_c.gen_ts2 = '1;
@@ -614,33 +628,16 @@ module pcie_ltssm_downstream
               transmit_ordered_set = '1;
               //goto cofig
               next_state = ST_POLLING_CONFIGURATION;
+            end else if (|lanes_ts1_satisfied) begin
+              // TODO: This should be entered when a 24 ms timeout is reached, 1024 TS1s were sent and 
+              // Any lane received 8 consecutive TS1s with the copmbliance rceive bit of symbol 5 == 1 and loopback bit == 0
+              next_state = ST_POLLING_COMPLIANCE;
             end
-        end
-
-
-        if ((timer_r >= TwentyFourMsTimeOut) && (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
-          //reset counts
-          // timer_c                = '0;
-          ordered_set_sent_cnt_c = '0;
-          //check if ts1 reqs satisfied
-          if (|lanes_ts1_satisfied || |lanes_ts2_satisfied) begin
-            //build ts2 ordered set
-            gen_os_ctrl_c.gen_ts1 = '0;
-            gen_os_ctrl_c.gen_ts2 = '1;
-            // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
-            ordered_set_c = gen_ts_os( gen1, TS2);
-            transmit_ordered_set = '1;
-            //goto cofig
-            next_state = ST_POLLING_CONFIGURATION;
-          end else if (|lanes_ts1_satisfied) begin
-            // TODO: This should be entered when a 24 ms timeout is reached, 1024 TS1s were sent and 
-            // Any lane received 8 consecutive TS1s with the copmbliance rceive bit of symbol 5 == 1 and loopback bit == 0
-            next_state = ST_POLLING_COMPLIANCE;
           end
-        end
-        if (timer_r >= TwentyFourMsTimeOut) begin
-            // If neither are met we go to ST_IDLE (Detect State...)
-            next_state = ST_IDLE;
+          if (timer_r >= TwentyFourMsTimeOut) begin
+              // If neither are met we go to ST_IDLE (Detect State...)
+              next_state = ST_IDLE;
+          end
         end
       end
       //*********************************************************
