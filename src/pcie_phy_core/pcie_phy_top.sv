@@ -128,6 +128,7 @@ module pcie_phy_top
   parameter int KEEP_ENABLE = 0;
 
   logic                                                      link_up;
+  logic link_up_100MHz;
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0]                 symbol6;
   logic              [(MAX_NUM_LANES*8)-1:0]                 lane_number;
   logic              [(MAX_NUM_LANES*8)-1:0]                 link_number;
@@ -237,29 +238,23 @@ module pcie_phy_top
   os_holder_t        [              3:0] rx_os_data_250;
   os_holder_t        [MAX_NUM_LANES-1:0] rx_os_data_reg;
 
-
-  // for (genvar i = 0; i < MAX_NUM_LANES; i++) begin
-  //   os_holder_t temp_os_holder;
-  //   assign temp_os_holder = rx_os_data[i];
-  //   async_fifo #(
-  //       .DSIZE(OsDataSize),
-  //       .ASIZE(4)
-  //   ) os_transmitted_async_fifo_inst (
-  //       .wclk(pipe_rx_usr_clk_i),
-  //       .wrst_n(!rst_i || link_up_i),
-  //       .winc(temp_os_holder.ts1_valid||temp_os_holder.ts2_valid||temp_os_holder.idle_valid|| temp_os_holder.eieos_valid),
-  //       .wdata(temp_os_holder),
-  //       .wfull(),
-  //       .awfull(),
-  //       .rclk(clk_i),
-  //       .rrst_n(!rst_i),
-  //       .rinc('1),
-  //       .rdata(rx_os_data_reg[i]),
-  //       .rempty(),
-  //       .arempty()
-  //   );
-
-  // end
+    async_fifo #(
+        .DSIZE(1),
+        .ASIZE(2)
+    ) os_transmitted_async_fifo_inst (
+        .wclk(pipe_rx_usr_clk_i),
+        .wrst_n(!rst_i ),
+        .winc('1),
+        .wdata(link_up),
+        .wfull(),
+        .awfull(),
+        .rclk(clk_i),
+        .rrst_n(!rst_i),
+        .rinc('1),
+        .rdata(link_up_100MHz),
+        .rempty(),
+        .arempty()
+    );
 
   logic [3:0] os_transmited_250;
 
@@ -349,17 +344,7 @@ module pcie_phy_top
       .pipe_txstart_block_o    (phy_txstart_block),
       .pipe_width_o            (pipe_width),
       .tx_os_data_i            (tx_os_data),
-      // .s_tx_os_axis_tkeep      (tx_os_fifo_axis_tkeep),
-      // .s_tx_os_axis_tvalid     (tx_os_fifo_axis_tvalid),
-      // .s_tx_os_axis_tlast      (tx_os_fifo_axis_tlast),
-      // .s_tx_os_axis_tuser      (tx_os_fifo_axis_tuser),
-      // .s_tx_os_axis_tready     (tx_os_fifo_axis_tready),
-      // .gen_os_ctrl_i           (gen_os_ctrl),
-      // //   .num_active_lanes_o(num_active_lanes_o),
       .num_active_lanes_i      (num_active_lanes_i),
-      // .send_ordered_set_i      (send_ordered_set),
-      // .ordered_set_i           (ordered_set),
-      // .curr_data_rate_i        (curr_data_rate),
       .ordered_set_tranmitted_o(ordered_set_tranmitted),
       .s_dllp_axis_tdata       (dllp_to_phy_axis_tdata),
       .s_dllp_axis_tkeep       (dllp_to_phy_axis_tkeep),
@@ -368,223 +353,6 @@ module pcie_phy_top
       .s_dllp_axis_tuser       (dllp_to_phy_axis_tuser),
       .s_dllp_axis_tready      (dllp_to_phy_axis_tready)
   );
-
-
-  //   axis_async_fifo #(
-  //       .DEPTH      (20),
-  //       .DATA_WIDTH (DATA_WIDTH),
-  //       .KEEP_ENABLE(1'b1),
-  //       .KEEP_WIDTH (KEEP_WIDTH),
-  //       .LAST_ENABLE(LAST_ENABLE),
-  //       .ID_ENABLE  (ID_ENABLE),
-  //       .ID_WIDTH   (ID_WIDTH),
-  //       .DEST_ENABLE('0),
-  //       .DEST_WIDTH (DEST_WIDTH),
-  //       .USER_ENABLE('0),
-  //       .USER_WIDTH (USER_WIDTH)
-  //   ) phy_to_dllp_axis_async_fifo_inst (
-  //       .s_clk        (pipe_rx_usr_clk_i),
-  //       .s_rst        (rst_i),
-  //       .s_axis_tdata (phy_to_dllp_axis_tdata),
-  //       .s_axis_tkeep (phy_to_dllp_axis_tkeep),
-  //       .s_axis_tvalid(phy_to_dllp_axis_tvalid),
-  //       .s_axis_tready(phy_to_dllp_axis_tready),
-  //       .s_axis_tlast (phy_to_dllp_axis_tlast),
-  //       .s_axis_tuser (phy_to_dllp_axis_tuser),
-  //       .s_axis_tid   (),
-  //       .s_axis_tdest (),
-
-
-
-  //       .m_clk        (clk_i),
-  //       .m_rst        (rst_i),
-  //       .m_axis_tdata (phy_to_dllp_fifo_axis_tdata),
-  //       .m_axis_tkeep (phy_to_dllp_fifo_axis_tkeep),
-  //       .m_axis_tvalid(phy_to_dllp_fifo_axis_tvalid),
-  //       .m_axis_tready(phy_to_dllp_fifo_axis_tready),
-  //       .m_axis_tlast (phy_to_dllp_fifo_axis_tlast),
-  //       .m_axis_tuser (phy_to_dllp_fifo_axis_tuser),
-  //       .m_axis_tid   (),
-  //       .m_axis_tdest (),
-
-  //       .s_pause_req          ('0),
-  //       .s_pause_ack          (),
-  //       .m_pause_req          ('0),
-  //       .m_pause_ack          (),
-  //       .s_status_depth       (),
-  //       .s_status_depth_commit(),
-  //       .s_status_overflow    (),
-  //       .s_status_bad_frame   (),
-  //       .s_status_good_frame  (),
-  //       .m_status_depth       (),
-  //       .m_status_depth_commit(),
-  //       .m_status_overflow    (),
-  //       .m_status_bad_frame   (),
-  //       .m_status_good_frame  ()
-  //   );
-
-  // axis_async_fifo #(
-  //     .DEPTH      (1),
-  //     .DATA_WIDTH (TxOsDataSize),
-  //     .KEEP_ENABLE(KEEP_ENABLE),
-  //     .KEEP_WIDTH (KEEP_WIDTH),
-  //     .LAST_ENABLE(LAST_ENABLE),
-  //     .ID_ENABLE  (ID_ENABLE),
-  //     .ID_WIDTH   (ID_WIDTH),
-  //     .DEST_ENABLE(DEST_ENABLE),
-  //     .DEST_WIDTH (DEST_WIDTH),
-  //     .USER_ENABLE(USER_ENABLE),
-  //     .USER_WIDTH (USER_WIDTH)
-  // ) tx_ordered_set_axis_async_fifo_inst (
-  //     .s_clk        (clk_i),
-  //     .s_rst        (rst_i),
-  //     .s_axis_tdata (tx_os_axis_tdata),
-  //     .s_axis_tkeep (tx_os_axis_tkeep),
-  //     .s_axis_tvalid(tx_os_axis_tvalid),
-  //     .s_axis_tready(tx_os_axis_tready),
-  //     .s_axis_tlast (tx_os_axis_tlast),
-  //     .s_axis_tuser (tx_os_axis_tuser),
-  //     .s_axis_tid   (),
-  //     .s_axis_tdest (),
-
-
-
-  //     .m_clk        (pipe_tx_usr_clk_i),
-  //     .m_rst        (rst_i),
-  //     .m_axis_tdata (tx_os_fifo_axis_tdata),
-  //     .m_axis_tkeep (tx_os_fifo_axis_tkeep),
-  //     .m_axis_tvalid(tx_os_fifo_axis_tvalid),
-  //     .m_axis_tready(tx_os_fifo_axis_tready),
-  //     .m_axis_tlast (tx_os_fifo_axis_tlast),
-  //     .m_axis_tuser (tx_os_fifo_axis_tuser),
-  //     .m_axis_tid   (),
-  //     .m_axis_tdest (),
-
-  //     .s_pause_req          ('0),
-  //     .s_pause_ack          (),
-  //     .m_pause_req          ('0),
-  //     .m_pause_ack          (),
-  //     .s_status_depth       (),
-  //     .s_status_depth_commit(),
-  //     .s_status_overflow    (),
-  //     .s_status_bad_frame   (),
-  //     .s_status_good_frame  (),
-  //     .m_status_depth       (),
-  //     .m_status_depth_commit(),
-  //     .m_status_overflow    (),
-  //     .m_status_bad_frame   (),
-  //     .m_status_good_frame  ()
-  // );
-
-
-  //   axis_async_fifo #(
-  //       .DEPTH      (10),
-  //       .DATA_WIDTH (DATA_WIDTH),
-  //       .KEEP_ENABLE(1'b1),
-  //       .KEEP_WIDTH (KEEP_WIDTH),
-  //       .LAST_ENABLE(LAST_ENABLE),
-  //       .ID_ENABLE  (ID_ENABLE),
-  //       .ID_WIDTH   (ID_WIDTH),
-  //       .DEST_ENABLE('0),
-  //       .DEST_WIDTH (DEST_WIDTH),
-  //       .USER_ENABLE('0),
-  //       .USER_WIDTH (USER_WIDTH)
-  //   ) dllp_axis_async_fifo_inst (
-  //       .s_clk        (clk_i),
-  //       .s_rst        (rst_i),
-  //       .s_axis_tdata (dllp_to_phy_axis_tdata),
-  //       .s_axis_tkeep (dllp_to_phy_axis_tkeep),
-  //       .s_axis_tvalid(dllp_to_phy_axis_tvalid),
-  //       .s_axis_tready(dllp_to_phy_axis_tready),
-  //       .s_axis_tlast (dllp_to_phy_axis_tlast),
-  //       .s_axis_tuser (dllp_to_phy_axis_tuser),
-  //       .s_axis_tid   (),
-  //       .s_axis_tdest (),
-
-
-
-  //       .m_clk        (pipe_tx_usr_clk_i),
-  //       .m_rst        (rst_i),
-  //       .m_axis_tdata (dllp_to_phy_fifo_axis_tdata),
-  //       .m_axis_tkeep (dllp_to_phy_fifo_axis_tkeep),
-  //       .m_axis_tvalid(dllp_to_phy_fifo_axis_tvalid),
-  //       .m_axis_tready(dllp_to_phy_fifo_axis_tready),
-  //       .m_axis_tlast (dllp_to_phy_fifo_axis_tlast),
-  //       .m_axis_tuser (dllp_to_phy_fifo_axis_tuser),
-  //       .m_axis_tid   (),
-  //       .m_axis_tdest (),
-
-  //       .s_pause_req          ('0),
-  //       .s_pause_ack          (),
-  //       .m_pause_req          ('0),
-  //       .m_pause_ack          (),
-  //       .s_status_depth       (),
-  //       .s_status_depth_commit(),
-  //       .s_status_overflow    (),
-  //       .s_status_bad_frame   (),
-  //       .s_status_good_frame  (),
-  //       .m_status_depth       (),
-  //       .m_status_depth_commit(),
-  //       .m_status_overflow    (),
-  //       .m_status_bad_frame   (),
-  //       .m_status_good_frame  ()
-  //   );
-
-
-  // for (genvar i = 0; i < MAX_NUM_LANES; i++) begin : gen_os_async_fifo
-  //   axis_async_fifo #(
-  //       .DEPTH      (DEPTH),
-  //       .DATA_WIDTH (OsDataSize),
-  //       .KEEP_ENABLE('0),
-  //       .KEEP_WIDTH (KEEP_WIDTH),
-  //       .LAST_ENABLE(LAST_ENABLE),
-  //       .ID_ENABLE  (ID_ENABLE),
-  //       .ID_WIDTH   (ID_WIDTH),
-  //       .DEST_ENABLE(DEST_ENABLE),
-  //       .DEST_WIDTH (DEST_WIDTH),
-  //       .USER_ENABLE(USER_ENABLE),
-  //       .USER_WIDTH (USER_WIDTH)
-  //   ) rx_ordered_set_axis_async_fifo_inst (
-  //       .s_clk        (pipe_rx_usr_clk_i),
-  //       .s_rst        (rst_i),
-  //       .s_axis_tdata (os_axis_tdata[i]),
-  //       .s_axis_tkeep (os_axis_tkeep[i]),
-  //       .s_axis_tvalid(os_axis_tvalid[i]),
-  //       .s_axis_tready(os_axis_tready[i]),
-  //       .s_axis_tlast (os_axis_tlast[i]),
-  //       .s_axis_tuser (os_axis_tuser[i]),
-  //       .s_axis_tid   (),
-  //       .s_axis_tdest (),
-
-
-
-  //       .m_clk        (clk_i),
-  //       .m_rst        (rst_i),
-  //       .m_axis_tdata (os_fifo_axis_tdata[i]),
-  //       .m_axis_tkeep (os_fifo_axis_tkeep[i]),
-  //       .m_axis_tvalid(os_fifo_axis_tvalid[i]),
-  //       .m_axis_tready(os_fifo_axis_tready[i]),
-  //       .m_axis_tlast (os_fifo_axis_tlast[i]),
-  //       .m_axis_tuser (os_fifo_axis_tuser[i]),
-  //       .m_axis_tid   (),
-  //       .m_axis_tdest (),
-
-  //       .s_pause_req          ('0),
-  //       .s_pause_ack          (),
-  //       .m_pause_req          ('0),
-  //       .m_pause_ack          (),
-  //       .s_status_depth       (),
-  //       .s_status_depth_commit(),
-  //       .s_status_overflow    (),
-  //       .s_status_bad_frame   (),
-  //       .s_status_good_frame  (),
-  //       .m_status_depth       (),
-  //       .m_status_depth_commit(),
-  //       .m_status_overflow    (),
-  //       .m_status_bad_frame   (),
-  //       .m_status_good_frame  ()
-  //   );
-  // end
 
   pcie_ltssm_downstream #(
       .CLK_RATE     (PHY_CLK_RATE),
@@ -634,28 +402,10 @@ module pcie_phy_top
       .data_rate_o             (),
       .ordered_set_tranmitted_i(ordered_set_tranmitted_reg),
       .ltssm_state_o           (ltssm_debug_state),
-      //   .gen_os_o(ordered_set),
-      // .ordered_set_o           (ordered_set),
-      // .send_ordered_set_o      (send_ordered_set),
       .changed_speed_recovery_o(),
       .idle_valid_o            (idle_valid),
-
-      // .m_os_axis_tdata (tx_os_axis_tdata),
-      // .m_os_axis_tkeep (tx_os_axis_tkeep),
-      // .m_os_axis_tvalid(tx_os_axis_tvalid),
-      // .m_os_axis_tlast (tx_os_axis_tlast),
-      // .m_os_axis_tuser (tx_os_axis_tuser),
-      // .m_os_axis_tready(tx_os_axis_tready),
       .os_holder_o(tx_os_data),
       .os_holder_i(rx_os_data)
-
-
-      // .s_os_axis_tdata (os_fifo_axis_tdata),
-      // .s_os_axis_tkeep (os_fifo_axis_tkeep),
-      // .s_os_axis_tvalid(os_fifo_axis_tvalid),
-      // .s_os_axis_tready(os_fifo_axis_tready),
-      // .s_os_axis_tlast (os_fifo_axis_tlast),
-      // .s_os_axis_tuser (os_fifo_axis_tuser)
   );
 
   pcie_datalink_layer #(
@@ -696,7 +446,7 @@ module pcie_phy_top
       .cfg_bus_number_o       (cfg_bus_number_o),
       .cfg_device_number_o    (cfg_device_number_o),
       .cfg_function_number_o  (cfg_function_number_o),
-      .phy_link_up_i          (link_up),
+      .phy_link_up_i          (link_up_100MHz),
       .fc_initialized_o       (fc_initialized_o),
       .idle_valid_i           (idle_valid),
       .ext_tag_enable_o       (),

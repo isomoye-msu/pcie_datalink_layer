@@ -37,12 +37,12 @@ set_property PACKAGE_PIN A8 [get_ports pci_exp_rxn[0]]
 set_property PACKAGE_PIN B8 [get_ports pci_exp_rxp[0]]
 set_property PACKAGE_PIN A4 [get_ports pci_exp_txn[0]]
 set_property PACKAGE_PIN B4 [get_ports pci_exp_txp[0]]
-set_property CFGBVS VCCO [current_design]
-set_property CONFIG_VOLTAGE 3.3 [current_design]
-set_property BITSTREAM.GENERAL.COMPRESS true [current_design]
-set_property BITSTREAM.CONFIG.UNUSEDPIN pullup [current_design]
-set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 2 [current_design]
-set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
+# set_property CFGBVS VCCO [current_design]
+# set_property CONFIG_VOLTAGE 3.3 [current_design]
+# set_property BITSTREAM.GENERAL.COMPRESS true [current_design]
+# set_property BITSTREAM.CONFIG.UNUSEDPIN pullup [current_design]
+# set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 2 [current_design]
+# set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
 
 # # led_:3
 # set_property LOC AB9 [get_ports {led_3}]
@@ -80,7 +80,6 @@ create_clock -add -name pcie_62d5mhz_user1_user2 -period 16 [get_nets in_module_
 set_false_path -from [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]] -to [get_clocks sys_clk_p]
 set_false_path -from [get_clocks sys_clk_p] -to [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT1]]
 set_false_path -from [get_clocks sys_clk_p] -to [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]]
-set_false_path -from [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]] -to [get_clocks sys_clk_p]
 set_false_path -from [get_pins {pcie_phy_top_inst/pcie_ltssm_downstream_inst/timer_r_reg[*]/C}] -to [get_pins {pcie_phy_top_inst/pcie_ltssm_downstream_inst/gen_cnt_ts1[*].ts2_cnt_reg[*]/CE}]
 set_false_path -reset_path -from [get_pins {pcie_phy_top_inst/pcie_ltssm_downstream_inst/timer_r_reg[3]/C}] -to [get_pins {pcie_phy_top_inst/pcie_ltssm_downstream_inst/gen_cnt_ts1[0].ts2_cnt_reg[0]/CE}]
 
@@ -93,9 +92,9 @@ set_false_path -from [get_pins -hierarchical -regexp .*pcie_phy_top_inst/pcie_lt
 #link up is a static signal that can be read at any time, so we need to set a false path from the link_up signal to the ltssm state machine
 set_false_path -from [get_pins -hierarchical -regexp .*pcie_phy_top_inst/pcie_ltssm_downstream_inst/FSM_sequential_curr_state_reg.*] -to [get_pins -hierarchical -regexp .*pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/.*]
 #These are the same clocks, so we need to set a false path between them
-set_false_path -from [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]] -to [get_clocks sys_clk_p]
 #async reset paths from the phy to the ltssm state machine
 set_false_path -from [get_pins -hierarchical -regexp .*pipe_wrapper_i/pipe_rxusrclk_in_beats/out_reg.*] -to [get_pins -hierarchical -regexp .*pcie_phy_top_inst/phy_transmit_inst/dllp_tx_axis_async_fifo_inst/.*]
+set_false_path -from [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT0]] -to [get_clocks -of_objects [get_pins in_module_mmcm.pipe_clock_i/mmcm_i/CLKOUT1]]
 
 # create_clock -name rx_clk -period 20.0 [get_nets rx_clk]
 

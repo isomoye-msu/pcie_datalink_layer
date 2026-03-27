@@ -14,16 +14,16 @@ module ordered_set_handler
     // parameter int UPCONFIG_EN   = 0                   //upconfig not supported
 ) (
     //clocks and resets
-    input  logic                         clk_i,             // Clock signal
-    input  logic                         rst_i,             // Reset signal
-    input  logic        [           1:0] sync_header_i,
-    input  rate_speed_e                  curr_data_rate_i,
-    input  logic        [          31:0] data_in_i,
-    input  logic                         data_valid_i,
-    input  logic        [           3:0] data_k_in_i,
-    input  logic        [           5:0] pipe_width_i,
+    input  logic               clk_i,             // Clock signal
+    input  logic               rst_i,             // Reset signal
+    input  logic        [ 1:0] sync_header_i,
+    input  rate_speed_e        curr_data_rate_i,
+    input  logic        [31:0] data_in_i,
+    input  logic               data_valid_i,
+    input  logic        [ 3:0] data_k_in_i,
+    input  logic        [ 5:0] pipe_width_i,
     //training set configuration signals
-    output os_holder_t                     os_holder_o
+    output os_holder_t         os_holder_o
 
 );
 
@@ -45,7 +45,7 @@ module ordered_set_handler
 
 
 
-  os_decode_state_e                   curr_state;
+   (* syn_keep = "true", mark_debug = "true" *) os_decode_state_e                   curr_state;
   os_decode_state_e                   next_state;
 
   logic              [           7:0] axis_pkt_cnt_c;
@@ -69,6 +69,9 @@ module ordered_set_handler
   logic                               ts1_valid_c;
   logic                               ts2_valid_c;
   logic                               eieos_valid_c;
+  logic                               polarity_inverted_r;
+  logic                               polarity_inverted_c;
+  
 
   // os_out_t                            os_out_c;
   // os_out_t                            os_out_r;
@@ -119,6 +122,7 @@ module ordered_set_handler
       skp2_r              <= '0;
       skp3_r              <= '0;
       ordered_set_out_r   <= '0;
+      polarity_inverted_r <= '0;
       // os_out_r            <= '0;
     end else begin
       curr_state          <= next_state;
@@ -134,6 +138,7 @@ module ordered_set_handler
       skp3_r              <= skp3_c;
       ordered_set_out_r   <= ordered_set_out_c;
       check_ordered_set_r <= check_ordered_set_c;
+      polarity_inverted_r <= polarity_inverted_c;
       // os_out_r            <= os_out_c;
     end
     //non-resetable
@@ -170,6 +175,7 @@ module ordered_set_handler
     word_index          = axis_pkt_cnt_r * byte_shift;
     packets_per_words   = MaxWordsPerOrderedSet - ((byte_shift) << 2);
     data_store_c        = data_store_r;
+    polarity_inverted_c = polarity_inverted_r;
     // for (int i = 0; i < MaxBytesPerPacket; i++) begin
     //   if ((pipe_width_i >> 3) == (1 << i)) begin
     //     packets_per_words = MaxBytesPerPacket >> i;
@@ -208,7 +214,14 @@ module ordered_set_handler
             for (int i = 0; i < 4; i++) begin
               if (i < byte_shift) begin
                 if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                  ordered_set_c[31:0] = data_in_i >> 8 * i;
+                  // ordered_set_c[31:0] = data_in_i >> 8 * i;
+                  for (int j = 0; j < 4; j++) begin
+                    if (i + j < byte_shift) begin
+                      int sum_idx;
+                      sum_idx = (i + j) % 4;  // Bounded for synthesis
+                      ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                    end
+                  end
                   next_state = ST_RX_GEN1;
                   axis_pkt_cnt_c = byte_shift - i;
                 end else if ((!data_k_in_i[i]) && data_in_i[i*8+:8] == '0) begin
@@ -272,7 +285,14 @@ module ordered_set_handler
                 next_state          = ST_IDLE;
               end
               if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                ordered_set_c[7:0] = data_in_i >> 8 * i;
+                // ordered_set_c[7:0] = data_in_i >> 8 * i;
+                for (int j = 0; j < 4; j++) begin
+                  if (i + j < byte_shift) begin
+                    int sum_idx;
+                    sum_idx = (i + j) % 4;  // Bounded for synthesis
+                    ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                  end
+                end
                 next_state = ST_RX_GEN1;
                 axis_pkt_cnt_c = byte_shift - i;
               end
@@ -359,10 +379,28 @@ module ordered_set_handler
       // idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
-        if (ordered_set_r[8*7+:8] != TS1) begin
+        // if (ordered_set_r[8*7+:8] != TS1) begin
+        if (ordered_set_r[8*6+:8] == TS1 && ordered_set_r[8*7+:8] == TS1 
+        && ordered_set_r[8*8+:8] == TS1 && ordered_set_r[8*9+:8] == TS1) begin
+          ts1_valid_c = '1;
+        end
+        else if (ordered_set_r[8*6+:8] == TS1_INV && ordered_set_r[8*7+:8] == TS1_INV &&
+           ordered_set_r[8*8+:8] == TS1_INV && ordered_set_r[8*9+:8] == TS1_INV) begin
+          ts1_valid_c = '1;
+          polarity_inverted_c = '1;
+        end
+        else begin
           ts1_valid_c = '0;
         end
-        if (ordered_set_r[8*7+:8] != TS2) begin
+
+        if (ordered_set_r[8*6+:8] == TS2 && ordered_set_r[8*7+:8] == TS2 
+          && ordered_set_r[8*8+:8] == TS2 && ordered_set_r[8*9+:8] == TS2) begin
+          ts2_valid_c = '1;
+        end else if (ordered_set_r[8*6+:8] == TS2_INV && ordered_set_r[8*7+:8] == TS2_INV
+           && ordered_set_r[8*8+:8] == TS2_INV && ordered_set_r[8*9+:8] == TS2_INV) begin
+          ts2_valid_c           = '1;
+          polarity_inverted_c = '1;
+        end else begin
           ts2_valid_c = '0;
         end
         // //check for TS1 or TS2
@@ -447,10 +485,11 @@ module ordered_set_handler
     // m_os_axis_tlast       = '1;
 
     os_holder_o.ordered_set = ordered_set_out_r;
-    os_holder_o.ts1_valid   = ts1_valid_r;
-    os_holder_o.ts2_valid   = ts2_valid_r;
-    os_holder_o.idle_valid  = idle_valid_r;
+    os_holder_o.ts1_valid = ts1_valid_r;
+    os_holder_o.ts2_valid = ts2_valid_r;
+    os_holder_o.idle_valid = idle_valid_r;
     os_holder_o.eieos_valid = eieos_valid_r;
+    os_holder_o.polarity_inverted = polarity_inverted_r;
     // // os_out_c.
     // if (ts1_valid_r || ts2_valid_r || idle_valid_r || eieos_valid_r) begin
     //   m_os_axis_tdata  = os_holder;
