@@ -975,6 +975,7 @@ module pcie_ltssm_downstream
       //  Configuration.Idle
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
+        transmit_ordered_set   = '1;
         if (ordered_set_tranmitted_r) begin
           //check if idle received
           if (|single_idle_received) begin
@@ -982,7 +983,7 @@ module pcie_ltssm_downstream
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
           end
           //check if number of idle OS received and idle OS sent
-          if (|single_idle_received && (ordered_set_sent_cnt_r >= 16)) begin
+          if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 16)) begin
             //assert success.. tells ltssm hierarchy to move to its next state
             success_c                    = '1;
             //reset counters
