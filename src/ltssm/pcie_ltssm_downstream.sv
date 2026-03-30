@@ -55,8 +55,14 @@ module pcie_ltssm_downstream
     input  logic [MAX_NUM_LANES-1:0] lanes_ts2_satisfied_i,
     input  logic [MAX_NUM_LANES-1:0] config_copmlete_ts2_i,
     input  logic                     from_l0_i,
+
+    // Holds all lanes where a Receiver has been detected
     input  logic [MAX_NUM_LANES-1:0] receiver_detected_i,
+
+    // Holds all lanes where Receiver is in EI
+    // These should all act together for use???
     input  logic [MAX_NUM_LANES-1:0] phy_rxelecidle_i,
+
     output logic [MAX_NUM_LANES-1:0] tx_enter_elec_idle_o,
     output logic [              19:0] ltssm_state_o,
     output logic                     goto_cfg_o,
@@ -120,8 +126,8 @@ module pcie_ltssm_downstream
 
     ST_DETECT_WAIT_ONE_MS             = 20'b00000000000000100001, // 21
     ST_DETECT_QUIET                   = 20'b00000000000001000001, // 41
-    ST_DETECT_ACTIVE                  = 20'b00000000000001100001,
-    ST_DETECT_RX                      = 20'b00000000000010000001,
+    ST_DETECT_ACTIVE                  = 20'b00000000000001100001, // 61
+    ST_DETECT_RX                      = 20'b00000000000010000001, // 81
 
     ST_POLLING_ACTIVE                 = 20'b00000000000000100010, // 22
     ST_POLLING_CONFIGURATION          = 20'b00000000000001000010, // 42
@@ -226,8 +232,17 @@ module pcie_ltssm_downstream
 
   logic              [     MAX_NUM_LANES-1:0] lane_status_c;
   logic              [     MAX_NUM_LANES-1:0] lane_status_r;
+
+  // holds last "receiver detected" lines for ST_DETECT_RX state
   logic              [     MAX_NUM_LANES-1:0] lanes_detected_c;
   logic              [     MAX_NUM_LANES-1:0] lanes_detected_r;
+
+  // holds last "receiver elecidle" lines
+  logic              [     MAX_NUM_LANES-1:0] phy_rxelecidle_r;
+  logic              [     MAX_NUM_LANES-1:0] phy_rxelecidle_exit_detected;
+
+
+
   logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_c;
   logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_r;
   logic              [                15:0] polarity_lockout_timer_c;
@@ -276,6 +291,19 @@ module pcie_ltssm_downstream
   assign phy_rxpolarity_o       = phy_rxpolarity_r;
   assign link_up_o              = link_up_r;
 
+ 
+  always_comb begin : detect_phy_rxelecidle_exit_detected
+    for (int i = 0; i < MAX_NUM_LANES; i++) begin
+      // If last cycle lane was in elecidle and this cycle it is not,
+      // => exit detected
+      if (phy_rxelecidle_r[i] && ~phy_rxelecidle_i[i]) begin
+        phy_rxelecidle_exit_detected[i] = '1;
+      end
+      else begin
+        phy_rxelecidle_exit_detected[i] = '0;
+      end
+    end
+  end
 
   always_ff @(posedge clk_i) begin : gen_link_number
     if (rst_i) begin
@@ -346,6 +374,7 @@ module pcie_ltssm_downstream
       phy_rxpolarity_r               <= '0;
       polarity_lockout_timer_r       <= '0;
       gen_os_ctrl_r                  <= '0;
+      phy_rxelecidle_r               <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
       //   tx_preset <=
@@ -354,6 +383,7 @@ module pcie_ltssm_downstream
       // end
     end else begin
       curr_state                     <= next_state;
+      phy_rxelecidle_r               <= phy_rxelecidle_i;
       timer_r                        <= timer_c;
       error_r                        <= error_c;
       success_r                      <= success_c;
@@ -458,18 +488,16 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Idle
       //*********************************************************
-      // This is actually ST_DETECT?
+      // In ST_DETECT_QUIET we need to transmitter to be in  Electrical Idle.
+      // Furthermore, the data rate needs to be set to gen1. If that is not the case already, transmit
+      // the old rate for one ms (happening in ST_DETECT_WAIT_ONE_MS) and then set the current_data_rate to gen1. 
+      // Then proceed to ST_DETECT_QUIET.
       ST_IDLE: begin
         if (en_i) begin
-          // timer_c                      = '0;
           idle_to_rlock_transitioned_c = '0;
           gen_os_ctrl_c                = '0;
-          gen_os_ctrl_c.gen_idle       = '1;
-          gen_os_ctrl_c.valid          = '1;
           phy_txelecidle_o             = '1;
           phy_powerdown_o              = 2'b10;
-          transmit_ordered_set         = '1;
-          ordered_set_c = gen_zeros();
           if (curr_data_rate_r.rate != gen1) begin
             next_state = ST_DETECT_WAIT_ONE_MS;
           end else begin
@@ -482,86 +510,84 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Only necessary if data rate is greater than Gen1. This should also set datarate to gen1.
       ST_DETECT_WAIT_ONE_MS: begin
-        // gen_os_ctrl_c.gen_idle = '1;
-        //bounded timeout counter
-        // timer_c = (timer_r >= OneMsTimeOut) ? OneMsTimeOut : timer_r + 1;
         phy_powerdown_o  = 2'b10;
         phy_txelecidle_o = '1;
         if (timer_r >= OneMsTimeOut) begin
+          curr_data_rate_c.rate = gen1;
           next_state = ST_DETECT_QUIET;
-          gen_os_ctrl_c.valid    = '1;
         end
       end
       //*********************************************************
       // Detect.Quiet
       //*********************************************************
+      // In this state we need to transmit EIs.
+      // We leave this state either if 12ms are over, or, if we detect that any receiving lane exits electrical idle.
+      // phy_rxelecidle_exit_detected will be 1 for exactly one cycle if any lane exited electrical idle between cycles.
+      // Requires an "exit electrical idle" detection
       ST_DETECT_QUIET: begin
-        //bounded timeout counter
-        // gen_os_ctrl_c.gen_idle = '1;
-        // timer_c          = (timer_r >= TwelveMsTimeOut) ? TwelveMsTimeOut : timer_r + 1;
-        // gen_os_ctrl_c.valid = '1;
         phy_txelecidle_o = '1;
         phy_powerdown_o  = 2'b10;
         phy_txdeemph_o   = '0;
-        if (((|lane_status_i) || (timer_r >= TwelveMsTimeOut)) && (ordered_set_tranmitted_i) 
-        && (!phy_phystatus_rst_i)) begin
-          //reset counts
-          // timer_c       = '0;
+
+        if (((|phy_rxelecidle_exit_detected) || (timer_r >= TwelveMsTimeOut))) begin
           next_state    = ST_DETECT_ACTIVE;
-          // timer_c       = '0;
-          lane_status_c = lane_status_i;
         end
       end
       //*********************************************************
       // Detect.Active
       //*********************************************************
+      // Requires reciever detection to transition to ST_POLLING
+      // Receiver detection is triggered in the PIPE. For this, phy_txdetectrx_o has to be set/kept at 1.
+      // We then listen on the phy_phystatus_i signal to wait for the receiver detection to finish. 
+      // Oddly engough this takes aroun 130 cycles. 
+      // The result is stored in receiver_detected_i. If on all lanes a receiver was detected we can transition to ST_POLLING.
+      // If only some lanes detect a receiver we go to ST_DETECT_RX. If no receiver were detected we go back to ST_IDLE=>ST_DETECT_QUIET.
       ST_DETECT_ACTIVE: begin
-        // gen_os_ctrl_c.gen_idle = '1;
         //bounded timeout counter
-        // timer_c             = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        gen_os_ctrl_c.valid = '1;
         phy_txdetectrx_o = '1;
-        phy_txelecidle_o = '1;
-        if ((ordered_set_tranmitted_i)) begin
-          if (&lane_status_i) begin
-            success_c        = '1;
-            // timer_c          = '0;
-            lanes_detected_c = lane_status_i;
-            next_state       = ST_POLLING;
-          end else if ((timer_r >= TwoMsTimeOut)) begin
-            if (|lane_status_i) begin
+        phy_powerdown_o  = 2'b10;
+
+        // Wait for receiver detection to finish
+        if (|phy_phystatus_i) begin
+          if (|receiver_detected_i) begin
+            if (&receiver_detected_i) begin
               success_c        = '1;
               // timer_c          = '0;
-              lanes_detected_c = lane_status_i;
-              next_state       = ST_DETECT_RX;
+              lanes_detected_c = receiver_detected_i;
+              next_state       = ST_POLLING;
             end else begin
-              error_c    = '1;
-              // timer_c    = '0;
-              next_state = ST_IDLE;
-            end
+              lanes_detected_c = receiver_detected_i;
+              next_state       = ST_DETECT_RX;
+            end 
+          end else begin
+            next_state = ST_IDLE; // Should technically be ST_DETECT_QIUET
           end
+        end else if (timer_r >= TwoMsTimeOut) begin
+          next_state =  ST_IDLE; // Should technically be ST_DETECT_QIUET
         end
       end
       //*********************************************************
       // Detect.Recever.Detection
       //*********************************************************
+      // In this state we need to wait 12ms, and then perform another receiver detection.
+      // If the same lanes detect a receiver we can go to ST_POLLING (technically, all undetected lanes need to transition to electrical idle...)
+      // If the lanes change we go back to ST_IDLE.
       ST_DETECT_RX: begin
-        // timer_c = timer_r + 1;
-        // gen_os_ctrl_c.valid    = '1;
-        // gen_os_ctrl_c.gen_idle = '1;
-        phy_txdetectrx_o = '1;
-        phy_txelecidle_o = '1;
-        if (timer_r >= TwoMsTimeOut) begin
-          if ((ordered_set_tranmitted_i)) begin
-            if ((lane_status_i == '1) || (lane_status_i == lane_status_r)) begin
+        if (timer_r >= TwelveMsTimeOut) begin
+          phy_txdetectrx_o = '1;
+          phy_powerdown_o  = 2'b10;
+          if (|phy_phystatus_i) begin
+            if ((lanes_detected_r == receiver_detected_i)) begin
               success_c        = '1;
-              lanes_detected_c = lane_status_i;
+              lanes_detected_c = receiver_detected_i;
               next_state       = ST_POLLING;
             end else begin
               error_c    = '1;
               next_state = ST_IDLE;
             end
-          end
+          end 
+        end else if (timer_r >= TwentyFourMsTimeOut) begin
+          next_state = ST_IDLE;
         end
       end
       //*********************************************************
@@ -851,43 +877,41 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
         link_up_c = '1;
-        if (ordered_set_tranmitted_i) begin
-          //check if idle received
-          if (|single_idle_received) begin
-            //start counting idle OS sent
-            ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
-          end
-          //check if number of idle OS received and idle OS sent
-          if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 8'd16)) begin
-            //assert success.. tells ltssm hierarchy to move to its next state            
-            success_c                    = '1;
-            //reset counters
-            ordered_set_sent_cnt_c       = '0;
-            gen_os_ctrl_c.gen_ts1        = '0;
-            gen_os_ctrl_c.gen_ts2        = '0;
-            gen_os_ctrl_c.gen_idle       = '0;
-            gen_os_ctrl_c.valid          = '0;
-            transmit_ordered_set         = '1;
-            idle_to_rlock_transitioned_c = '0;
-            //goto wait for ena low
-            next_state                   = ST_L0;
-          end  //check timeout counter
-          else if (timer_r >= TwoMsTimeOut)
-          begin
-          if (idle_to_rlock_transitioned_r < 8'hFF) begin
-            if (curr_data_rate_r == gen1 || curr_data_rate_r == gen2) begin 
-              idle_to_rlock_transitioned_c = 8'hFF;
-            end else begin
-              idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
-            end 
-            next_state = ST_RECOVERY_RCVR_LOCK;
-          end
-            idle_to_rlock_transitioned_c = '1;
-            //assert error
-            error_c                      = '1;
-            //goto wait low
-            next_state                   = ST_IDLE;
-          end
+        //check if idle received
+        if (|single_idle_received && ordered_set_tranmitted_i) begin
+          //start counting idle OS sent
+          ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
+        end
+        //check if number of idle OS received and idle OS sent
+        if ((&link_idle_satisfied) && (ordered_set_sent_cnt_r >= 8'd16)) begin
+          //assert success.. tells ltssm hierarchy to move to its next state            
+          success_c                    = '1;
+          //reset counters
+          ordered_set_sent_cnt_c       = '0;
+          gen_os_ctrl_c.gen_ts1        = '0;
+          gen_os_ctrl_c.gen_ts2        = '0;
+          gen_os_ctrl_c.gen_idle       = '0;
+          gen_os_ctrl_c.valid          = '0;
+          transmit_ordered_set         = '1;
+          idle_to_rlock_transitioned_c = '0;
+          //goto wait for ena low
+          next_state                   = ST_L0;
+        end  //check timeout counter
+        else if (timer_r >= TwoMsTimeOut)
+        begin
+        if (idle_to_rlock_transitioned_r < 8'hFF) begin
+          if (curr_data_rate_r == gen1 || curr_data_rate_r == gen2) begin 
+            idle_to_rlock_transitioned_c = 8'hFF;
+          end else begin
+            idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
+          end 
+          next_state = ST_RECOVERY_RCVR_LOCK;
+        end
+          idle_to_rlock_transitioned_c = '1;
+          //assert error
+          error_c                      = '1;
+          //goto wait low
+          next_state                   = ST_IDLE;
         end
       end
       //-----------------------------------------------------------
