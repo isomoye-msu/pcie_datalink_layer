@@ -340,30 +340,30 @@ module pcie_phy_top
   ) pcie_datalink_layer_inst (
       .clk_i                  (clk_i),
       .rst_i                  (rst_i),
-      .s_tlp_axis_tdata       (s_tlp_axis_tdata),
-      .s_tlp_axis_tkeep       (s_tlp_axis_tkeep),
-      .s_tlp_axis_tvalid      (s_tlp_axis_tvalid),
-      .s_tlp_axis_tlast       (s_tlp_axis_tlast),
-      .s_tlp_axis_tuser       (s_tlp_axis_tuser),
-      .s_tlp_axis_tready      (s_tlp_axis_tready),
-      .m_tlp_axis_tdata       (m_tlp_axis_tdata),
-      .m_tlp_axis_tkeep       (m_tlp_axis_tkeep),
-      .m_tlp_axis_tvalid      (m_tlp_axis_tvalid),
-      .m_tlp_axis_tlast       (m_tlp_axis_tlast),
-      .m_tlp_axis_tuser       (m_tlp_axis_tuser),
-      .m_tlp_axis_tready      (m_tlp_axis_tready),
-      .s_phy_axis_tdata       (m_dllp_axis_tdata),
-      .s_phy_axis_tkeep       (m_dllp_axis_tkeep),
-      .s_phy_axis_tvalid      (m_dllp_axis_tvalid),
-      .s_phy_axis_tlast       (m_dllp_axis_tlast),
-      .s_phy_axis_tuser       (m_dllp_axis_tuser),
-      .s_phy_axis_tready      (m_dllp_axis_tready),
-      .m_phy_axis_tdata       (s_dllp_axis_tdata),
-      .m_phy_axis_tkeep       (s_dllp_axis_tkeep),
-      .m_phy_axis_tvalid      (s_dllp_axis_tvalid),
-      .m_phy_axis_tlast       (s_dllp_axis_tlast),
-      .m_phy_axis_tuser       (s_dllp_axis_tuser),
-      .m_phy_axis_tready      (s_dllp_axis_tready),
+      .s_tlp_axis_tdata       (s_tlp_axis_tdata),   // input from pcie_top_gtp
+      .s_tlp_axis_tkeep       (s_tlp_axis_tkeep),   // input from pcie_top_gtp
+      .s_tlp_axis_tvalid      (s_tlp_axis_tvalid),  // input from pcie_top_gtp
+      .s_tlp_axis_tlast       (s_tlp_axis_tlast),   // input from pcie_top_gtp
+      .s_tlp_axis_tuser       (s_tlp_axis_tuser),   // input from pcie_top_gtp
+      .s_tlp_axis_tready      (s_tlp_axis_tready),  // input from pcie_top_gtp
+      .m_tlp_axis_tdata       (m_tlp_axis_tdata),   // Not connected???
+      .m_tlp_axis_tkeep       (m_tlp_axis_tkeep),   // Not connected???
+      .m_tlp_axis_tvalid      (m_tlp_axis_tvalid),  // Not connected???
+      .m_tlp_axis_tlast       (m_tlp_axis_tlast),   // Not connected???
+      .m_tlp_axis_tuser       (m_tlp_axis_tuser),   // Not connected???
+      .m_tlp_axis_tready      (m_tlp_axis_tready),  // Not connected???
+      .s_phy_axis_tdata       (m_dllp_axis_tdata),  // input from phy_receive
+      .s_phy_axis_tkeep       (m_dllp_axis_tkeep),  // input from phy_receive
+      .s_phy_axis_tvalid      (m_dllp_axis_tvalid), // input from phy_receive
+      .s_phy_axis_tlast       (m_dllp_axis_tlast),  // input from phy_receive
+      .s_phy_axis_tuser       (m_dllp_axis_tuser),  // input from phy_receive
+      .s_phy_axis_tready      (m_dllp_axis_tready), // input from phy_receive
+      .m_phy_axis_tdata       (s_dllp_axis_tdata),  // output to phy_transmit
+      .m_phy_axis_tkeep       (s_dllp_axis_tkeep),  // output to phy_transmit
+      .m_phy_axis_tvalid      (s_dllp_axis_tvalid), // output to phy_transmit
+      .m_phy_axis_tlast       (s_dllp_axis_tlast),  // output to phy_transmit
+      .m_phy_axis_tuser       (s_dllp_axis_tuser),  // output to phy_transmit
+      .m_phy_axis_tready      (s_dllp_axis_tready), // output to phy_transmit
       .cfg_bus_number_o       (cfg_bus_number_o),
       .cfg_device_number_o    (cfg_device_number_o),
       .cfg_function_number_o  (cfg_function_number_o),

@@ -276,3 +276,23 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe44]
 set_property port_width 16 [get_debug_ports u_ila_0/probe44]
 connect_debug_port u_ila_0/probe44 [get_nets [list {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[0]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[1]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[2]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[3]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[4]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[5]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[6]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[7]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[8]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[9]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[10]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[11]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[12]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[13]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[14]} {pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/crc_reversed[15]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe45]
+set_property port_width 5 [get_debug_ports u_ila_0/probe45]
+connect_debug_port u_ila_0/probe45 [get_nets [list {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/curr_state[0]} {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/curr_state[1]} {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/curr_state[2]} {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/curr_state[3]} {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_flow_ctrl_init_inst/curr_state[4]}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe46]
+set_property port_width 1 [get_debug_ports u_ila_0/probe46]
+connect_debug_port u_ila_0/probe46 [get_nets [list pcie_phy_top_inst/pcie_datalink_layer_inst/dllp_receive_inst/dllp_handler_inst/axis_register_inst/m_axis_tuser_reg]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe47]
+set_property port_width 1 [get_debug_ports u_ila_0/probe47]
+connect_debug_port u_ila_0/probe47 [get_nets [list {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_datalink_init_inst/FSM_sequential_curr_state[0]_i_1__5_n_2}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe48]
+set_property port_width 1 [get_debug_ports u_ila_0/probe48]
+connect_debug_port u_ila_0/probe48 [get_nets [list {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_datalink_init_inst/FSM_sequential_curr_state[1]_i_1__5_n_2}]]
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe49]
+set_property port_width 1 [get_debug_ports u_ila_0/probe49]
+connect_debug_port u_ila_0/probe49 [get_nets [list {pcie_phy_top_inst/pcie_datalink_layer_inst/pcie_datalink_init_inst/FSM_sequential_curr_state[2]_i_2__3_n_2}]]
