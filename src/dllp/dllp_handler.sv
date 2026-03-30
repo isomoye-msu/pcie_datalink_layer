@@ -52,7 +52,7 @@ module dllp_handler
     ST_TLP_EOP
   } dll_rx_st_e;
 
-  dll_rx_st_e                   curr_state;
+   (* syn_keep = "true", mark_debug = "true" *) dll_rx_st_e                   curr_state;
   dll_rx_st_e                   next_state;
   dllp_union_t                  dll_packet_c;
   dllp_union_t                  dll_packet_r;
