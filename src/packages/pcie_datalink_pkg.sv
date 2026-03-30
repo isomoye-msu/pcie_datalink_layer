@@ -53,21 +53,21 @@ package pcie_datalink_pkg;
 
   typedef enum logic [7:0] {
     Ack               = 8'b00000000,
-    Nak               = 8'b00010000,
-    PM_Enter_L1       = 8'b00100000,
-    PM_Enter_L23      = 8'b00100001,
-    PM_Actv_St_Req_L1 = 8'b00100011,
-    PM_Request_Ack    = 8'b00100100,
-    Vendor_Specific   = 8'b00110000,
-    InitFC1_P         = 8'b01000000,
-    InitFC1_NP        = 8'b01010000,
-    InitFC1_Cpl       = 8'b01100000,
-    InitFC2_P         = 8'b11000000,
-    InitFC2_NP        = 8'b11010000,
-    InitFC2_Cpl       = 8'b11100000,
-    UpdateFC_P        = 8'b10000000,
-    UpdateFC_NP       = 8'b10010000,
-    UpdateFC_Cpl      = 8'b10100000
+    Nak               = 8'b00010000,  // 0x10
+    PM_Enter_L1       = 8'b00100000,  // 0x20
+    PM_Enter_L23      = 8'b00100001,  // 0x21
+    PM_Actv_St_Req_L1 = 8'b00100011,  // 0x23
+    PM_Request_Ack    = 8'b00100100,  // 0x24
+    Vendor_Specific   = 8'b00110000,   // 0x30
+    InitFC1_P         = 8'b01000000,  // 0x40
+    InitFC1_NP        = 8'b01010000,  // 0x50
+    InitFC1_Cpl       = 8'b01100000,  // 0x60
+    InitFC2_P         = 8'b11000000,  // 0xC0
+    InitFC2_NP        = 8'b11010000,  // 0xD0
+    InitFC2_Cpl       = 8'b11100000,  // 0xE0
+    UpdateFC_P        = 8'b10000000,  // 0x80
+    UpdateFC_NP       = 8'b10010000,  // 0x90
+    UpdateFC_Cpl      = 8'b10100000   // 0xA0
   } dllp_type_e;
 
   typedef enum logic [2:0] {

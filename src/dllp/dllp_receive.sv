@@ -39,7 +39,7 @@ module dllp_receive
     output logic                               m_axis_dllp2tlp_tlast,
     output logic            [(USER_WIDTH)-1:0] m_axis_dllp2tlp_tuser,
     input  logic                               m_axis_dllp2tlp_tready,
-    // TLP dllp2tlp output
+    // TLP dllp2phy output
     output logic            [(DATA_WIDTH)-1:0] m_axis_dllp2phy_tdata,
     output logic            [(KEEP_WIDTH)-1:0] m_axis_dllp2phy_tkeep,
     output logic                               m_axis_dllp2phy_tvalid,

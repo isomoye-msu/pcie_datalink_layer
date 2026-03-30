@@ -42,6 +42,7 @@ module pcie_datalink_layer
     output logic [USER_WIDTH-1:0] m_tlp_axis_tuser,
     input  logic                  m_tlp_axis_tready,
     //DLLP AXIS inputs
+    // COMING FROM THE PHYSICAL LAYER
     input  logic [DATA_WIDTH-1:0] s_phy_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_phy_axis_tkeep,
     input  logic                  s_phy_axis_tvalid,
@@ -49,6 +50,7 @@ module pcie_datalink_layer
     input  logic [USER_WIDTH-1:0] s_phy_axis_tuser,
     output logic                  s_phy_axis_tready,
     //PHY -> DLLP AXIS output
+    // GOING TO THE PHYSICAL LAYER
     output logic [DATA_WIDTH-1:0] m_phy_axis_tdata,
     output logic [KEEP_WIDTH-1:0] m_phy_axis_tkeep,
     output logic                  m_phy_axis_tvalid,
@@ -278,6 +280,8 @@ module pcie_datalink_layer
       .cfg_bus_number_o      (cfg_bus_number_o),
       .cfg_device_number_o   (cfg_device_number_o),
       .cfg_function_number_o (cfg_function_number_o),
+      
+      // DLLP handler outputs
       .seq_num_o             (seq_num),
       .seq_num_vld_o         (seq_num_vld),
       .seq_num_acknack_o     (seq_num_acknack),

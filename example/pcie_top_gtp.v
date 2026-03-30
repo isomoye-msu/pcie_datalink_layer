@@ -895,7 +895,7 @@ module pcie_top_gtp #(
       .PCIE_USE_MODE             (PCIE_USE_MODE),
       .PCIE_LANE                 (LINK_CAP_MAX_LINK_WIDTH),
       .PCIE_LPM_DFE              ("LPM"),
-      .PCIE_LINK_SPEED           (3),
+      .PCIE_LINK_SPEED           (2),
       .PCIE_TX_EIDLE_ASSERT_DELAY(3'd2),
       .PCIE_OOBCLK_MODE          (1),
       .PCIE_REFCLK_FREQ          (REF_CLK_FREQ),
@@ -919,8 +919,8 @@ module pcie_top_gtp #(
       .PIPE_RXDATA          (phy_rxdata[31:0]),
       .PIPE_RXDATAK         (phy_rxdatak[3:0]),
       //---------- PIPE Command Ports ------------------
-      .PIPE_TXDETECTRX      (phy_txdetectrx),
-      .PIPE_TXELECIDLE      (phy_txelecidle),
+      .PIPE_TXDETECTRX      (phy_txdetectrx),             // TXUSRCLK2?
+      .PIPE_TXELECIDLE      (phy_txelecidle),             // TXUSRCLK2?
       .PIPE_TXCOMPLIANCE    (phy_txcompliance),
       .PIPE_RXPOLARITY      (phy_rxpolarity),
       .PIPE_POWERDOWN       (phy_powerdown),
@@ -931,18 +931,18 @@ module pcie_top_gtp #(
       .PIPE_TXDEEMPH        ({(LINK_CAP_MAX_LINK_WIDTH) {phy_txdeemph}}),
       //---------- PIPE Status Ports -------------------
       .PIPE_RXVALID         (phy_rxdata_valid[0:0]),
-      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),
+      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),       // RXUSRCLK2?
       .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
-      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),
+      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),      // RXUSRCLK2?
       .PIPE_EYESCANDATAERROR(),
-      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),
+      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),        // RXUSRCLK2?
       //---------- PIPE User Ports ---------------------------
       .PIPE_MMCM_RST_N      (pipe_mmcm_rst_n),
       .PIPE_PCLK_LOCK       (clock_locked),
       .PIPE_RXCHANISALIGNED (  /*gt_rxchanisaligned_wire[LINK_CAP_MAX_LINK_WIDTH-1:0]*/),
       //---------- External Clock Ports ---------------------------
-      .PIPE_PCLK_IN         (PIPE_PCLK_IN),
-      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),
+      .PIPE_PCLK_IN         (PIPE_PCLK_IN),             // TXUSRCLK2
+      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),         // RXUSRCLK2
       .PIPE_DCLK_IN         (PIPE_DCLK_IN),
       .PIPE_OOBCLK_IN       (PIPE_OOBCLK_IN),
       .PIPE_MMCM_LOCK_IN    (PIPE_MMCM_LOCK_IN),

@@ -22,7 +22,7 @@ module dllp_handler
     input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
     input  logic                  s_axis_tvalid,
     input  logic                  s_axis_tlast,
-    input  logic [USER_WIDTH-1:0] s_axis_tuser,
+    (* syn_keep = "true", mark_debug = "true" *)input  logic [USER_WIDTH-1:0] s_axis_tuser,
     output logic                  s_axis_tready,
     //tlp ack/nak
     output logic [          11:0] seq_num_o,
@@ -71,11 +71,14 @@ module dllp_handler
   logic        [          11:0] ackd_transmit_seq_c;
   logic        [          11:0] ackd_transmit_seq_r;
   //s axis skid buffer
-  logic        [DATA_WIDTH-1:0] skid_s_axis_tdata;
+  
+  (* syn_keep = "true", mark_debug = "true" *) logic        [DATA_WIDTH-1:0] skid_s_axis_tdata;
   logic        [KEEP_WIDTH-1:0] skid_s_axis_tkeep;
-  logic                         skid_s_axis_tvalid;
+  
+  (* syn_keep = "true", mark_debug = "true" *)logic                         skid_s_axis_tvalid;
   logic                         skid_s_axis_tlast;
-  logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
+  
+  (* syn_keep = "true", mark_debug = "true" *) logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
   logic                         skid_s_axis_tready;
   //Flow control
   logic        [           7:0] tx_fc_ph_c;
@@ -106,10 +109,15 @@ module dllp_handler
   logic                         fc2_p_stored_r;
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
-  logic                [          15:0] crc_reversed;
+   (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
 
+  // debug
+  (* syn_keep = "true", mark_debug = "true" *)logic [15:0] dbg_lower_skid_data_dllp;
+  
   assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
+  assign dbg_lower_skid_data_dllp = skid_s_axis_tdata[15:0];
+
 
   always_comb begin : byteswap
     crc_reversed = ~crc_in_r;
@@ -290,7 +298,7 @@ module dllp_handler
   end
 
   pcie_datalink_crc pcie_datalink_crc_inst (
-      .crcIn ('1),
+      .crcIn (16'hFFFF),
       .data  (skid_s_axis_tdata),
       .crcOut(crc_out)
   );
