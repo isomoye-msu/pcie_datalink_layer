@@ -156,13 +156,11 @@ module pcie_flow_ctrl_init
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
-          if (fc1_values_stored_i) begin
-            seq_count_c = '0;
-            fc2_count_c = '0;
-            //build dllp packet
-            init_ack_o  = '1;
-            next_state  = ST_FC1_P;
-          end
+          seq_count_c = '0;
+          fc2_count_c = '0;
+          //build dllp packet
+          init_ack_o  = '1;
+          next_state  = ST_FC1_P;
         end
       end
       ST_FC1_P: begin
