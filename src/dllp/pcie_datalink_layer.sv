@@ -154,7 +154,7 @@ module pcie_datalink_layer
   logic                               fc2_values_sent;
   logic                               fc_init_done;
   logic                               fc2_values_stored_reg;
-
+  logic                               first_feature_exchange_dllp_received;
 
 
 
@@ -193,6 +193,7 @@ module pcie_datalink_layer
       .fc1_values_stored_i (fc1_values_stored),
       .fc2_values_stored_i (fc2_values_stored),
       .update_fc_i         (update_fc),
+      .first_feature_exchange_dllp_received_i(first_feature_exchange_dllp_received),
       .m_axis_tdata        (phy_fc_axis_tdata),
       .m_axis_tkeep        (phy_fc_axis_tkeep),
       .m_axis_tvalid       (phy_fc_axis_tvalid),
@@ -294,7 +295,8 @@ module pcie_datalink_layer
       .tx_fc_npd_o           (tx_fc_npd),
       .tx_fc_cplh_o          (tx_fc_cplh),
       .tx_fc_cpld_o          (tx_fc_cpld),
-      .update_fc_o           (update_fc)
+      .update_fc_o           (update_fc),
+      .first_feature_exchange_dllp_received_o (first_feature_exchange_dllp_received)
   );
 
 

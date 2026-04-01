@@ -72,7 +72,8 @@ module dllp_receive
     output logic [11:0] tx_fc_npd_o,
     output logic [ 7:0] tx_fc_cplh_o,
     output logic [11:0] tx_fc_cpld_o,
-    output logic        update_fc_o
+    output logic        update_fc_o,
+    output logic        first_feature_exchange_dllp_received_o
 );
 
   localparam int UserIsTlp = 1;
@@ -210,7 +211,8 @@ module dllp_receive
       .tx_fc_npd_o        (tx_fc_npd_o),
       .tx_fc_cplh_o       (tx_fc_cplh_o),
       .tx_fc_cpld_o       (tx_fc_cpld_o),
-      .update_fc_o        (update_fc_o)
+      .update_fc_o        (update_fc_o),
+      .first_feature_exchange_dllp_received_o (first_feature_exchange_dllp_received_o)
   );
 
   //dllp flow control update module instance

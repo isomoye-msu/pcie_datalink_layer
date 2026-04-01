@@ -38,7 +38,8 @@ module dllp_handler
     output logic [          11:0] tx_fc_npd_o,
     output logic [           7:0] tx_fc_cplh_o,
     output logic [          11:0] tx_fc_cpld_o,
-    output logic                  update_fc_o
+    output logic                  update_fc_o,
+    output logic                  first_feature_exchange_dllp_received_o
 );
 
   localparam int UserIsDllp = 0;
@@ -110,6 +111,8 @@ module dllp_handler
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
    (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
+  logic                         first_feature_exchange_dllp_received_r;
+  logic                         first_feature_exchange_dllp_received_c;
 
   // debug
   (* syn_keep = "true", mark_debug = "true" *)logic [15:0] dbg_lower_skid_data_dllp;
@@ -141,6 +144,7 @@ module dllp_handler
       tx_fc_npd_r         <= '0;
       tx_fc_cplh_r        <= '0;
       tx_fc_cpld_r        <= '0;
+      first_feature_exchange_dllp_received_r <= '0;
       //capture signals
       fc1_np_stored_r     <= '0;
       fc1_p_stored_r      <= '0;
@@ -162,6 +166,7 @@ module dllp_handler
       tx_fc_npd_r         <= tx_fc_npd_c;
       tx_fc_cplh_r        <= tx_fc_cplh_c;
       tx_fc_cpld_r        <= tx_fc_cpld_c;
+      first_feature_exchange_dllp_received_r <= first_feature_exchange_dllp_received_c;
       //capture signals
       fc1_np_stored_r     <= fc1_np_stored_c;
       fc1_p_stored_r      <= fc1_p_stored_c;
@@ -193,6 +198,8 @@ module dllp_handler
     tx_fc_cplh_c        = tx_fc_cplh_r;
     tx_fc_cpld_c        = tx_fc_cpld_r;
     update_fc_c         = '0;
+    first_feature_exchange_dllp_received_c = first_feature_exchange_dllp_received_r;
+
     //capture signals
     fc1_np_stored_c     = fc1_np_stored_r;
     fc1_p_stored_c      = fc1_p_stored_r;
@@ -235,6 +242,9 @@ module dllp_handler
           Nak: begin
             seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
             seq_num_vld_o = '1;
+          end
+          Feature_Exchange: begin
+            first_feature_exchange_dllp_received_c = '1;
           end
           PM_Enter_L1: begin
             //not implemented
@@ -344,5 +354,6 @@ module dllp_handler
   assign tx_fc_cplh_o = tx_fc_cplh_r;
   assign tx_fc_cpld_o = tx_fc_cpld_r;
   assign update_fc_o  = update_fc_r;
+  assign first_feature_exchange_dllp_received_o = first_feature_exchange_dllp_received_r;
 
 endmodule

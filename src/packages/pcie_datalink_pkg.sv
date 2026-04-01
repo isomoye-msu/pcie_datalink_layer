@@ -53,6 +53,7 @@ package pcie_datalink_pkg;
 
   typedef enum logic [7:0] {
     Ack               = 8'b00000000,
+    Feature_Exchange  = 8'b00000010,
     Nak               = 8'b00010000,  // 0x10
     PM_Enter_L1       = 8'b00100000,  // 0x20
     PM_Enter_L23      = 8'b00100001,  // 0x21

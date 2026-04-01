@@ -18,6 +18,7 @@ module pcie_flow_ctrl_init
     input logic first_tlp_valid_i,
     input logic idle_valid_i,
     input logic update_fc_i,
+    input logic first_feature_exchange_dllp_received_i,
 
     /*
      * DLLP UPDATE AXI output
@@ -156,11 +157,13 @@ module pcie_flow_ctrl_init
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
-          seq_count_c = '0;
-          fc2_count_c = '0;
-          //build dllp packet
-          init_ack_o  = '1;
-          next_state  = ST_FC1_P;
+          if (fc1_values_stored_i || first_feature_exchange_dllp_received_i) begin
+            seq_count_c = '0;
+            fc2_count_c = '0;
+            //build dllp packet
+            init_ack_o  = '1;
+            next_state  = ST_FC1_P;
+          end
         end
       end
       ST_FC1_P: begin
