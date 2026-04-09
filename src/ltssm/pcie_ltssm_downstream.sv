@@ -716,6 +716,7 @@ module pcie_ltssm_downstream
           if (ordered_set_sent_cnt_r >= 4) begin
             gen_os_ctrl_c.gen_ts1  = '1;
             ordered_set_sent_cnt_c = '0;
+            transmit_ordered_set = '1;
             next_state             = ST_CONFIGURATION_LINKWIDTH_START;
           end
         end
