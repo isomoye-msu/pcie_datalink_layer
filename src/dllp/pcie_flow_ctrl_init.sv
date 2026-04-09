@@ -193,7 +193,7 @@ module pcie_flow_ctrl_init
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
           seq_count_c    = '0;
-          fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
+          fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, PdMinCredits);
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -218,7 +218,7 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
           //wait for 10us
-          fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
+          fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, '0, '0);
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -286,7 +286,7 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
           //wait for 10us
-          fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
+          fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, PdMinCredits);
           // fc_axis_tdata = dll_packet_c;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -312,7 +312,7 @@ module pcie_flow_ctrl_init
         //wait for 10us
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
-          fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
+          fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, '0, '0);
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -381,7 +381,7 @@ module pcie_flow_ctrl_init
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
         //build dllp fc update for crc
-        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, HdrMinCredits, HdrMinCredits);
+        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, HdrMinCredits, PdMinCredits);
         //done with dllp
         if (fc_axis_tready) begin
           next_state = ST_UPDATE_NP_CRC;

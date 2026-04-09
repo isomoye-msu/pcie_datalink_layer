@@ -161,7 +161,7 @@ module dllp_fc_update
         //build dllp fc update for crc
         //build axis master output
         fc_axis_tdata =
-            send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i + FcPData);
+            send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i);
         dllp_lcrc_c = crc_out;
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
@@ -187,8 +187,7 @@ module dllp_fc_update
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
         //build dllp fc update for crc
-        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i,
-                                     npd_credits_consumed_i + FcNpData);
+        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i, npd_credits_consumed_i);
         //done with dllp
         if (fc_axis_tready) begin
           next_state = ST_UPDATE_NP_CRC;
@@ -202,7 +201,10 @@ module dllp_fc_update
         fc_axis_tlast  = '1;
         //done with dllp
         if (fc_axis_tready) begin
-          next_state = ST_UPDATE_CPL;
+          // TODO: Temporary fix to don't send CPL updates if it was initialised to 0
+          timer_c = '0;
+          start_ack_c = '1;
+          next_state = ST_WAIT_LOW;
         end
       end
       //send np

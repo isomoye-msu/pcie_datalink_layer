@@ -177,8 +177,8 @@ module dllp2tlp
       pd_credits_consumed_r   <= PdMinCredits;
       nph_credits_consumed_r  <= HdrMinCredits;
       npd_credits_consumed_r  <= PdMinCredits;
-      cplh_credits_consumed_r <= HdrMinCredits;
-      cpld_credits_consumed_r <= PdMinCredits;
+      cplh_credits_consumed_r <= 0;
+      cpld_credits_consumed_r <= 0;
       tlp_nullified_r         <= '0;
       fc_start_r              <= '0;
     end else begin
