@@ -241,6 +241,8 @@ module pcie_ltssm_downstream
   logic              [     MAX_NUM_LANES-1:0] phy_rxelecidle_r;
   logic              [     MAX_NUM_LANES-1:0] phy_rxelecidle_exit_detected;
 
+  // Need to pipeline phy_phystatus_i
+  logic              [     MAX_NUM_LANES-1:0] phy_phystatus_r;
 
 
   logic              [     MAX_NUM_LANES-1:0] phy_rxpolarity_c;
@@ -375,6 +377,7 @@ module pcie_ltssm_downstream
       polarity_lockout_timer_r       <= '0;
       gen_os_ctrl_r                  <= '0;
       phy_rxelecidle_r               <= '0;
+      phy_phystatus_r                <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
       //   tx_preset <=
@@ -412,6 +415,7 @@ module pcie_ltssm_downstream
       phy_rxpolarity_r               <= phy_rxpolarity_c;
       polarity_lockout_timer_r       <= polarity_lockout_timer_c;
       gen_os_ctrl_r                  <= gen_os_ctrl_c;
+      phy_phystatus_r                <= phy_phystatus_i;
     end
     //non-resetable
   end
@@ -538,7 +542,7 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Requires reciever detection to transition to ST_POLLING
       // Receiver detection is triggered in the PIPE. For this, phy_txdetectrx_o has to be set/kept at 1.
-      // We then listen on the phy_phystatus_i signal to wait for the receiver detection to finish. 
+      // We then listen on the phy_phystatus_r signal to wait for the receiver detection to finish. 
       // Oddly engough this takes aroun 130 cycles. 
       // The result is stored in receiver_detected_i. If on all lanes a receiver was detected we can transition to ST_POLLING.
       // If only some lanes detect a receiver we go to ST_DETECT_RX. If no receiver were detected we go back to ST_IDLE=>ST_DETECT_QUIET.
@@ -548,7 +552,7 @@ module pcie_ltssm_downstream
         phy_powerdown_o  = 2'b10;
 
         // Wait for receiver detection to finish
-        if (|phy_phystatus_i) begin
+        if (|phy_phystatus_r) begin
           if (|receiver_detected_i) begin
             if (&receiver_detected_i) begin
               success_c        = '1;
@@ -562,7 +566,7 @@ module pcie_ltssm_downstream
           end else begin
             next_state = ST_IDLE; // Should technically be ST_DETECT_QIUET
           end
-        end else if (timer_r >= TwoMsTimeOut) begin
+        end else if (timer_r >= TwentyFourMsTimeOut) begin
           next_state =  ST_IDLE; // Should technically be ST_DETECT_QIUET
         end
       end
@@ -576,7 +580,7 @@ module pcie_ltssm_downstream
         if (timer_r >= TwelveMsTimeOut) begin
           phy_txdetectrx_o = '1;
           phy_powerdown_o  = 2'b10;
-          if (|phy_phystatus_i) begin
+          if (|phy_phystatus_r) begin
             if ((lanes_detected_r == receiver_detected_i)) begin
               success_c        = '1;
               lanes_detected_c = receiver_detected_i;
