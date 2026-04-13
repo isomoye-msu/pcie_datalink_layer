@@ -20,7 +20,7 @@ module pcie_cfg_wrapper
     //TLP AXIS inputs
     input  logic [  DATA_WIDTH-1:0] s_axis_tdata,
     input  logic [  KEEP_WIDTH-1:0] s_axis_tkeep,
-    input  logic                    s_axis_tvalid,
+    (* mark_debug = "true", keep = "true" *) input  logic                    s_axis_tvalid,
     input  logic                    s_axis_tlast,
     input  logic [  USER_WIDTH-1:0] s_axis_tuser,
     output logic                    s_axis_tready,

@@ -55,7 +55,7 @@ module ordered_set_handler
   } os_decode_state_e;
 
 
-  (* mark_debug = "true" *) os_decode_state_e curr_state;
+  os_decode_state_e curr_state;
   os_decode_state_e                   next_state;
 
   logic              [           7:0] axis_pkt_cnt_c;
@@ -174,6 +174,7 @@ module ordered_set_handler
     word_index          = axis_pkt_cnt_r * byte_shift;
     packets_per_words   = MaxWordsPerOrderedSet - ((byte_shift) << 2);
     data_store_c        = data_store_r;
+    ordered_set_out_c   = ordered_set_out_r;
     // for (int i = 0; i < MaxBytesPerPacket; i++) begin
     //   if ((pipe_width_i >> 3) == (1 << i)) begin
     //     packets_per_words = MaxBytesPerPacket >> i;

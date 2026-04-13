@@ -178,7 +178,7 @@ module pcie_top_gtp #(
   wire [               MAX_NUM_LANES-1:0] phy_phystatus;
   wire                                    phy_phystatus_rst;
   wire [               MAX_NUM_LANES-1:0] phy_rxelecidle;
-  wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
+  (* mark_debug = "true", keep = "true" *)  wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
   wire [                             2:0] phy_txmargin;
   wire                                    phy_txswing;
   wire                                    phy_txdeemph;

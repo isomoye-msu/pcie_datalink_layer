@@ -67,7 +67,7 @@ module dllp_fc_update
   logic             [USER_WIDTH-1:0] fc_axis_tuser;
   logic                              fc_axis_tready;
   // Internal state machine for link flow control
-  fc_update_state_e                  curr_state;
+  (* syn_keep = "true", mark_debug = "true" *) fc_update_state_e                  curr_state;
   fc_update_state_e                  next_state;
   dllp_fc_t                          dll_packet_c;
   dllp_fc_t                          dll_packet_r;
@@ -161,7 +161,7 @@ module dllp_fc_update
         //build dllp fc update for crc
         //build axis master output
         fc_axis_tdata =
-            send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i);
+            send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i + FcPData);
         dllp_lcrc_c = crc_out;
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
@@ -187,7 +187,7 @@ module dllp_fc_update
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
         //build dllp fc update for crc
-        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i, npd_credits_consumed_i);
+        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i, npd_credits_consumed_i + FcNpData);
         //done with dllp
         if (fc_axis_tready) begin
           next_state = ST_UPDATE_NP_CRC;

@@ -52,7 +52,7 @@ module pcie_phy_top
     input  wire [     MAX_NUM_LANES-1:0] phy_phystatus,
     input  wire                          phy_phystatus_rst,
     input  wire [     MAX_NUM_LANES-1:0] phy_rxelecidle,
-    input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+    (* mark_debug = "true", keep = "true" *) input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
     // TX Driver
     output wire [                   2:0] phy_txmargin,
     output wire                          phy_txswing,
@@ -122,14 +122,14 @@ module pcie_phy_top
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
   logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
   logic              [(MAX_NUM_LANES*8)-1:0] link_number;
-  logic              [    MAX_NUM_LANES-1:0] ts1_valid;
-  logic              [    MAX_NUM_LANES-1:0] ts2_valid;
-  logic              [    MAX_NUM_LANES-1:0] idle_valid;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] ts1_valid;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] ts2_valid;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] idle_valid;
   logic              [    MAX_NUM_LANES-1:0] polarity_inverted;
   training_ctrl_t    [    MAX_NUM_LANES-1:0] training_ctrl;
   rate_speed_e                               curr_data_rate;
   pcie_ordered_set_t                         ordered_set;
-  logic                                      ordered_set_tranmitted;
+  (* mark_debug = "true", keep = "true" *) logic                                      ordered_set_tranmitted;
   logic                                      send_ordered_set;
   rate_id_t          [    MAX_NUM_LANES-1:0] rate_id;
   logic              [                  5:0] pipe_width;
@@ -154,9 +154,12 @@ module pcie_phy_top
   logic                                  s_dllp_axis_tlast;
   logic              [   USER_WIDTH-1:0] s_dllp_axis_tuser;
   logic                                  s_dllp_axis_tready;
-  gen_os_struct_t                        gen_os_ctrl;
+  (* mark_debug = "true", keep = "true" *) gen_os_struct_t                        gen_os_ctrl;
   logic              [MAX_NUM_LANES-1:0] active_lanes;
-  logic              [MAX_NUM_LANES-1:0] lane_status;
+  (* mark_debug = "true", keep = "true" *) logic              [MAX_NUM_LANES-1:0] lane_status;
+
+  logic                                       phy_txdetectrx_detect_upper_edge_r;
+  logic                                       phy_txdetectrx_detect_upper_edge;
 
   async_fifo #(
         .DSIZE(1),
@@ -180,8 +183,27 @@ module pcie_phy_top
   // assign phy_powerdown = '0;
   assign link_up_o = link_up;
 
+
+  always_comb begin : detect_phy_txdetectrx_upper_edge
+    // => exit detected
+    if (~phy_txdetectrx_detect_upper_edge_r && phy_txdetectrx) begin
+        phy_txdetectrx_detect_upper_edge = '1;
+    end
+    else begin
+        phy_txdetectrx_detect_upper_edge = '0;
+    end
+  end
+
+  always_ff @(posedge pipe_rx_usr_clk_i) begin 
+    if (rst_i) begin
+      phy_txdetectrx_detect_upper_edge_r <= 0;
+    end else begin
+      phy_txdetectrx_detect_upper_edge_r <= phy_txdetectrx;
+    end
+  end
+
   always_ff @(posedge pipe_rx_usr_clk_i) begin
-    if (rst_i || phy_phystatus_rst) begin
+    if (rst_i || phy_phystatus_rst || phy_txdetectrx_detect_upper_edge) begin
       lane_status        <= '0;
       num_active_lanes_i <= '0;
     end else begin

@@ -22,7 +22,7 @@ module dllp_handler
     input  logic [KEEP_WIDTH-1:0] s_axis_tkeep,
     input  logic                  s_axis_tvalid,
     input  logic                  s_axis_tlast,
-    (* syn_keep = "true", mark_debug = "true" *)input  logic [USER_WIDTH-1:0] s_axis_tuser,
+    input  logic [USER_WIDTH-1:0] s_axis_tuser,
     output logic                  s_axis_tready,
     //tlp ack/nak
     output logic [          11:0] seq_num_o,
@@ -53,7 +53,7 @@ module dllp_handler
     ST_TLP_EOP
   } dll_rx_st_e;
 
-   (* syn_keep = "true", mark_debug = "true" *) dll_rx_st_e                   curr_state;
+  (* syn_keep = "true", mark_debug = "true" *) dll_rx_st_e                   curr_state;
   dll_rx_st_e                   next_state;
   dllp_union_t                  dll_packet_c;
   dllp_union_t                  dll_packet_r;
@@ -79,7 +79,7 @@ module dllp_handler
   (* syn_keep = "true", mark_debug = "true" *)logic                         skid_s_axis_tvalid;
   logic                         skid_s_axis_tlast;
   
-  (* syn_keep = "true", mark_debug = "true" *) logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
+  logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
   logic                         skid_s_axis_tready;
   //Flow control
   logic        [           7:0] tx_fc_ph_c;
@@ -110,7 +110,7 @@ module dllp_handler
   logic                         fc2_p_stored_r;
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
-   (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
+  (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
   logic                         first_feature_exchange_dllp_received_r;
   logic                         first_feature_exchange_dllp_received_c;
 

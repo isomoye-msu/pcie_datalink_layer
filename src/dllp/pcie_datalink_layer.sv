@@ -159,7 +159,7 @@ module pcie_datalink_layer
 
 
 
-  pcie_dl_status_e                    link_status;
+  (* syn_keep = "true", mark_debug = "true" *) pcie_dl_status_e                    link_status;
   logic                               first_tlp_valid;
 
 

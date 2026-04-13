@@ -73,7 +73,7 @@ module pcie_flow_ctrl_init
   logic                                 fc_axis_tready;
 
   // Internal state machine for link flow control
-   (* syn_keep = "true", mark_debug = "true" *)  flow_control_state_e                  curr_state;
+  (* syn_keep = "true", mark_debug = "true" *)  flow_control_state_e                  curr_state;
   flow_control_state_e                  next_state;
   dllp_fc_t                             dll_packet_c;
   dllp_fc_t                             dll_packet_r;
