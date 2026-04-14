@@ -904,19 +904,20 @@ module pcie_ltssm_downstream
         end  //check timeout counter
         else if (timer_r >= TwoMsTimeOut)
         begin
-        if (idle_to_rlock_transitioned_r < 8'hFF) begin
-          if (curr_data_rate_r == gen1 || curr_data_rate_r == gen2) begin 
-            idle_to_rlock_transitioned_c = 8'hFF;
+          if (idle_to_rlock_transitioned_r < 8'hFF) begin
+            if (curr_data_rate_r == gen1 || curr_data_rate_r == gen2) begin 
+              idle_to_rlock_transitioned_c = 8'hFF;
+            end else begin
+              idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
+            end 
+            next_state = ST_RECOVERY_RCVR_LOCK;
           end else begin
-            idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r + 1;
-          end 
-          next_state = ST_RECOVERY_RCVR_LOCK;
-        end
-          idle_to_rlock_transitioned_c = '1;
-          //assert error
-          error_c                      = '1;
-          //goto wait low
-          next_state                   = ST_IDLE;
+            idle_to_rlock_transitioned_c = '1;
+            //assert error
+            error_c                      = '1;
+            //goto wait low
+            next_state                   = ST_IDLE;
+          end
         end
       end
       //-----------------------------------------------------------
@@ -1423,7 +1424,7 @@ module pcie_ltssm_downstream
   for (genvar lane = 0; lane < MAX_NUM_LANES; lane++) begin : gen_cnt_ts1
     //local helper counters
     (* mark_debug = "true" *) logic              [7:0] ts1_cnt;
-    logic              [7:0] ts2_cnt;
+    (* mark_debug = "true" *) logic              [7:0] ts2_cnt;
     logic              [7:0] idle_cnt;
 
     logic              [7:0] lane_in_save;
@@ -1500,6 +1501,15 @@ module pcie_ltssm_downstream
       end else begin
         lane_link_number_selected[lane] <= '0;
         lane_max_rate_asserted[lane] <= '0;
+        // Retain old values by default
+        ts1_cnt                    <= ts1_cnt;
+        ts2_cnt                    <= ts2_cnt;
+        first_ts1                   <= first_ts1;
+        idle_cnt                   <= idle_cnt;
+        lane_speed_change_bit      <= lane_speed_change_bit;
+        single_idle_received[lane] <= single_idle_received[lane];
+        single_ts1_received[lane]  <= single_ts1_received[lane];
+        single_ts2_received[lane]  <= single_ts2_received[lane];
         if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
           ts1_cnt                    <= '0;
           ts2_cnt                    <= '0;
@@ -1528,7 +1538,7 @@ module pcie_ltssm_downstream
                   ) begin
                 ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
               end else begin
-                ts1_cnt <= '0;
+                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end else if (ts2_valid_i[lane]) begin
               single_ts2_received[lane]  <= '1;
@@ -1536,7 +1546,7 @@ module pcie_ltssm_downstream
               begin
                 ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
               end else begin
-                ts1_cnt <= '0;
+                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end
           end
@@ -1547,7 +1557,7 @@ module pcie_ltssm_downstream
               begin
                 ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
               end else begin
-                ts2_cnt <= '0;
+                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end
           end
@@ -1619,7 +1629,7 @@ module pcie_ltssm_downstream
               end else begin
                 first_ts1             <= '0;
                 lane_speed_change_bit <= '0;
-                ts2_cnt               <= '0;
+                ts2_cnt               <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
               end
               // if (ordered_set_i[lane].ts_s6 == temp_os_holder.ts_s6
               // && ordered_set_i[lane].rate_id.rate == temp_os_holder.rate_id.rate) begin
@@ -1651,7 +1661,7 @@ module pcie_ltssm_downstream
               idle_cnt <= idle_cnt >= 8'h8 ? 8'h8 : idle_cnt + 1'b1;
               // ts1_cnt <= ts1_cnt + 1;
             end else if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              idle_cnt <= '0;
+              idle_cnt <= idle_cnt >= 8'h8 ? 8'h8 : '0;
             end
             if(ts1_valid_i[lane] || ts2_valid_i[lane] &&
                 ((ordered_set_i[lane].lane_num == PAD)))
@@ -1673,10 +1683,10 @@ module pcie_ltssm_downstream
               && (ordered_set_i[lane].lane_num == PAD) /*&& first_ts1*/)
               begin
                 //incrment ts1 count
-                ts1_cnt <= ts1_cnt >= 8'hFF ? 8'hFF : ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
               end else begin
                 //reset ts1 cnt... this ensures that the TS1-OS are consecutive per the spec
-                ts1_cnt <= '0;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
               end
             end
             //check if consecutive TS1's satisfied for this lane
@@ -1698,10 +1708,10 @@ module pcie_ltssm_downstream
               //from the one stored when we entered this state
               if ((ordered_set_i[lane].link_num == link_number_selected)) begin
                 //increment count
-                ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
                 lane_in_save <= ordered_set_i[lane].lane_num;
               end else begin
-                ts1_cnt <= '0;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
               end
             end
           end
@@ -1715,9 +1725,9 @@ module pcie_ltssm_downstream
               if (((ordered_set_i[lane].link_num != PAD)
                    && (ordered_set_i[lane].lane_num != lane_in_save)))
               begin
-                ts1_cnt <= ts1_cnt >= 8'h3 ? 8'h3 : ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
               end else begin
-                ts1_cnt <= '0;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
               end
             end
           end
@@ -1731,14 +1741,14 @@ module pcie_ltssm_downstream
               if ((ordered_set_i[lane].link_num == link_number_selected)
                   && (ordered_set_i[lane].lane_num != PAD))
               begin
-                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
                 if (lane == '0) begin
                   max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate
                   ? ordered_set_i[lane].rate_id.rate : max_rate;
                   lane_max_rate_asserted[lane] <= '1;
                 end
               end else begin
-                ts1_cnt <= '0;
+                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
               end
             end
           end
@@ -1752,7 +1762,7 @@ module pcie_ltssm_downstream
                 ts1_cnt <= '0;
               end else begin
                 ts1_cnt <= '0;
-                ts2_cnt <= '0;
+                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end
           end
@@ -1763,7 +1773,7 @@ module pcie_ltssm_downstream
               single_idle_received[lane] <= '1;
               ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
             end else if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              ts1_cnt <= '0;
+              ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
             end
           end
           default: begin
