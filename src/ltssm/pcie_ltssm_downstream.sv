@@ -115,7 +115,7 @@ module pcie_ltssm_downstream
     ST_DETECT                         = 20'b00000000000000000001,
     ST_POLLING                        = 20'b00000000000000000010, // 02
     ST_CONFIGURATION                  = 20'b00000000000000000011,
-    ST_RECOVERY                       = 20'b00000000000000000100,
+    ST_RECOVERY                       = 20'b00000000000000000100, // 04
     ST_L0                             = 20'b00000000000000000101, // 05
     ST_L0s                            = 20'b00000000000000000110,
     ST_L1                             = 20'b00000000000000000111,
@@ -133,28 +133,28 @@ module pcie_ltssm_downstream
     ST_POLLING_CONFIGURATION          = 20'b00000000000001000010, // 42
     ST_POLLING_COMPLIANCE             = 20'b00000000000001100010, // 62
 
-    ST_CONFIGURATION_LINKWIDTH_START  = 20'b00000000000000100011,
+    ST_CONFIGURATION_LINKWIDTH_START  = 20'b00000000000000100011, // 23
     ST_CONFIGURATION_LINKWIDTH_ACCEPT = 20'b00000000000001000011,
     ST_CONFIGURATION_LANENUM_ACCEPT   = 20'b00000000000001100011,
     ST_CONFIGURATION_LANENUM_WAIT     = 20'b00000000000010000011,
     ST_CONFIGURATION_COMPLETE         = 20'b00000000000010100011,
     ST_CONFIGURATION_IDLE             = 20'b00000000000011100011, // E3
 
-    ST_RECOVERY_RCVR_LOCK             = 20'b00000000000000100100,
-    ST_RECOVERY_RCVR_LOCK_TIMEOUT     = 20'b00000000000001000100,
-    ST_RECOVERY_EQUAL                 = 20'b00000000000001100100,
-    ST_RECOVERY_SPEED                 = 20'b00000000000010000100,
-    ST_RECOVERY_SPEED_WAIT            = 20'b00000000000010100100,
-    ST_RECOVERY_SPEED_EIEOS           = 20'b00000000000011000100,
-    ST_RECOVERY_RCVR_CFG              = 20'b00000000000011100100,
-    ST_RECOVERY_IDLE                  = 20'b00000000000100000100,
-    ST_RECOVERY_COMPLETE              = 20'b00000000000100100100,
-    ST_RECOVERY_EXT_SYNCH             = 20'b00000000000101000100,
-    ST_RECOVERY_SEND_SDS              = 20'b00000000000101100100,
-    ST_RECOVERY_EQUAL_PHASE_0         = 20'b00000000000110000100,
-    ST_RECOVERY_EQUAL_PHASE_1         = 20'b00000000000110100100,
-    ST_RECOVERY_EQUAL_PHASE_2         = 20'b00000000000111000100,
-    ST_RECOVERY_EQUAL_PHASE_3         = 20'b00000000000111100100
+    ST_RECOVERY_RCVR_LOCK             = 20'b00000000000000100100, // 24
+    ST_RECOVERY_RCVR_LOCK_TIMEOUT     = 20'b00000000000001000100, // 44
+    ST_RECOVERY_EQUAL                 = 20'b00000000000001100100, // 64
+    ST_RECOVERY_SPEED                 = 20'b00000000000010000100, // 84
+    ST_RECOVERY_SPEED_WAIT            = 20'b00000000000010100100, // A4
+    ST_RECOVERY_SPEED_EIEOS           = 20'b00000000000011000100, // C4
+    ST_RECOVERY_RCVR_CFG              = 20'b00000000000011100100, // E4
+    ST_RECOVERY_IDLE                  = 20'b00000000000100000100, //104
+    ST_RECOVERY_COMPLETE              = 20'b00000000000100100100, //124
+    ST_RECOVERY_EXT_SYNCH             = 20'b00000000000101000100, //144
+    ST_RECOVERY_SEND_SDS              = 20'b00000000000101100100, //164
+    ST_RECOVERY_EQUAL_PHASE_0         = 20'b00000000000110000100, //184
+    ST_RECOVERY_EQUAL_PHASE_1         = 20'b00000000000110100100, //1A4
+    ST_RECOVERY_EQUAL_PHASE_2         = 20'b00000000000111000100, //1C4
+    ST_RECOVERY_EQUAL_PHASE_3         = 20'b00000000000111100100  //1E4
   } ltssm_state_e;
 
   typedef struct packed {
@@ -684,32 +684,32 @@ module pcie_ltssm_downstream
       //-----------------------------------------------------------
       ST_POLLING_CONFIGURATION: begin
         //bounded timeout counter
-        if (ordered_set_tranmitted_i) begin
-          if (|single_ts2_received ) begin
+        if (ordered_set_tranmitted_i && |single_ts2_received) begin
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
-          end
-          if (|lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h10) begin
-            //assert success
-            success_c = '1;
-            //reset counts
-            // timer_c    = '0;
-            ordered_set_sent_cnt_c = '0;
-            gen_os_ctrl_c.gen_ts1 = '1;
-            gen_os_ctrl_c.gen_ts2 = '0;
-            transmit_ordered_set = '1;
-            ordered_set_c = gen_ts_os( gen1, TS1);
-            //goto wait low
-            next_state = ST_CONFIGURATION_LINKWIDTH_START;
-          end  //check timeout count
-          else if (timer_r >= FourtyEightMsTimeOut)
-          begin
-            // timer_c    = '0;
-            //assert error.
-            error_c    = '1;
-            //goto wait low
-            next_state = ST_IDLE;
-          end
         end
+
+        if (|lanes_ts2_satisfied && ordered_set_sent_cnt_r >= 8'h10) begin
+          //assert success
+          success_c = '1;
+          //reset counts
+          // timer_c    = '0;
+          ordered_set_sent_cnt_c = '0;
+          gen_os_ctrl_c.gen_ts1 = '1;
+          gen_os_ctrl_c.gen_ts2 = '0;
+          transmit_ordered_set = '1;
+          ordered_set_c = gen_ts_os( gen1, TS1);
+          //goto wait low
+          next_state = ST_CONFIGURATION_LINKWIDTH_START;
+        end  //check timeout count
+        else if (timer_r >= FourtyEightMsTimeOut)
+        begin
+          // timer_c    = '0;
+          //assert error.
+          error_c    = '1;
+          //goto wait low
+          next_state = ST_IDLE;
+        end
+
       end
       //-----------------------------------------------------------
       //  Configuration
@@ -930,7 +930,13 @@ module pcie_ltssm_downstream
         idle_to_rlock_transitioned_c = '0;
         if (|ts1_valid_i || |ts2_valid_i || (directed_speed_change_i && !changed_speed_recovery_r))
         begin
-          next_state = ST_RECOVERY;
+          gen_os_ctrl_c.gen_ts1 = '1;
+          gen_os_ctrl_c.valid = '1;
+          transmit_ordered_set = '1;
+          ordered_set_c = gen_ts_os( curr_data_rate_r.rate, TS1, train_seq_e'(link_number_selected),
+                  train_seq_e'(0), last_data_rate_c);
+          ordered_set_sent_cnt_c = '0;
+          next_state = ST_RECOVERY_RCVR_LOCK;
         end
       end
       //-----------------------------------------------------------
@@ -1360,44 +1366,48 @@ module pcie_ltssm_downstream
           if (single_idle_received) begin
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           end
-          //recovery idle scenario
-          if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
-          gen_os_ctrl_c                = '0;
-          gen_os_ctrl_c.valid          = '0;
-          next_state                   = ST_L0;
-          idle_to_rlock_transitioned_c = '0;
-          end else if (at_least_one_ts1_ts2) begin
+        end
+        // disabled scenario
+        if (link_disable_requested) begin
+          gen_os_ctrl_c = '0;
+          next_state = ST_DISABLED;
+        end
+        if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
+        gen_os_ctrl_c                = '0;
+        gen_os_ctrl_c.valid          = '0;
+        next_state                   = ST_L0;
+        idle_to_rlock_transitioned_c = '0;
+        end else if (at_least_one_ts1_ts2) begin
+          // timer_c                = '0;
+          gen_os_ctrl_c.valid        = '1;
+          ordered_set_sent_cnt_c     = '0;
+          gen_os_ctrl_c.gen_ts1      = '1;
+          gen_os_ctrl_c.gen_ts2      = '0;
+          transmit_ordered_set       = '1;
+          ordered_set_c = gen_ts_os(gen1, TS1);
+          next_state             = ST_CONFIGURATION_LINKWIDTH_START;
+        end else if (timer_r >= TwoMsTimeOut) begin
+          //goto recovery scenario
+          if (idle_to_rlock_transitioned_r != '1) begin
             // timer_c                = '0;
-            gen_os_ctrl_c.valid        = '1;
-            ordered_set_sent_cnt_c     = '0;
-            gen_os_ctrl_c.gen_ts1      = '1;
-            gen_os_ctrl_c.gen_ts2      = '0;
-            transmit_ordered_set       = '1;
-            ordered_set_c = gen_ts_os(gen1, TS1);
-            next_state             = ST_CONFIGURATION_LINKWIDTH_START;
-          end else if (timer_r >= TwoMsTimeOut) begin
-            //goto recovery scenario
-            if (idle_to_rlock_transitioned_r != '1) begin
-              // timer_c                = '0;
-              gen_os_ctrl_c.valid    = '0;
-              ordered_set_sent_cnt_c = '0;
-              //check data rate for retry options
-              if (curr_data_rate_r.rate == gen1) begin
-                idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r == '1 ?
-                '1 : idle_to_rlock_transitioned_r + 1'b1;
-              end
-              if (curr_data_rate_r.rate == gen2) begin
-                idle_to_rlock_transitioned_c = '1;
-              end
-              next_state = ST_RECOVERY;
-            end  //goto detect
-            else
-            begin
-              // timer_c                = '0;
-              gen_os_ctrl_c.valid    = '0;
-              ordered_set_sent_cnt_c = '0;
-              next_state             = ST_DETECT;
+            gen_os_ctrl_c.valid    = '0;
+            ordered_set_sent_cnt_c = '0;
+            //check data rate for retry options
+            if (curr_data_rate_r.rate == gen1) begin
+              idle_to_rlock_transitioned_c = idle_to_rlock_transitioned_r == '1 ?
+              '1 : idle_to_rlock_transitioned_r + 1'b1;
             end
+            if (curr_data_rate_r.rate == gen2) begin
+              idle_to_rlock_transitioned_c = '1;
+            end
+            next_state = ST_RECOVERY;
+          end  //goto detect
+          else
+          begin
+            // timer_c                = '0;
+            gen_os_ctrl_c.valid    = '0;
+            ordered_set_sent_cnt_c = '0;
+            next_state             = ST_DETECT;
           end
         end
       end
@@ -1433,6 +1443,25 @@ module pcie_ltssm_downstream
     rate_id_t                temp_rate_id;
     logic                    lane_speed_change_bit;
 
+    // Signals used for combinatorial logic block
+    logic [7:0] ts1_cnt_c, ts2_cnt_c, idle_cnt_c;
+    logic first_ts1_c;
+
+    logic single_idle_received_c;
+    logic single_ts1_received_c;
+    logic single_ts2_received_c;
+
+    logic lane_link_number_selected_c;
+    logic lane_max_rate_asserted_c;
+    logic lane_speed_change_bit_c;
+
+    logic [7:0] link_number_selected_per_lane_c;
+    logic [7:0] lane_in_save_c;
+    ts_symbol6_union_t temp_ts6_c;
+
+    rate_id_t temp_rate_id_c;
+
+    rate_speed_e max_rate_per_lane_c;
 
 
     always_ff @(posedge clk_i) begin : output_registers
@@ -1480,15 +1509,12 @@ module pcie_ltssm_downstream
 
     end
 
-
-
-    //sequential block
-    always_ff @(posedge clk_i) begin : cnt_ts1
+    always_ff @(posedge clk_i) begin
       if (rst_i) begin
         ts1_cnt                                  <= '0;
         ts2_cnt                                  <= '0;
         idle_cnt                                 <= '0;
-        first_ts1                                <= '0;
+        first_ts1                                 <= '0;
         link_number_selected_per_lane[lane*8+:8] <= '0;
         lane_in_save                             <= PAD_;
         single_idle_received[lane]               <= '0;
@@ -1499,285 +1525,336 @@ module pcie_ltssm_downstream
         max_rate_per_lane[lane]                  <= gen1;
         lane_max_rate_asserted[lane]             <= '0;
       end else begin
-        lane_link_number_selected[lane] <= '0;
-        lane_max_rate_asserted[lane] <= '0;
-        // Retain old values by default
-        ts1_cnt                    <= ts1_cnt;
-        ts2_cnt                    <= ts2_cnt;
-        first_ts1                   <= first_ts1;
-        idle_cnt                   <= idle_cnt;
-        lane_speed_change_bit      <= lane_speed_change_bit;
-        single_idle_received[lane] <= single_idle_received[lane];
-        single_ts1_received[lane]  <= single_ts1_received[lane];
-        single_ts2_received[lane]  <= single_ts2_received[lane];
-        if (next_state != curr_state && (next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT)) begin
-          ts1_cnt                    <= '0;
-          ts2_cnt                    <= '0;
-          first_ts1                   <= '0;
-          idle_cnt                   <= '0;
-          lane_speed_change_bit      <= '0;
-          single_idle_received[lane] <= '0;
-          single_ts1_received[lane]  <= '0;
-          single_ts2_received[lane]  <= '0;
-        end
+        ts1_cnt <= ts1_cnt_c;
+        ts2_cnt <= ts2_cnt_c;
+        idle_cnt <= idle_cnt_c;
+        first_ts1 <= first_ts1_c;
+
+        single_idle_received[lane] <= single_idle_received_c;
+        single_ts1_received[lane]  <= single_ts1_received_c;
+        single_ts2_received[lane]  <= single_ts2_received_c;
+
+        lane_speed_change_bit <= lane_speed_change_bit_c;
+
+        lane_link_number_selected[lane] <= lane_link_number_selected_c;
+        lane_max_rate_asserted[lane]    <= lane_max_rate_asserted_c;
+
+        link_number_selected_per_lane[lane*8+:8] <= link_number_selected_per_lane_c;
+        lane_in_save <= lane_in_save_c;
+        max_rate_per_lane[lane] <= max_rate_per_lane_c;
+        temp_ts6 <= temp_ts6_c;
+        temp_rate_id <= temp_rate_id_c;
+
+      end
+    end
+
+
+    always_comb begin
+      // =========================
+      // DEFAULTS (HOLD)
+      // =========================
+      ts1_cnt_c  = ts1_cnt;
+      ts2_cnt_c  = ts2_cnt;
+      idle_cnt_c = idle_cnt;
+      first_ts1_c = first_ts1;
+
+      single_idle_received_c = single_idle_received[lane];
+      single_ts1_received_c  = single_ts1_received[lane];
+      single_ts2_received_c  = single_ts2_received[lane];
+
+      lane_speed_change_bit_c = lane_speed_change_bit;
+
+      lane_link_number_selected_c = '0;
+      lane_max_rate_asserted_c    = '0;
+
+      link_number_selected_per_lane_c = link_number_selected_per_lane[lane*8+:8];
+      lane_in_save_c = lane_in_save;
+      max_rate_per_lane_c = max_rate_per_lane[lane];
+
+      temp_ts6_c = temp_ts6;
+      temp_rate_id_c = temp_rate_id;
+
+      // =========================
+      // GLOBAL TRANSITION RESET
+      // =========================
+      if (next_state != curr_state &&
+          next_state != ST_RECOVERY_RCVR_LOCK_TIMEOUT) begin
+
+        ts1_cnt_c  = '0;
+        ts2_cnt_c  = '0;
+        idle_cnt_c = '0;
+        first_ts1_c = '0;
+
+        single_idle_received_c = '0;
+        single_ts1_received_c  = '0;
+        single_ts2_received_c  = '0;
+
+        lane_speed_change_bit_c = '0;
+
+      end else begin
+
         case (curr_state)
+
+          // =========================
           ST_IDLE: begin
-            ts1_cnt                    <= '0;
-            ts2_cnt                    <= '0;
-            first_ts1                   <= '0;
-            idle_cnt                   <= '0;
-            single_idle_received[lane] <= '0;
-            single_ts1_received[lane]  <= '0;
-            single_ts2_received[lane]  <= '0;
+            ts1_cnt_c ='0;
+            ts2_cnt_c ='0;
+            idle_cnt_c ='0;
+            first_ts1_c ='0;
+
+            single_idle_received_c ='0;
+            single_ts1_received_c  ='0;
+            single_ts2_received_c  ='0;
           end
+
+          // =========================
           ST_POLLING_ACTIVE: begin
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
-              if (((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD))
-                  /*&& ordered_set_i[lane].train_ctrl.loopback*/
-                  ) begin
-                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
+              single_ts1_received_c = '1;
+
+              if ((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)) begin
+                ts1_cnt_c = (ts1_cnt >= 8'h8) ? 8'h8 : ts1_cnt + 1;
               end else begin
-                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
+                ts1_cnt_c <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end else if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
-              if (((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)))
-              begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
+              single_ts2_received_c = '1;
+
+              if ((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)) begin 
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : ts2_cnt + 1;
               end else begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
+                ts2_cnt_c = ts2_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end
           end
+
+          // =========================
           ST_POLLING_CONFIGURATION: begin
             if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
-              if (((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)))
-              begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
-              end else begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
-              end
+              single_ts2_received_c ='1;
+
+              if ((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD))
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : ts2_cnt + 1;
+              else
+                ts2_cnt_c = ts2_cnt >= 8'h8 ? 8'h8 : '0;
             end
           end
-          ST_RECOVERY_RCVR_LOCK, ST_RECOVERY_RCVR_LOCK_TIMEOUT: begin
+
+          // =========================
+          ST_RECOVERY_RCVR_LOCK,
+          ST_RECOVERY_RCVR_LOCK_TIMEOUT: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
+              single_ts1_received_c ='1;
             end else if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
+              single_ts2_received_c ='1;
             end
+
             if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
+
               if (lane == '0) begin
-                max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate
-                ? ordered_set_i[lane].rate_id.rate : max_rate;
-                lane_max_rate_asserted[lane] <= '1;
+                max_rate_per_lane_c =
+                  (ordered_set_i[lane].rate_id.rate > max_rate)
+                  ? ordered_set_i[lane].rate_id.rate : max_rate;
+
+                lane_max_rate_asserted_c ='1;
               end
-              // $display("speed change: %s ", ordered_set_i[lane].rate_id.speed_change);
-              if (1
-                  /*(ordered_set_i[lane].lane_num == lane) &&
-                  (ordered_set_i[lane].link_num == link_number_selected )
-                  */
-                  ) begin
-                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
-                if (ordered_set_i[lane].rate_id.speed_change) begin
-                  lane_speed_change_bit <= '1;
-                end else begin
-                  lane_speed_change_bit <= '0;
-                end
-              end else begin
-                ts1_cnt <= '0;
-              end
-            end
-            //wait for incoming ts2-os...//skip if threshhold already reached
-            if (ts2_valid_i[lane]) begin
-              if (1
-                  /*((ordered_set_i[lane].lane_num == lane) &&
-                  ordered_set_i[lane].link_num && link_number_selected)*/
-                  ) begin
-                ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
-                if (ordered_set_i[lane].rate_id.speed_change) begin
-                  lane_speed_change_bit <= '1;
-                end else begin
-                  lane_speed_change_bit <= '0;
-                end
-              end else begin
-                ts2_cnt <= '0;
-              end
+
+              ts1_cnt_c = ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
+
+              lane_speed_change_bit_c =
+                ordered_set_i[lane].rate_id.speed_change;
             end
           end
+
+          // =========================
           ST_RECOVERY_RCVR_CFG: begin
-            // pcie_tsos_t temp_os_holder = pcie_tsos_t'(ordered_set_r);
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
-              if((temp_ts6 == ordered_set_i[lane].ts_s6)
-                  && ((curr_data_rate_r.rate < gen3) || ((curr_data_rate_r.rate >= gen3)
-                                                         && ordered_set_i[lane].ts_s6.ts2.req_equal)) &&
-                  (temp_rate_id == ordered_set_i[lane].rate_id) || !first_ts1)
-              begin
-                temp_ts6     <= ordered_set_i[lane].ts_s6;
-                first_ts1    <= '1;
-                temp_rate_id <= ordered_set_i[lane].rate_id;
-                ts2_cnt      <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
-                if (ordered_set_i[lane].rate_id.speed_change) begin
-                  lane_speed_change_bit <= '1;
-                end else begin
-                  lane_speed_change_bit <= '0;
-                end
+              single_ts2_received_c ='1;
+
+              if ((temp_ts6 == ordered_set_i[lane].ts_s6) &&
+                  ((curr_data_rate_r.rate < gen3) ||
+                  ((curr_data_rate_r.rate >= gen3) &&
+                    ordered_set_i[lane].ts_s6.ts2.req_equal)) &&
+                  (temp_rate_id == ordered_set_i[lane].rate_id) ||
+                  !first_ts1) begin
+                temp_ts6_c = ordered_set_i[lane].ts_s6;
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : ts2_cnt + 1;
+                first_ts1_c ='1;
+                temp_rate_id_c = ordered_set_i[lane].rate_id;
+
+                lane_speed_change_bit_c =
+                  ordered_set_i[lane].rate_id.speed_change;
+
               end else begin
-                first_ts1             <= '0;
-                lane_speed_change_bit <= '0;
-                ts2_cnt               <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : '0;
+                first_ts1_c ='0;
+                lane_speed_change_bit_c ='0;
               end
-              // if (ordered_set_i[lane].ts_s6 == temp_os_holder.ts_s6
-              // && ordered_set_i[lane].rate_id.rate == temp_os_holder.rate_id.rate) begin
-              //   ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
-              // end
-              // else if((curr_data_rate_r.rate > gen2) &&
-              //   (ordered_set_i[lane].lane_num == lane)
-              //   &&(ordered_set_i[lane].link_num == link_number_selected )) begin
-              //   ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
-              // end else begin
-              //   ts2_cnt <= '0;
-              // end
             end
           end
+
+          // =========================
           ST_RECOVERY_EQUAL_PHASE_1: begin
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
-              if ((ordered_set_i[lane].ts_s6.ts1.ec == 2'b01)) begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1'b1;
-                single_idle_received[lane] <= '0;
+              single_ts1_received_c ='1;
+
+              if (ordered_set_i[lane].ts_s6.ts1.ec == 2'b01) begin
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : ts1_cnt + 1;
+                single_idle_received_c ='0;
               end
             end
           end
+
+          // =========================
           ST_RECOVERY_IDLE: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             //using ts1_cnt as idle count
             if (idle_valid_i[lane]) begin
-              single_idle_received[lane] <= '1;
-              idle_cnt <= idle_cnt >= 8'h8 ? 8'h8 : idle_cnt + 1'b1;
-              // ts1_cnt <= ts1_cnt + 1;
+              single_idle_received_c ='1;
+              idle_cnt_c = (idle_cnt >= 8'h8) ? 8'h8 : idle_cnt + 1;
+
             end else if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              idle_cnt <= idle_cnt >= 8'h8 ? 8'h8 : '0;
+              idle_cnt_c = idle_cnt >= 8'h8 ? 8'h8 : '0;
             end
-            if(ts1_valid_i[lane] || ts2_valid_i[lane] &&
-                ((ordered_set_i[lane].lane_num == PAD)))
-            begin
-              ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1'b1;
-              single_idle_received[lane] <= '0;
+
+            if ((ts1_valid_i[lane] || ts2_valid_i[lane]) &&
+                (ordered_set_i[lane].lane_num == PAD)) begin
+              ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : ts2_cnt + 1;
+              single_idle_received_c ='0;
             end
           end
+
+          // =========================
           ST_CONFIGURATION_LINKWIDTH_START: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
-              if (((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)))
-              begin
-                first_ts1 <= '1;
+              single_ts1_received_c ='1;
+
+              if ((ordered_set_i[lane].link_num == PAD) &&
+                  (ordered_set_i[lane].lane_num == PAD)) begin
+                first_ts1_c ='1;
               end
+
+              
               //check that link number is not pad and that lane number is pad
-              if ((ordered_set_i[lane].link_num != PAD) 
-              && (ordered_set_i[lane].lane_num == PAD) /*&& first_ts1*/)
-              begin
+              if ((ordered_set_i[lane].link_num != PAD) &&
+                  (ordered_set_i[lane].lane_num == PAD)) begin
                 //incrment ts1 count
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
-              end else begin
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : ts1_cnt + 1;
+              end else begin    
                 //reset ts1 cnt... this ensures that the TS1-OS are consecutive per the spec
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 :'0;
               end
             end
+
             //check if consecutive TS1's satisfied for this lane
             if (link_width_satisfied[lane]) begin
               //select link number by choosing lowest significant lane satisfied
               //ignore all other lanes
               if ((lane == 0) || (link_width_satisfied[lane:0] == '0)) begin
-                link_number_selected_per_lane[lane*8+:8] <= ordered_set_i[lane].link_num;
-                lane_link_number_selected[lane] <= '1;
+                link_number_selected_per_lane_c = ordered_set_i[lane].link_num;
+                lane_link_number_selected_c ='1;
               end
             end
           end
+
+          // =========================
           ST_CONFIGURATION_LINKWIDTH_ACCEPT: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
+              single_ts1_received_c ='1;
+
               //check that incoming link number matches the "link_number_selected"
               //that we are now transmitting and that lane number is different
               //from the one stored when we entered this state
-              if ((ordered_set_i[lane].link_num == link_number_selected)) begin
+              if (ordered_set_i[lane].link_num == link_number_selected) begin
                 //increment count
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
-                lane_in_save <= ordered_set_i[lane].lane_num;
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : ts1_cnt + 1;
+                lane_in_save_c = ordered_set_i[lane].lane_num;
               end else begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : '0;
               end
             end
           end
+
+          // =========================
           ST_CONFIGURATION_LANENUM_WAIT: begin
             if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
+              single_ts1_received_c ='1;
             end else if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
+              single_ts2_received_c ='1;
             end
+
             if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              if (((ordered_set_i[lane].link_num != PAD)
-                   && (ordered_set_i[lane].lane_num != lane_in_save)))
-              begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
-              end else begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
+              if ((ordered_set_i[lane].link_num != PAD) &&
+                  (ordered_set_i[lane].lane_num != lane_in_save)) begin
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : ts1_cnt + 1;
+              end else begin    
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : '0;
               end
             end
           end
+
+          // =========================
           ST_CONFIGURATION_LANENUM_ACCEPT: begin
-            if (ts1_valid_i[lane]) begin
-              single_ts1_received[lane]  <= '1;
-            end else if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane]  <= '1;
-            end
+            if (ts1_valid_i[lane])
+              single_ts1_received_c ='1;
+            else if (ts2_valid_i[lane])
+              single_ts2_received_c ='1;
+
             if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              if ((ordered_set_i[lane].link_num == link_number_selected)
-                  && (ordered_set_i[lane].lane_num != PAD))
-              begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : ts1_cnt + 1;
+              if ((ordered_set_i[lane].link_num == link_number_selected) &&
+                  (ordered_set_i[lane].lane_num != PAD)) begin
+
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : ts1_cnt + 1;
+
                 if (lane == '0) begin
-                  max_rate_per_lane[lane] <= ordered_set_i[lane].rate_id.rate > max_rate
-                  ? ordered_set_i[lane].rate_id.rate : max_rate;
-                  lane_max_rate_asserted[lane] <= '1;
+                  max_rate_per_lane_c =
+                    (ordered_set_i[lane].rate_id.rate > max_rate)
+                    ? ordered_set_i[lane].rate_id.rate : max_rate;
+
+                  lane_max_rate_asserted_c ='1;
                 end
+
               end else begin
-                ts1_cnt <= ts1_cnt >= 8'h2 ? 8'h2 : '0;
+                ts1_cnt_c = (ts1_cnt >= 8'h2) ? 8'h2 : '0;
               end
             end
           end
+
+          // =========================
           ST_CONFIGURATION_COMPLETE: begin
             if (ts2_valid_i[lane]) begin
-              single_ts2_received[lane] <= '1;
-              if ((ordered_set_i[lane].link_num == link_number_selected)
-                  && (ordered_set_i[lane].lane_num == lane))
-              begin
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : ts2_cnt + 1;
-                ts1_cnt <= '0;
+              single_ts2_received_c ='1;
+
+              if ((ordered_set_i[lane].link_num == link_number_selected) &&
+                  (ordered_set_i[lane].lane_num == lane)) begin
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : ts2_cnt + 1;
+                ts1_cnt_c = '0;
               end else begin
-                ts1_cnt <= '0;
-                ts2_cnt <= ts2_cnt >= 8'h8 ? 8'h8 : '0;
+                ts1_cnt_c = '0;
+                ts2_cnt_c = (ts2_cnt >= 8'h8) ? 8'h8 : '0;
               end
             end
           end
+
+          // =========================
           ST_CONFIGURATION_IDLE: begin
             //wait for incoming ts1-os...//skip if threshhold already reached
             //using ts1_cnt as idle count
             if (idle_valid_i[lane]) begin
-              single_idle_received[lane] <= '1;
-              ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
+              single_idle_received_c ='1;
+              ts1_cnt_c = (ts1_cnt >= 8'h8) ? 8'h8 : ts1_cnt + 1;
+
             end else if (ts1_valid_i[lane] || ts2_valid_i[lane]) begin
-              ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
+              ts1_cnt_c = (ts1_cnt >= 8'h8) ? 8'h8 : '0;
             end
           end
-          default: begin
-          end
+
+          default: ;
+
         endcase
       end
     end
