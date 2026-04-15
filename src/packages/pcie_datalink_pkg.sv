@@ -14,7 +14,8 @@ package pcie_datalink_pkg;
   parameter int LtssmDetect = 32'd1500;
   parameter int FcClpData = FcPData / FcPHdr;
   parameter int SkidBuffer = 2;
-  parameter int HdrMinCredits = 8'h1;
+  parameter int HdrMinCredits = 8'h10;
+  parameter int PdMinCredits = 8'h40;
 
 
 

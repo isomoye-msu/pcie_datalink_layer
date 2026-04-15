@@ -34,7 +34,7 @@ module pcie_flow_ctrl_init
 );
 
 
-  localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
+  // localparam int PdMinCredits = MAX_PAYLOAD_SIZE / 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
   localparam int FcWaitPeriod = 8'h2;
   localparam int FcInitWaitPeriod = 8'h0A * 11;
 

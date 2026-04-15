@@ -46,7 +46,7 @@ module dllp2tlp
 );
   /* verilator lint_off WIDTHEXPAND */
   /* verilator lint_off WIDTHTRUNC */
-  localparam int PdMinCredits = (MAX_PAYLOAD_SIZE >> 4);
+  // localparam int PdMinCredits = (MAX_PAYLOAD_SIZE / 4);
   localparam int FcWaitPeriod = 8'hA0;
   localparam int TlpAxis = 0;
   localparam int UserIsTlp = 1;
