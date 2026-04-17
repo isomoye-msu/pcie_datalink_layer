@@ -1255,14 +1255,24 @@ module pcie_ltssm_downstream
           if (single_idle_received) begin
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           end
-          //recovery idle scenario
-          if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
-            gen_os_ctrl_c        = '0;
-            gen_os_ctrl_c.valid  = '1;
-            next_state           = ST_RECOVERY_SEND_SDS;
-            transmit_ordered_set = '1;
-            gen_sds_os(ordered_set_c);
-          end else if (at_least_one_ts1_ts2) begin
+        end
+        if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
+        gen_os_ctrl_c                = '0;
+        gen_os_ctrl_c.valid          = '0;
+        next_state                   = ST_L0;
+        idle_to_rlock_transitioned_c = '0;
+        end else if (at_least_one_ts1_ts2) begin
+          // timer_c                = '0;
+          gen_os_ctrl_c.valid        = '1;
+          ordered_set_sent_cnt_c     = '0;
+          gen_os_ctrl_c.gen_ts1      = '1;
+          gen_os_ctrl_c.gen_ts2      = '0;
+          transmit_ordered_set       = '1;
+          ordered_set_c = gen_ts_os(gen1, TS1);
+          next_state             = ST_CONFIGURATION_LINKWIDTH_START;
+        end else if (timer_r >= TwoMsTimeOut) begin
+          //goto recovery scenario
+          if (idle_to_rlock_transitioned_r != '1) begin
             // timer_c                = '0;
             gen_os_ctrl_c.valid    = '0;
             ordered_set_sent_cnt_c = '0;
