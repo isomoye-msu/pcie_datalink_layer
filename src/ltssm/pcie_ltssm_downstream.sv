@@ -1367,11 +1367,6 @@ module pcie_ltssm_downstream
             ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
           end
         end
-        // disabled scenario
-        if (link_disable_requested) begin
-          gen_os_ctrl_c = '0;
-          next_state = ST_DISABLED;
-        end
         if (((|lanes_idle_satisfied) && ordered_set_sent_cnt_r >= 8'd16)) begin
         gen_os_ctrl_c                = '0;
         gen_os_ctrl_c.valid          = '0;
