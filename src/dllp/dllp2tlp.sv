@@ -71,7 +71,7 @@ module dllp2tlp
   } dll_rx_st_e;
 
 
-  dll_rx_st_e                            curr_state;
+   (* syn_keep = "true", mark_debug = "true" *)  dll_rx_st_e                            curr_state;
   dll_rx_st_e                            next_state;
   dllp_union_t                           dll_packet;
   //tlp nulled
@@ -81,46 +81,46 @@ module dllp2tlp
   logic                                  tlp_nullified_r;
   //transmit sequence logic
   logic                 [          15:0] next_transmit_seq_c;
-  logic                 [          15:0] next_transmit_seq_r;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                 [          15:0] next_transmit_seq_r;
   logic                 [          15:0] next_expected_seq_num_c;
-  logic                 [          15:0] next_expected_seq_num_r;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                 [          15:0] next_expected_seq_num_r;
   logic                 [          11:0] ackd_transmit_seq_c;
   logic                 [          15:0] ackd_transmit_seq_r;
   //crc helper signals
   logic                 [          31:0] crc_from_tlp_c;
   logic                 [          31:0] crc_from_tlp_r;
   logic                 [          31:0] crc_calculated_c;
-  logic                 [          31:0] crc_calculated_r;
+   (* syn_keep = "true", mark_debug = "true" *)  logic                 [          31:0] crc_calculated_r;
   logic                 [          31:0] crc_output_16;
   logic                 [          31:0] crc_output_32;
   logic                 [          31:0] lcrc32d32;
   logic                 [          15:0] dllp_crc_out;
   logic                 [          15:0] dllp_lcrc32d32;
   logic                 [          31:0] dllp_lcrc_c;
-  logic                 [          31:0] dllp_lcrc_r;
+   (* syn_keep = "true", mark_debug = "true" *) logic                 [          31:0] dllp_lcrc_r;
   logic                 [          31:0] word_count_c;
   logic                 [          31:0] word_count_r;
   logic                 [           1:0] crc_byte_select;
   //tlp type signals
   pcie_tlp_header_dw0_t                  tlp_dw0;
   logic                                  tlp_is_cplh_c;
-  logic                                  tlp_is_cplh_r;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_cplh_r;
   logic                                  tlp_is_nph_c;
-  logic                                  tlp_is_nph_r;
+   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_nph_r;
   logic                                  tlp_is_ph_c;
-  logic                                  tlp_is_ph_r;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_ph_r;
   logic                                  tlp_is_npd_c;
-  logic                                  tlp_is_npd_r;
+   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_npd_r;
   logic                                  tlp_is_pd_c;
-  logic                                  tlp_is_pd_r;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_pd_r;
   logic                                  tlp_is_cpld_c;
-  logic                                  tlp_is_cpld_r;
+   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_cpld_r;
   //skid buffer axis signals
-  logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
+   (* syn_keep = "true", mark_debug = "true" *) logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  logic                                  skid_axis_tvalid;
-  logic                                  skid_axis_tlast;
-  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                                  skid_axis_tvalid;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                                  skid_axis_tlast;
+  (* syn_keep = "true", mark_debug = "true" *)  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
   logic                                  skid_axis_tready;
   // tlp pipeline axis bus
   logic                 [DATA_WIDTH-1:0] pipeline_axis_tdata;

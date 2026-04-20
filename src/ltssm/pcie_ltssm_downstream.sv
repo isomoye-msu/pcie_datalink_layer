@@ -202,6 +202,7 @@ module pcie_ltssm_downstream
   logic                                       equalization_done_8gb_r;
   logic                                       start_equalization_w_preset_c;
   logic                                       start_equalization_w_preset_r;
+  logic link_disable_requested;
   //! internal_axis_signals
   // logic              [   DATA_WIDTH-1:0] ltssm_axis_tdata;
   // logic              [   KEEP_WIDTH-1:0] ltssm_axis_tkeep;
@@ -452,6 +453,7 @@ module pcie_ltssm_downstream
 
 
   always_comb begin : ltssm_combo
+    link_disable_requested = '0;
     next_state                     = curr_state;
     // timer_c                        = timer_r;
     error_c                        = error_r;
