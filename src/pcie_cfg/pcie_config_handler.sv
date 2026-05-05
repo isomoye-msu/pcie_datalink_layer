@@ -161,13 +161,8 @@ module pcie_config_handler
     // tlp_data_word    = '0;
     // tlp_byte_swapped = '0;
     rx_tlp_ready  = '0;
-    s_axil_awvalid = 1'b0;
-    s_axil_wvalid = 1'b0;
-    s_axil_arvalid = 1'b0;
-    s_axil_rready = 1'b0;
-    s_axil_bready = 1'b0;
     case (Q.state)
-      ST_IDLE: begin // State 0
+      ST_IDLE: begin
         rx_tlp_ready = '1;
         if (rx_tlp_valid && rx_tlp_sop) begin
           D.tlp_hdr.whole_ = rx_tlp_hdr;
@@ -182,24 +177,32 @@ module pcie_config_handler
           end
         end
       end
-      ST_CFG_WR: begin // State 2
+      ST_CFG_WR: begin
         s_axil_awvalid = 1'b1;
-        s_axil_wvalid = 1'b0;
+        // pready         = 1'b0;
+        // pslverr        = 1'b0;
+        // prdata         = '0;
+        s_axil_wvalid = 1'b1;
         s_axil_arvalid = 1'b0;
         s_axil_rready = 1'b0;
         s_axil_bready = 1'b0;
         {D.cfg_bus_number, D.cfg_device_number, D.cfg_function_number} = {
           Q.tlp_hdr.struct_.word_2.byte_0, Q.tlp_hdr.struct_.word_2.byte_1
         };
-        if (s_axil_awready == 1'b1) begin
+        if ((s_axil_awready & s_axil_wready) == 1'b1) begin
+          D.state = ST_CFG_WR_ACK;
+        end else if (s_axil_awready == 1'b1) begin
           D.state = ST_CFG_WR_DATA;
         end else begin
           D.state = ST_CFG_WR;
         end
-      end 
+      end  // case: write
 
       ST_CFG_WR_DATA: begin
         s_axil_awvalid = 1'b0;
+        // pready         = 1'b0;
+        // pslverr        = 1'b0;
+        // prdata         = '0;
         s_axil_wvalid = 1'b1;
         s_axil_arvalid = 1'b0;
         s_axil_rready = 1'b0;
@@ -212,9 +215,12 @@ module pcie_config_handler
         end else begin
           D.state = ST_CFG_WR_DATA;
         end
-      end
+      end  // case: write_data
       ST_CFG_WR_ACK: begin
         s_axil_awvalid = 1'b0;
+        // pready         = s_axil_bvalid;
+        // pslverr        = s_axil_bresp == '0 ? 1'b0 : s_axil_bvalid;
+        // prdata         = '0;
         s_axil_wvalid  = 1'b0;
         s_axil_arvalid = 1'b0;
         s_axil_rready  = 1'b0;
@@ -229,20 +235,23 @@ module pcie_config_handler
         end
       end
 
-      ST_CFG_RD: begin // State 1
+      ST_CFG_RD: begin
         s_axil_awvalid = 1'b0;
         s_axil_wvalid  = 1'b0;
         s_axil_arvalid = 1'b1;
-        s_axil_rready  = 1'b0;
+        s_axil_rready  = 1'b1;
         s_axil_bready  = 1'b0;
-        if (s_axil_arready == 1'b1) begin
-          D.state = ST_WAIT_RD; 
-        end else begin
-          D.state = ST_CFG_RD;
+        if ((s_axil_arready & s_axil_rvalid) == 1'b1) begin
+          D.state = ST_IDLE;
+        end else if (s_axil_arready == 1'b1) begin
+          D.state = ST_WAIT_RD;
         end
-      end  
+      end  // case: write_ack
 
       ST_WAIT_RD: begin
+        // pready         = s_axil_arready & s_axil_rvalid;
+        // pslverr        = s_axil_rresp == '0 ? 1'b0 : s_axil_rvalid;
+        // prdata         = s_axil_rdata;
         D.cpl_tlp      = gen_cpld(Q.tlp_hdr, s_axil_rdata);
         s_axil_awvalid = 1'b0;
         s_axil_wvalid  = 1'b0;
@@ -253,9 +262,27 @@ module pcie_config_handler
           D.word_count = '0;
           D.length     = 32'd3;
           D.state      = ST_SEND_CPL_TLP;
-        end  
+        end  // case: read
       end
 
+      ST_WAIT_WR: begin
+        // pready         = s_axil_rvalid;
+        // pslverr        = s_axil_rresp == '0 ? 1'b0 : s_axil_rvalid;
+        // prdata         = s_axil_rdata;
+        s_axil_awvalid = 1'b0;
+        s_axil_wvalid  = 1'b0;
+        s_axil_arvalid = 1'b0;
+        s_axil_rready  = 1'b1;
+        s_axil_bready  = 1'b0;
+        if (s_axil_rvalid == 1'b1) begin
+          D.cpl_tlp    = gen_cpl(Q.tlp_hdr, s_axil_rdata);
+          D.word_count = '0;
+          D.length     = 32'd2;
+          D.state      = ST_SEND_CPL_TLP;
+        end else begin
+          D.state = ST_WAIT_WR;
+        end
+      end  // case: read_data
       ST_SEND_CPL_TLP: begin
         s_axis_tdata  = Q.cpl_tlp[(32*Q.word_count)+:32];
         s_axis_tkeep  = '1;

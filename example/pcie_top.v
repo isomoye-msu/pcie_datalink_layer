@@ -93,9 +93,7 @@ module pcie_top #(
 
     input sys_clk_p,
     input sys_clk_n,
-    input sys_rst_n,
-    input pcie_refclk_p,
-    input pcie_refclk_n
+    input sys_rst_n
 
 );
 
@@ -116,17 +114,6 @@ module pcie_top #(
       .O(sys_clk)
   );
 
-  wire gt_refclk;
-  wire gt_refclk_div2_unused;
-
-  IBUFDS_GTE2 i_pcie_refclk (
-      .I     (pcie_refclk_p),
-      .IB    (pcie_refclk_n),
-      .CEB   (1'b0),
-      .O     (gt_refclk),
-      .ODIV2 (gt_refclk_div2_unused)
-  );
-
   // Parameters
   localparam CLK_RATE = 100;
   localparam MAX_NUM_LANES = 1;
@@ -135,7 +122,7 @@ module pcie_top #(
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
-  localparam IS_ROOT_PORT = 0;
+  localparam IS_ROOT_PORT = 1;
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;
@@ -700,7 +687,7 @@ module pcie_top #(
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
   pipe_wrapper #(
-      .PCIE_SIM_MODE             ("FALSE"),
+      .PCIE_SIM_MODE             ("TRUE"),
       // synthesis translate_off
       .PCIE_SIM_SPEEDUP          ("TRUE"),
       // synthesis translate_on
@@ -733,7 +720,7 @@ module pcie_top #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
-      .PIPE_CLK    (gt_refclk),
+      .PIPE_CLK    (sys_clk),
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------

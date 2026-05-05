@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2022.1 (64-bit)
+# SW Build 3526262 on Mon Apr 18 15:47:01 MDT 2022
+# IP Build 3524634 on Mon Apr 18 20:55:01 MDT 2022
+# Start of session at: Sat Sep 20 18:20:31 2025
+# Process ID: 2190772
+# Current directory: /tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/pcie_7x_0_ex.runs/clk_wiz_0_synth_1
+# Command line: vivado -log clk_wiz_0.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source clk_wiz_0.tcl
+# Log file: /tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/pcie_7x_0_ex.runs/clk_wiz_0_synth_1/clk_wiz_0.vds
+# Journal file: /tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/pcie_7x_0_ex.runs/clk_wiz_0_synth_1/vivado.jou
+# Running On: capc-ub22-is, OS: Linux, CPU Frequency: 2793.437 MHz, CPU Physical cores: 16, Host memory: 33607 MB
+#-----------------------------------------------------------
+source clk_wiz_0.tcl -notrace

@@ -46,7 +46,7 @@ module dllp2tlp
 );
   /* verilator lint_off WIDTHEXPAND */
   /* verilator lint_off WIDTHTRUNC */
-  // localparam int PdMinCredits = (MAX_PAYLOAD_SIZE / 4);
+  localparam int PdMinCredits = (MAX_PAYLOAD_SIZE >> 4);
   localparam int FcWaitPeriod = 8'hA0;
   localparam int TlpAxis = 0;
   localparam int UserIsTlp = 1;
@@ -71,7 +71,7 @@ module dllp2tlp
   } dll_rx_st_e;
 
 
-   (* syn_keep = "true", mark_debug = "true" *)  dll_rx_st_e                            curr_state;
+  dll_rx_st_e                            curr_state;
   dll_rx_st_e                            next_state;
   dllp_union_t                           dll_packet;
   //tlp nulled
@@ -81,46 +81,46 @@ module dllp2tlp
   logic                                  tlp_nullified_r;
   //transmit sequence logic
   logic                 [          15:0] next_transmit_seq_c;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                 [          15:0] next_transmit_seq_r;
+  logic                 [          15:0] next_transmit_seq_r;
   logic                 [          15:0] next_expected_seq_num_c;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                 [          15:0] next_expected_seq_num_r;
+  logic                 [          15:0] next_expected_seq_num_r;
   logic                 [          11:0] ackd_transmit_seq_c;
   logic                 [          15:0] ackd_transmit_seq_r;
   //crc helper signals
   logic                 [          31:0] crc_from_tlp_c;
   logic                 [          31:0] crc_from_tlp_r;
   logic                 [          31:0] crc_calculated_c;
-   (* syn_keep = "true", mark_debug = "true" *)  logic                 [          31:0] crc_calculated_r;
+  logic                 [          31:0] crc_calculated_r;
   logic                 [          31:0] crc_output_16;
   logic                 [          31:0] crc_output_32;
   logic                 [          31:0] lcrc32d32;
   logic                 [          15:0] dllp_crc_out;
   logic                 [          15:0] dllp_lcrc32d32;
   logic                 [          31:0] dllp_lcrc_c;
-   (* syn_keep = "true", mark_debug = "true" *) logic                 [          31:0] dllp_lcrc_r;
+  logic                 [          31:0] dllp_lcrc_r;
   logic                 [          31:0] word_count_c;
   logic                 [          31:0] word_count_r;
   logic                 [           1:0] crc_byte_select;
   //tlp type signals
   pcie_tlp_header_dw0_t                  tlp_dw0;
   logic                                  tlp_is_cplh_c;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_cplh_r;
+  logic                                  tlp_is_cplh_r;
   logic                                  tlp_is_nph_c;
-   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_nph_r;
+  logic                                  tlp_is_nph_r;
   logic                                  tlp_is_ph_c;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_ph_r;
+  logic                                  tlp_is_ph_r;
   logic                                  tlp_is_npd_c;
-   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_npd_r;
+  logic                                  tlp_is_npd_r;
   logic                                  tlp_is_pd_c;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                                  tlp_is_pd_r;
+  logic                                  tlp_is_pd_r;
   logic                                  tlp_is_cpld_c;
-   (* syn_keep = "true", mark_debug = "true" *) logic                                  tlp_is_cpld_r;
+  logic                                  tlp_is_cpld_r;
   //skid buffer axis signals
-   (* syn_keep = "true", mark_debug = "true" *) logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
+  logic                 [DATA_WIDTH-1:0] skid_axis_tdata;
   logic                 [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                                  skid_axis_tvalid;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                                  skid_axis_tlast;
-  (* syn_keep = "true", mark_debug = "true" *)  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
+  logic                                  skid_axis_tvalid;
+  logic                                  skid_axis_tlast;
+  logic                 [USER_WIDTH-1:0] skid_axis_tuser;
   logic                                  skid_axis_tready;
   // tlp pipeline axis bus
   logic                 [DATA_WIDTH-1:0] pipeline_axis_tdata;
@@ -177,8 +177,8 @@ module dllp2tlp
       pd_credits_consumed_r   <= PdMinCredits;
       nph_credits_consumed_r  <= HdrMinCredits;
       npd_credits_consumed_r  <= PdMinCredits;
-      cplh_credits_consumed_r <= 0;
-      cpld_credits_consumed_r <= 0;
+      cplh_credits_consumed_r <= HdrMinCredits;
+      cpld_credits_consumed_r <= PdMinCredits;
       tlp_nullified_r         <= '0;
       fc_start_r              <= '0;
     end else begin
