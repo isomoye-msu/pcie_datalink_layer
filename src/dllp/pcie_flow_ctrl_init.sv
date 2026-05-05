@@ -32,10 +32,12 @@ module pcie_flow_ctrl_init
     output logic                    init_ack_o
 );
 
-
+  localparam int ClkRate = 100; //MHz
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
   localparam int FcWaitPeriod = 8'h2;
   localparam int FcInitWaitPeriod = 8'h0A * 11;
+  localparam int ClockPeriodNs = ((10 ** 3) / ClkRate);
+  localparam longint TwelveMsTimeOut =  (12 * (10 ** 4)) / ClockPeriodNs;
 
   typedef enum logic [5:0] {
     ST_IDLE,
@@ -175,7 +177,8 @@ module pcie_flow_ctrl_init
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
-          if (fc1_values_stored_i) begin
+          //initial wait period before starting flow control, wait for 10us
+          if (fc1_values_stored_i || seq_count_r >= TwelveMsTimeOut) begin
             seq_count_c = '0;
             fc2_count_c = '0;
             //build dllp packet

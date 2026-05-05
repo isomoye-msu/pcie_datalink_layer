@@ -67,7 +67,7 @@ package pcie_datalink_pkg;
     InitFC2_Cpl       = 8'b11100000,
     UpdateFC_P        = 8'b10000000,
     UpdateFC_NP       = 8'b10010000,
-    UpdateFC_Cpl      = 8'b10100000
+    UpdateFC_Cpl      = 8'b1010_0000
   } dllp_type_e;
 
   typedef enum logic [2:0] {

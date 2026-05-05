@@ -2,8 +2,18 @@
 # IO constraints
 ################################################################################
 # SYSCLK
-set_property PACKAGE_PIN F6 [get_ports sys_clk_p]
-set_property PACKAGE_PIN E6 [get_ports sys_clk_n]
+set_property PACKAGE_PIN R4 [get_ports sys_clk_p]
+set_property PACKAGE_PIN T4 [get_ports sys_clk_n]
+
+set_property -dict {PACKAGE_PIN R4 IOSTANDARD DIFF_SSTL15} [get_ports {sys_clk_p}]; #
+set_property -dict {PACKAGE_PIN T4 IOSTANDARD DIFF_SSTL15} [get_ports {sys_clk_n}]; #
+
+set_property PACKAGE_PIN F10 [get_ports pcie_refclk_p]
+set_property PACKAGE_PIN E10 [get_ports pcie_refclk_n]
+set_property -dict {PACKAGE_PIN F10 IOSTANDARD DIFF_SSTL15} [get_ports {pcie_refclk_p}]; #
+set_property -dict {PACKAGE_PIN E10 IOSTANDARD DIFF_SSTL15} [get_ports {pcie_refclk_n}]; #
+create_clock -name pcie_refclk -period 10.0 [get_ports pcie_refclk_p]
+
 # set_property IOSTANDARD LVDS_25 [get_ports sys_clk_p]
 # set_property IOSTANDARD LVDS_25 [get_ports sys_clk_n]
 
@@ -33,10 +43,10 @@ set_property LOC IBUFDS_GTE2_X0Y0 [get_cells refclk_ibuf]
 # set_property IOSTANDARD LVCMOS33 [get_ports led_2]
 
 
-set_property PACKAGE_PIN A8 [get_ports pci_exp_rxn[0]]
-set_property PACKAGE_PIN B8 [get_ports pci_exp_rxp[0]]
-set_property PACKAGE_PIN A4 [get_ports pci_exp_txn[0]]
-set_property PACKAGE_PIN B4 [get_ports pci_exp_txp[0]]
+set_property PACKAGE_PIN C9 [get_ports pci_exp_rxn[0]]
+set_property PACKAGE_PIN D9 [get_ports pci_exp_rxp[0]]
+set_property PACKAGE_PIN C7 [get_ports pci_exp_txn[0]]
+set_property PACKAGE_PIN D7 [get_ports pci_exp_txp[0]]
 # set_property CFGBVS VCCO [current_design]
 # set_property CONFIG_VOLTAGE 3.3 [current_design]
 # set_property BITSTREAM.GENERAL.COMPRESS true [current_design]
@@ -48,9 +58,10 @@ set_property PACKAGE_PIN B4 [get_ports pci_exp_txp[0]]
 # set_property LOC AB9 [get_ports {led_3}]
 # set_property IOSTANDARD LVCMOS15 [get_ports {led_3}]
 
-
-set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
-set_property LOC M20 [get_ports sys_rst_n]
+set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33 PULLUP true} [get_ports {sys_rst_n}]; #
+set_false_path -from [get_ports sys_rst_n]; #
+# set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
+# set_property LOC L16 [get_ports sys_rst_n]
 # set_property PULLUP true [get_ports sys_rst_n]
 
 ################################################################################

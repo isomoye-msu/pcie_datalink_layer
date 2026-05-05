@@ -11,7 +11,7 @@ module pcie_top_gtp #(
     parameter         [11:0] RBAR_CAP_NEXTPTR              = 12'h000,
     parameter         [ 3:0] RBAR_CAP_VERSION              = 4'h1,
     parameter                PCIE_USE_MODE                 = "1.0",
-    parameter                PCIE_GT_DEVICE                = "GTX",
+    parameter                PCIE_GT_DEVICE                = "GTP",
     parameter                PL_AUTO_CONFIG                = 0,
     parameter                ENABLE_JTAG_DBG               = "FALSE",
     parameter                PL_FAST_TRAIN                 = "FALSE",
@@ -64,10 +64,10 @@ module pcie_top_gtp #(
     // input  logic [           (2*MAX_NUM_LANES)-1:0] phy_rxsync_header,
 
     // synthesis translate_off
-    output wire led_0,
-    output wire led_1,
-    output wire led_2,
-    output wire led_3,
+    output led_0,
+    output led_1,
+    output led_2,
+    output led_3,
 
     //TLP AXIS output
     // output logic [DATA_WIDTH-1:0] m_tlp_axis_tdata,
@@ -93,45 +93,38 @@ module pcie_top_gtp #(
 
     input sys_clk_p,
     input sys_clk_n,
-    input sys_rst_n
+    input sys_rst_n,
+    input pcie_refclk_p,
+    input pcie_refclk_n
 
 );
 
 
   wire sys_clk;
-  wire sys_clk_buf;
-  (* KEEP = "TRUE" *)wire led_0;
-  (* KEEP = "TRUE" *)wire led_1;
-  (* KEEP = "TRUE" *)wire led_2;
-  (* KEEP = "TRUE" *)wire led_3;
 
 
 
   //------------------------------------------------------------------------------
   // Instance IBUFDS of IBUFDS Module.
   //------------------------------------------------------------------------------
-  // IBUFDS IBUFDS (
-  //     // Inputs.
-  //     .I (sys_clk_p),
-  //     .IB(sys_clk_n),
+  IBUFDS IBUFDS (
+      // Inputs.
+      .I (sys_clk_p),
+      .IB(sys_clk_n),
 
-  //     // Outputs.
-  //     .O(sys_clk)
-  // );
-  IBUFDS_GTE2 refclk_ibuf (
-      .O(sys_clk),
-      .ODIV2(),
-      .I(sys_clk_p),
-      .CEB(1'b0),
-      .IB(sys_clk_n)
+      // Outputs.
+      .O(sys_clk)
   );
 
+  wire gt_refclk;
+  wire gt_refclk_div2_unused;
 
-  // BUFGCE: General Clock Buffer with Clock Enable
-  BUFGCE BUFGCE_inst (
-      .O (sys_clk_buf),   // 1-bit output: Buffer
-      .CE(1'b1),  // 1-bit input: Buffer enable
-      .I (sys_clk)    // 1-bit input: Clock input
+  IBUFDS_GTE2 i_pcie_refclk (
+      .I     (pcie_refclk_p),
+      .IB    (pcie_refclk_n),
+      .CEB   (1'b0),
+      .O     (gt_refclk),
+      .ODIV2 (gt_refclk_div2_unused)
   );
 
   // Parameters
@@ -142,7 +135,7 @@ module pcie_top_gtp #(
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
-  localparam IS_ROOT_PORT = 1;
+  localparam IS_ROOT_PORT = 0;
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;
@@ -185,7 +178,7 @@ module pcie_top_gtp #(
   wire [               MAX_NUM_LANES-1:0] phy_phystatus;
   wire                                    phy_phystatus_rst;
   wire [               MAX_NUM_LANES-1:0] phy_rxelecidle;
-  wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
+  (* mark_debug = "true", keep = "true" *)  wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
   wire [                             2:0] phy_txmargin;
   wire                                    phy_txswing;
   wire                                    phy_txdeemph;
@@ -205,9 +198,22 @@ module pcie_top_gtp #(
   wire [                           8-1:0] pipe_width_o;
   wire                                    as_mac_in_detect;
   wire                                    as_cdr_hold_req;
-  wire [                             7:0] debug_state;
-  wire                                    tx_elec_idle;
-  wire                                    phy_ready_en;
+  (* mark_debug = "true", keep = "true" *) wire [20:0] debug_state;
+  (* mark_debug = "true", keep = "true" *) wire tx_elec_idle = 1'b0;
+  wire phy_ready_en = 1'b1;
+
+  // PIPE debug alias wires (top-level for ILA visibility)
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txdetectrx  = phy_txdetectrx;
+  (* mark_debug = "true", keep = "true" *) wire [2:0]  dbg_rxstatus    = phy_rxstatus[2:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_phystatus   = phy_phystatus[0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_rxelecidle  = phy_rxelecidle[0];
+  wire        dbg_rxvalid     = phy_rxvalid[0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_rxdata      = phy_rxdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_rxdatak     = phy_rxdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_txdata      = phy_txdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_txdatak     = phy_txdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txelecidle  = phy_txelecidle[0];
+  wire [1:0]  dbg_powerdown   = phy_powerdown;
 
 
   wire [                  DATA_WIDTH-1:0] s_tlp_axis_tdata;
@@ -319,69 +325,62 @@ module pcie_top_gtp #(
   // 4. Physical Layer Control and Status (PL) Interface
   //-------------------------------------------------------
 
-  wire                     pl_directed_link_auton;
-  wire [              1:0] pl_directed_link_change;
-  wire                     pl_directed_link_speed;
-  wire [              1:0] pl_directed_link_width;
-  wire                     pl_upstream_prefer_deemph;
+  wire       pl_directed_link_auton;
+  wire [1:0] pl_directed_link_change;
+  wire       pl_directed_link_speed;
+  wire [1:0] pl_directed_link_width;
+  wire       pl_upstream_prefer_deemph;
 
-  wire                     sys_rst_n_c;
+  wire       sys_rst_n_c;
 
   // Wires used for external clocking connectivity
-  wire                     pipe_pclk_in;
-  wire                     pipe_rxusrclk_in;
-  wire [              7:0] pipe_rxoutclk_in;
-  wire                     pipe_dclk_in;
-  wire                     pipe_userclk1_in;
-  wire                     pipe_userclk2_in;
-  wire                     pipe_mmcm_lock_in;
+  wire       pipe_pclk_in;
+  wire       pipe_rxusrclk_in;
+  wire [7:0] pipe_rxoutclk_in;
+  wire       pipe_dclk_in;
+  wire       pipe_userclk1_in;
+  wire       pipe_userclk2_in;
+  wire       pipe_mmcm_lock_in;
 
-  wire                     pipe_txoutclk_out;
-  wire [              7:0] pipe_rxoutclk_out;
-  wire [              7:0] pipe_pclk_sel_out;
-  wire                     pipe_gen3_out;
-  wire                     pipe_oobclk_in;
+  wire       pipe_txoutclk_out;
+  wire [7:0] pipe_rxoutclk_out;
+  wire [7:0] pipe_pclk_sel_out;
+  wire       pipe_gen3_out;
+  wire       pipe_oobclk_in;
 
-  wire                     rx_np_req;
+  wire       rx_np_req;
 
   // Flow Control
-  wire [              2:0] fc_sel;
+  wire [2:0] fc_sel;
 
-  wire                     link_up;
+  (* mark_debug = "true", keep = "true" *) wire       link_up;
 
-  wire                     PIPE_TXOUTCLK_OUT;
-  wire                     PIPE_DCLK_IN;
-  wire                     PIPE_MMCM_LOCK_IN;
-  wire                     PIPE_RXUSRCLK_IN;
-  wire                     PIPE_OOBCLK_IN;
+  wire       PIPE_TXOUTCLK_OUT;
+  wire       PIPE_DCLK_IN;
+  wire       PIPE_MMCM_LOCK_IN;
+  wire       PIPE_RXUSRCLK_IN;
+  wire       PIPE_OOBCLK_IN;
 
 
-  wire                     trn_lnk_up;
-  reg                      user_reset_int;
-  reg                      bridge_reset_int;
-  reg                      bridge_reset_d;
-  reg                      phy_rdy_n;
-  wire                     user_clk_out;  // actually is user_clk2
-  reg                      user_reset_out;
-  reg                      user_lnk_up;
+  wire       trn_lnk_up;
+  reg        user_reset_int;
+  reg        bridge_reset_int;
+  reg        bridge_reset_d;
+  reg        phy_rdy_n;
+  wire       user_clk_out;  // actually is user_clk2
+  reg        user_reset_out;
+  reg        user_lnk_up;
 
-  assign m_tlp_axis_byte_swap_tdata[7:0] = m_tlp_axis_tdata[31:24];
-  assign m_tlp_axis_byte_swap_tdata[15:8] = m_tlp_axis_tdata[23:16];
+  assign m_tlp_axis_byte_swap_tdata[7:0]   = m_tlp_axis_tdata[31:24];
+  assign m_tlp_axis_byte_swap_tdata[15:8]  = m_tlp_axis_tdata[23:16];
   assign m_tlp_axis_byte_swap_tdata[23:16] = m_tlp_axis_tdata[15:8];
   assign m_tlp_axis_byte_swap_tdata[31:24] = m_tlp_axis_tdata[7:0];
 
 
-  assign s_tlp_axis_byte_swap_tdata[7:0] = s_tlp_axis_tdata[31:24];
-  assign s_tlp_axis_byte_swap_tdata[15:8] = s_tlp_axis_tdata[23:16];
+  assign s_tlp_axis_byte_swap_tdata[7:0]   = s_tlp_axis_tdata[31:24];
+  assign s_tlp_axis_byte_swap_tdata[15:8]  = s_tlp_axis_tdata[23:16];
   assign s_tlp_axis_byte_swap_tdata[23:16] = s_tlp_axis_tdata[15:8];
   assign s_tlp_axis_byte_swap_tdata[31:24] = s_tlp_axis_tdata[7:0];
-
-
-  assign led_0 = fc_initialized_o;
-  assign led_1 = phy_powerdown;
-  assign led_2 = link_up;
-  assign led_3 = phy_ready_en;
-
 
   pcie_phy_top #(
       .CLK_RATE     (CLK_RATE),
@@ -396,7 +395,7 @@ module pcie_top_gtp #(
       .CROSSLINK_EN (CROSSLINK_EN),
       .UPCONFIG_EN  (UPCONFIG_EN)
   ) pcie_phy_top_inst (
-      .clk_i            (sys_clk_buf),
+      .clk_i            (sys_clk),
       .rst_i            (!sys_rst_n),
       .en_i             (1'b1),
       .pipe_rx_usr_clk_i(PIPE_RXUSRCLK_IN),
@@ -445,10 +444,10 @@ module pcie_top_gtp #(
       .cfg_device_number_o  (cfg_device_number),
       .cfg_function_number_o(cfg_function_number),
 
-      .pipe_width_o     (pipe_width_o),
-      .as_mac_in_detect (as_mac_in_detect),
-      .as_cdr_hold_req  (as_cdr_hold_req),
-      .ltssm_debug_state(debug_state),
+      .pipe_width_o           (pipe_width_o),
+      .as_mac_in_detect       (as_mac_in_detect),
+      .as_cdr_hold_req        (as_cdr_hold_req),
+      .ltssm_debug_state      (debug_state),
       .tx_elec_idle     (tx_elec_idle),
       .phy_ready_en     (phy_ready_en),
       .link_up_o        (link_up),
@@ -480,7 +479,7 @@ module pcie_top_gtp #(
   wire cfg_err_internal_cor;
 
 
-  //axis input skid buffer
+//axis input skid buffer
   axis_register #(
       .DATA_WIDTH (APP_DATA_WIDTH),
       .KEEP_ENABLE(1'b1),
@@ -494,7 +493,7 @@ module pcie_top_gtp #(
       .USER_WIDTH (USER_WIDTH),
       .REG_TYPE   (2)
   ) app_rx_pipeline_inst (
-      .clk          (sys_clk_buf),
+      .clk          (sys_clk),
       .rst          (!sys_rst_n),
       .s_axis_tdata (s_app_axis_tdata),
       .s_axis_tkeep (s_app_axis_tkeep),
@@ -529,7 +528,7 @@ module pcie_top_gtp #(
       .USER_ENABLE  (1'b1),
       .USER_WIDTH   (USER_WIDTH)
   ) axis_app_rx_inst (
-      .clk(sys_clk_buf),
+      .clk(sys_clk),
       .rst(!sys_rst_n),
 
       .s_axis_tdata (s_app_reg_axis_tdata),
@@ -567,7 +566,7 @@ module pcie_top_gtp #(
       .USER_ENABLE  (1'b1),
       .USER_WIDTH   (USER_WIDTH)
   ) axis_app_tx_inst (
-      .clk(sys_clk_buf),
+      .clk(sys_clk),
       .rst(!sys_rst_n),
 
       .s_axis_tdata (m_tlp_axis_byte_swap_tdata),
@@ -599,7 +598,7 @@ module pcie_top_gtp #(
       // 1. AXI-S Interface                                                                                             //
       //----------------------------------------------------------------------------------------------------------------//
       // Common
-      .user_clk        (sys_clk_buf),
+      .user_clk        (sys_clk),
       .user_reset      (!sys_rst_n),
       .user_lnk_up     (link_up),
       // Tx
@@ -718,7 +717,7 @@ module pcie_top_gtp #(
 
   assign pipe_mmcm_rst_n = sys_rst_n;
 
-  // Clocking PRIMITIVE
+   // Clocking PRIMITIVE
   //------------------------------------
 
   // Instantiation of the MMCM PRIMITIVE
@@ -740,89 +739,89 @@ module pcie_top_gtp #(
   wire        clkfbout_clk_wiz_0;
   wire        clkfbout_buf_clk_wiz_0;
   wire        clkfboutb_unused;
-  wire        clkout0b_unused;
-  wire        clkout1_unused;
-  wire        clkout1b_unused;
-  wire        clkout2_unused;
-  wire        clkout2b_unused;
-  wire        clkout3_unused;
-  wire        clkout3b_unused;
-  wire        clkout4_unused;
+    wire clkout0b_unused;
+   wire clkout1_unused;
+   wire clkout1b_unused;
+   wire clkout2_unused;
+   wire clkout2b_unused;
+   wire clkout3_unused;
+   wire clkout3b_unused;
+   wire clkout4_unused;
   wire        clkout5_unused;
   wire        clkout6_unused;
   wire        clkfbstopped_unused;
   wire        clkinstopped_unused;
   wire        reset_high;
+  wire gt_clk;
 
-  // MMCME2_ADV
-  // #(.BANDWIDTH            ("OPTIMIZED"),
-  //   .CLKOUT4_CASCADE      ("FALSE"),
-  //   .COMPENSATION         ("ZHOLD"),
-  //   .STARTUP_WAIT         ("FALSE"),
-  //   .DIVCLK_DIVIDE        (1),
-  //   .CLKFBOUT_MULT_F      (10.000),
-  //   .CLKFBOUT_PHASE       (0.000),
-  //   .CLKFBOUT_USE_FINE_PS ("FALSE"),
-  //   .CLKOUT0_DIVIDE_F     (10.000),
-  //   .CLKOUT0_PHASE        (0.000),
-  //   .CLKOUT0_DUTY_CYCLE   (0.500),
-  //   .CLKOUT0_USE_FINE_PS  ("FALSE"),
-  //   .CLKIN1_PERIOD        (10.000))
-  // mmcm_adv_inst
-  //   // Output clocks
-  //  (
-  //   .CLKFBOUT            (clkfbout_clk_wiz_0),
-  //   .CLKFBOUTB           (clkfboutb_unused),
-  //   .CLKOUT0             (sys_clk_buf),
-  //   .CLKOUT0B            (clkout0b_unused),
-  //   .CLKOUT1             (clkout1_unused),
-  //   .CLKOUT1B            (clkout1b_unused),
-  //   .CLKOUT2             (clkout2_unused),
-  //   .CLKOUT2B            (clkout2b_unused),
-  //   .CLKOUT3             (clkout3_unused),
-  //   .CLKOUT3B            (clkout3b_unused),
-  //   .CLKOUT4             (clkout4_unused),
-  //   .CLKOUT5             (clkout5_unused),
-  //   .CLKOUT6             (clkout6_unused),
-  //    // Input clock control
-  //   .CLKFBIN             (clkfbout_buf_clk_wiz_0),
-  //   .CLKIN1              (sys_clk_buf),
-  //   .CLKIN2              (1'b0),
-  //    // Tied to always select the primary input clock
-  //   .CLKINSEL            (1'b1),
-  //   // Ports for dynamic reconfiguration
-  //   .DADDR               (7'h0),
-  //   .DCLK                (1'b0),
-  //   .DEN                 (1'b0),
-  //   .DI                  (16'h0),
-  //   .DO                  (do_unused),
-  //   .DRDY                (drdy_unused),
-  //   .DWE                 (1'b0),
-  //   // Ports for dynamic phase shift
-  //   .PSCLK               (1'b0),
-  //   .PSEN                (1'b0),
-  //   .PSINCDEC            (1'b0),
-  //   .PSDONE              (psdone_unused),
-  //   // Other control and status signals
-  //   .LOCKED              (locked_int),
-  //   .CLKINSTOPPED        (clkinstopped_unused),
-  //   .CLKFBSTOPPED        (clkfbstopped_unused),
-  //   .PWRDWN              (1'b0),
-  //   .RST                 (!sys_rst_n));
+  MMCME2_ADV
+  #(.BANDWIDTH            ("OPTIMIZED"),
+    .CLKOUT4_CASCADE      ("FALSE"),
+    .COMPENSATION         ("ZHOLD"),
+    .STARTUP_WAIT         ("FALSE"),
+    .DIVCLK_DIVIDE        (1),
+    .CLKFBOUT_MULT_F      (10.000),
+    .CLKFBOUT_PHASE       (0.000),
+    .CLKFBOUT_USE_FINE_PS ("FALSE"),
+    .CLKOUT0_DIVIDE_F     (10.000),
+    .CLKOUT0_PHASE        (0.000),
+    .CLKOUT0_DUTY_CYCLE   (0.500),
+    .CLKOUT0_USE_FINE_PS  ("FALSE"),
+    .CLKIN1_PERIOD        (10.000))
+  mmcm_adv_inst
+    // Output clocks
+   (
+    .CLKFBOUT            (clkfbout_clk_wiz_0),
+    .CLKFBOUTB           (clkfboutb_unused),
+    .CLKOUT0             (gt_clk),
+    .CLKOUT0B            (clkout0b_unused),
+    .CLKOUT1             (clkout1_unused),
+    .CLKOUT1B            (clkout1b_unused),
+    .CLKOUT2             (clkout2_unused),
+    .CLKOUT2B            (clkout2b_unused),
+    .CLKOUT3             (clkout3_unused),
+    .CLKOUT3B            (clkout3b_unused),
+    .CLKOUT4             (clkout4_unused),
+    .CLKOUT5             (clkout5_unused),
+    .CLKOUT6             (clkout6_unused),
+     // Input clock control
+    .CLKFBIN             (clkfbout_buf_clk_wiz_0),
+    .CLKIN1              (sys_clk),
+    .CLKIN2              (1'b0),
+     // Tied to always select the primary input clock
+    .CLKINSEL            (1'b1),
+    // Ports for dynamic reconfiguration
+    .DADDR               (7'h0),
+    .DCLK                (1'b0),
+    .DEN                 (1'b0),
+    .DI                  (16'h0),
+    .DO                  (do_unused),
+    .DRDY                (drdy_unused),
+    .DWE                 (1'b0),
+    // Ports for dynamic phase shift
+    .PSCLK               (1'b0),
+    .PSEN                (1'b0),
+    .PSINCDEC            (1'b0),
+    .PSDONE              (psdone_unused),
+    // Other control and status signals
+    .LOCKED              (locked_int),
+    .CLKINSTOPPED        (clkinstopped_unused),
+    .CLKFBSTOPPED        (clkfbstopped_unused),
+    .PWRDWN              (1'b0),
+    .RST                 (!sys_rst_n));
 
 
-  //      assign reset_high = reset; 
+//      assign reset_high = reset; 
 
   assign locked = locked_int;
-  // Clock Monitor clock assigning
-  //--------------------------------------
-  // Output buffering
+// Clock Monitor clock assigning
+//--------------------------------------
+ // Output buffering
   //-----------------------------------
 
-  BUFG clkf_buf (
-      .O(clkfbout_buf_clk_wiz_0),
-      .I(clkfbout_clk_wiz_0)
-  );
+  BUFG clkf_buf
+   (.O (clkfbout_buf_clk_wiz_0),
+    .I (clkfbout_clk_wiz_0));
 
 
 
@@ -871,7 +870,7 @@ module pcie_top_gtp #(
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
   pipe_wrapper #(
-      .PCIE_SIM_MODE             ("TRUE"),
+      .PCIE_SIM_MODE             ("FALSE"),
       // synthesis translate_off
       .PCIE_SIM_SPEEDUP          ("TRUE"),
       // synthesis translate_on
@@ -896,7 +895,7 @@ module pcie_top_gtp #(
       .PCIE_USE_MODE             (PCIE_USE_MODE),
       .PCIE_LANE                 (LINK_CAP_MAX_LINK_WIDTH),
       .PCIE_LPM_DFE              ("LPM"),
-      .PCIE_LINK_SPEED           (3),
+      .PCIE_LINK_SPEED           (2),
       .PCIE_TX_EIDLE_ASSERT_DELAY(3'd2),
       .PCIE_OOBCLK_MODE          (1),
       .PCIE_REFCLK_FREQ          (REF_CLK_FREQ),
@@ -904,7 +903,7 @@ module pcie_top_gtp #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
-      .PIPE_CLK    (sys_clk),
+      .PIPE_CLK    (gt_refclk),
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------
@@ -920,8 +919,8 @@ module pcie_top_gtp #(
       .PIPE_RXDATA          (phy_rxdata[31:0]),
       .PIPE_RXDATAK         (phy_rxdatak[3:0]),
       //---------- PIPE Command Ports ------------------
-      .PIPE_TXDETECTRX      (phy_txdetectrx),
-      .PIPE_TXELECIDLE      (phy_txelecidle),
+      .PIPE_TXDETECTRX      (phy_txdetectrx),             // TXUSRCLK2?
+      .PIPE_TXELECIDLE      (phy_txelecidle),             // TXUSRCLK2?
       .PIPE_TXCOMPLIANCE    (phy_txcompliance),
       .PIPE_RXPOLARITY      (phy_rxpolarity),
       .PIPE_POWERDOWN       (phy_powerdown),
@@ -932,18 +931,18 @@ module pcie_top_gtp #(
       .PIPE_TXDEEMPH        ({(LINK_CAP_MAX_LINK_WIDTH) {phy_txdeemph}}),
       //---------- PIPE Status Ports -------------------
       .PIPE_RXVALID         (phy_rxdata_valid[0:0]),
-      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),
+      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),       // RXUSRCLK2?
       .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
-      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),
+      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),      // RXUSRCLK2?
       .PIPE_EYESCANDATAERROR(),
-      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),
+      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),        // RXUSRCLK2?
       //---------- PIPE User Ports ---------------------------
       .PIPE_MMCM_RST_N      (pipe_mmcm_rst_n),
       .PIPE_PCLK_LOCK       (clock_locked),
       .PIPE_RXCHANISALIGNED (  /*gt_rxchanisaligned_wire[LINK_CAP_MAX_LINK_WIDTH-1:0]*/),
       //---------- External Clock Ports ---------------------------
-      .PIPE_PCLK_IN         (PIPE_PCLK_IN),
-      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),
+      .PIPE_PCLK_IN         (PIPE_PCLK_IN),             // TXUSRCLK2
+      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),         // RXUSRCLK2
       .PIPE_DCLK_IN         (PIPE_DCLK_IN),
       .PIPE_OOBCLK_IN       (PIPE_OOBCLK_IN),
       .PIPE_MMCM_LOCK_IN    (PIPE_MMCM_LOCK_IN),

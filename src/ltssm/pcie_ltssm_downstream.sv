@@ -16,14 +16,14 @@ module pcie_ltssm_downstream
     // TLP keep width
     parameter int KEEP_WIDTH    = DATA_WIDTH / 8,
     parameter int USER_WIDTH    = $bits(phy_user_t),
-    parameter int SIM_FAST_LINK = 1,
+    parameter int SIM_FAST_LINK = 1,              //! If set, makes the link training faster by reducing some of the timers, useful for simulation
 
-    parameter int          IS_ROOT_PORT       = 1,
+    parameter int          IS_ROOT_PORT       = 0,
     parameter int          LINK_NUM           = 0,
     parameter int          IS_UPSTREAM        = 0,    //downstream by default
     parameter int          CROSSLINK_EN       = 0,    //crosslink not supported
     parameter int          UPCONFIG_EN        = 0,    //upconfig not supported
-    parameter rate_speed_e MAX_SUPPORTED_RATE = gen3
+    parameter rate_speed_e MAX_SUPPORTED_RATE = gen1
 ) (
     input  logic                         clk_i,                //! 100MHz clock signal
     input  logic                         rst_i,                //! Reset signal
@@ -101,17 +101,16 @@ module pcie_ltssm_downstream
     //! @end
 );
 
-  localparam int ClockPeriodNs = ((10 ** 3) / CLK_RATE);
+  localparam int ClockPeriodNs = SIM_FAST_LINK ? ((10 ** 3) / CLK_RATE) * 10 : ((10 ** 3) / CLK_RATE);
   localparam longint TwentyFourMsTimeOut = (24 * (10 ** 4)) / ClockPeriodNs;
   localparam longint FourtyEightMsTimeOut = (48 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint TwelveMsTimeOut = SIM_FAST_LINK ? (12 * (10 ** 4)) / (ClockPeriodNs *10): 
-  (12 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint TwoMsTimeOut = (2 * (10 ** 4)) / ClockPeriodNs;
-  localparam longint OneMsTimeOut = SIM_FAST_LINK ? (1 * (10 ** 4)) / (ClockPeriodNs *10): (1 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint TwelveMsTimeOut =  (12 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint TwoMsTimeOut =   (2 * (10 ** 4)) / ClockPeriodNs;
+  localparam longint OneMsTimeOut = (1 * (10 ** 4)) / ClockPeriodNs;
   localparam int SixUsTimeOut = (6 * (10 ** 3)) / ClockPeriodNs;
   localparam int EigthHundredNanoSecondTimeOut = (800) / ClockPeriodNs;
   localparam int TwentyNanoSeconds = 20* (10 **0)/ ClockPeriodNs;  //(20 * (10** -9)); //)) / int'((1 / (CLK_RATE * $pow(10, 6))));
-  localparam int MinTS1sPolling = 1024;
+  localparam int MinTS1sPolling = SIM_FAST_LINK ? 64 : 1024;
 
   typedef enum logic [19:0] {
     ST_IDLE                                  = 20'h00,
@@ -312,7 +311,7 @@ module pcie_ltssm_downstream
 
   logic              [                   3:0] enumeration_try_c;
   logic              [                   3:0] enumeration_try_r;
-
+  logic [    MAX_NUM_LANES-1:0] phy_phystatus_r;
   assign active_lanes_o         = lane_active_r;
   assign ltssm_state_o          = curr_state;
   assign equalization_requested = (equal_req != '0 | !(equal_status_r.equal_complete));
@@ -379,7 +378,7 @@ module pcie_ltssm_downstream
       equalization_done_8gb_r        <= '0;
       gen_os_ctrl_r.valid            <= '0;
       start_equalization_w_preset_r  <= '1;
-      last_data_rate_r               <= gen3_basic;
+      last_data_rate_r               <= gen1_basic;
       curr_data_rate_r               <= gen1_basic;
       preset_coeff_r                 <= '0;
       equal_status_r                 <= '0;
@@ -400,6 +399,7 @@ module pcie_ltssm_downstream
 
       polarity_lockout_timer_r       <= '0;
       ordered_set_in_r               <= '0;
+      phy_phystatus_r <= '0;
       // for(i = 0; i < MAX_NUM_LANES; i++) begin
       //   preset_coeff_r.rx_preset <=
       //   tx_preset <=
@@ -443,6 +443,7 @@ module pcie_ltssm_downstream
       eieos_valid_r                  <= eieos_valid_c;
       enumeration_try_r              <= enumeration_try_c;
       polarity_inverted_r            <= polarity_inverted_c;
+      phy_phystatus_r <= phy_phystatus_i;
     end
     //non-resetable
     ordered_set_tranmitted_r <= ordered_set_tranmitted_i;
@@ -553,6 +554,7 @@ module pcie_ltssm_downstream
     phy_powerdown_o = '0;
     phy_txdeemph_o = '1;
     phy_txcompliance_o = '0;
+    polarity_inverted_c = polarity_inverted_r;
     // phy_rxpolarity_o = '0;
     phy_txmargin_o = '0;
     reset_timer_c = '0;
@@ -574,7 +576,6 @@ module pcie_ltssm_downstream
           phy_powerdown_o              = 2'b10;
           transmit_ordered_set         = '1;
           ordered_set_c                = gen_zeros();
-          reset_timer_c                = '1;
           if (curr_data_rate_r.rate != gen1) begin
             next_state = ST_DETECT_WAIT_ONE_MS;
           end else begin
@@ -585,6 +586,7 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Detect.Wait.One.Ms
       //*********************************************************
+      // Only necessary if data rate is greater than Gen1. This should also set datarate to gen1.
       ST_DETECT_WAIT_ONE_MS: begin
         // gen_os_ctrl_c.gen_idle = '1;
         //bounded timeout counter
@@ -608,8 +610,7 @@ module pcie_ltssm_downstream
         phy_txelecidle_o = '1;
         phy_powerdown_o  = 2'b10;
         phy_txdeemph_o   = '0;
-        if (((|lane_status_i) || (timer_r >= TwelveMsTimeOut)) && (ordered_set_tranmitted_r) 
-        && (!phy_phystatus_rst_i)) begin
+        if ((|lane_status_i) ) begin
           //reset counts
           // timer_c       = '0;
           next_state    = ST_DETECT_ACTIVE;
@@ -625,54 +626,47 @@ module pcie_ltssm_downstream
         // gen_os_ctrl_c.gen_idle = '1;
         //bounded timeout counter
         // timer_c             = (timer_r >= TwoMsTimeOut) ? TwoMsTimeOut : timer_r + 1;
-        gen_os_ctrl_c.valid = '1;
-        phy_txdetectrx_o = '1;
-        phy_txelecidle_o = '1;
-        if ((ordered_set_tranmitted_r)) begin
-          if (&lane_status_i) begin
-            success_c        = '1;
-            // timer_c          = '0;
-            lanes_detected_c = lane_status_i;
-            next_state       = ST_POLLING;
-            reset_timer_c    = '1;
-          end else if ((timer_r >= TwoMsTimeOut)) begin
-            if (|lane_status_i) begin
+         phy_txdetectrx_o = '1;
+        phy_powerdown_o  = 2'b10;
+
+        // Wait for receiver detection to finish
+        if (|phy_phystatus_r) begin
+          if (|receiver_detected_i) begin
+            if (&receiver_detected_i) begin
               success_c        = '1;
               // timer_c          = '0;
-              lanes_detected_c = lane_status_i;
-              next_state       = ST_DETECT_RX;
-              reset_timer_c    = '1;
+              lanes_detected_c = receiver_detected_i;
+              next_state       = ST_POLLING;
             end else begin
-              error_c    = '1;
-              // timer_c    = '0;
-              next_state = ST_IDLE;
-              reset_timer_c = '1;
-            end
+              lanes_detected_c = receiver_detected_i;
+              next_state       = ST_DETECT_RX;
+            end 
+          end else begin
+            next_state = ST_IDLE; // Should technically be ST_DETECT_QIUET
           end
+        end else if (timer_r >= TwentyFourMsTimeOut) begin
+          next_state =  ST_IDLE; // Should technically be ST_DETECT_QIUET
         end
       end
       //*********************************************************
       // Detect.Recever.Detection
       //*********************************************************
       ST_DETECT_RX: begin
-        // timer_c = timer_r + 1;
-        // gen_os_ctrl_c.valid    = '1;
-        // gen_os_ctrl_c.gen_idle = '1;
-        phy_txdetectrx_o = '1;
-        phy_txelecidle_o = '1;
-        if (timer_r >= TwoMsTimeOut) begin
-          if ((ordered_set_tranmitted_r)) begin
-            if ((lane_status_i == '1) || (lane_status_i == lane_status_r)) begin
+         if (timer_r >= TwelveMsTimeOut) begin
+          phy_txdetectrx_o = '1;
+          phy_powerdown_o  = 2'b10;
+          if (|phy_phystatus_r) begin
+            if ((lanes_detected_r == receiver_detected_i)) begin
               success_c        = '1;
-              lanes_detected_c = lane_status_i;
+              lanes_detected_c = receiver_detected_i;
               next_state       = ST_POLLING;
-              reset_timer_c    = '1;
             end else begin
               error_c    = '1;
-              reset_timer_c = '1;
               next_state = ST_IDLE;
             end
-          end
+          end 
+        end else if (timer_r >= TwentyFourMsTimeOut) begin
+          next_state = ST_IDLE;
         end
       end
       //*********************************************************
@@ -694,6 +688,9 @@ module pcie_ltssm_downstream
       //*********************************************************
       // Polling.Active
       //*********************************************************
+      //*********************************************************
+      // Polling.Active
+      //*********************************************************
       ST_POLLING_ACTIVE: begin
         //bounded timeout counter
         // timer_c = (timer_r >= TwentyFourMsTimeOut) ? TwentyFourMsTimeOut : timer_r + 1;
@@ -701,18 +698,56 @@ module pcie_ltssm_downstream
         //Idle and transmitting the TS1 Ordered Sets.
         // Phy transmitter handles common mode settling, will throttle with tready
         //check if timer reached or TSOS sent count met
+        // transmit_ordered_set = '1;
         //check if last packet in frame
-        if (ordered_set_tranmitted_r) begin
+        if (ordered_set_tranmitted_i) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1;
-          if (|polarity_inverted_i && (polarity_lockout_timer_r == 0)) begin
-            polarity_inverted_c = polarity_inverted_r ^ polarity_inverted_i;
-            polarity_lockout_timer_c = 16'd1000;  // ~10us lockout
-          end
+        end
 
-          if ((timer_r >= TwentyFourMsTimeOut) || (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
-            //reset counts
-            next_state = ST_POLLING_ACTIVE_GEN_OS;
+        if (|polarity_inverted_i && (polarity_lockout_timer_r == 0)) begin
+          polarity_inverted_c = polarity_inverted_r ^ polarity_inverted_i;
+          polarity_lockout_timer_c = 16'd1000;  // ~10us lockout
+        end
+
+
+        if ((ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+          if (&lanes_ts1_satisfied || &lanes_ts2_satisfied) begin
+            ordered_set_sent_cnt_c = '0;
+            //build ts2 ordered set
+            gen_os_ctrl_c.gen_ts1 = '0;
+            gen_os_ctrl_c.gen_ts2 = '1;
+            // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+            ordered_set_c = gen_ts_os(gen1, TS2);
+            transmit_ordered_set = '1;
+            //goto cofig
+            next_state = ST_POLLING_CONFIGURATION;
           end
+        end
+
+
+        if ((timer_r >= TwentyFourMsTimeOut) && (ordered_set_sent_cnt_r >= MinTS1sPolling)) begin
+          //reset counts
+          // timer_c                = '0;
+          ordered_set_sent_cnt_c = '0;
+          //check if ts1 reqs satisfied
+          if (&lanes_ts1_satisfied) begin
+            // //build ts2 ordered set
+            gen_os_ctrl_c.gen_ts1 = '0;
+            gen_os_ctrl_c.gen_ts2 = '1;
+            // // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+            // ordered_set_c = gen_ts_os( gen1, TS2);
+            // transmit_ordered_set = '1;
+            //goto cofig
+            next_state = ST_POLLING_ACTIVE_GEN_OS;
+          end else if (|lanes_ts1_satisfied) begin
+            // TODO: This should be entered when a 24 ms timeout is reached, 1024 TS1s were sent and 
+            // Any lane received 8 consecutive TS1s with the copmbliance rceive bit of symbol 5 == 1 and loopback bit == 0
+            next_state = ST_POLLING_COMPLIANCE;
+          end
+        end
+        if (timer_r >= TwentyFourMsTimeOut) begin
+          // If neither are met we go to ST_IDLE (Detect State...)
+          next_state = ST_IDLE;
         end
       end
       ST_POLLING_ACTIVE_GEN_OS: begin
@@ -720,21 +755,15 @@ module pcie_ltssm_downstream
         // timer_c                = '0;
         ordered_set_sent_cnt_c = '0;
         //check if ts1 reqs satisfied
-        if (&lanes_ts1_satisfied) begin
-          //build ts2 ordered set
-          gen_os_ctrl_c.gen_ts1 = '0;
-          gen_os_ctrl_c.gen_ts2 = '1;
-          // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
-          ordered_set_c = gen_ts_os(gen1, TS2);
-          transmit_ordered_set = '1;
-          reset_timer_c = '1;
-          //goto cofig
-          next_state = ST_POLLING_CONFIGURATION;
-        end else begin
-          //goto compliance
-          reset_timer_c = '1;
-          next_state = ST_POLLING_COMPLIANCE;
-        end
+        //build ts2 ordered set
+        gen_os_ctrl_c.gen_ts1 = '0;
+        gen_os_ctrl_c.gen_ts2 = '1;
+        // ordered_set_c = gen_ts_os( gen1, TS1,PAD_,PAD_,'1);
+        ordered_set_c = gen_ts_os(gen1, TS2);
+        transmit_ordered_set = '1;
+        reset_timer_c = '1;
+        //goto cofig
+        next_state = ST_POLLING_CONFIGURATION;
       end
       //*********************************************************
       // Polling.Compliance: NOT IMPLEMENTED
@@ -750,6 +779,7 @@ module pcie_ltssm_downstream
       //  Polling.Configuration
       //-----------------------------------------------------------
       ST_POLLING_CONFIGURATION: begin
+        transmit_ordered_set = '1;
         //bounded timeout counter
         if (ordered_set_tranmitted_r) begin
           ordered_set_sent_cnt_c = ordered_set_sent_cnt_r + 1'b1;
@@ -975,7 +1005,7 @@ module pcie_ltssm_downstream
       //  Configuration.Idle
       //-----------------------------------------------------------
       ST_CONFIGURATION_IDLE: begin
-        transmit_ordered_set   = '1;
+        transmit_ordered_set = '1;
         if (ordered_set_tranmitted_r) begin
           //check if idle received
           if (|single_idle_received) begin
@@ -1730,6 +1760,7 @@ module pcie_ltssm_downstream
                   /*&& ordered_set_in_r[lane].train_ctrl.loopback*/
                   ) begin
                 ts1_cnt <= ts1_cnt >= 8'h8 ? 8'h8 : ts1_cnt + 1;
+                single_idle_received[lane] <= '1;
               end else begin
                 ts1_cnt <= '0;
               end
