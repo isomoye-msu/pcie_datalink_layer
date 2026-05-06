@@ -17,10 +17,7 @@ filesets:
       - fusesoc:pcie:dllp_receive
       - fusesoc:pcie:dllp_transmit
       - fusesoc:pcie:lint
-  
-  synth:
-    files:
-      - dllp.xdc : {file_type : xdc}
+
 
 targets:
   default:
@@ -36,7 +33,7 @@ targets:
 
   synth:
     default_tool : vivado
-    filesets : [rtl,synth]
+    filesets : [rtl]
     tools:
       vivado:
         part : xc7a100tcsg324-1

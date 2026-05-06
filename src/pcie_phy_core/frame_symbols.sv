@@ -37,12 +37,9 @@ module frame_symbols
   //tlp to dllp fsm emum
   typedef enum logic [3:0] {
     ST_IDLE,
-    ST_STP,
-    ST_SDP,
     ST_FRAME_STREAM,
     ST_FRAME_GEN_3_TLP,
     ST_FRAME_GEN_3_DLLP,
-    ST_FRAME_GEN_3_TLP_CRC,
     ST_FRAME_GEN_3_TLP_SDS,
     ST_FRAME_GEN_3_STREAM,
     ST_FRAME_LAST,
@@ -54,14 +51,6 @@ module frame_symbols
   //fsm holder signals
   frame_st_e                  curr_state;
   frame_st_e                  next_state;
-
-  logic      [DATA_WIDTH-1:0] skid_axis_tdata;
-  logic      [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  logic                       skid_axis_tvalid;
-  logic                       skid_axis_tlast;
-  logic      [USER_WIDTH-1:0] skid_axis_tuser;
-  logic                       skid_axis_tready;
-
   //phy data out axis signals
   logic      [DATA_WIDTH-1:0] phy_axis_tdata;
   logic      [KEEP_WIDTH-1:0] phy_axis_tkeep;
@@ -77,16 +66,6 @@ module frame_symbols
   logic                       buffer_axis_tlast;
   logic      [USER_WIDTH-1:0] buffer_axis_tuser;
   logic                       buffer_axis_tready;
-
-
-  logic      [DATA_WIDTH-1:0] second_buffer_axis_tdata;
-  logic      [KEEP_WIDTH-1:0] second_buffer_axis_tkeep;
-  logic                       second_buffer_axis_tvalid;
-  logic                       second_buffer_axis_tlast;
-  logic      [USER_WIDTH-1:0] second_buffer_axis_tuser;
-  logic                       second_buffer_axis_tready;
-
-
 
   //flow buffer axis stage1 signals
   logic      [DATA_WIDTH-1:0] fifo_axis_tdata;
@@ -106,10 +85,8 @@ module frame_symbols
 
   logic      [          15:0] tlp_length_c;
   logic      [          15:0] tlp_length_r;
-  logic      [           3:0] fcrc_c;
-  logic      [           3:0] fcrc_r;
-  logic                       fp_c;
-  logic                       fp_r;
+  logic      [           3:0] fcrc;
+  logic                       fp;
   logic                       fifo_ready;
   logic                       fifo_valid;
   logic                       is_tlp_c;
@@ -117,7 +94,6 @@ module frame_symbols
   logic                       is_dllp_c;
   logic                       is_dllp_r;
   logic                       mux_axis_buffer;
-  logic                       assert_buffer;
 
   always @(posedge clk_i) begin
     if (rst_i) begin
@@ -128,190 +104,166 @@ module frame_symbols
     tlp_length_r <= tlp_length_c;
     is_tlp_r     <= is_tlp_c;
     is_dllp_r    <= is_dllp_c;
-    fcrc_r       <= fcrc_c;
-    fp_r         <= fp_c;
   end
 
 
   always_comb begin : main_seq
-    next_state       = curr_state;
-    phy_axis_tdata   = '0;
-    phy_axis_tkeep   = '0;
-    phy_axis_tvalid  = '0;
-    phy_axis_tlast   = '0;
-    phy_axis_tuser   = '0;
-    skid_axis_tready = '0;
-    fifo_valid       = '0;
-    mux_axis_buffer  = '0;
-    is_tlp_c         = is_tlp_r;
-    is_dllp_c        = is_dllp_r;
-    tlp_length_c     = tlp_length_r;
-    fcrc_c           = fcrc_r;
-    fp_c             = fp_r;
-    assert_buffer    = '0;
+    next_state      = curr_state;
+    phy_axis_tdata  = '0;
+    phy_axis_tkeep  = '0;
+    phy_axis_tvalid = '0;
+    phy_axis_tlast  = '0;
+    phy_axis_tuser  = '0;
+    s_axis_tready   = '0;
+    fifo_valid      = '0;
+    mux_axis_buffer = '0;
+    is_tlp_c        = is_tlp_r;
+    is_dllp_c       = is_dllp_r;
+    tlp_length_c    = tlp_length_r;
 
-    // if (!mux_axis_buffer) begin
-    //   mux_axis_tdata  = skid_axis_tdata;
-    //   mux_axis_tkeep  = skid_axis_tkeep;
-    //   mux_axis_tvalid = skid_axis_tvalid;
-    //   mux_axis_tlast  = skid_axis_tlast;
-    //   mux_axis_tuser  = skid_axis_tuser;
-    // end else begin
-    //   mux_axis_tdata  = fifo_axis_tdata;
-    //   mux_axis_tkeep  = fifo_axis_tkeep;
-    //   mux_axis_tvalid = fifo_axis_tvalid;
-    //   mux_axis_tlast  = fifo_axis_tlast;
-    //   mux_axis_tuser  = fifo_axis_tuser;
-    // end
+    if (!mux_axis_buffer) begin
+      mux_axis_tdata  = s_axis_tdata;
+      mux_axis_tkeep  = s_axis_tkeep;
+      mux_axis_tvalid = s_axis_tvalid;
+      mux_axis_tlast  = s_axis_tlast;
+      mux_axis_tuser  = s_axis_tuser;
+    end else begin
+      mux_axis_tdata  = fifo_axis_tdata;
+      mux_axis_tkeep  = fifo_axis_tkeep;
+      mux_axis_tvalid = fifo_axis_tvalid;
+      mux_axis_tlast  = fifo_axis_tlast;
+      mux_axis_tuser  = fifo_axis_tuser;
+    end
     case (curr_state)
       //wait until pipeline is full and upstream ready
       //store packet, because we're shifting the data to fit in
       //the seq number, we'll need to save 2 bytes of this packet
       ST_IDLE: begin
-        skid_axis_tready = phy_axis_tready || !skid_axis_tvalid;
-        if (phy_axis_tready && skid_axis_tvalid) begin
+        if (phy_axis_tready && s_axis_tvalid) begin
+          phy_axis_tvalid = '1;
+          phy_axis_tkeep  = '1;
           if (curr_data_rate_i < gen3) begin
-            assert_buffer = '1;
-            if (skid_axis_tuser[0]) begin
-              next_state = ST_SDP;
-            end else begin
-              next_state = ST_STP;
-            end
+            s_axis_tready = '1;
+            phy_axis_tdata = {s_axis_tdata[23:0], s_axis_tuser[0] ? SDP : STP};
+            phy_axis_tuser = 4'b0001;
+            next_state = ST_FRAME_STREAM;
           end else begin
-            next_state = ST_IDLE;
-            // if (skid_axis_tuser[0]) begin
-            //   is_dllp_c      = '1;
-            //   is_tlp_c       = '0;
-            //   skid_axis_tready  = '1;
-            //   phy_axis_tdata = {skid_axis_tdata[15:0], GEN3_SDP[15:0]};
-            //   phy_axis_tuser = 4'b0011;
-            //   next_state     = ST_IDLE;
-            // end else if (skid_axis_tuser[1] && fifo_ready) begin
-            //   is_dllp_c     = '0;
-            //   is_tlp_c      = '1;
-            //   fifo_valid    = '1;
-            //   skid_axis_tready = '1;
-            //   next_state    = ST_IDLE;
-            // end
+            if (s_axis_tuser[0]) begin
+              is_dllp_c      = '1;
+              is_tlp_c       = '0;
+              s_axis_tready  = '1;
+              phy_axis_tdata = {s_axis_tdata[15:0], GEN3_SDP[15:0]};
+              phy_axis_tuser = 4'b0011;
+              next_state     = ST_FRAME_GEN_3_DLLP;
+            end else if (s_axis_tuser[1] && fifo_ready) begin
+              is_dllp_c     = '0;
+              is_tlp_c      = '1;
+              fifo_valid    = '1;
+              s_axis_tready = '1;
+              next_state    = ST_FRAME_GEN_3_TLP;
+            end
           end
         end
-      end
-      ST_SDP: begin
-        phy_axis_tvalid = '1;
-        phy_axis_tkeep  = '1;
-        phy_axis_tdata  = {buffer_axis_tdata[23:0], SDP};
-        phy_axis_tuser  = 4'b0001;
-        next_state      = ST_FRAME_STREAM;
-      end
-      ST_STP: begin
-        phy_axis_tvalid = '1;
-        phy_axis_tkeep  = '1;
-        // skid_axis_tready = '1;
-        phy_axis_tdata  = {buffer_axis_tdata[23:0], STP};
-        phy_axis_tuser  = 4'b0001;
-        next_state      = ST_FRAME_STREAM;
       end
       ST_FRAME_STREAM: begin
-        skid_axis_tready = phy_axis_tready;
-        if (skid_axis_tready && skid_axis_tvalid) begin
-          skid_axis_tready = '1;
+        s_axis_tready   = phy_axis_tready;
+        if (s_axis_tready && s_axis_tvalid) begin
+          s_axis_tready   = '1;
           phy_axis_tvalid = '1;
-          assert_buffer = '1;
-          phy_axis_tdata = {skid_axis_tdata[23:0], buffer_axis_tdata[31:24]};
-          phy_axis_tkeep = {skid_axis_tkeep[2:0], buffer_axis_tkeep[3]};
-          if (skid_axis_tlast) begin
-            // next_state = ST_IDLE;
-            phy_axis_tvalid = 0;
-            next_state = ST_FRAME_LAST;
-            // endcase
+          phy_axis_tdata  = {s_axis_tdata[23:0], buffer_axis_tdata[31:24]};
+          phy_axis_tkeep  = {s_axis_tkeep[2:0], buffer_axis_tkeep[3]};
+          if (s_axis_tlast) begin
+            next_state = ST_IDLE;
+            // phy_axis_tlast = '1;
+            case (s_axis_tkeep)
+              4'b0001: begin
+                phy_axis_tdata[23:16] = ENDP;
+                phy_axis_tkeep[2]     = '1;
+                phy_axis_tuser        = 4'b0100;
+                phy_axis_tlast        = '1;
+              end
+              4'b0011: begin
+                phy_axis_tdata[31:24] = ENDP;
+                phy_axis_tuser        = 4'b1000;
+                phy_axis_tlast        = '1;
+                phy_axis_tkeep[3]     = '1;
+              end
+              default: begin
+                next_state = ST_FRAME_LAST;
+              end
+            endcase
           end
         end
       end
-      // ST_FRAME_GEN_3_DLLP: begin
-      //   if (phy_axis_tready && skid_axis_tvalid) begin
-      //     skid_axis_tready   = '1;
-      //     phy_axis_tvalid = '1;
-      //     phy_axis_tdata  = {skid_axis_tdata[15:0], buffer_axis_tdata[31:16]};
-      //     phy_axis_tkeep  = {skid_axis_tkeep[1:0], buffer_axis_tkeep[3:2]};
-      //     if (skid_axis_tlast) begin
-      //       phy_axis_tlast = '1;
-      //       next_state = ST_IDLE;
-      //       case (skid_axis_tkeep)
-      //         4'b0001, 4'b0011: begin
-      //         end
-      //         default: begin
-      //           phy_axis_tlast = '0;
-      //           next_state     = ST_FRAME_LAST_DLLP;
-      //         end
-      //       endcase
-      //     end
-      //   end
-      // end
-      // ST_FRAME_GEN_3_TLP: begin
-      //   skid_axis_tready = fifo_ready;
-      //   fifo_valid    = '1;
-      //   if (fifo_ready && skid_axis_tvalid) begin
-      //     tlp_length_c = tlp_length_r + 1'b1;
-      //     if (skid_axis_tlast) begin
-      //       next_state = ST_FRAME_GEN_3_TLP_CRC;
-      //       if (skid_axis_tkeep != 4'b0011) begin
-      //         //this is bad.. misalliged tlp. goto idle
-      //         next_state = ST_IDLE;
-      //       end
-      //     end
-      //   end
-      // end
-      // ST_FRAME_GEN_3_TLP_CRC: begin
-      //   gen_fcrc_parity(fcrc_c, fp_c, tlp_length_r);
-      //   next_state = ST_FRAME_GEN_3_TLP_SDS;
-      // end
-      // ST_FRAME_GEN_3_TLP_SDS: begin
-      //   fifo_axis_tready = phy_axis_tready;
-      //   mux_axis_buffer  = '1;
-      //   if (phy_axis_tready && fifo_axis_tvalid) begin
-      //     phy_axis_tvalid = '1;
-      //     phy_axis_tuser  = '1;
-      //     gen_stp_gen3(phy_axis_tdata, fp_r, fcrc_r, tlp_length_r, {
-      //                  fifo_axis_tdata[15:8], fifo_axis_tdata[3:0]});
-      //     next_state = ST_FRAME_GEN_3_STREAM;
-      //   end
-      // end
-      // ST_FRAME_GEN_3_STREAM: begin
-      //   fifo_axis_tready = phy_axis_tready;
-      //   if (phy_axis_tready && fifo_axis_tvalid) begin
-      //     phy_axis_tvalid = '1;
-      //     phy_axis_tdata  = {fifo_axis_tdata[15:0], buffer_axis_tdata[31:16]};
-      //     phy_axis_tkeep  = {fifo_axis_tdata[1:0], buffer_axis_tkeep[3:2]};
-      //     if (fifo_axis_tlast) begin
-      //       next_state = ST_FRAME_LAST_DLLP;
-      //       case (fifo_axis_tkeep)
-      //         4'b0001, 4'b0011: begin
-      //         end
-      //         default: begin
-      //           next_state = ST_FRAME_LAST_DLLP;
-      //         end
-      //       endcase
-      //     end
-      //   end
-      // end
+      ST_FRAME_GEN_3_DLLP: begin
+        if (phy_axis_tready && s_axis_tvalid) begin
+          s_axis_tready   = '1;
+          phy_axis_tvalid = '1;
+          phy_axis_tdata  = {s_axis_tdata[15:0], buffer_axis_tdata[31:16]};
+          phy_axis_tkeep  = {s_axis_tkeep[1:0], buffer_axis_tkeep[3:2]};
+          if (s_axis_tlast) begin
+            phy_axis_tlast = '1;
+            next_state = ST_IDLE;
+            case (s_axis_tkeep)
+              4'b0001, 4'b0011: begin
+              end
+              default: begin
+                phy_axis_tlast = '0;
+                next_state = ST_FRAME_LAST_DLLP;
+              end
+            endcase
+          end
+        end
+      end
+      ST_FRAME_GEN_3_TLP: begin
+        s_axis_tready = fifo_ready;
+        fifo_valid    = '1;
+        if (fifo_ready && s_axis_tvalid) begin
+          tlp_length_c = tlp_length_r + 1'b1;
+          if (s_axis_tlast) begin
+            next_state = ST_FRAME_GEN_3_TLP_SDS;
+            if (s_axis_tkeep != 4'b0011) begin
+              //this is bad.. misalliged tlp. goto idle
+              next_state = ST_IDLE;
+            end
+          end
+        end
+      end
+      ST_FRAME_GEN_3_TLP_SDS: begin
+        fifo_axis_tready = phy_axis_tready;
+        mux_axis_buffer  = '1;
+        if (phy_axis_tready && fifo_axis_tvalid) begin
+          phy_axis_tvalid = '1;
+          phy_axis_tuser  = '1;
+          gen_fcrc_parity(fcrc, fp, tlp_length_r);
+          gen_stp_gen3(phy_axis_tdata, fp, fcrc, tlp_length_r, {
+                       fifo_axis_tdata[15:8], fifo_axis_tdata[3:0]});
+          next_state = ST_FRAME_GEN_3_STREAM;
+        end
+      end
+      ST_FRAME_GEN_3_STREAM: begin
+        fifo_axis_tready = phy_axis_tready;
+        if (phy_axis_tready && fifo_axis_tvalid) begin
+          phy_axis_tvalid = '1;
+          phy_axis_tdata  = {fifo_axis_tdata[15:0], buffer_axis_tdata[31:16]};
+          phy_axis_tkeep  = {fifo_axis_tdata[1:0], buffer_axis_tkeep[3:2]};
+          if (fifo_axis_tlast) begin
+            next_state = ST_FRAME_LAST_DLLP;
+            case (fifo_axis_tkeep)
+              4'b0001, 4'b0011: begin
+              end
+              default: begin
+                next_state = ST_FRAME_LAST_DLLP;
+              end
+            endcase
+          end
+        end
+      end
       ST_FRAME_LAST: begin
         if (phy_axis_tready) begin
           next_state = ST_IDLE;
           phy_axis_tvalid = '1;
-          phy_axis_tdata = {buffer_axis_tdata[23:0], second_buffer_axis_tdata[31:24]};
           case (buffer_axis_tkeep)
-            4'b0001: begin
-              phy_axis_tdata[23:16] = ENDP;
-              phy_axis_tkeep[2]     = '1;
-              phy_axis_tuser        = 4'b0100;
-              phy_axis_tlast        = '1;
-            end
-            4'b0011: begin
-              phy_axis_tdata[31:24] = ENDP;
-              phy_axis_tuser        = 4'b1000;
-              phy_axis_tlast        = '1;
-              phy_axis_tkeep[3]     = '1;
-            end
             4'b0111: begin
               phy_axis_tuser      = 4'b0001;
               phy_axis_tdata[7:0] = ENDP;
@@ -319,7 +271,7 @@ module frame_symbols
             end
             4'b1111: begin
               phy_axis_tuser = 4'b0010;
-              phy_axis_tdata = {ENDP, second_buffer_axis_tdata[31:24]};
+              phy_axis_tdata = {ENDP, buffer_axis_tdata[31:24]};
               phy_axis_tkeep = 4'b0011;
             end
             default: begin
@@ -327,242 +279,169 @@ module frame_symbols
           endcase
         end
       end
-      // ST_FRAME_LAST_DLLP: begin  //unreachable in current design
-      //   if (phy_axis_tready) begin
-      //     next_state      = ST_IDLE;
-      //     phy_axis_tvalid = '1;
-      //     case (buffer_axis_tkeep)
-      //       4'b0111: begin
-      //         phy_axis_tdata[15:0] = buffer_axis_tdata[23:16];
-      //         phy_axis_tkeep[1:0]  = buffer_axis_tkeep[3];
-      //       end
-      //       4'b1111: begin
-      //         phy_axis_tdata[15:0] = buffer_axis_tdata[31:16];
-      //         phy_axis_tkeep       = buffer_axis_tkeep[3:2];
-      //       end
-      //       default: begin
-      //       end
-      //     endcase
-      //   end
-      // end
-      // ST_FRAME_LAST_DLLP_ALLIGN: begin  //unreachable in current design
-      //   if (phy_axis_tready) begin
-      //     next_state      = ST_IDLE;
-      //     phy_axis_tvalid = '1;
-      //     phy_axis_tlast  = '1;
-      //     case (buffer_axis_tkeep)
-      //       4'b0111: begin
-      //         phy_axis_tuser = 4'b0001;
-      //         phy_axis_tdata = GEN3_EDS[31:24];
-      //         phy_axis_tkeep = 4'b0001;
-      //       end
-      //       4'b1111: begin
-      //         phy_axis_tuser    = 4'b0011;
-      //         phy_axis_tdata    = GEN3_EDS[31:16];
-      //         phy_axis_tkeep[0] = 4'b0011;
-      //       end
-      //       default: begin
-      //       end
-      //     endcase
-      //   end
-      // end
+      ST_FRAME_LAST_DLLP: begin  //unreachable in current design
+        if (phy_axis_tready) begin
+          next_state = ST_IDLE;
+          phy_axis_tvalid = '1;
+          case (buffer_axis_tkeep)
+            4'b0111: begin
+              phy_axis_tdata[15:0] = buffer_axis_tdata[23:16];
+              phy_axis_tkeep[1:0]  = buffer_axis_tkeep[3];
+            end
+            4'b1111: begin
+              phy_axis_tdata[15:0] = buffer_axis_tdata[31:16];
+              phy_axis_tkeep       = buffer_axis_tkeep[3:2];
+            end
+            default: begin
+            end
+          endcase
+        end
+      end
+      ST_FRAME_LAST_DLLP_ALLIGN: begin  //unreachable in current design
+        if (phy_axis_tready) begin
+          next_state      = ST_IDLE;
+          phy_axis_tvalid = '1;
+          phy_axis_tlast  = '1;
+          case (buffer_axis_tkeep)
+            4'b0111: begin
+              phy_axis_tuser = 4'b0001;
+              phy_axis_tdata = GEN3_EDS[31:24];
+              phy_axis_tkeep = 4'b0001;
+            end
+            4'b1111: begin
+              phy_axis_tuser    = 4'b0011;
+              phy_axis_tdata    = GEN3_EDS[31:16];
+              phy_axis_tkeep[0] = 4'b0011;
+            end
+            default: begin
+            end
+          endcase
+        end
+      end
       default: begin
       end
     endcase
   end
 
-
-
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
+      .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
+      .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_input_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (s_axis_tdata),
-      .s_axis_tkeep (s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid),
-      .s_axis_tready(s_axis_tready),
-      .s_axis_tlast (s_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (s_axis_tuser),
-      .m_axis_tdata (skid_axis_tdata),
-      .m_axis_tkeep (skid_axis_tkeep),
-      .m_axis_tvalid(skid_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast (skid_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (skid_axis_tuser)
-  );
-
-
-  //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
   ) axis_buffer_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (skid_axis_tdata),
-      .s_axis_tkeep (skid_axis_tkeep),
-      .s_axis_tvalid(skid_axis_tvalid),
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(mux_axis_tdata),
+      .s_axis_tkeep(mux_axis_tkeep),
+      .s_axis_tvalid(mux_axis_tvalid),
       .s_axis_tready(),
-      .s_axis_tlast (skid_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (skid_axis_tuser),
-      .m_axis_tdata (buffer_axis_tdata),
-      .m_axis_tkeep (buffer_axis_tkeep),
+      .s_axis_tlast(mux_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(mux_axis_tuser),
+      .m_axis_tdata(buffer_axis_tdata),
+      .m_axis_tkeep(buffer_axis_tkeep),
       .m_axis_tvalid(buffer_axis_tvalid),
-      .m_axis_tready(assert_buffer),
-      .m_axis_tlast (buffer_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (buffer_axis_tuser)
+      .m_axis_tready(phy_axis_tready && mux_axis_tvalid),
+      .m_axis_tlast(buffer_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(buffer_axis_tuser)
   );
-
-
 
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
+      .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
+      .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_second_buffer_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (buffer_axis_tdata),
-      .s_axis_tkeep (buffer_axis_tkeep),
-      .s_axis_tvalid(buffer_axis_tvalid),
-      .s_axis_tready(),
-      .s_axis_tlast (buffer_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (buffer_axis_tuser),
-      .m_axis_tdata (second_buffer_axis_tdata),
-      .m_axis_tkeep (second_buffer_axis_tkeep),
-      .m_axis_tvalid(second_buffer_axis_tvalid),
-      .m_axis_tready(assert_buffer),
-      .m_axis_tlast (second_buffer_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (second_buffer_axis_tuser)
-  );
-
-  //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
   ) axis_output_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (phy_axis_tdata),
-      .s_axis_tkeep (phy_axis_tkeep),
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(phy_axis_tdata),
+      .s_axis_tkeep(phy_axis_tkeep),
       .s_axis_tvalid(phy_axis_tvalid),
       .s_axis_tready(phy_axis_tready),
-      .s_axis_tlast (phy_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (phy_axis_tuser),
-      .m_axis_tdata (m_axis_tdata),
-      .m_axis_tkeep (m_axis_tkeep),
+      .s_axis_tlast(phy_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(phy_axis_tuser),
+      .m_axis_tdata(m_axis_tdata),
+      .m_axis_tkeep(m_axis_tkeep),
       .m_axis_tvalid(m_axis_tvalid),
       .m_axis_tready(m_axis_tready),
-      .m_axis_tlast (m_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (m_axis_tuser)
+      .m_axis_tlast(m_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(m_axis_tuser)
   );
 
 
   //dllp2tlp fifo.. allows for processing tlp
   //and storing to confirm proper tlp seq num and crc..
   //before sending to the transaction layer
-  // axis_fifo #(
-  //     .DEPTH               (RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
-  //     .DATA_WIDTH          (DATA_WIDTH),
-  //     .KEEP_ENABLE         (KEEP_WIDTH > 0),
-  //     .KEEP_WIDTH          (KEEP_WIDTH),
-  //     .LAST_ENABLE         (1),
-  //     .ID_ENABLE           (0),
-  //     .DEST_ENABLE         (0),
-  //     .USER_ENABLE         ('1),
-  //     .USER_WIDTH          (USER_WIDTH),
-  //     // .PIPELINE_OUTPUT(2),
-  //     .FRAME_FIFO          (1),
-  //     .USER_BAD_FRAME_VALUE('1),
-  //     .USER_BAD_FRAME_MASK ('1),
-  //     // .PIPELINE_OUTPUT(),
-  //     .DROP_BAD_FRAME      (1),
-  //     .DROP_WHEN_FULL      (0)
-  // ) dllp2tlp_fifo_inst (
-  //     .clk                (clk_i),
-  //     .rst                (rst_i),
-  //     // AXI input
-  //     .s_axis_tdata       (s_axis_tdata),
-  //     .s_axis_tkeep       (s_axis_tkeep),
-  //     .s_axis_tvalid      (s_axis_tvalid && fifo_valid),
-  //     .s_axis_tready      (fifo_ready),
-  //     .s_axis_tlast       (s_axis_tlast),
-  //     .s_axis_tuser       (s_axis_tuser),
-  //     .s_axis_tid         (),
-  //     .s_axis_tdest       (),
-  //     // AXI output
-  //     .m_axis_tdata       (fifo_axis_tdata),
-  //     .m_axis_tkeep       (fifo_axis_tkeep),
-  //     .m_axis_tvalid      (fifo_axis_tvalid),
-  //     .m_axis_tready      (fifo_axis_tready),
-  //     .m_axis_tlast       (fifo_axis_tlast),
-  //     .m_axis_tuser       (fifo_axis_tuser),
-  //     .m_axis_tid         (),
-  //     .m_axis_tdest       (),
-  //     .pause_ack          (),
-  //     .pause_req          (),
-  //     .status_depth       (),
-  //     .status_depth_commit(),
-  //     // Status
-  //     .status_overflow    (),
-  //     .status_bad_frame   (),
-  //     .status_good_frame  ()
-  // );
+  axis_fifo #(
+      .DEPTH(RX_FIFO_SIZE * MAX_PAYLOAD_SIZE),
+      .DATA_WIDTH(DATA_WIDTH),
+      .KEEP_ENABLE(KEEP_WIDTH > 0),
+      .KEEP_WIDTH(KEEP_WIDTH),
+      .LAST_ENABLE(1),
+      .ID_ENABLE(0),
+      .DEST_ENABLE(0),
+      .USER_ENABLE('1),
+      .USER_WIDTH(USER_WIDTH),
+      // .PIPELINE_OUTPUT(2),
+      .FRAME_FIFO(1),
+      .USER_BAD_FRAME_VALUE('1),
+      .USER_BAD_FRAME_MASK('1),
+      // .PIPELINE_OUTPUT(),
+      .DROP_BAD_FRAME(1),
+      .DROP_WHEN_FULL(0)
+  ) dllp2tlp_fifo_inst (
+      .clk(clk_i),
+      .rst(rst_i),
+      // AXI input
+      .s_axis_tdata(s_axis_tdata),
+      .s_axis_tkeep(s_axis_tkeep),
+      .s_axis_tvalid(s_axis_tvalid && fifo_valid),
+      .s_axis_tready(fifo_ready),
+      .s_axis_tlast(s_axis_tlast),
+      .s_axis_tuser(s_axis_tuser),
+      .s_axis_tid(),
+      .s_axis_tdest(),
+      // AXI output
+      .m_axis_tdata(fifo_axis_tdata),
+      .m_axis_tkeep(fifo_axis_tkeep),
+      .m_axis_tvalid(fifo_axis_tvalid),
+      .m_axis_tready(fifo_axis_tready),
+      .m_axis_tlast(fifo_axis_tlast),
+      .m_axis_tuser(fifo_axis_tuser),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .pause_ack(),
+      .pause_req(),
+      .status_depth(),
+      .status_depth_commit(),
+      // Status
+      .status_overflow(),
+      .status_bad_frame(),
+      .status_good_frame()
+  );
 
 endmodule

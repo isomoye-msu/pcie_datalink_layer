@@ -104,9 +104,9 @@ class pipe_driver_bfm():
         uvm_root().logger.info(name + " initiated") 
         
     async def start(self):
-        cocotb.start_soon(Clock(self.dut.clk_i, 10, units="ns").start())
-        cocotb.start_soon(Clock(self.dut.pipe_rx_usr_clk_i, 4, units="ns").start())
-        cocotb.start_soon(Clock(self.dut.pipe_tx_usr_clk_i, 4, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.clk_i, 5, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_rx_usr_clk_i, 5, units="ns").start())
+        cocotb.start_soon(Clock(self.dut.pipe_tx_usr_clk_i, 5, units="ns").start())
         # super().body()
         uvm_root().logger.info(self.name + " body initiated") 
         
@@ -147,12 +147,12 @@ class pipe_driver_bfm():
         self.dut.phy_phystatus_rst.value = 0
         # self.dut.phy_rxstandby   = 0
         self.dut.phy_rxelecidle.value  = 0
-        await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+        await RisingEdge(self.dut.clk_i)
         while(self.dut.rst_i == 0x1):
             await RisingEdge(self.dut.rst_i)
         # for i in range(int(self.dut.MAX_NUM_LANES)):
         self.dut.phy_phystatus.value = 0x0
-        await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+        await RisingEdge(self.dut.clk_i)
         
 
         for i in range(NUM_OF_LANES):
@@ -162,20 +162,20 @@ class pipe_driver_bfm():
         # self.dut.A.value = 0
         # self.dut.B.value = 0
         # self.dut.op.value = 0
-        # await FallingEdge(self.dut.pipe_tx_usr_clk_i)
+        # await FallingEdge(self.dut.clk_i)
         # self.dut.rst_i_n.value = 1
-        # await FallingEdge(self.dut.pipe_tx_usr_clk_i)
+        # await FallingEdge(self.dut.clk_i)
         
 
     async def detect(self):
         while True:
             while not self.dut.phy_txdetectrx == 0x1:
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                 # for i in range(len(self.dut.phy_txdetectrx)):
                     # if(self.dut.phy_txdetectrx[i] == 0x1):
                         # break
             # assert 1 == 0
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             
             phy_status = 0x0
             phy_rxstatus = 0x0
@@ -187,7 +187,7 @@ class pipe_driver_bfm():
                 # phy_status[0] = 1
                 phy_status |= 0x1 << i
             self.dut.phy_phystatus.value = phy_status
-                # await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                # await RisingEdge(self.dut.clk_i)
                 # phy_status[i] = 0b1
             
             # self.dut.phy_phystatus.value = phy_status
@@ -198,7 +198,7 @@ class pipe_driver_bfm():
             self.dut.phy_rxstatus.value = phy_rxstatus
             # self.dut.phy_rxstatus.value = phy_rxstatus
             
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             self.dut.phy_phystatus.value = 0
             self.dut.phy_rxstatus.value = 0
 
@@ -206,32 +206,32 @@ class pipe_driver_bfm():
             #     self.dut.phy_phystatus.value[i] = 0x0
             # for i in range(int(self.dut.MAX_NUM_LANES)-1):
             #     self.dut.phy_rxstatus.value[i*3:(i*3)+3] = 0
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             cocotb.start_soon(self.rolling_idle_data())
             
     async def polling(self):
         while True:
             while not self.dut.phy_powerdown == 0x0:
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
 
             # assert 1 == 0
             # flag = 0
             # previous_PowerDown = 0
             # while(1):
-                # await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                # await RisingEdge(self.dut.clk_i)
                 # if(self.dut.phy_powerdown == 0x0):
                     # break
             
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             for i in range(int(self.dut.MAX_NUM_LANES)):
                 self.dut.phy_phystatus.value[i] = 0x1
             
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             for i in range(int(self.dut.MAX_NUM_LANES)):
                 self.dut.phy_phystatus.value[i] = 0x1
             
             while not all(self.dut.phy_txelecidle.value[i] == 0 for i in range(len(self.dut.phy_txelecidle))):
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                     
  #------------------------------------------
  # Methods
@@ -511,7 +511,7 @@ class pipe_driver_bfm():
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
             
         if (self.current_gen.value > gen_t.GEN2.value):
         # if current_gen > GEN2:
@@ -529,7 +529,7 @@ class pipe_driver_bfm():
                     self.dut.phy_rxdata.value = temp_data
                     # RxData[i*pipe_max_width:i*pipe_max_width+pipe_max_width] = Data
 
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
             
         
         self.dut.phy_rxdata.value = 0
@@ -595,7 +595,7 @@ class pipe_driver_bfm():
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
             # assert 1 == 0
 
             self.dut.phy_rxdata.value = 0
@@ -657,7 +657,7 @@ class pipe_driver_bfm():
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char
 
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
 
             self.dut.phy_rxdata.value = 0
             self.dut.phy_rxdatak.value = 0
@@ -670,7 +670,7 @@ class pipe_driver_bfm():
             # assert 1 == 0
         else:  #gen3 and higher:
             for z in range(int((16*8)/width)):
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                 
             #stuff data deping on lane width
                 for j in range(int(width/8)):
@@ -695,7 +695,7 @@ class pipe_driver_bfm():
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char
 
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
 
             self.dut.phy_rxdata.value = 0
             self.dut.phy_rxdatak.value = 0
@@ -741,7 +741,7 @@ class pipe_driver_bfm():
                 self.dut.phy_rxdata.value = temp_data
                 self.dut.phy_rxdatak.value = temp_char
 
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
 
                 self.dut.phy_rxdata.value = 0
                 self.dut.phy_rxdatak.value = 0
@@ -763,7 +763,7 @@ class pipe_driver_bfm():
 
                     #duplicating the Data and Characters to each lane in the driver
             else :
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                     
 
                 
@@ -902,7 +902,7 @@ class pipe_driver_bfm():
     async def send_skp(self):
         if self.data:
             while not self.data_empty.is_set():
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
             self.data_empty.clear()
         self.data.append( 0x00)
         self.k_data.append(D_K_character.D)
@@ -926,7 +926,7 @@ class pipe_driver_bfm():
         if self.data:
             return
             while not self.data_empty.is_set():
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
             self.data_empty.clear()
 
         # while len(self.data) != 0:
@@ -948,7 +948,7 @@ class pipe_driver_bfm():
 
     async def send_data(self):
         while not self.data:
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
 
     #else uvm_error("pipe_driver_bfm", "Unexpected PowerDown value at Normal Data Operation")
         self.dut.phy_rxelecidle.value = 0
@@ -1043,7 +1043,7 @@ class pipe_driver_bfm():
             self.dut.phy_rxdata.value = temp_data
             self.dut.phy_rxdatak.value = temp_char
 
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
         # await self.data_sent.set()
         # self.data = []
 
@@ -1079,7 +1079,7 @@ class pipe_driver_bfm():
                             self.dut.phy_rxstart_block[i] = 0b0
             temp_data = data.get()
             self.driver_scrambler,self.dut.phy_rxdata[((l*pipe_max_width)+(k*8)) :  (l*pipe_max_width)+(k*8) +8] =  scramble(self.driver_scrambler, temp_data, l, self.current_gen)
-        await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+        await RisingEdge(self.dut.clk_i)
 
 
  #***************************** Equalization *******************************/
@@ -1087,18 +1087,18 @@ class pipe_driver_bfm():
         flag_tx_preset_applied = 0
         while True:
             while(1):
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                 if((LocalPrst_iIndex == my_tx_preset)  and  (GetLocalPrst_iCoeffcients == 1)):
                     break  
             # wait ((LocalPrst_iIndex == my_tx_preset)  and  (GetLocalPrst_iCoeffcients == 1))
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             self.dut.phy_txeq_coeff  = 1
             self.dut.phy_txeq_preset = my_local_txPrst_i_coefficients
 
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             self.dut.phy_txeq_coeff = 0
             while(1):
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                 if(TxDeemph == my_local_txPrst_i_coefficients):
                     break
                 self.dut.phy_txeq_ctrl = 1
@@ -1108,7 +1108,7 @@ class pipe_driver_bfm():
     async def equalization_preset_applied(self):
     #uvm_info("pipe_monitor_bfm", "waiting for flag_tx_preset_applied ", UVM_NONE)
         while True:
-            await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+            await RisingEdge(self.dut.clk_i)
             if(self.flag_tx_preset_applied == 1):
                 break
 
@@ -1132,10 +1132,10 @@ class pipe_driver_bfm():
     async def eq_eval(self):
         while True:
             while(RxEqEval == 0):
-                await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+                await RisingEdge(self.dut.clk_i)
                 
         # assert ((FS == {pipe_num_of_lanes{fs_dsp}})  and  (LF == {pipe_num_of_lanes{lf_dsp}}))
         # else uvm_error("pipe_driver_bfm", "FS and LF not assigned")
-        await RisingEdge(self.dut.pipe_tx_usr_clk_i)
+        await RisingEdge(self.dut.clk_i)
         LinkEvaluationFeedbackDirectionChange = 0b000000
         eval_feedback_was_asserted = 1

@@ -557,8 +557,8 @@ module lane_management
   // );
 
   // assign sync_header_o      = sync_header_r;
-  assign s_dllp_axis_tready   = (ready_out & is_dllp_r) || !(s_dllp_axis_tvalid);
-  assign fifo_phy_axis_tready = (ready_out & is_phy_r) || !(fifo_phy_axis_tvalid);
+  assign s_dllp_axis_tready   = ready_out & is_dllp_r;
+  assign fifo_phy_axis_tready = ready_out & is_phy_r;
 
   assign data_valid_o         = '1;
   assign data_out_o           = data_valid_r ? data_out_r : '0;
