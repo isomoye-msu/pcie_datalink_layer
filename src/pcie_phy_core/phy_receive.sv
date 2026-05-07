@@ -29,6 +29,7 @@ module phy_receive
     output logic              [               MAX_NUM_LANES-1:0] ts1_valid_o,
     output logic              [               MAX_NUM_LANES-1:0] ts2_valid_o,
     output logic              [               MAX_NUM_LANES-1:0] idle_valid_o,
+    output logic              [               MAX_NUM_LANES-1:0] polarity_inverted_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] link_num_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] lane_num_o,
     // output logic        [         (MAX_NUM_LANES * 8)-1:0] symbol6_o,
@@ -176,7 +177,8 @@ module phy_receive
         .idle_valid_o    (idle_valid_o[lane]),
         .ts1_valid_o     (ts1_valid_o[lane]),
         .ts2_valid_o     (ts2_valid_o[lane]),
-        .eieos_valid_o   ()
+        .eieos_valid_o   (),
+        .polarity_inverted_o(polarity_inverted_o[lane])
     );
   end
 
