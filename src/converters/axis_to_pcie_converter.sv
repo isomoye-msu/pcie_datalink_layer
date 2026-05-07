@@ -45,11 +45,7 @@ module axis_to_pcie_converter
 );
   /* verilator lint_off WIDTHEXPAND */
   /* verilator lint_off WIDTHTRUNC */
-<<<<<<< HEAD
-  localparam int PdMinCredits = (MAX_PAYLOAD_SIZE >> 4);
-=======
   // localparam int PdMinCredits = (MAX_PAYLOAD_SIZE >> 4);
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam int FcWaitPeriod = 8'hA0;
   localparam int TlpAxis = 0;
   localparam int UserIsTlp = 1;
