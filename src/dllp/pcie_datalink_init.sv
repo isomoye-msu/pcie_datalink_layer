@@ -38,8 +38,8 @@ module pcie_datalink_init
   pcie_dl_status_e       link_status_r;
   logic                  init_flow_control_c;
   logic                  init_flow_control_r;
-  logic            [3:0] soft_reset_r;
-  logic            [3:0] soft_reset_c;
+  logic                  soft_reset_r;
+  logic                  soft_reset_c;
 
   // Initialize to idle state
   always_ff @(posedge clk_i or posedge rst_i) begin
@@ -59,25 +59,21 @@ module pcie_datalink_init
   always_comb begin : combo_block
     next_state          = curr_state;
     init_flow_control_c = init_flow_control_r;
-    soft_reset_c[0]     = soft_reset_r[0];
+    soft_reset_c        = soft_reset_r;
     link_status_c       = link_status_r;
-
-    for (int i = 0; i < 3; i++) begin
-      soft_reset_c[i+i] = soft_reset_r[i];
-    end
     case (curr_state)
       ST_DL_INACTIVE: begin
         link_status_c = DL_DOWN;
         if (phy_link_up_i) begin
           next_state          = ST_DL_INIT;
           init_flow_control_c = '1;
-          soft_reset_c[0]     = '0;
+          soft_reset_c        = '0;
         end
       end
       ST_DL_INIT: begin
         if (!phy_link_up_i) begin
-          next_state = ST_DL_INACTIVE;
-          soft_reset_c[0] = '1;
+          next_state   = ST_DL_INACTIVE;
+          soft_reset_c = '1;
         end else begin
           if (init_ack_i) begin
             next_state = ST_DL_INIT_FC1;
@@ -86,8 +82,8 @@ module pcie_datalink_init
       end
       ST_DL_INIT_FC1: begin
         if (!phy_link_up_i) begin
-          next_state      = ST_DL_INACTIVE;
-          soft_reset_c[0] = '1;
+          next_state   = ST_DL_INACTIVE;
+          soft_reset_c = '1;
         end else begin
           if (fc1_values_stored_i || fc2_values_stored_i) begin
             next_state    = ST_DL_INIT_FC2;
@@ -97,8 +93,8 @@ module pcie_datalink_init
       end
       ST_DL_INIT_FC2: begin
         if (!phy_link_up_i) begin
-          next_state = ST_DL_INACTIVE;
-          soft_reset_c[0] = '1;
+          next_state   = ST_DL_INACTIVE;
+          soft_reset_c = '1;
         end else begin
           if (fc2_values_stored_i) begin
             next_state    = ST_DL_ACTIVE;
@@ -108,8 +104,8 @@ module pcie_datalink_init
       end
       ST_DL_ACTIVE: begin
         if (!phy_link_up_i) begin
-          next_state = ST_DL_INACTIVE;
-          soft_reset_c[0] = '1;
+          next_state   = ST_DL_INACTIVE;
+          soft_reset_c = '1;
         end
       end
       default: begin
@@ -118,6 +114,6 @@ module pcie_datalink_init
   end
 
   assign init_flow_control_o = init_flow_control_r;
-  assign soft_reset_o        = |soft_reset_r;
+  assign soft_reset_o        = soft_reset_r;
   assign link_status_o       = link_status_r;
 endmodule

@@ -51,14 +51,6 @@ filesets:
       - verif/env/pcie_scoreboard.py: {file_type : user, copyto : .}
       - verif/tests/test_pcie_core.py: {file_type : user, copyto : .}
 
-parameters:
-  # 1. Define the parameter details
-  SIM_FAST_LINK:
-    datatype    : int
-    description : enable fast sim which cuts down the wait time
-    paramtype   : vlogparam
-    default     : 1
-
 targets:
   default:
     flow: sim
@@ -85,7 +77,6 @@ targets:
         - -Wno-NTSFM -timescale=1ns/1ps +acc +vpd
       vcs_options:
         - +vcs+dumpvars+test.vcd
-    parameters: [SIM_FAST_LINK]
     filesets : [rtl,cocotb]
     toplevel : [pcie_phy_top]
 

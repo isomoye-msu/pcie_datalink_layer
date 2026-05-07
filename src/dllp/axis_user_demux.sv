@@ -55,26 +55,18 @@ module axis_user_demux
     ST_TLP
   } demux_st_e;
 
-  demux_st_e                  curr_state;
-  demux_st_e                  next_state;
+  demux_st_e curr_state;
+  demux_st_e next_state;
 
 
-  logic                       dllp_valid;
-  logic                       tlp_valid;
-  logic                       first_tlp_valid_c;
-  logic                       first_tlp_valid_r;
+  logic dllp_valid;
+  logic tlp_valid;
+  logic first_tlp_valid_c;
+  logic first_tlp_valid_r;
 
 
-  logic      [DATA_WIDTH-1:0] skid_axis_tdata;
-  logic      [KEEP_WIDTH-1:0] skid_axis_tkeep;
-  logic                       skid_axis_tvalid;
-  logic                       skid_axis_tlast;
-  logic      [USER_WIDTH-1:0] skid_axis_tuser;
-  logic                       skid_axis_tready;
-
-
-  logic                       tlp_ready;
-  logic                       dllp_ready;
+  logic tlp_ready;
+  logic dllp_ready;
 
   always @(posedge clk_i) begin : main_seq
     if (rst_i) begin
@@ -90,35 +82,34 @@ module axis_user_demux
     next_state = curr_state;
     dllp_valid = '0;
     tlp_valid = '0;
-    skid_axis_tready = '0;
+    s_axis_tready = '0;
     first_tlp_valid_c = first_tlp_valid_r;
     case (curr_state)
       ST_IDLE: begin
-        skid_axis_tready = '1;
-        if (skid_axis_tvalid) begin
-          if (skid_axis_tuser[UserIsTlp]) begin
-            skid_axis_tready = m_tlp_axis_tready;
-            tlp_valid = skid_axis_tvalid;
+        if (s_axis_tvalid) begin
+          if (s_axis_tuser[UserIsTlp]) begin
+            s_axis_tready = m_tlp_axis_tready;
+            tlp_valid = s_axis_tvalid;
             next_state = ST_TLP;
-          end else if (skid_axis_tuser[UserIsDllp]) begin
-            skid_axis_tready = m_dllp_axis_tready;
-            dllp_valid = skid_axis_tvalid;
+          end else if (s_axis_tuser[UserIsDllp]) begin
+            s_axis_tready = m_dllp_axis_tready;
+            dllp_valid = s_axis_tvalid;
             next_state = ST_DLLP;
           end
         end
       end
       ST_TLP: begin
-        skid_axis_tready = tlp_ready;
-        tlp_valid = skid_axis_tvalid;
+        s_axis_tready = tlp_ready;
+        tlp_valid = s_axis_tvalid;
         first_tlp_valid_c = '1;
-        if (skid_axis_tvalid && tlp_ready && skid_axis_tlast) begin
+        if (s_axis_tvalid && tlp_ready && s_axis_tlast) begin
           next_state = ST_IDLE;
         end
       end
       ST_DLLP: begin
-        skid_axis_tready = dllp_ready;
-        dllp_valid = skid_axis_tvalid;
-        if (skid_axis_tvalid && dllp_ready && skid_axis_tlast) begin
+        s_axis_tready = dllp_ready;
+        dllp_valid = s_axis_tvalid;
+        if (s_axis_tvalid && dllp_ready && s_axis_tlast) begin
           next_state = ST_IDLE;
         end
       end
@@ -129,108 +120,75 @@ module axis_user_demux
 
   assign first_tlp_valid_o = first_tlp_valid_r;
 
-  //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
-  ) axis_input_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (s_axis_tdata),
-      .s_axis_tkeep (s_axis_tkeep),
-      .s_axis_tvalid(s_axis_tvalid),
-      .s_axis_tready(s_axis_tready),
-      .s_axis_tlast (s_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (s_axis_tuser),
-      .m_axis_tdata (skid_axis_tdata),
-      .m_axis_tkeep (skid_axis_tkeep),
-      .m_axis_tvalid(skid_axis_tvalid),
-      .m_axis_tready(skid_axis_tready),
-      .m_axis_tlast (skid_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (skid_axis_tuser)
-  );
 
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
+      .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
+      .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
   ) dllp_axis_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (skid_axis_tdata),
-      .s_axis_tkeep (skid_axis_tkeep),
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(s_axis_tdata),
+      .s_axis_tkeep(s_axis_tkeep),
       .s_axis_tvalid(dllp_valid),
       .s_axis_tready(dllp_ready),
-      .s_axis_tlast (skid_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (skid_axis_tuser),
-      .m_axis_tdata (m_dllp_axis_tdata),
-      .m_axis_tkeep (m_dllp_axis_tkeep),
+      .s_axis_tlast(s_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(s_axis_tuser),
+      .m_axis_tdata(m_dllp_axis_tdata),
+      .m_axis_tkeep(m_dllp_axis_tkeep),
       .m_axis_tvalid(m_dllp_axis_tvalid),
       .m_axis_tready(m_dllp_axis_tready),
-      .m_axis_tlast (m_dllp_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (m_dllp_axis_tuser)
+      .m_axis_tlast(m_dllp_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(m_dllp_axis_tuser)
   );
 
 
   //axis skid buffer
   axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
+      .DATA_WIDTH(DATA_WIDTH),
       .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
+      .KEEP_WIDTH(KEEP_WIDTH),
       .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
+      .ID_ENABLE('0),
+      .ID_WIDTH(1),
       .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
+      .DEST_WIDTH(1),
       .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (SkidBuffer)
+      .USER_WIDTH(USER_WIDTH),
+      .REG_TYPE(SkidBuffer)
   ) tlp_axis_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (skid_axis_tdata),
-      .s_axis_tkeep (skid_axis_tkeep),
+      .clk(clk_i),
+      .rst(rst_i),
+      .s_axis_tdata(s_axis_tdata),
+      .s_axis_tkeep(s_axis_tkeep),
       .s_axis_tvalid(tlp_valid),
       .s_axis_tready(tlp_ready),
-      .s_axis_tlast (skid_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (skid_axis_tuser),
-      .m_axis_tdata (m_tlp_axis_tdata),
-      .m_axis_tkeep (m_tlp_axis_tkeep),
+      .s_axis_tlast(s_axis_tlast),
+      .s_axis_tid('0),
+      .s_axis_tdest('0),
+      .s_axis_tuser(s_axis_tuser),
+      .m_axis_tdata(m_tlp_axis_tdata),
+      .m_axis_tkeep(m_tlp_axis_tkeep),
       .m_axis_tvalid(m_tlp_axis_tvalid),
       .m_axis_tready(m_tlp_axis_tready),
-      .m_axis_tlast (m_tlp_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (m_tlp_axis_tuser)
+      .m_axis_tlast(m_tlp_axis_tlast),
+      .m_axis_tid(),
+      .m_axis_tdest(),
+      .m_axis_tuser(m_tlp_axis_tuser)
   );
 
 endmodule

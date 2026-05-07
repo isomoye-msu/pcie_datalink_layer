@@ -66,11 +66,6 @@ filesets:
   synth:
     files:
       - example/gtp_channel.xdc : {file_type : xdc}
-      - example/ila_debug.xdc : {file_type: xdc}
-      - example/axis_fifo_constraints/dllp_rx_axis_async_fifo_timing.xdc : {file_type : xdc}
-      - example/axis_fifo_constraints/dllp_tx_axis_async_fifo_timing.xdc : {file_type : xdc}
-      - example/async_fifo_constraints.tcl: {file_type: user}
-
 
   cocotb:
     files:
@@ -167,19 +162,9 @@ targets:
     filesets : [rtl,synth,xsim_tb,glbl]
     tools:
       vivado:
-        part : xc7a200tfbg484-2
-        synth_options: --flatten_hierarchy none
+        part : xc7a200tfbg676-2
     toplevel : pcie_top_gtp
 
 scripts:
   iceprog:
     cmd : [MODULE=pcie_top]
-  apply_constraints:
-    filesets:
-      - synth
-    cmd:
-      - vivado
-      - -mode
-      - batch
-      - -source
-      - async_fifo_constraints.tcl

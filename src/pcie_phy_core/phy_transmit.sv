@@ -17,32 +17,26 @@ module phy_transmit
     input logic rst_i,  //! Reset signal
 
 
-    input  logic                                    en_i,
-    input  logic                                    link_up_i,
-    output logic [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
-    output logic [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
-    output logic [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
-    output logic [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
-    output logic [               MAX_NUM_LANES-1:0] pipe_txstart_block_o,
-    output logic [                             5:0] pipe_width_o,
-    output logic                                    ordered_set_tranmitted_o,
-    input  logic [                             5:0] num_active_lanes_i,
-
-    // input  logic [TxOsDataSize-1:0] s_tx_os_axis_tdata,
-    // input  logic [  KEEP_WIDTH-1:0] s_tx_os_axis_tkeep,
-    // input  logic                    s_tx_os_axis_tvalid,
-    // input  logic                    s_tx_os_axis_tlast,
-    // input  logic [  USER_WIDTH-1:0] s_tx_os_axis_tuser,
-    // output logic                    s_tx_os_axis_tready,
-    input os_tx_holder_t tx_os_data_i,
-
-
-    input  logic [DATA_WIDTH-1:0] s_dllp_axis_tdata,
-    input  logic [KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
-    input  logic                  s_dllp_axis_tvalid,
-    input  logic                  s_dllp_axis_tlast,
-    input  logic [USER_WIDTH-1:0] s_dllp_axis_tuser,
-    output logic                  s_dllp_axis_tready
+    input  logic                                                 en_i,
+    input  logic                                                 link_up_i,
+    output logic              [( MAX_NUM_LANES* DATA_WIDTH)-1:0] pipe_data_o,
+    output logic              [               MAX_NUM_LANES-1:0] pipe_data_valid_o,
+    output logic              [           (4*MAX_NUM_LANES)-1:0] pipe_data_k_o,
+    output logic              [           (2*MAX_NUM_LANES)-1:0] pipe_sync_header_o,
+    output logic              [               MAX_NUM_LANES-1:0] pipe_txstart_block_o,
+    output logic              [                             5:0] pipe_width_o,
+    input  logic              [                             5:0] num_active_lanes_i,
+    input  logic                                                 send_ordered_set_i,
+    input  pcie_ordered_set_t                                    ordered_set_i,
+    input  rate_speed_e                                          curr_data_rate_i,
+    output logic                                                 ordered_set_tranmitted_o,
+    input  gen_os_struct_t                                       gen_os_ctrl_i,
+    input  logic              [                  DATA_WIDTH-1:0] s_dllp_axis_tdata,
+    input  logic              [                  KEEP_WIDTH-1:0] s_dllp_axis_tkeep,
+    input  logic                                                 s_dllp_axis_tvalid,
+    input  logic                                                 s_dllp_axis_tlast,
+    input  logic              [                  USER_WIDTH-1:0] s_dllp_axis_tuser,
+    output logic                                                 s_dllp_axis_tready
 );
   parameter int DEPTH = 20;
   parameter int ID_ENABLE = 0;
@@ -52,15 +46,16 @@ module phy_transmit
   parameter int USER_ENABLE = 1;
   parameter int LAST_ENABLE = 1;
   parameter int KEEP_ENABLE = (DATA_WIDTH > 8);
-  parameter int FRAME_DEPTH = 100;
 
 
-  logic              [                  DATA_WIDTH-1:0] s_buffer_dllp_axis_tdata;
-  logic              [                  KEEP_WIDTH-1:0] s_buffer_dllp_axis_tkeep;
-  logic                                                 s_buffer_dllp_axis_tvalid;
-  logic                                                 s_buffer_dllp_axis_tlast;
-  logic              [                  USER_WIDTH-1:0] s_buffer_dllp_axis_tuser;
-  logic                                                 s_buffer_dllp_axis_tready;
+
+
+  //   logic [DATA_WIDTH-1:0] dllp_axis_tdata;
+  //   logic [KEEP_WIDTH-1:0] dllp_axis_tkeep;
+  //   logic dllp_axis_tvalid;
+  //   logic dllp_axis_tlast;
+  //   logic [USER_WIDTH-1:0] dllp_axis_tuser;
+  //   logic dllp_axis_tready;
 
   logic              [                  DATA_WIDTH-1:0] framed_axis_tdata;
   logic              [                  KEEP_WIDTH-1:0] framed_axis_tkeep;
@@ -77,13 +72,6 @@ module phy_transmit
   logic                                                 fifo_framed_axis_tlast;
   logic              [                  USER_WIDTH-1:0] fifo_framed_axis_tuser;
   logic                                                 fifo_framed_axis_tready;
-
-  logic              [                  DATA_WIDTH-1:0] fifo_buffer_framed_axis_tdata;
-  logic              [                  KEEP_WIDTH-1:0] fifo_buffer_framed_axis_tkeep;
-  logic                                                 fifo_buffer_framed_axis_tvalid;
-  logic                                                 fifo_buffer_framed_axis_tlast;
-  logic              [                  USER_WIDTH-1:0] fifo_buffer_framed_axis_tuser;
-  logic                                                 fifo_buffer_framed_axis_tready;
 
   logic              [  (DATA_WIDTH*MAX_NUM_LANES)-1:0] phy_axis_tdata;
   logic              [  (KEEP_WIDTH*MAX_NUM_LANES)-1:0] phy_axis_tkeep;
@@ -126,67 +114,13 @@ module phy_transmit
   gen_os_struct_t                                       gen_os_ctrl;
 
 
-  logic                                                 send_ordered_set_i;
-  pcie_ordered_set_t                                    ordered_set_i;
-  rate_speed_e                                          curr_data_rate_i;
-  gen_os_struct_t                                       gen_os_ctrl_i;
-
+  //   assign m_axis_tready   = phy_axis_tready;
   assign pipe_width_o = lm_pipe_width;
 
 
-  localparam int LtssmDataInSize = 1 + +$size(
-      ordered_set
-  ) + $size(
-      gen_os_ctrl
-  ) + $size(
-      pcie_ordered_set_t
-  );
+  localparam int LtssmDataInSize = 1 +
+   + $size(ordered_set) + $size(gen_os_ctrl) + $size(pcie_ordered_set_t);
 
-  //   os_tx_holder_t os_holder;
-  //   assign os_holder = os_tx_holder_t'(s_tx_os_axis_tdata);
-
-  always_ff @(posedge pipe_tx_usr_clk_i) begin : axis_signals
-    send_ordered_set_i <= tx_os_data_i.send_ordered_set;
-    ordered_set_i      <= tx_os_data_i.ordered_set;
-    curr_data_rate_i   <= tx_os_data_i.curr_data_rate;
-    gen_os_ctrl_i      <= tx_os_data_i.gen_os_ctrl;
-    // end
-  end
-
-
-  //axis skid buffer
-  axis_register #(
-      .DATA_WIDTH (DATA_WIDTH),
-      .KEEP_ENABLE('1),
-      .KEEP_WIDTH (KEEP_WIDTH),
-      .LAST_ENABLE('1),
-      .ID_ENABLE  ('0),
-      .ID_WIDTH   (1),
-      .DEST_ENABLE('0),
-      .DEST_WIDTH (1),
-      .USER_ENABLE('1),
-      .USER_WIDTH (USER_WIDTH),
-      .REG_TYPE   (1)
-  ) axis_buffer_register_inst (
-      .clk          (clk_i),
-      .rst          (rst_i),
-      .s_axis_tdata (s_dllp_axis_tdata),
-      .s_axis_tkeep (s_dllp_axis_tkeep),
-      .s_axis_tvalid(s_dllp_axis_tvalid),
-      .s_axis_tready(s_dllp_axis_tready),
-      .s_axis_tlast (s_dllp_axis_tlast),
-      .s_axis_tid   ('0),
-      .s_axis_tdest ('0),
-      .s_axis_tuser (s_dllp_axis_tuser),
-      .m_axis_tdata (s_buffer_dllp_axis_tdata),
-      .m_axis_tkeep (s_buffer_dllp_axis_tkeep),
-      .m_axis_tvalid(s_buffer_dllp_axis_tvalid),
-      .m_axis_tready(s_buffer_dllp_axis_tready),
-      .m_axis_tlast (s_buffer_dllp_axis_tlast),
-      .m_axis_tid   (),
-      .m_axis_tdest (),
-      .m_axis_tuser (s_buffer_dllp_axis_tuser)
-  );
 
   frame_symbols #(
       .USER_WIDTH(USER_WIDTH),
@@ -196,12 +130,12 @@ module phy_transmit
       .clk_i           (clk_i),
       .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
-      .s_axis_tdata    (s_buffer_dllp_axis_tdata),
-      .s_axis_tkeep    (s_buffer_dllp_axis_tkeep),
-      .s_axis_tvalid   (s_buffer_dllp_axis_tvalid),
-      .s_axis_tlast    (s_buffer_dllp_axis_tlast),
-      .s_axis_tuser    (s_buffer_dllp_axis_tuser),
-      .s_axis_tready   (s_buffer_dllp_axis_tready),
+      .s_axis_tdata    (s_dllp_axis_tdata),
+      .s_axis_tkeep    (s_dllp_axis_tkeep),
+      .s_axis_tvalid   (s_dllp_axis_tvalid),
+      .s_axis_tlast    (s_dllp_axis_tlast),
+      .s_axis_tuser    (s_dllp_axis_tuser),
+      .s_axis_tready   (s_dllp_axis_tready),
       .m_axis_tdata    (framed_axis_tdata),
       .m_axis_tkeep    (framed_axis_tkeep),
       .m_axis_tvalid   (framed_axis_tvalid),
@@ -232,6 +166,8 @@ module phy_transmit
   end
 
 
+
+
   lane_management #(
       .DATA_WIDTH(DATA_WIDTH),
       .STRB_WIDTH(STRB_WIDTH),
@@ -242,18 +178,18 @@ module phy_transmit
       .clk_i             (pipe_tx_usr_clk_i),
       .rst_i             (rst_i),
       .phy_link_up_i     (),
-      .s_dllp_axis_tdata (fifo_buffer_framed_axis_tdata),
-      .s_dllp_axis_tkeep (fifo_buffer_framed_axis_tkeep),
-      .s_dllp_axis_tvalid(fifo_buffer_framed_axis_tvalid),
-      .s_dllp_axis_tlast (fifo_buffer_framed_axis_tlast),
-      .s_dllp_axis_tuser (fifo_buffer_framed_axis_tuser),
-      .s_dllp_axis_tready(fifo_buffer_framed_axis_tready),
-      .s_phy_axis_tdata  (phy_axis_tdata),
-      .s_phy_axis_tkeep  (phy_axis_tkeep),
-      .s_phy_axis_tvalid (phy_axis_tvalid),
-      .s_phy_axis_tlast  (phy_axis_tlast),
-      .s_phy_axis_tuser  (phy_axis_tuser),
-      .s_phy_axis_tready (phy_axis_tready),
+      .s_dllp_axis_tdata (fifo_framed_axis_tdata),
+      .s_dllp_axis_tkeep (fifo_framed_axis_tkeep),
+      .s_dllp_axis_tvalid(fifo_framed_axis_tvalid),
+      .s_dllp_axis_tlast (fifo_framed_axis_tlast),
+      .s_dllp_axis_tuser (fifo_framed_axis_tuser),
+      .s_dllp_axis_tready(fifo_framed_axis_tready),
+      .s_phy_axis_tdata  (fifo_phy_axis_tdata),
+      .s_phy_axis_tkeep  (fifo_phy_axis_tkeep),
+      .s_phy_axis_tvalid (fifo_phy_axis_tvalid),
+      .s_phy_axis_tlast  (fifo_phy_axis_tlast),
+      .s_phy_axis_tuser  (fifo_phy_axis_tuser),
+      .s_phy_axis_tready (fifo_phy_axis_tready),
       .curr_data_rate_i  (curr_data_rate_i),
       .lane_reverse_i    ('0),
       .data_out_o        (lm_data_out),
@@ -266,6 +202,75 @@ module phy_transmit
   );
 
 
+//   synchronous_fifo # (
+//     .DEPTH(3),
+//     .DATA_WIDTH(LtssmDataInSize)
+//   )
+//   ltssm_to_os_gen_async_fifo_inst (
+//     .reset(rst_i),
+//     .clk_in(pipe_rx_usr_clk_i),
+//     .we('1),
+//     .din({curr_data_rate_i, send_ordered_set_i, gen_os_ctrl_i, ordered_set_i}),
+//     .busy(tx_fifo_full),
+//     .clk_out(pipe_tx_usr_clk_i),
+//     .re('1),
+//     .dout({curr_data_rate, send_ordered_set, gen_os_ctrl, ordered_set}),
+//     .ready(tx_fifo_empty)
+//   );
+//   async_fifo #(
+//       .DSIZE(LtssmDataInSize),
+//       .ASIZE(2)
+//   ) ltssm_to_os_gen_async_fifo_inst (
+//       .wclk(pipe_rx_usr_clk_i),
+//       .wrst_n(!rst_i),
+//       .winc(gen_os_ctrl_i.valid || send_ordered_set_i),
+//       .wdata({curr_data_rate_i, send_ordered_set_i, gen_os_ctrl_i, ordered_set_i}),
+//       .wfull(tx_fifo_full),
+//       .awfull(),
+//       .rclk(pipe_tx_usr_clk_i),
+//       .rrst_n(!rst_i),
+//       .rinc(!tx_fifo_empty),
+//       .rdata({curr_data_rate, send_ordered_set, gen_os_ctrl, ordered_set}),
+//       .rempty(tx_fifo_empty),
+//       .arempty()
+//   );
+
+
+//     synchronous_fifo # (
+//     .DEPTH(3),
+//     .DATA_WIDTH(1)
+//   )
+//   os_gen_to_ltssm_async_fifo_inst (
+//     .reset(rst_i),
+//     .clk_in(pipe_tx_usr_clk_i),
+//     .we('1),
+//     .din({ordered_set_tranmitted}),
+//     .busy(rx_fifo_full),
+//     .clk_out(pipe_rx_usr_clk_i),
+//     .re('1),
+//     .dout({ordered_set_tranmitted_o}),
+//     .ready(rx_fifo_empty)
+//   );
+
+//   async_fifo #(
+//       .DSIZE(1),
+//       .ASIZE(2)
+//   ) os_gen_to_ltssm_async_fifo_inst (
+//       .wclk(pipe_tx_usr_clk_i),
+//       .wrst_n(!rst_i),
+//       .winc(ordered_set_tranmitted),
+//       .wdata({ordered_set_tranmitted}),
+//       .wfull(rx_fifo_full),
+//       .awfull(),
+//       .rclk(pipe_rx_usr_clk_i),
+//       .rrst_n(!rst_i),
+//       .rinc(!rx_fifo_empty),
+//       .rdata({ordered_set_tranmitted_o}),
+//       .rempty(rx_fifo_empty),
+//       .arempty()
+//   );
+
+
   os_generator #(
       .CLK_RATE(CLK_RATE),
       .DATA_WIDTH(DATA_WIDTH),
@@ -273,10 +278,10 @@ module phy_transmit
       .USER_WIDTH(USER_WIDTH),
       .MAX_NUM_LANES(MAX_NUM_LANES)
   ) os_generator_inst (
-      .clk_i           (pipe_tx_usr_clk_i),
+      .clk_i           (pipe_rx_usr_clk_i),
       .rst_i           (rst_i),
       .curr_data_rate_i(curr_data_rate_i),
-      .link_up_i       (link_up_i),
+      .link_up_i      (link_up_i),
       .send_ltssm_os_i (send_ordered_set_i),
       .preset_i        ('0),
       .gen_os_ctrl_i   (gen_os_ctrl_i),
@@ -290,6 +295,58 @@ module phy_transmit
       .m_axis_tready   (phy_axis_tready)
   );
 
+    axis_async_fifo #(
+        .DEPTH      (DEPTH),
+        .DATA_WIDTH (DATA_WIDTH),
+        .KEEP_ENABLE(KEEP_ENABLE),
+        .KEEP_WIDTH (KEEP_WIDTH),
+        .LAST_ENABLE(LAST_ENABLE),
+        .ID_ENABLE  (ID_ENABLE),
+        .ID_WIDTH   (ID_WIDTH),
+        .DEST_ENABLE(DEST_ENABLE),
+        .DEST_WIDTH (DEST_WIDTH),
+        .USER_ENABLE(USER_ENABLE),
+        .USER_WIDTH (USER_WIDTH)
+    ) ordered_set_axis_async_fifo_inst (
+        .s_clk        (pipe_rx_usr_clk_i),
+        .s_rst        (rst_i),
+        .s_axis_tdata (phy_axis_tdata),
+        .s_axis_tkeep (phy_axis_tkeep),
+        .s_axis_tvalid(phy_axis_tvalid),
+        .s_axis_tready(phy_axis_tready),
+        .s_axis_tlast (phy_axis_tlast),
+        .s_axis_tid   (),
+        .s_axis_tdest (),
+        .s_axis_tuser (phy_axis_tuser),
+
+
+
+        .m_clk        (pipe_tx_usr_clk_i),
+        .m_rst        (rst_i),
+        .m_axis_tdata (fifo_phy_axis_tdata),
+        .m_axis_tkeep (fifo_phy_axis_tkeep),
+        .m_axis_tvalid(fifo_phy_axis_tvalid),
+        .m_axis_tready(fifo_phy_axis_tready),
+        .m_axis_tlast (fifo_phy_axis_tlast),
+        .m_axis_tid   (),
+        .m_axis_tdest (),
+        .m_axis_tuser (fifo_phy_axis_tuser),
+
+        .s_pause_req          ('0),
+        .s_pause_ack          (),
+        .m_pause_req          ('0),
+        .m_pause_ack          (),
+        .s_status_depth       (),
+        .s_status_depth_commit(),
+        .s_status_overflow    (),
+        .s_status_bad_frame   (),
+        .s_status_good_frame  (),
+        .m_status_depth       (),
+        .m_status_depth_commit(),
+        .m_status_overflow    (),
+        .m_status_bad_frame   (),
+        .m_status_good_frame  ()
+    );
 
 
   axis_async_fifo #(
@@ -304,7 +361,7 @@ module phy_transmit
       .DEST_WIDTH (DEST_WIDTH),
       .USER_ENABLE(USER_ENABLE),
       .USER_WIDTH (USER_WIDTH)
-  ) dllp_tx_axis_async_fifo_inst (
+  ) dllp_axis_async_fifo_inst (
       .s_clk        (clk_i),
       .s_rst        (rst_i),
       .s_axis_tdata (framed_axis_tdata),
@@ -345,53 +402,6 @@ module phy_transmit
       .m_status_good_frame  ()
   );
 
-
-  axis_fifo #(
-      .DEPTH               (FRAME_DEPTH),
-      .DATA_WIDTH          (DATA_WIDTH),
-      .KEEP_ENABLE         (KEEP_WIDTH > 0),
-      .KEEP_WIDTH          (KEEP_WIDTH),
-      .LAST_ENABLE         (1),
-      .ID_ENABLE           (0),
-      .DEST_ENABLE         (0),
-      .USER_ENABLE         ('1),
-      .USER_WIDTH          (USER_WIDTH),
-      // .PIPELINE_OUTPUT(2),
-      .FRAME_FIFO          (1),
-      .USER_BAD_FRAME_VALUE('1),
-      .USER_BAD_FRAME_MASK ('1),
-      // .PIPELINE_OUTPUT(),
-      .DROP_BAD_FRAME      (1),
-      .DROP_WHEN_FULL      (0)
-  ) phy_frame_fifo_inst (
-      .clk                (pipe_tx_usr_clk_i),
-      .rst                (rst_i),
-      // AXI input
-      .s_axis_tdata       (fifo_framed_axis_tdata),
-      .s_axis_tkeep       (fifo_framed_axis_tkeep),
-      .s_axis_tvalid      (fifo_framed_axis_tvalid),
-      .s_axis_tready      (fifo_framed_axis_tready),
-      .s_axis_tlast       (fifo_framed_axis_tlast),
-      .s_axis_tuser       (fifo_framed_axis_tuser),
-      .s_axis_tid         (),
-      .s_axis_tdest       (),
-      // AXI output
-      .m_axis_tdata       (fifo_buffer_framed_axis_tdata),
-      .m_axis_tkeep       (fifo_buffer_framed_axis_tkeep),
-      .m_axis_tvalid      (fifo_buffer_framed_axis_tvalid),
-      .m_axis_tready      (fifo_buffer_framed_axis_tready),
-      .m_axis_tlast       (fifo_buffer_framed_axis_tlast),
-      .m_axis_tuser       (fifo_buffer_framed_axis_tuser),
-      .m_axis_tid         (),
-      .m_axis_tdest       (),
-      .pause_ack          (),
-      .pause_req          (),
-      .status_depth       (),
-      .status_depth_commit(),
-      // Status
-      .status_overflow    (),
-      .status_bad_frame   (),
-      .status_good_frame  ()
-  );
+  //always #5  clk = ! clk ;
 
 endmodule
