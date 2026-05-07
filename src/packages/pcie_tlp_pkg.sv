@@ -201,11 +201,7 @@ package pcie_tlp_pkg;
       {temp_cpl.dw_1.byte2.byte_count, temp_cpl.dw_1.byte3.byte_count} = 12'h004;
       {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} =
       {tlp_hdr_in.word_2.byte_0,tlp_hdr_in.word_2.byte_1};
-<<<<<<< HEAD
-      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_1[6:0];
-=======
       temp_cpl.dw_2.byte3.lower_address = 6'h00;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       temp_cpl.dw_2.byte2.tag = tlp_hdr_in.word_1.tag;
       {temp_cpl.dw_2.byte0.requester_id,temp_cpl.dw_2.byte1.requester_id} =
       tlp_hdr_in.word_1.requester_id;
@@ -227,11 +223,7 @@ package pcie_tlp_pkg;
       {temp_cpl.dw_1.byte2.byte_count, temp_cpl.dw_1.byte3.byte_count} = 12'h000;
       {temp_cpl.dw_1.byte0.completer_id, temp_cpl.dw_1.byte1.completer_id} = 
       {tlp_hdr_in.word_2.byte_0,tlp_hdr_in.word_2.byte_1};
-<<<<<<< HEAD
-      temp_cpl.dw_2.byte3.lower_address = tlp_hdr_in.word_1[6:0];
-=======
       temp_cpl.dw_2.byte3.lower_address = 6'h00;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       temp_cpl.dw_2.byte2.tag = tlp_hdr_in.word_1.tag;
       {temp_cpl.dw_2.byte0.requester_id,temp_cpl.dw_2.byte1.requester_id} =
       tlp_hdr_in.word_1.requester_id;

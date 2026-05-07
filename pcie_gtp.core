@@ -162,11 +162,8 @@ targets:
     filesets : [rtl,synth,xsim_tb,glbl]
     tools:
       vivado:
-        part : xc7a200tfbg676-2
-<<<<<<< HEAD
-=======
+        part : xc7a200tfbg484-2
         synth_options: --flatten_hierarchy none
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     toplevel : pcie_top_gtp
 
 scripts:

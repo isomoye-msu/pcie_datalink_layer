@@ -38,12 +38,8 @@ module dllp_handler
     output logic [          11:0] tx_fc_npd_o,
     output logic [           7:0] tx_fc_cplh_o,
     output logic [          11:0] tx_fc_cpld_o,
-<<<<<<< HEAD
-    output logic                  update_fc_o
-=======
     output logic                  update_fc_o,
     output logic                  first_feature_exchange_dllp_received_o
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 );
 
   localparam int UserIsDllp = 0;
@@ -57,11 +53,7 @@ module dllp_handler
     ST_TLP_EOP
   } dll_rx_st_e;
 
-<<<<<<< HEAD
-  dll_rx_st_e                   curr_state;
-=======
   (* syn_keep = "true", mark_debug = "true" *) dll_rx_st_e                   curr_state;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   dll_rx_st_e                   next_state;
   dllp_union_t                  dll_packet_c;
   dllp_union_t                  dll_packet_r;
@@ -80,12 +72,6 @@ module dllp_handler
   logic        [          11:0] ackd_transmit_seq_c;
   logic        [          11:0] ackd_transmit_seq_r;
   //s axis skid buffer
-<<<<<<< HEAD
-  logic        [DATA_WIDTH-1:0] skid_s_axis_tdata;
-  logic        [KEEP_WIDTH-1:0] skid_s_axis_tkeep;
-  logic                         skid_s_axis_tvalid;
-  logic                         skid_s_axis_tlast;
-=======
   
   (* syn_keep = "true", mark_debug = "true" *) logic        [DATA_WIDTH-1:0] skid_s_axis_tdata;
   logic        [KEEP_WIDTH-1:0] skid_s_axis_tkeep;
@@ -93,7 +79,6 @@ module dllp_handler
   (* syn_keep = "true", mark_debug = "true" *)logic                         skid_s_axis_tvalid;
   logic                         skid_s_axis_tlast;
   
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   logic        [USER_WIDTH-1:0] skid_s_axis_tuser;
   logic                         skid_s_axis_tready;
   //Flow control
@@ -125,12 +110,6 @@ module dllp_handler
   logic                         fc2_p_stored_r;
   logic                         fc2_c_stored_c;
   logic                         fc2_c_stored_r;
-<<<<<<< HEAD
-  logic                [          15:0] crc_reversed;
-
-  assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
-  assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
-=======
   (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
   logic                         first_feature_exchange_dllp_received_r;
   logic                         first_feature_exchange_dllp_received_c;
@@ -142,7 +121,6 @@ module dllp_handler
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
   assign dbg_lower_skid_data_dllp = skid_s_axis_tdata[15:0];
 
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
   always_comb begin : byteswap
     crc_reversed = ~crc_in_r;
@@ -166,10 +144,7 @@ module dllp_handler
       tx_fc_npd_r         <= '0;
       tx_fc_cplh_r        <= '0;
       tx_fc_cpld_r        <= '0;
-<<<<<<< HEAD
-=======
       first_feature_exchange_dllp_received_r <= '0;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       //capture signals
       fc1_np_stored_r     <= '0;
       fc1_p_stored_r      <= '0;
@@ -191,10 +166,7 @@ module dllp_handler
       tx_fc_npd_r         <= tx_fc_npd_c;
       tx_fc_cplh_r        <= tx_fc_cplh_c;
       tx_fc_cpld_r        <= tx_fc_cpld_c;
-<<<<<<< HEAD
-=======
       first_feature_exchange_dllp_received_r <= first_feature_exchange_dllp_received_c;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       //capture signals
       fc1_np_stored_r     <= fc1_np_stored_c;
       fc1_p_stored_r      <= fc1_p_stored_c;
@@ -226,11 +198,8 @@ module dllp_handler
     tx_fc_cplh_c        = tx_fc_cplh_r;
     tx_fc_cpld_c        = tx_fc_cpld_r;
     update_fc_c         = '0;
-<<<<<<< HEAD
-=======
     first_feature_exchange_dllp_received_c = first_feature_exchange_dllp_received_r;
 
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     //capture signals
     fc1_np_stored_c     = fc1_np_stored_r;
     fc1_p_stored_c      = fc1_p_stored_r;
@@ -274,12 +243,9 @@ module dllp_handler
             seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
             seq_num_vld_o = '1;
           end
-<<<<<<< HEAD
-=======
           Feature_Exchange: begin
             first_feature_exchange_dllp_received_c = '1;
           end
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
           PM_Enter_L1: begin
             //not implemented
           end
@@ -342,11 +308,7 @@ module dllp_handler
   end
 
   pcie_datalink_crc pcie_datalink_crc_inst (
-<<<<<<< HEAD
-      .crcIn ('1),
-=======
       .crcIn (16'hFFFF),
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .data  (skid_s_axis_tdata),
       .crcOut(crc_out)
   );
@@ -392,9 +354,6 @@ module dllp_handler
   assign tx_fc_cplh_o = tx_fc_cplh_r;
   assign tx_fc_cpld_o = tx_fc_cpld_r;
   assign update_fc_o  = update_fc_r;
-<<<<<<< HEAD
-=======
   assign first_feature_exchange_dllp_received_o = first_feature_exchange_dllp_received_r;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 endmodule

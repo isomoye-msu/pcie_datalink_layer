@@ -1257,10 +1257,7 @@ module pcie_config_reg (
         end
     end
     assign hwif_out.byte_offset_0C.latency_timer_register.value = field_storage.byte_offset_0C.latency_timer_register.value;
-<<<<<<< HEAD
-=======
     // ========================== FALSELY PLACED interrupt_line_register AND interrupt_pin_register =============================
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     // Field: pcie_config_reg.byte_offset_0C.interrupt_line_register
     always_comb begin
         automatic logic [7:0] next_c;
@@ -1304,10 +1301,7 @@ module pcie_config_reg (
             field_storage.byte_offset_0C.interrupt_pin_register.value <= field_combo.byte_offset_0C.interrupt_pin_register.next;
         end
     end
-<<<<<<< HEAD
-=======
     // ========================== FALSELY PLACED interrupt_line_register AND interrupt_pin_register =============================
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     assign hwif_out.byte_offset_0C.interrupt_pin_register.value = field_storage.byte_offset_0C.interrupt_pin_register.value;
     assign hwif_out.base_address_register_0.region_type.value = 1'h0;
     assign hwif_out.base_address_register_0.locatable.value = 2'h0;
@@ -2047,21 +2041,12 @@ module pcie_config_reg (
     assign readback_array[1][29:29] = (decoded_reg_strb.byte_offset_04 && !decoded_req_is_wr) ? field_storage.byte_offset_04.received_master_abort.value : '0;
     assign readback_array[1][30:30] = (decoded_reg_strb.byte_offset_04 && !decoded_req_is_wr) ? field_storage.byte_offset_04.signaled_system_error.value : '0;
     assign readback_array[1][31:31] = (decoded_reg_strb.byte_offset_04 && !decoded_req_is_wr) ? field_storage.byte_offset_04.detected_parity_error.value : '0;
-<<<<<<< HEAD
-    assign readback_array[2][7:0] = (decoded_reg_strb.byte_offset_08 && !decoded_req_is_wr) ? 8'h0 : '0;
-    assign readback_array[2][31:8] = (decoded_reg_strb.byte_offset_08 && !decoded_req_is_wr) ? 24'h0 : '0;
-    assign readback_array[3][7:0] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.cache_line_size_register.value : '0;
-    assign readback_array[3][15:8] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.latency_timer_register.value : '0;
-    assign readback_array[3][23:16] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.interrupt_line_register.value : '0;
-    assign readback_array[3][31:24] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.interrupt_pin_register.value : '0;
-=======
     assign readback_array[2][7:0] = (decoded_reg_strb.byte_offset_08 && !decoded_req_is_wr) ? 8'h0 : '0; // Revision ID
     assign readback_array[2][31:8] = (decoded_reg_strb.byte_offset_08 && !decoded_req_is_wr) ? 24'h0 : '0; // Class Code
     assign readback_array[3][7:0] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.cache_line_size_register.value : '0;
     assign readback_array[3][15:8] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? field_storage.byte_offset_0C.latency_timer_register.value : '0;
     assign readback_array[3][23:16] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? 8'h0 : '0; // Header Type
     assign readback_array[3][31:24] = (decoded_reg_strb.byte_offset_0C && !decoded_req_is_wr) ? 8'h0 : '0; // BIST
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     assign readback_array[4][0:0] = (decoded_reg_strb.base_address_register_0 && !decoded_req_is_wr) ? 1'h0 : '0;
     assign readback_array[4][2:1] = (decoded_reg_strb.base_address_register_0 && !decoded_req_is_wr) ? 2'h0 : '0;
     assign readback_array[4][3:3] = (decoded_reg_strb.base_address_register_0 && !decoded_req_is_wr) ? 1'h0 : '0;

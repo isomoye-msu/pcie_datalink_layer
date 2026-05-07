@@ -217,15 +217,6 @@ module gen1_scramble
             // end
             //check if comma
             if (Q.data[1][byte_idx*8+:8] == COM) begin
-<<<<<<< HEAD
-              D.scramble_reset[byte_idx+1] = '1;
-              D.byte_cnt = (pipe_width_i >> 3) - (byte_idx);
-              for (int d_idx = 0; d_idx < 4; d_idx++) begin
-                if (d_idx >= byte_idx) begin
-                  D.disable_scrambling[d_idx] = '1;
-                  // D.stop_scrambling[idx]    = '1;
-                end
-=======
               logic is_skp_os;
               is_skp_os = '0;
               if (byte_idx < (pipe_width_i >> 3) - 1) begin
@@ -249,7 +240,6 @@ module gen1_scramble
                 D.skp_os[byte_idx] = '1;
                 D.disable_scrambling[byte_idx] = '1;
                 D.lfsr_in = lfsr_out[byte_idx];
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
               end
               // D.scramble_reset[byte_idx] = '1;
               // D.byte_cnt                 = byte_idx;

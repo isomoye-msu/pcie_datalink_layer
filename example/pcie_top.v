@@ -93,13 +93,9 @@ module pcie_top #(
 
     input sys_clk_p,
     input sys_clk_n,
-<<<<<<< HEAD
-    input sys_rst_n
-=======
     input sys_rst_n,
     input pcie_refclk_p,
     input pcie_refclk_n
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 );
 
@@ -120,8 +116,6 @@ module pcie_top #(
       .O(sys_clk)
   );
 
-<<<<<<< HEAD
-=======
   wire gt_refclk;
   wire gt_refclk_div2_unused;
 
@@ -133,7 +127,6 @@ module pcie_top #(
       .ODIV2 (gt_refclk_div2_unused)
   );
 
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   // Parameters
   localparam CLK_RATE = 100;
   localparam MAX_NUM_LANES = 1;
@@ -142,11 +135,7 @@ module pcie_top #(
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
-<<<<<<< HEAD
-  localparam IS_ROOT_PORT = 1;
-=======
   localparam IS_ROOT_PORT = 0;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;
@@ -711,11 +700,7 @@ module pcie_top #(
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
   pipe_wrapper #(
-<<<<<<< HEAD
-      .PCIE_SIM_MODE             ("TRUE"),
-=======
       .PCIE_SIM_MODE             ("FALSE"),
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       // synthesis translate_off
       .PCIE_SIM_SPEEDUP          ("TRUE"),
       // synthesis translate_on
@@ -748,11 +733,7 @@ module pcie_top #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
-<<<<<<< HEAD
-      .PIPE_CLK    (sys_clk),
-=======
       .PIPE_CLK    (gt_refclk),
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------

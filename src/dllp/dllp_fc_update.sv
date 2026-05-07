@@ -36,11 +36,7 @@ module dllp_fc_update
     input  logic                    m_axis_tready
 );
 
-<<<<<<< HEAD
-  localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;
-=======
   // localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
   // localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
   // localparam int HdrMinCredits = 8'h040;
@@ -71,11 +67,7 @@ module dllp_fc_update
   logic             [USER_WIDTH-1:0] fc_axis_tuser;
   logic                              fc_axis_tready;
   // Internal state machine for link flow control
-<<<<<<< HEAD
-  fc_update_state_e                  curr_state;
-=======
   (* syn_keep = "true", mark_debug = "true" *) fc_update_state_e                  curr_state;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   fc_update_state_e                  next_state;
   dllp_fc_t                          dll_packet_c;
   dllp_fc_t                          dll_packet_r;
@@ -169,11 +161,7 @@ module dllp_fc_update
         //build dllp fc update for crc
         //build axis master output
         fc_axis_tdata =
-<<<<<<< HEAD
-            send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i + FcPData);
-=======
             send_fc_init(UpdateFC_P, '0, ph_credits_consumed_i, pd_credits_consumed_i);
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
         dllp_lcrc_c = crc_out;
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
@@ -199,12 +187,7 @@ module dllp_fc_update
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
         //build dllp fc update for crc
-<<<<<<< HEAD
-        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i,
-                                     npd_credits_consumed_i + FcNpData);
-=======
         fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, nph_credits_consumed_i, npd_credits_consumed_i);
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
         //done with dllp
         if (fc_axis_tready) begin
           next_state = ST_UPDATE_NP_CRC;
@@ -218,14 +201,10 @@ module dllp_fc_update
         fc_axis_tlast  = '1;
         //done with dllp
         if (fc_axis_tready) begin
-<<<<<<< HEAD
-          next_state = ST_UPDATE_CPL;
-=======
           // TODO: Temporary fix to not send CPL updates if it was initialised to 0
           timer_c = '0;
           start_ack_c = '1;
           next_state = ST_WAIT_LOW;
->>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
         end
       end
       //send np
