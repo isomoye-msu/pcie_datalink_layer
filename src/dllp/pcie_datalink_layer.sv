@@ -42,7 +42,6 @@ module pcie_datalink_layer
     output logic [USER_WIDTH-1:0] m_tlp_axis_tuser,
     input  logic                  m_tlp_axis_tready,
     //DLLP AXIS inputs
-    // COMING FROM THE PHYSICAL LAYER
     input  logic [DATA_WIDTH-1:0] s_phy_axis_tdata,
     input  logic [KEEP_WIDTH-1:0] s_phy_axis_tkeep,
     input  logic                  s_phy_axis_tvalid,
@@ -50,7 +49,6 @@ module pcie_datalink_layer
     input  logic [USER_WIDTH-1:0] s_phy_axis_tuser,
     output logic                  s_phy_axis_tready,
     //PHY -> DLLP AXIS output
-    // GOING TO THE PHYSICAL LAYER
     output logic [DATA_WIDTH-1:0] m_phy_axis_tdata,
     output logic [KEEP_WIDTH-1:0] m_phy_axis_tkeep,
     output logic                  m_phy_axis_tvalid,
@@ -154,12 +152,12 @@ module pcie_datalink_layer
   logic                               fc2_values_sent;
   logic                               fc_init_done;
   logic                               fc2_values_stored_reg;
-  logic                               first_feature_exchange_dllp_received;
 
 
 
 
-  (* syn_keep = "true", mark_debug = "true" *) pcie_dl_status_e                    link_status;
+
+  pcie_dl_status_e                    link_status;
   logic                               first_tlp_valid;
 
 
@@ -193,7 +191,6 @@ module pcie_datalink_layer
       .fc1_values_stored_i (fc1_values_stored),
       .fc2_values_stored_i (fc2_values_stored),
       .update_fc_i         (update_fc),
-      .first_feature_exchange_dllp_received_i(first_feature_exchange_dllp_received),
       .m_axis_tdata        (phy_fc_axis_tdata),
       .m_axis_tkeep        (phy_fc_axis_tkeep),
       .m_axis_tvalid       (phy_fc_axis_tvalid),
@@ -281,8 +278,6 @@ module pcie_datalink_layer
       .cfg_bus_number_o      (cfg_bus_number_o),
       .cfg_device_number_o   (cfg_device_number_o),
       .cfg_function_number_o (cfg_function_number_o),
-      
-      // DLLP handler outputs
       .seq_num_o             (seq_num),
       .seq_num_vld_o         (seq_num_vld),
       .seq_num_acknack_o     (seq_num_acknack),
@@ -295,8 +290,7 @@ module pcie_datalink_layer
       .tx_fc_npd_o           (tx_fc_npd),
       .tx_fc_cplh_o          (tx_fc_cplh),
       .tx_fc_cpld_o          (tx_fc_cpld),
-      .update_fc_o           (update_fc),
-      .first_feature_exchange_dllp_received_o (first_feature_exchange_dllp_received)
+      .update_fc_o           (update_fc)
   );
 
 

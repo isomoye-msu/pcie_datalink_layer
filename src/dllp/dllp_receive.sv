@@ -39,7 +39,7 @@ module dllp_receive
     output logic                               m_axis_dllp2tlp_tlast,
     output logic            [(USER_WIDTH)-1:0] m_axis_dllp2tlp_tuser,
     input  logic                               m_axis_dllp2tlp_tready,
-    // TLP dllp2phy output
+    // TLP dllp2tlp output
     output logic            [(DATA_WIDTH)-1:0] m_axis_dllp2phy_tdata,
     output logic            [(KEEP_WIDTH)-1:0] m_axis_dllp2phy_tkeep,
     output logic                               m_axis_dllp2phy_tvalid,
@@ -72,8 +72,7 @@ module dllp_receive
     output logic [11:0] tx_fc_npd_o,
     output logic [ 7:0] tx_fc_cplh_o,
     output logic [11:0] tx_fc_cpld_o,
-    output logic        update_fc_o,
-    output logic        first_feature_exchange_dllp_received_o
+    output logic        update_fc_o
 );
 
   localparam int UserIsTlp = 1;
@@ -211,8 +210,7 @@ module dllp_receive
       .tx_fc_npd_o        (tx_fc_npd_o),
       .tx_fc_cplh_o       (tx_fc_cplh_o),
       .tx_fc_cpld_o       (tx_fc_cpld_o),
-      .update_fc_o        (update_fc_o),
-      .first_feature_exchange_dllp_received_o (first_feature_exchange_dllp_received_o)
+      .update_fc_o        (update_fc_o)
   );
 
   //dllp flow control update module instance
