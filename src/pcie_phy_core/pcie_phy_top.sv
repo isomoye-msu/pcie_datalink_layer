@@ -11,7 +11,11 @@ module pcie_phy_top
     parameter int KEEP_WIDTH    = STRB_WIDTH,
     parameter int USER_WIDTH    = 5,
     // TLP keep width
+<<<<<<< HEAD
     parameter int IS_ROOT_PORT  = 1,
+=======
+    parameter int IS_ROOT_PORT = 0,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     parameter int LINK_NUM      = 0,
     parameter int IS_UPSTREAM   = 0,               //downstream by default
     parameter int CROSSLINK_EN  = 0,               //crosslink not supported
@@ -52,7 +56,11 @@ module pcie_phy_top
     input  wire [     MAX_NUM_LANES-1:0] phy_phystatus,
     input  wire                          phy_phystatus_rst,
     input  wire [     MAX_NUM_LANES-1:0] phy_rxelecidle,
+<<<<<<< HEAD
     input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+=======
+    (* mark_debug = "true", keep = "true" *) input  wire [ (MAX_NUM_LANES*3)-1:0] phy_rxstatus,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     // TX Driver
     output wire [                   2:0] phy_txmargin,
     output wire                          phy_txswing,
@@ -85,11 +93,19 @@ module pcie_phy_top
 
     // Debug output
 
+<<<<<<< HEAD
     (* mark_debug *) output wire [20:0] ltssm_debug_state,
 
     // Bringup Control Inputs
     (* mark_debug *) input wire tx_elec_idle,
     (* mark_debug *) input wire phy_ready_en,
+=======
+    output wire [20:0] ltssm_debug_state,
+
+    // Bringup Control Inputs
+    input wire tx_elec_idle,
+    input wire phy_ready_en,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 
     output logic link_up_o,
@@ -118,6 +134,7 @@ module pcie_phy_top
 
 
   logic                                      link_up;
+<<<<<<< HEAD
   ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
   logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
   logic              [(MAX_NUM_LANES*8)-1:0] link_number;
@@ -128,6 +145,20 @@ module pcie_phy_top
   rate_speed_e                               curr_data_rate;
   pcie_ordered_set_t                         ordered_set;
   logic                                      ordered_set_tranmitted;
+=======
+  logic                                      link_up_100MHz;
+  ts_symbol6_union_t [    MAX_NUM_LANES-1:0] symbol6;
+  logic              [(MAX_NUM_LANES*8)-1:0] lane_number;
+  logic              [(MAX_NUM_LANES*8)-1:0] link_number;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] ts1_valid;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] ts2_valid;
+  (* mark_debug = "true", keep = "true" *) logic              [    MAX_NUM_LANES-1:0] idle_valid;
+  logic              [    MAX_NUM_LANES-1:0] polarity_inverted;
+  training_ctrl_t    [    MAX_NUM_LANES-1:0] training_ctrl;
+  rate_speed_e                               curr_data_rate;
+  pcie_ordered_set_t                         ordered_set;
+  (* mark_debug = "true", keep = "true" *) logic                                      ordered_set_tranmitted;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   logic                                      send_ordered_set;
   rate_id_t          [    MAX_NUM_LANES-1:0] rate_id;
   logic              [                  5:0] pipe_width;
@@ -152,16 +183,67 @@ module pcie_phy_top
   logic                                  s_dllp_axis_tlast;
   logic              [   USER_WIDTH-1:0] s_dllp_axis_tuser;
   logic                                  s_dllp_axis_tready;
+<<<<<<< HEAD
   gen_os_struct_t                        gen_os_ctrl;
   logic              [MAX_NUM_LANES-1:0] active_lanes;
   logic              [MAX_NUM_LANES-1:0] lane_status;
+=======
+  (* mark_debug = "true", keep = "true" *) gen_os_struct_t                        gen_os_ctrl;
+  logic              [MAX_NUM_LANES-1:0] active_lanes;
+  (* mark_debug = "true", keep = "true" *) logic              [MAX_NUM_LANES-1:0] lane_status;
+
+  logic                                       phy_txdetectrx_detect_upper_edge_r;
+  logic                                       phy_txdetectrx_detect_upper_edge;
+
+  async_fifo #(
+        .DSIZE(1),
+        .ASIZE(2)
+  ) os_transmitted_async_fifo_inst (
+      .wclk(pipe_rx_usr_clk_i),
+      .wrst_n(!rst_i ),
+      .winc('1),
+      .wdata(link_up),
+      .wfull(),
+      .awfull(),
+      .rclk(clk_i),
+      .rrst_n(!rst_i),
+      .rinc('1),
+      .rdata(link_up_100MHz),
+      .rempty(),
+      .arempty()
+  );
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
   assign phy_rate  = curr_data_rate - 1'b1;
   // assign phy_powerdown = '0;
   assign link_up_o = link_up;
 
+<<<<<<< HEAD
   always_ff @(posedge pipe_rx_usr_clk_i) begin
     if (rst_i || phy_phystatus_rst) begin
+=======
+
+  always_comb begin : detect_phy_txdetectrx_upper_edge
+    // => exit detected
+    if (~phy_txdetectrx_detect_upper_edge_r && phy_txdetectrx) begin
+        phy_txdetectrx_detect_upper_edge = '1;
+    end
+    else begin
+        phy_txdetectrx_detect_upper_edge = '0;
+    end
+  end
+
+  always_ff @(posedge pipe_rx_usr_clk_i) begin 
+    if (rst_i) begin
+      phy_txdetectrx_detect_upper_edge_r <= 0;
+    end else begin
+      phy_txdetectrx_detect_upper_edge_r <= phy_txdetectrx;
+    end
+  end
+
+  always_ff @(posedge pipe_rx_usr_clk_i) begin
+    if (rst_i || phy_phystatus_rst || phy_txdetectrx_detect_upper_edge) begin
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       lane_status        <= '0;
       num_active_lanes_i <= '0;
     end else begin
@@ -202,6 +284,10 @@ module pcie_phy_top
       .ts1_valid_o       (ts1_valid),
       .ts2_valid_o       (ts2_valid),
       .idle_valid_o      (idle_valid),
+<<<<<<< HEAD
+=======
+      .polarity_inverted_o(polarity_inverted),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .ordered_set_o     (rx_ordered_set),
       .curr_data_rate_i  (curr_data_rate),
       .m_dllp_axis_tdata (m_dllp_axis_tdata),
@@ -269,6 +355,10 @@ module pcie_phy_top
       .ts1_valid_i        (ts1_valid),
       .ts2_valid_i        (ts2_valid),
       .idle_valid_i       (idle_valid),
+<<<<<<< HEAD
+=======
+      .polarity_inverted_i(polarity_inverted),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .phy_rxstatus_i     (phy_rxstatus),
       .phy_phystatus_i    (phy_phystatus),
       .phy_phystatus_rst_i(phy_phystatus_rst),
@@ -318,6 +408,7 @@ module pcie_phy_top
   ) pcie_datalink_layer_inst (
       .clk_i                  (clk_i),
       .rst_i                  (rst_i),
+<<<<<<< HEAD
       .s_tlp_axis_tdata       (s_tlp_axis_tdata),
       .s_tlp_axis_tkeep       (s_tlp_axis_tkeep),
       .s_tlp_axis_tvalid      (s_tlp_axis_tvalid),
@@ -346,6 +437,36 @@ module pcie_phy_top
       .cfg_device_number_o    (cfg_device_number_o),
       .cfg_function_number_o  (cfg_function_number_o),
       .phy_link_up_i          (link_up),
+=======
+      .s_tlp_axis_tdata       (s_tlp_axis_tdata),   // input from pcie_top_gtp
+      .s_tlp_axis_tkeep       (s_tlp_axis_tkeep),   // input from pcie_top_gtp
+      .s_tlp_axis_tvalid      (s_tlp_axis_tvalid),  // input from pcie_top_gtp
+      .s_tlp_axis_tlast       (s_tlp_axis_tlast),   // input from pcie_top_gtp
+      .s_tlp_axis_tuser       (s_tlp_axis_tuser),   // input from pcie_top_gtp
+      .s_tlp_axis_tready      (s_tlp_axis_tready),  // input from pcie_top_gtp
+      .m_tlp_axis_tdata       (m_tlp_axis_tdata),   // Not connected???
+      .m_tlp_axis_tkeep       (m_tlp_axis_tkeep),   // Not connected???
+      .m_tlp_axis_tvalid      (m_tlp_axis_tvalid),  // Not connected???
+      .m_tlp_axis_tlast       (m_tlp_axis_tlast),   // Not connected???
+      .m_tlp_axis_tuser       (m_tlp_axis_tuser),   // Not connected???
+      .m_tlp_axis_tready      (m_tlp_axis_tready),  // Not connected???
+      .s_phy_axis_tdata       (m_dllp_axis_tdata),  // input from phy_receive
+      .s_phy_axis_tkeep       (m_dllp_axis_tkeep),  // input from phy_receive
+      .s_phy_axis_tvalid      (m_dllp_axis_tvalid), // input from phy_receive
+      .s_phy_axis_tlast       (m_dllp_axis_tlast),  // input from phy_receive
+      .s_phy_axis_tuser       (m_dllp_axis_tuser),  // input from phy_receive
+      .s_phy_axis_tready      (m_dllp_axis_tready), // input from phy_receive
+      .m_phy_axis_tdata       (s_dllp_axis_tdata),  // output to phy_transmit
+      .m_phy_axis_tkeep       (s_dllp_axis_tkeep),  // output to phy_transmit
+      .m_phy_axis_tvalid      (s_dllp_axis_tvalid), // output to phy_transmit
+      .m_phy_axis_tlast       (s_dllp_axis_tlast),  // output to phy_transmit
+      .m_phy_axis_tuser       (s_dllp_axis_tuser),  // output to phy_transmit
+      .m_phy_axis_tready      (s_dllp_axis_tready), // output to phy_transmit
+      .cfg_bus_number_o       (cfg_bus_number_o),
+      .cfg_device_number_o    (cfg_device_number_o),
+      .cfg_function_number_o  (cfg_function_number_o),
+      .phy_link_up_i          (link_up_100MHz),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .fc_initialized_o       (fc_initialized_o),
       .idle_valid_i           (idle_valid),
       .ext_tag_enable_o       (),

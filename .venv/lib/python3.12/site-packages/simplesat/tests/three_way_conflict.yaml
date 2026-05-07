@@ -1,0 +1,45 @@
+
+packages:
+  - A 1.0.0-1
+  - A 2.0.0-1
+  - C 1.0.0-1; depends (A)
+  - D 1.0.0-1; conflicts (A ^= 1.0)
+  - E 1.0.0-1; conflicts (A ^= 2.0)
+
+request:
+  - operation: "install"
+    requirement: "C"
+  - operation: "install"
+    requirement: "D"
+  - operation: "install"
+    requirement: "E"
+
+installed:
+  - "A 1.0.0-1"
+  - "C 1.0.0-1"
+
+marked:
+  - "C"
+
+failure:
+  requirements: ['C', 'D', 'E']
+  raw: |
+    Conflicting requirements:
+    Requirements: 'C'
+        Install command rule (+C-1.0.0-1)
+    Requirements: 'C' <- 'A'
+        C-1.0.0-1 requires (+A-1.0.0-1 | +A-2.0.0-1)
+    Requirements: 'D' <- 'A ^= 1.0'
+        A-1.0.0-1 conflicts with +D-1.0.0-1
+    Requirements: 'D'
+        Install command rule (+D-1.0.0-1)
+
+    Conflicting requirements:
+    Requirements: 'C'
+        Install command rule (+C-1.0.0-1)
+    Requirements: 'C' <- 'A'
+        C-1.0.0-1 requires (+A-1.0.0-1 | +A-2.0.0-1)
+    Requirements: 'E' <- 'A ^= 2.0'
+        E-1.0.0-1 conflicts with +A-2.0.0-1
+    Requirements: 'E'
+        Install command rule (+E-1.0.0-1)

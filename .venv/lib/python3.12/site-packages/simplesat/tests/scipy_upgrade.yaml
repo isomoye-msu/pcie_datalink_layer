@@ -1,0 +1,67 @@
+packages:
+    - MKL 10.2-1
+    - MKL 10.2-2
+    - MKL 10.3-1
+    - libgfortran 3.0.0-1
+    - libgfortran 3.0.0-2
+    - numpy 1.5.1-1; depends (MKL == 10.3-1)
+    - numpy 1.5.1-2; depends (MKL == 10.3-1)
+    - numpy 1.6.0b2-1; depends (MKL == 10.3-1)
+    - numpy 1.6.0-1; depends (MKL == 10.3-1)
+    - numpy 1.6.0-2; depends (MKL == 10.3-1)
+    - numpy 1.6.0-3; depends (MKL == 10.3-1)
+    - numpy 1.6.0-4; depends (MKL == 10.3-1)
+    - numpy 1.6.0-5; depends (MKL == 10.3-1)
+    - numpy 1.6.1-1; depends (MKL == 10.3-1)
+    - numpy 1.6.1-2; depends (MKL == 10.3-1)
+    - numpy 1.6.1-3; depends (MKL == 10.3-1)
+    - numpy 1.6.1-5; depends (MKL == 10.3-1)
+    - numpy 1.7.1-1; depends (MKL == 10.3-1)
+    - numpy 1.7.1-2; depends (MKL == 10.3-1)
+    - numpy 1.7.1-3; depends (MKL == 10.3-1)
+    - numpy 1.8.0-1; depends (MKL == 10.3-1)
+    - numpy 1.8.0-2; depends (MKL == 10.3-1)
+    - numpy 1.8.0-3; depends (MKL == 10.3-1)
+    - numpy 1.8.1-1; depends (MKL == 10.3-1)
+    - numpy 1.8.1-2; depends (MKL == 10.3-1)
+    - numpy 1.8.1-3; depends (libgfortran ^= 3.0.0, MKL == 10.3-1)
+    - numpy 1.9.2-1; depends (libgfortran ^= 3.0.0, MKL == 10.3-1)
+    - scipy 0.9.0rc2-1; depends (numpy ^= 1.5.1)
+    - scipy 0.9.0-1; depends (numpy ^= 1.5.1)
+    - scipy 0.9.0-2; depends (numpy ^= 1.6.0)
+    - scipy 0.9.0-3; depends (numpy ^= 1.6.1)
+    - scipy 0.10.0-1; depends (numpy ^= 1.6.1)
+    - scipy 0.10.1-1; depends (numpy ^= 1.6.1)
+    - scipy 0.11.0-1; depends (numpy ^= 1.6.1)
+    - scipy 0.12.0-1; depends (numpy ^= 1.6.1)
+    - scipy 0.12.0-2; depends (numpy ^= 1.7.1)
+    - scipy 0.13.0-1; depends (numpy ^= 1.7.1, libgfortran ^= 3.0.0)
+    - scipy 0.13.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.13.2-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.13.3-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.14.0-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.14.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.14.0-3; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0)
+    - scipy 0.14.1rc1-1; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0, MKL ^= 10.3)
+    - scipy 0.15.1-1; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0, MKL ^= 10.3)
+    - scipy 0.15.1-2; depends (numpy ^= 1.9.2, libgfortran ^= 3.0.0, MKL ^= 10.3)
+
+request:
+    - operation: "install"
+      requirement: "scipy > 0.15"
+
+installed:
+    - MKL 10.3-1
+    - libgfortran 3.0.0-1
+    - numpy 1.8.1-1
+    - scipy 0.14.0-3
+
+transaction:
+    - kind: "install"
+      package: "MKL 10.3-1"
+    - kind: "install"
+      package: "libgfortran 3.0.0-2"
+    - kind: "install"
+      package: "numpy 1.9.2-1"
+    - kind: "install"
+      package: "scipy 0.15.1-2"

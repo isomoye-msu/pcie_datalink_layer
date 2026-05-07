@@ -124,7 +124,11 @@ module pcie_gtx_kc705
   localparam int STRB_WIDTH = DATA_WIDTH / 8;
   localparam int KEEP_WIDTH = STRB_WIDTH;
   localparam int USER_WIDTH = 5;
+<<<<<<< HEAD
   localparam int IS_ROOT_PORT = 1;
+=======
+  localparam int IS_ROOT_PORT = 0;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam int LINK_NUM = 0;
   localparam int IS_UPSTREAM = 0;
   localparam int CROSSLINK_EN = 0;

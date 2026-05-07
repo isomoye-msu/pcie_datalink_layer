@@ -12,7 +12,11 @@ module ltssm_detect
     // TLP keep width
     parameter int KEEP_WIDTH    = DATA_WIDTH / 8,
     parameter int USER_WIDTH    = $bits(phy_user_t),
+<<<<<<< HEAD
     parameter int IS_ROOT_PORT  = 1,
+=======
+    parameter int IS_ROOT_PORT = 0,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     parameter int LINK_NUM      = 0,
     parameter int IS_UPSTREAM   = 0,                  //downstream by default
     parameter int CROSSLINK_EN  = 0,                  //crosslink not supported

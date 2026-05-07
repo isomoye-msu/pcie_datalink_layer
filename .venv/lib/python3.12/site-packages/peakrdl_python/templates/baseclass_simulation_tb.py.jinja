@@ -1,0 +1,65 @@
+{#
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% include "header_tb.py.jinja" with context %}
+{% if legacy_block_access %}from array import array as Array{% endif %}
+{% if asyncoutput %}
+import sys
+import asyncio
+if sys.version_info < (3, 8):
+    import asynctest  # type: ignore[import]
+else:
+    import unittest
+{% else %}
+import unittest
+{% endif %}
+
+
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import RegisterWriteVerifyError
+{% if asyncoutput %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import AsyncCallbackSet{% if legacy_block_access %}Legacy{% endif %}
+{% else %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import NormalCallbackSet{% if legacy_block_access %}Legacy{% endif %}
+{% endif %}
+
+from ._{{top_node.inst_name}}_test_base import {{top_node.inst_name}}_TestCase, {{top_node.inst_name}}_TestCase_BlockAccess
+
+from ..reg_model.{{top_node.inst_name}} import {{top_node.inst_name}}_cls
+from ..sim.{{top_node.inst_name}} import {{top_node.inst_name}}_simulator_cls
+
+class {{top_node.inst_name}}_SimTestCase({{top_node.inst_name}}_TestCase): # type: ignore[valid-type,misc]
+
+    def setUp(self) -> None:
+        self.sim = {{top_node.inst_name}}_simulator_cls(address=0)
+        self.dut = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}AsyncCallbackSet{% else %}NormalCallbackSet{% endif %}{% if legacy_block_access %}Legacy{% endif %}(read_callback=self.sim.read,
+                                                          write_callback=self.sim.write))
+
+class {{top_node.inst_name}}_SimTestCase_BlockAccess({{top_node.inst_name}}_TestCase_BlockAccess): # type: ignore[valid-type,misc]
+
+    def setUp(self) -> None:
+        self.sim = {{top_node.inst_name}}_simulator_cls(address=0)
+        self.dut = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}AsyncCallbackSet{% else %}NormalCallbackSet{% endif %}{% if legacy_block_access %}Legacy{% endif %}(read_callback=self.sim.read,
+                                                          write_callback=self.sim.write,
+                                                          read_block_callback=self.sim.read_block,
+                                                          write_block_callback=self.sim.write_block))
+
+
+
+
+if __name__ == '__main__':
+    pass

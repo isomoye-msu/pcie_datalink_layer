@@ -1,0 +1,429 @@
+{#
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% include "header_tb.py.jinja" with context %}
+
+{% if legacy_block_access %}from array import array as Array{% endif %}
+from typing import Union, cast
+{% if asyncoutput %}
+import sys
+import asyncio
+import unittest
+from unittest.mock import Mock
+{% else %}
+import unittest
+from unittest.mock import Mock
+{% endif %}
+import random
+{% if legacy_enum_type %}
+from enum import IntEnum
+{% endif %}
+
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.register import Register,MemoryRegister
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.field import Field
+
+from ._{{top_node.inst_name}}_sim_test_base import {{top_node.inst_name}}_SimTestCase, {{top_node.inst_name}}_SimTestCase_BlockAccess
+from ._{{top_node.inst_name}}_sim_test_base import __name__ as base_name
+from ._{{top_node.inst_name}}_test_base import random_enum_reg_value
+
+{% if not legacy_enum_type %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import SystemRDLEnum
+{% endif %}
+
+class {{fq_block_name}}_single_access({{top_node.inst_name}}_SimTestCase): # type: ignore[valid-type,misc]
+
+    {% if asyncoutput %}async {% endif %}def test_register_read_and_write(self) -> None:
+        """
+        Walk the register map and check every register can be read and written to correctly
+        """
+        {% for node in owned_elements.registers -%}
+        # test access operations (read and/or write) to register:
+        # {{'.'.join(node.get_path_segments())}}
+        with self.subTest(msg='register: {{'.'.join(node.get_path_segments())}}'):
+            sim_register = self.sim.register_by_full_name('{{'.'.join(node.get_path_segments())}}')
+            self.assertIsInstance(sim_register, (Register,MemoryRegister))
+            register_read_callback = Mock()
+            register_write_callback = Mock()
+
+            {% if node.has_sw_readable -%}
+            # register read checks
+            # update the value via the backdoor in the simulator
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node)}}+1)
+            sim_register.value = random_value
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_value)
+            # up to now the callback should not have been called
+            sim_register.read_callback = register_read_callback
+            sim_register.write_callback = register_write_callback
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node)}}+1)
+            sim_register.value = random_value
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_value)
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_called_once_with(value=random_value)
+            register_write_callback.reset_mock()
+            register_read_callback.reset_mock()
+            sim_register.value = random_value
+            sim_register.read_callback = None
+            sim_register.write_callback = None
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_value)
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_not_called()
+
+            {% endif %}
+
+            {% if node.has_sw_writable -%}
+            # register write checks
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node)}}+1)
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_value)  # type: ignore[union-attr]
+            self.assertEqual(sim_register.value, random_value)
+            # up to now the callback should not have been called
+            sim_register.read_callback = register_read_callback
+            sim_register.write_callback = register_write_callback
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node)}}+1)
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_value)  # type: ignore[union-attr]
+            self.assertEqual(sim_register.value, random_value)
+            register_write_callback.assert_called_once_with(value=random_value)
+            register_read_callback.assert_not_called()
+            register_write_callback.reset_mock()
+            register_read_callback.reset_mock()
+            sim_register.read_callback = None
+            sim_register.write_callback = None
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node)}}+1)
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_value)  # type: ignore[union-attr]
+            self.assertEqual(sim_register.value, random_value)
+            {% if node.has_sw_readable -%}
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_value)
+            {% endif %}
+            {% endif %}
+
+        {% endfor %}
+
+    {% if asyncoutput %}async {% endif %}def test_field_read_and_write(self) -> None:
+        """
+        Walk the register map and check every field can be read and written to correctly
+        """
+        random_field_value: Union[int, {% if legacy_enum_type %}IntEnum{% else %}SystemRDLEnum{% endif %}]
+        {% for node in owned_elements.fields -%}
+        # test access operations (read and/or write) to register:
+        # {{'.'.join(node.get_path_segments())}}
+        with self.subTest(msg='field: {{'.'.join(node.get_path_segments())}}'):
+            sim_register = self.sim.register_by_full_name('{{'.'.join(node.parent.get_path_segments())}}')
+            self.assertIsInstance(sim_register, (Register,MemoryRegister))
+            sim_field = self.sim.field_by_full_name('{{'.'.join(node.get_path_segments())}}')
+            self.assertIsInstance(sim_field, Field)
+            register_read_callback = Mock()
+            register_write_callback = Mock()
+            field_read_callback = Mock()
+            field_write_callback = Mock()
+
+            {% if node.is_sw_readable -%}
+            # register read checks
+            # update the register value via the backdoor in the simulator
+
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            random_value = (random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1) & {{get_field_inv_bitmask_hex_string(node)}}) | ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})
+            {% else %}
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1)
+            random_field_value = (random_value & {{get_field_bitmask_hex_string(node)}}) >> {{node.low}}
+                {% if node.msb == node.low %}
+            random_field_value = self._reverse_bits(value=random_field_value, number_bits={{node.width}})
+                {% endif %}
+            {% endif %}
+            sim_register.value = random_value
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_field_value)
+            # update the field value via the backdoor in the simulator
+            previous_register_value = random_value
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            sim_field.value = random_field_value.value
+            self.assertEqual(sim_register.value, (previous_register_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}}))
+            {% else %}
+            random_field_value = random.randrange(0, {{get_field_max_value_hex_string(node)}}+1)
+            sim_field.value = random_field_value
+            self.assertEqual(sim_register.value, (previous_register_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({% if node.msb == node.high %}random_field_value{% else %}self._reverse_bits(value=random_field_value, number_bits={{node.width}}){% endif %} << {{node.low}}))
+            {% endif %}
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_field_value)
+            # hook up the call backs to check they work correctly
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            random_value = (random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1) & {{get_field_inv_bitmask_hex_string(node)}}) | ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})
+            {% else %}
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1)
+            random_field_value = (random_value & {{get_field_bitmask_hex_string(node)}}) >> {{node.low}}
+                {% if node.msb == node.low %}
+            random_field_value = self._reverse_bits(value=random_field_value, number_bits={{node.width}})
+                {% endif %}
+            {% endif %}
+            sim_register.value = random_value
+            sim_register.read_callback = register_read_callback
+            sim_register.write_callback = register_write_callback
+            sim_field.read_callback = field_read_callback
+            sim_field.write_callback = field_write_callback
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_field_value)
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_called_once_with(value=random_value)
+            field_write_callback.assert_not_called()
+            {%- if 'encode' in node.list_properties() %}
+            field_read_callback.assert_called_once_with(value=random_field_value.value)
+            {% else %}
+            field_read_callback.assert_called_once_with(value=random_field_value)
+            {% endif %}
+            # revert the callbacks and check again
+            register_write_callback.reset_mock()
+            register_read_callback.reset_mock()
+            field_write_callback.reset_mock()
+            field_read_callback.reset_mock()
+            sim_register.read_callback = None
+            sim_register.write_callback = None
+            sim_field.read_callback = None
+            sim_field.write_callback = None
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            random_value = (random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1) & {{get_field_inv_bitmask_hex_string(node)}}) | ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})
+            {% else %}
+            random_value = random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1)
+            random_field_value = (random_value & {{get_field_bitmask_hex_string(node)}}) >> {{node.low}}
+                {% if node.msb == node.low %}
+            random_field_value = self._reverse_bits(value=random_field_value, number_bits={{node.width}})
+                {% endif %}
+            {% endif %}
+            sim_register.value = random_value
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(), random_field_value)
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_not_called()
+            field_write_callback.assert_not_called()
+            field_read_callback.assert_not_called()
+            {% endif %}
+
+            {% if node.is_sw_writable -%}
+            # register write checks
+            # update the register value via the backdoor in the simulator, then perform a field
+            # write and make sure it is updated
+            {% if node.parent.has_sw_readable -%}
+            inital_reg_random_value = random.randrange(0, {{get_reg_max_value_hex_string(node.parent)}}+1)
+            sim_register.value = inital_reg_random_value
+            {% else -%}
+            {# if the register is not readable the write assumes the rest of the register is 0 #}
+            inital_reg_random_value = 0
+            {% endif %}
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            {% else %}
+            random_field_value = random.randrange(0, {{get_field_max_value_hex_string(node)}}+1)
+            {% endif %}
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_field_value) # type: ignore[arg-type]
+            {%- if 'encode' in node.list_properties() %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            {% else %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value{% else %}self._reverse_bits(value=random_field_value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            {% endif %}
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_not_called()
+            field_write_callback.assert_not_called()
+            field_read_callback.assert_not_called()
+            reg_random_value = sim_register.value
+            # hook up the call backs
+            sim_register.read_callback = None
+            sim_register.write_callback = register_write_callback
+            sim_field.read_callback = None
+            sim_field.write_callback = field_write_callback
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            {% else %}
+            random_field_value = random.randrange(0, {{get_field_max_value_hex_string(node)}}+1)
+            {% endif %}
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_field_value) # type: ignore[arg-type]
+            {%- if 'encode' in node.list_properties() %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            register_write_callback.assert_called_once_with(value=(reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            field_write_callback.assert_called_once_with(value=random_field_value.value) # type: ignore[attr-defined]
+            {% else %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value{% else %}self._reverse_bits(value=random_field_value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            register_write_callback.assert_called_once_with(value=(reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value{% else %}self._reverse_bits(value=random_field_value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            field_write_callback.assert_called_once_with(value=random_field_value)
+            {% endif %}
+            register_read_callback.assert_not_called()
+            field_read_callback.assert_not_called()
+            reg_random_value = sim_register.value
+            # revert the callbacks and check again
+            register_write_callback.reset_mock()
+            register_read_callback.reset_mock()
+            field_write_callback.reset_mock()
+            field_read_callback.reset_mock()
+            sim_register.write_callback = None
+            sim_field.write_callback = None
+            {%- if 'encode' in node.list_properties() %}
+            random_field_value = random_enum_reg_value(self.dut.{{'.'.join(get_python_path_segments(node))}}.enum_cls)
+            {% else %}
+            random_field_value = random.randrange(0, {{get_field_max_value_hex_string(node)}}+1)
+            {% endif %}
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(random_field_value) # type: ignore[arg-type]
+            {%- if 'encode' in node.list_properties() %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value.value{% else %}self._reverse_bits(value=random_field_value.value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            {% else %}
+            self.assertEqual(sim_register.value, (inital_reg_random_value & {{get_field_inv_bitmask_hex_string(node)}}) | ({{get_field_bitmask_hex_string(node)}} & ({% if node.msb == node.high %}random_field_value{% else %}self._reverse_bits(value=random_field_value, number_bits={{node.width}}){% endif %} << {{node.low}})))
+            {% endif %}
+            register_write_callback.assert_not_called()
+            register_read_callback.assert_not_called()
+            field_write_callback.assert_not_called()
+            field_read_callback.assert_not_called()
+            {% endif %}
+
+        {% endfor %}
+
+
+    {% if uses_memory %}
+    {% if asyncoutput %}async {% endif %}def test_memory_read_and_write(self) -> None:
+        """
+        Walk the register map and check every memory can be read and written to correctly
+        """
+        {% for node in owned_elements.memories -%}
+
+        # test access operations (read and/or write) to register:
+        # {{'.'.join(node.get_path_segments())}}
+        with self.subTest(msg='memory: {{'.'.join(node.get_path_segments())}}'):
+
+            {% if node.is_sw_readable -%}
+
+            # checks single unit accesses at the first entry, the last entry and a random entry in
+            # in each case check a 0, max value and random value being read
+            for entry in [0, random.randint(0,{{node.get_property('mementries')-1}}), {{node.get_property('mementries')-1}}]:
+                self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=entry, number_entries=1), # type: ignore[union-attr]
+                                                         {% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [0]){% else %}[0]{% endif %})
+
+            # check a multi-entry read, if the memory is small do the entire memory, however, if
+            # it is large limit the number of entries to 10
+            entries_to_test = {% if node.get_property('mementries') > 10 %}10{% else %}{{node.get_property('mementries')}}{% endif %}
+
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=0, number_entries=entries_to_test), # type: ignore[union-attr]
+                             {% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [0 for _ in range(entries_to_test)]){% else %}[0 for _ in range(entries_to_test)]{% endif %})
+            {% endif %}
+
+            {% if node.is_sw_writable -%}
+            # checks single unit accesses at the first entry, the last entry and a random entry in
+            # in each case check a 0, max value and random value being read
+            for entry in [0, random.randint(0,{{node.get_property('mementries')-1}}), {{node.get_property('mementries')-1}}]:
+                for value in [0, random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}), {{get_memory_max_entry_value_hex_string(node)}}]:
+                    {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(start_entry=entry, data={% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [value]){% else %}[value]{% endif %}) # type: ignore[union-attr]
+                    {% if node.is_sw_readable -%}
+                    self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=entry, number_entries=1), # type: ignore[union-attr]
+                                     {% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [value]){% else %}[value]{% endif %})
+                    {% endif %}
+
+            # check a multi-entry read, if the memory is small do the entire memory, however, if
+            # it is large limit the number of entries to 10
+            entries_to_test = {% if node.get_property('mementries') > 10 %}10{% else %}{{node.get_property('mementries')}}{% endif %}
+            {% if legacy_block_access %}
+            random_data = Array('{{get_array_typecode(node.get_property('memwidth'))}}',
+                                [random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}) for x in range(entries_to_test)])
+            {% else %}
+            random_data = [random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}) for x in range(entries_to_test)]
+            {% endif %}
+            {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(start_entry=0, data=random_data) # type: ignore[union-attr]
+            {% if node.is_sw_readable -%}
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=0, number_entries=entries_to_test), # type: ignore[union-attr]
+                             random_data)
+            {% endif %}
+            {%- endif %}
+
+        {%- endfor %}
+    {%- endif %}
+
+
+
+class {{fq_block_name}}_block_access({{top_node.inst_name}}_SimTestCase_BlockAccess): # type: ignore[valid-type,misc]
+    """
+    tests for all the block access methods
+    """
+
+    {% if uses_memory %}
+    {% if asyncoutput %}async {% endif %}def test_memory_read_and_write(self) -> None:
+        """
+        Walk the register map and check every register can be read and written to correctly
+        """
+        {% for node in owned_elements.memories -%}
+
+        # test access operations (read and/or write) to register:
+        # {{'.'.join(node.get_path_segments())}}
+
+        {% if node.is_sw_readable -%}
+        # checks single unit accesses at the first entry, the last entry and a random entry in
+        # in each case check a 0, max value and random value being read
+        for entry in [0, random.randint(0,{{node.get_property('mementries')-1}}), {{node.get_property('mementries')-1}}]:
+
+            self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=entry, number_entries=1), # type: ignore[union-attr]
+                                                     {% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [0]){% else %}[0]{% endif %})
+
+        # check a multi-entry read, if the memory is small do the entire memory, however, if
+        # it is large limit the number of entries to 10
+        entries_to_test = {% if node.get_property('mementries') > 10 %}10{% else %}{{node.get_property('mementries')}}{% endif %}
+        {% if legacy_block_access %}
+        self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=0, # type: ignore[union-attr]
+                                      number_entries=entries_to_test),
+                                      Array('{{get_array_typecode(node.get_property('memwidth'))}}', [0 for _ in range(entries_to_test)]))
+        {% else %}
+        self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=0, # type: ignore[union-attr]
+                                      number_entries=entries_to_test),
+                                      [0 for _ in range(entries_to_test)])
+        {% endif %}
+        {% endif %}
+
+        {% if node.is_sw_writable -%}
+        # checks single unit accesses at the first entry, the last entry and a random entry in
+        # in each case check a 0, max value and random value being read
+        for entry in [0, random.randint(0,{{node.get_property('mementries')-1}}), {{node.get_property('mementries')-1}}]:
+            for value in [0, random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}), {{get_memory_max_entry_value_hex_string(node)}}]:
+                {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(start_entry=entry, data={% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [value]){% else %}[value]{% endif %}) # type: ignore[union-attr]
+                {% if node.is_sw_readable -%}
+                self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=entry, number_entries=1), # type: ignore[union-attr]
+                                 {% if legacy_block_access %}Array('{{get_array_typecode(node.get_property('memwidth'))}}', [value]){% else %}[value]{% endif %})
+                {% endif %}
+
+        # check a multi-entry read, if the memory is small do the entire memory, however, if
+        # it is large limit the number of entries to 10
+        entries_to_test = {% if node.get_property('mementries') > 10 %}10{% else %}{{node.get_property('mementries')}}{% endif %}
+        {% if legacy_block_access %}
+        random_data = Array('{{get_array_typecode(node.get_property('memwidth'))}}',
+                            [random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}) for x in range(entries_to_test)])
+        {% else %}
+        random_data = [random.randint(0,{{get_memory_max_entry_value_hex_string(node)}}) for x in range(entries_to_test)]
+        {% endif %}
+        {% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.write(start_entry=0, data=random_data) # type: ignore[union-attr]
+        {% if node.is_sw_readable -%}
+        self.assertEqual({% if asyncoutput %}await {%endif %}self.dut.{{'.'.join(get_python_path_segments(node))}}.read(start_entry=0, number_entries=entries_to_test), # type: ignore[union-attr]
+                         random_data)
+        {% endif %}
+
+        {%- endif %}
+
+        {%- endfor %}
+    {%- endif %}
+
+if __name__ == '__main__':
+{% if asyncoutput %}
+    if sys.version_info < (3, 8):
+        asynctest.main()
+    else:
+        unittest.main()
+{% else %}
+    unittest.main()
+{% endif %}
+
+
+
+

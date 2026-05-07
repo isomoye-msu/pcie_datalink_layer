@@ -1,0 +1,63 @@
+{#
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+{%- macro register_class_attributes(node) %}
+        {%- if node.is_array %}
+    self.__{{node.inst_name}}:{{get_fully_qualified_type_name(node)}}_array_cls = {{get_fully_qualified_type_name(node)}}_array_cls(address=self.address+{{node.raw_address_offset}},
+                                                                                  {% if 'accesswidth' in node.list_properties() -%}accesswidth={{node.get_property('accesswidth')}}{%- else -%}accesswidth={{node.size*8}}{%- endif -%},
+                                                                                  {% if 'regwidth' in node.list_properties() -%}width={{node.get_property('regwidth')}}{%- else -%}width={{node.size*8}}{%- endif -%},
+                                                                                  stride={{node.array_stride}},
+                                                                                  dimensions=tuple({{node.array_dimensions}}),
+                                                                                  logger_handle=logger_handle+'.{{node.inst_name}}',
+                                                                                  inst_name='{{node.inst_name}}', parent=self)
+        {%- else %}
+    self.__{{node.inst_name}}:{{get_fully_qualified_type_name(node)}}_cls = {{get_fully_qualified_type_name(node)}}_cls(
+                                                                 address=self.address+{{node.address_offset}},
+                                                                 {% if 'accesswidth' in node.list_properties() -%}accesswidth={{node.get_property('accesswidth')}}{%- else -%}accesswidth={{node.size*8}}{%- endif -%},
+                                                                 {% if 'regwidth' in node.list_properties() -%}width={{node.get_property('regwidth')}}{%- else -%}width={{node.size*8}}{%- endif -%},
+                                                                 logger_handle=logger_handle+'.{{node.inst_name}}',
+                                                                 inst_name='{{node.inst_name}}', parent=self)
+
+        {%- endif %}
+
+{%- endmacro %}
+
+{%- macro child_register_getter(node) %}
+    def get_registers(self, unroll:bool=False) -> Iterator[Union[{% if asyncoutput %}Async{% endif %}Reg, {% if asyncoutput %}Async{% endif %}RegArray]]:
+        """
+        generator that produces all the registers of this node
+        """
+        {% for child_node in node.children(unroll=False) -%}
+            {%- if not hide_node_func(child_node) %}
+                {%- if isinstance(child_node, systemrdlRegNode) %}
+                    {% if child_node.is_array %}
+        if unroll:
+            for child in self.{{safe_node_name(child_node)}}:
+                yield child
+        else:
+            yield self.{{safe_node_name(child_node)}}
+                    {% else %}
+        yield self.{{safe_node_name(child_node)}}
+                    {%- endif %}
+                {%- endif %}
+            {%- endif %}
+        {% endfor %}
+
+        # Empty generator in case there are no children of this type
+        if False: yield
+{%- endmacro %}
+

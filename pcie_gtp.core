@@ -163,6 +163,10 @@ targets:
     tools:
       vivado:
         part : xc7a200tfbg676-2
+<<<<<<< HEAD
+=======
+        synth_options: --flatten_hierarchy none
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     toplevel : pcie_top_gtp
 
 scripts:

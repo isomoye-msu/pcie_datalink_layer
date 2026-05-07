@@ -1,0 +1,15 @@
+packages:
+    - A 10.2-1
+    - B 10.3-1; conflicts (A)
+    - C 1.7.1-1; depends (A, B)
+
+request:
+    - operation: "install"
+      requirement: "C"
+
+failure:
+  requirements: ['C']
+  raw: |
+    Conflicting requirements:
+    Requirements: 'C'
+        Install command rule (+C-1.7.1-1)

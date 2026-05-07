@@ -46,7 +46,11 @@ module dllp2tlp
 );
   /* verilator lint_off WIDTHEXPAND */
   /* verilator lint_off WIDTHTRUNC */
+<<<<<<< HEAD
   localparam int PdMinCredits = (MAX_PAYLOAD_SIZE >> 4);
+=======
+  // localparam int PdMinCredits = (MAX_PAYLOAD_SIZE / 4);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam int FcWaitPeriod = 8'hA0;
   localparam int TlpAxis = 0;
   localparam int UserIsTlp = 1;
@@ -177,8 +181,13 @@ module dllp2tlp
       pd_credits_consumed_r   <= PdMinCredits;
       nph_credits_consumed_r  <= HdrMinCredits;
       npd_credits_consumed_r  <= PdMinCredits;
+<<<<<<< HEAD
       cplh_credits_consumed_r <= HdrMinCredits;
       cpld_credits_consumed_r <= PdMinCredits;
+=======
+      cplh_credits_consumed_r <= 0;
+      cpld_credits_consumed_r <= 0;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       tlp_nullified_r         <= '0;
       fc_start_r              <= '0;
     end else begin

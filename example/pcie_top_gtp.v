@@ -11,7 +11,11 @@ module pcie_top_gtp #(
     parameter         [11:0] RBAR_CAP_NEXTPTR              = 12'h000,
     parameter         [ 3:0] RBAR_CAP_VERSION              = 4'h1,
     parameter                PCIE_USE_MODE                 = "1.0",
+<<<<<<< HEAD
     parameter                PCIE_GT_DEVICE                = "GTX",
+=======
+    parameter                PCIE_GT_DEVICE                = "GTP",
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     parameter                PL_AUTO_CONFIG                = 0,
     parameter                ENABLE_JTAG_DBG               = "FALSE",
     parameter                PL_FAST_TRAIN                 = "FALSE",
@@ -93,7 +97,13 @@ module pcie_top_gtp #(
 
     input sys_clk_p,
     input sys_clk_n,
+<<<<<<< HEAD
     input sys_rst_n
+=======
+    input sys_rst_n,
+    input pcie_refclk_p,
+    input pcie_refclk_n
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 );
 
@@ -114,6 +124,20 @@ module pcie_top_gtp #(
       .O(sys_clk)
   );
 
+<<<<<<< HEAD
+=======
+  wire gt_refclk;
+  wire gt_refclk_div2_unused;
+
+  IBUFDS_GTE2 i_pcie_refclk (
+      .I     (pcie_refclk_p),
+      .IB    (pcie_refclk_n),
+      .CEB   (1'b0),
+      .O     (gt_refclk),
+      .ODIV2 (gt_refclk_div2_unused)
+  );
+
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   // Parameters
   localparam CLK_RATE = 100;
   localparam MAX_NUM_LANES = 1;
@@ -122,7 +146,11 @@ module pcie_top_gtp #(
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
+<<<<<<< HEAD
   localparam IS_ROOT_PORT = 1;
+=======
+  localparam IS_ROOT_PORT = 0;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;
@@ -165,7 +193,11 @@ module pcie_top_gtp #(
   wire [               MAX_NUM_LANES-1:0] phy_phystatus;
   wire                                    phy_phystatus_rst;
   wire [               MAX_NUM_LANES-1:0] phy_rxelecidle;
+<<<<<<< HEAD
   wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
+=======
+  (* mark_debug = "true", keep = "true" *)  wire [           (MAX_NUM_LANES*3)-1:0] phy_rxstatus;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   wire [                             2:0] phy_txmargin;
   wire                                    phy_txswing;
   wire                                    phy_txdeemph;
@@ -185,9 +217,28 @@ module pcie_top_gtp #(
   wire [                           8-1:0] pipe_width_o;
   wire                                    as_mac_in_detect;
   wire                                    as_cdr_hold_req;
+<<<<<<< HEAD
   wire [                             7:0] debug_state;
   wire                                    tx_elec_idle;
   wire                                    phy_ready_en;
+=======
+  (* mark_debug = "true", keep = "true" *) wire [20:0] debug_state;
+  (* mark_debug = "true", keep = "true" *) wire tx_elec_idle = 1'b0;
+  wire phy_ready_en = 1'b1;
+
+  // PIPE debug alias wires (top-level for ILA visibility)
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txdetectrx  = phy_txdetectrx;
+  (* mark_debug = "true", keep = "true" *) wire [2:0]  dbg_rxstatus    = phy_rxstatus[2:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_phystatus   = phy_phystatus[0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_rxelecidle  = phy_rxelecidle[0];
+  wire        dbg_rxvalid     = phy_rxvalid[0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_rxdata      = phy_rxdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_rxdatak     = phy_rxdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire [31:0] dbg_txdata      = phy_txdata[31:0];
+  (* mark_debug = "true", keep = "true" *) wire [3:0]  dbg_txdatak     = phy_txdatak[3:0];
+  (* mark_debug = "true", keep = "true" *) wire        dbg_txelecidle  = phy_txelecidle[0];
+  wire [1:0]  dbg_powerdown   = phy_powerdown;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 
   wire [                  DATA_WIDTH-1:0] s_tlp_axis_tdata;
@@ -327,7 +378,11 @@ module pcie_top_gtp #(
   // Flow Control
   wire [2:0] fc_sel;
 
+<<<<<<< HEAD
   wire       link_up;
+=======
+  (* mark_debug = "true", keep = "true" *) wire       link_up;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
   wire       PIPE_TXOUTCLK_OUT;
   wire       PIPE_DCLK_IN;
@@ -844,7 +899,11 @@ module pcie_top_gtp #(
   assign pipe_mmcm_lock = PIPE_MMCM_LOCK_IN;
 
   pipe_wrapper #(
+<<<<<<< HEAD
       .PCIE_SIM_MODE             ("TRUE"),
+=======
+      .PCIE_SIM_MODE             ("FALSE"),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       // synthesis translate_off
       .PCIE_SIM_SPEEDUP          ("TRUE"),
       // synthesis translate_on
@@ -869,7 +928,11 @@ module pcie_top_gtp #(
       .PCIE_USE_MODE             (PCIE_USE_MODE),
       .PCIE_LANE                 (LINK_CAP_MAX_LINK_WIDTH),
       .PCIE_LPM_DFE              ("LPM"),
+<<<<<<< HEAD
       .PCIE_LINK_SPEED           (3),
+=======
+      .PCIE_LINK_SPEED           (2),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .PCIE_TX_EIDLE_ASSERT_DELAY(3'd2),
       .PCIE_OOBCLK_MODE          (1),
       .PCIE_REFCLK_FREQ          (REF_CLK_FREQ),
@@ -877,7 +940,11 @@ module pcie_top_gtp #(
       .PCIE_USERCLK2_FREQ        (USERCLK2_FREQ + 1)         // unused
   ) pipe_wrapper_i (
       //---------- PIPE Clock & Reset Ports ------------------
+<<<<<<< HEAD
       .PIPE_CLK    (gt_clk),
+=======
+      .PIPE_CLK    (gt_refclk),
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .PIPE_RESET_N(sys_rst_n),
       // .PIPE_PCLK   (),
       //---------- PIPE TX Data Ports ------------------
@@ -893,8 +960,13 @@ module pcie_top_gtp #(
       .PIPE_RXDATA          (phy_rxdata[31:0]),
       .PIPE_RXDATAK         (phy_rxdatak[3:0]),
       //---------- PIPE Command Ports ------------------
+<<<<<<< HEAD
       .PIPE_TXDETECTRX      (phy_txdetectrx),
       .PIPE_TXELECIDLE      (phy_txelecidle),
+=======
+      .PIPE_TXDETECTRX      (phy_txdetectrx),             // TXUSRCLK2?
+      .PIPE_TXELECIDLE      (phy_txelecidle),             // TXUSRCLK2?
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .PIPE_TXCOMPLIANCE    (phy_txcompliance),
       .PIPE_RXPOLARITY      (phy_rxpolarity),
       .PIPE_POWERDOWN       (phy_powerdown),
@@ -905,18 +977,31 @@ module pcie_top_gtp #(
       .PIPE_TXDEEMPH        ({(LINK_CAP_MAX_LINK_WIDTH) {phy_txdeemph}}),
       //---------- PIPE Status Ports -------------------
       .PIPE_RXVALID         (phy_rxdata_valid[0:0]),
+<<<<<<< HEAD
       .PIPE_PHYSTATUS       (phy_phystatus[0:0]),
       .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
       .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),
       .PIPE_EYESCANDATAERROR(),
       .PIPE_RXSTATUS        (phy_rxstatus[2:0]),
+=======
+      .PIPE_PHYSTATUS       (phy_phystatus[0:0]),       // RXUSRCLK2?
+      .PIPE_PHYSTATUS_RST   (phy_phystatus_rst),
+      .PIPE_RXELECIDLE      (phy_rxelecidle[0:0]),      // RXUSRCLK2?
+      .PIPE_EYESCANDATAERROR(),
+      .PIPE_RXSTATUS        (phy_rxstatus[2:0]),        // RXUSRCLK2?
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       //---------- PIPE User Ports ---------------------------
       .PIPE_MMCM_RST_N      (pipe_mmcm_rst_n),
       .PIPE_PCLK_LOCK       (clock_locked),
       .PIPE_RXCHANISALIGNED (  /*gt_rxchanisaligned_wire[LINK_CAP_MAX_LINK_WIDTH-1:0]*/),
       //---------- External Clock Ports ---------------------------
+<<<<<<< HEAD
       .PIPE_PCLK_IN         (PIPE_PCLK_IN),
       .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),
+=======
+      .PIPE_PCLK_IN         (PIPE_PCLK_IN),             // TXUSRCLK2
+      .PIPE_RXUSRCLK_IN     (PIPE_RXUSRCLK_IN),         // RXUSRCLK2
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
       .PIPE_DCLK_IN         (PIPE_DCLK_IN),
       .PIPE_OOBCLK_IN       (PIPE_OOBCLK_IN),
       .PIPE_MMCM_LOCK_IN    (PIPE_MMCM_LOCK_IN),

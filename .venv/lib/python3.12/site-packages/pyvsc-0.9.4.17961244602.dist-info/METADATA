@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: pyvsc
+Version: 0.9.4.17961244602
+Summary: pyvsc (Verification Stimulus and Coverage) is a Python package for generating randomized stimulus and defining and collecting functional coverage.
+Home-page: https://github.com/fvutils/pyvsc
+Author: Matthew Ballance
+Author-email: matt.ballance@gmail.com
+License: Apache 2.0
+Keywords: Python,Functional Verification,Constraints,Coverage
+License-File: LICENSE
+Requires-Dist: pyboolector>=3.2.2
+Requires-Dist: pyucis>=0.1.4
+Requires-Dist: toposort
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
+
+
+  PyVSC implements a Python-embedded domain-specific language for
+  capturing random variables and data structures, constraints,
+  and functional coverage metrics. PyVSC is built on top of the
+  Boolector SMT solver. 
+  

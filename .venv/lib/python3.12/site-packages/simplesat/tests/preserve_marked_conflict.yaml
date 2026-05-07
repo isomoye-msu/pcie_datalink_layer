@@ -1,0 +1,33 @@
+# Upgrade impossible because marked package EPD_free depends on numpy < 1.8
+packages:
+    - MKL 10.2-1
+    - MKL 10.3-1
+    - EPD_free 7.3-1; depends (MKL == 10.2-1, numpy == 1.7.1-1)
+    - numpy 1.7.1-1; depends (MKL == 10.2-1)
+    - numpy 1.8.1-1; depends (MKL == 10.3-1)
+    - numpy 1.8.1-2; depends (MKL == 10.3-1)
+
+marked:
+    - EPD_free
+
+request:
+    - operation: "install"
+      requirement: "numpy > 1.8"
+
+installed:
+    - EPD_free 7.3-1
+    - MKL 10.2-1
+    - numpy 1.7.1-1
+
+failure:
+    requirements: ['EPD_free', 'numpy > 1.8-0']
+    raw: |
+        Conflicting requirements:
+        Requirements: 'EPD_free'
+            Install command rule (+EPD_free-7.3-1)
+        Requirements: 'EPD_free' <- 'numpy == 1.7.1-1'
+            EPD_free-7.3-1 requires (+numpy-1.7.1-1)
+        Requirements: 'numpy > 1.8-0' <- 'numpy'
+            Can only install one of: (+numpy-1.7.1-1 | +numpy-1.8.1-2)
+        Requirements: 'numpy > 1.8-0'
+            Install command rule (+numpy-1.8.1-1 | +numpy-1.8.1-2)

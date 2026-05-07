@@ -1,0 +1,3 @@
+[peakrdl.exporters]
+markdown=peakrdl_markdown.__peakrdl__:Exporter
+

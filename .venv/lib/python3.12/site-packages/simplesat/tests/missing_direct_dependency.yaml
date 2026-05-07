@@ -1,0 +1,9 @@
+packages:
+    - MKL 10.3-1
+    - libgfortran 3.0.0-2
+    - numpy 1.9.2-1; depends (libgfortran ^= 3.0.0, MKL == 10.3-1)
+    - numpy 1.9.3-1; depends (libfortran ^= 3.0.0, MKL == 10.3-1)
+
+request:
+    - operation: "install"
+      requirement: "numpy >= 1.9"

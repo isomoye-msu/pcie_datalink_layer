@@ -1,0 +1,94 @@
+# This is update_reverse_dependencies_no_prefer_installed.yaml, but with the
+# solution for prefer_installed=True
+packages:
+  - A 0.0.0-1; depends (C ^= 0.0.0)
+  - A 3.0.0-1; depends (G ^= 1.0.0)
+  - B 0.0.0-1; depends (D ^= 0.0.0)
+  - B 1.0.0-1
+  - C 0.0.0-1
+  - D 0.0.0-1
+  - E 0.0.0-1; depends (A ^= 0.0.0)
+  - E 1.0.0-1; depends (I ^= 0.0.0, B ^= 1.0.0)
+  - F 0.0.0-1
+  - G 1.0.0-1
+  - I 0.0.0-1; depends (J ^= 0.0.0)
+  - J 0.0.0-1
+  - X 0.0.0-1; depends (A ^= 0.0.0, B ^= 0.0.0)
+  - X 1.0.0-1; depends (A ^= 3.0.0, B ^= 1.0.0)
+  - Y 0.0.0-1; depends (X ^= 0.0.0)
+  - Y 1.0.0-1
+  - Y 2.0.0-1; depends (F ^= 0.0.0)
+  - Y 3.0.0-1; depends (X ^= 1.0.0)
+    # None of our direct requirements depend or reverse-depend on Z, but it
+    # must not be pruned
+  - Z 0.0.0-1; depends (E ^= 0.0.0)
+  - Z 1.0.0-1; depends (E ^= 1.0.0)
+
+
+request:
+  - operation: "install"
+    requirement: "E ^= 1.0.0"
+
+
+marked:
+  - E
+  - Y
+  - Z
+
+installed:
+  - A 0.0.0-1
+  - B 0.0.0-1
+  - C 0.0.0-1
+  - D 0.0.0-1
+  - E 0.0.0-1
+  - X 0.0.0-1
+  - Y 0.0.0-1
+  - Z 0.0.0-1
+
+transaction:
+  - kind: "remove"
+    package: "Z 0.0.0-1"
+  - kind: "remove"
+    package: "Y 0.0.0-1"
+  - kind: "remove"
+    package: "X 0.0.0-1"
+  - kind: "remove"
+    package: "E 0.0.0-1"
+  - kind: "remove"
+    package: "B 0.0.0-1"
+  - kind: "install"
+    package: "B 1.0.0-1"
+  - kind: "install"
+    package: "F 0.0.0-1"
+  - kind: "install"
+    package: "J 0.0.0-1"
+  - kind: "install"
+    package: "I 0.0.0-1"
+  - kind: "install"
+    package: "Y 2.0.0-1"
+  - kind: "install"
+    package: "E 1.0.0-1"
+  - kind: "install"
+    package: "Z 1.0.0-1"
+
+pretty_transaction:
+  - kind: "remove"
+    package: "X 0.0.0-1"
+  - kind: "update"
+    from: "B 0.0.0-1"
+    to: "B 1.0.0-1"
+  - kind: "install"
+    package: "F 0.0.0-1"
+  - kind: "install"
+    package: "J 0.0.0-1"
+  - kind: "install"
+    package: "I 0.0.0-1"
+  - kind: "update"
+    from: "Y 0.0.0-1"
+    to: "Y 2.0.0-1"
+  - kind: "update"
+    from: "E 0.0.0-1"
+    to: "E 1.0.0-1"
+  - kind: "update"
+    from: "Z 0.0.0-1"
+    to: "Z 1.0.0-1"

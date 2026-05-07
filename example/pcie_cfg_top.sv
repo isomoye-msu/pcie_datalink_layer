@@ -12,7 +12,11 @@ module pcie_cfg_top
     parameter int KEEP_WIDTH = STRB_WIDTH,
     parameter int USER_WIDTH = 5,
     // TLP keep width
+<<<<<<< HEAD
     parameter int IS_ROOT_PORT = 1,
+=======
+    parameter int IS_ROOT_PORT = 0,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
     parameter int LINK_NUM = 0,
     parameter int IS_UPSTREAM = 0,  //downstream by default
     parameter int CROSSLINK_EN = 0,  //crosslink not supported
@@ -84,8 +88,13 @@ module pcie_cfg_top
     (* mark_debug *) output wire [7:0] debug_state,
 
     // Bringup Control Inputs
+<<<<<<< HEAD
     (* mark_debug *) input wire tx_elec_idle,
     (* mark_debug *) input wire phy_ready_en,
+=======
+    input wire tx_elec_idle,
+    input wire phy_ready_en,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
 
     output logic link_up_o,

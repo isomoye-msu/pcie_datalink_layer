@@ -1,0 +1,152 @@
+{#
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% from 'addrmap_udp_property.py.jinja' import udp_property with context %}
+{% from 'addrmap_universal_property.py.jinja' import universal_properties with context %}
+{% from 'addrmap_system_rdl_name_mapping.py.jinja' import get_child_by_system_rdl_name with context %}
+{% from 'addrmap_system_rdl_name_mapping.py.jinja' import systemrdl_python_child_name_map with context %}
+
+{%- macro register_class(node) %}
+    {%- if node.has_sw_readable and node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_cls(Reg{% if asyncoutput %}Async{% endif %}ReadWrite):
+    {%- elif node.has_sw_readable and not node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_cls(Reg{% if asyncoutput %}Async{% endif %}ReadOnly):
+    {%- elif not node.has_sw_readable and node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_cls(Reg{% if asyncoutput %}Async{% endif %}WriteOnly):
+    {%- endif %}
+    """
+    Class to represent a register in the register model
+
+    {{get_table_block(node) | indent}}
+    """
+
+    __slots__ : list[str] = [{%- for child_node in node.children(unroll=False) -%}'__{{child_node.inst_name}}'{% if not loop.last %}, {% endif %}{%- endfor %}]
+
+    def __init__(self,
+                 address: int,
+                 width: int,
+                 accesswidth: int,
+                 logger_handle: str,
+                 inst_name: str,
+                 parent: Union[{% if asyncoutput -%}Async{%- endif -%}AddressMap,{%- if asyncoutput -%}Async{%- endif -%}RegFile,
+                 {%- if node.has_sw_readable and node.has_sw_writable -%}
+                    Memory{% if asyncoutput %}Async{% endif -%}ReadWrite{% if legacy_block_access %}Legacy{% endif %}
+                 {%- elif node.has_sw_readable and not node.has_sw_writable -%}
+                    Readable{% if asyncoutput %}Async{% endif -%}Memory{% if legacy_block_access %}Legacy{% endif %}
+                 {%- elif not node.has_sw_readable and node.has_sw_writable -%}
+                    Writable{% if asyncoutput %}Async{% endif -%}Memory{% if legacy_block_access %}Legacy{% endif %}
+                 {%- endif -%}
+                 ]):
+
+        super().__init__(address=address,
+                         width=width,
+                         accesswidth=accesswidth,
+                         logger_handle=logger_handle,
+                         inst_name=inst_name,
+                         parent=parent)
+
+        # build the field attributes
+        {% for child_node in get_reg_fields(node, hide_node_func) %}
+        self.__{{child_node.inst_name}}:{{get_fully_qualified_type_name(child_node)}}_cls = {{get_fully_qualified_type_name(child_node)}}_cls(
+            parent_register=self,
+            size_props=FieldSizeProps(
+                width={{child_node.width}},
+                lsb={{child_node.lsb}},
+                msb={{child_node.msb}},
+                low={{child_node.low}},
+                high={{child_node.high}}),
+            misc_props=FieldMiscProps(
+                default={{get_field_default_value(child_node)}},
+                is_volatile={{child_node.is_hw_writable}}),
+            logger_handle=logger_handle+'.{{child_node.inst_name}}',
+            inst_name='{{child_node.inst_name}}',
+            field_type={% if 'encode' in child_node.list_properties() %}{{ get_fully_qualified_enum_type(child_node.get_property('encode'), top_node.parent, child_node, hide_node_func) + '_enumcls' }}{% else %}int{% endif %})
+        {%- endfor %}
+
+    @property
+    def fields(self) -> Iterator[Union[Field{% if asyncoutput %}Async{% endif %}ReadOnly, Field{% if asyncoutput %}Async{% endif %}WriteOnly,Field{% if asyncoutput %}Async{% endif %}ReadWrite]]:
+        """
+        generator that produces has all the fields within the register
+        """
+        {% for child_node in get_reg_fields(node, hide_node_func) -%}
+        yield self.{{safe_node_name(child_node)}}
+        {% endfor %}
+        # Empty generator in case there are no children of this type
+        if False: yield
+
+
+    {% if node.has_sw_writable and not node.has_sw_readable %}
+    {# if the register has no readable components, all the fields must be writen as one #}
+    {% if asyncoutput %}async {% endif %}def write_fields(self, {%- for child_node in node.fields() -%} {{safe_node_name(child_node)}} : {%- if 'encode' in child_node.list_properties() %}{{get_fully_qualified_enum_type(child_node.get_property('encode'), top_node.parent, child_node, hide_node_func)}}_enumcls{% else %}int{% endif %}{%- if not loop.last -%},{%- endif -%}{%- endfor -%}) -> None: # type: ignore[override]
+        """
+        Do a write to the register, updating all fields
+        """
+        reg_value = 0
+        {%- for child_node in node.fields() %}
+        reg_value &= self.{{safe_node_name(child_node)}}.inverse_bitmask
+        reg_value |= self.{{safe_node_name(child_node)}}._encode_write_value({{safe_node_name(child_node)}})
+        {% endfor %}
+
+        {% if asyncoutput %}await {% endif %}self.write(reg_value)
+
+    {% endif %}
+
+    # build the properties for the fields
+    {% for child_node in get_reg_fields(node, hide_node_func) %}
+    @property
+    def {{safe_node_name(child_node)}}(self) -> {{get_fully_qualified_type_name(child_node)}}_cls:
+        """
+        Property to access {{child_node.inst_name}} field of the register
+
+        {{get_table_block(child_node) | indent(8)}}
+        """
+        return self.__{{child_node.inst_name}}
+    {%- endfor %}
+
+    {{ systemrdl_python_child_name_map(node) }}
+
+    {{ get_child_by_system_rdl_name(node) }}
+
+    {{ udp_property(node) }}
+
+    {{ universal_properties(node) }}
+
+    {%- if node.is_array %}
+        {%- if node.has_sw_readable and node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_array_cls(Reg{% if asyncoutput %}Async{% endif %}ReadWriteArray):
+        {%- elif node.has_sw_readable and not node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_array_cls(Reg{% if asyncoutput %}Async{% endif %}ReadOnlyArray):
+        {%- elif not node.has_sw_readable and node.has_sw_writable %}
+class {{get_fully_qualified_type_name(node)}}_array_cls(Reg{% if asyncoutput %}Async{% endif %}WriteOnlyArray):
+        {%- endif %}
+    """
+    Class to represent a register array in the register model
+    """
+    __slots__: list[str] = []
+
+    @property
+    def _element_datatype(self) -> Type[Node]:
+        return {{get_fully_qualified_type_name(node)}}_cls
+
+    {{ universal_properties(node) }}
+
+    {%- endif %}
+
+
+
+{%- endmacro %}

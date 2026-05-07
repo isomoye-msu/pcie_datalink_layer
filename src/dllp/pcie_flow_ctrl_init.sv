@@ -18,6 +18,10 @@ module pcie_flow_ctrl_init
     input logic first_tlp_valid_i,
     input logic idle_valid_i,
     input logic update_fc_i,
+<<<<<<< HEAD
+=======
+    input logic first_feature_exchange_dllp_received_i,
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
 
     /*
      * DLLP UPDATE AXI output
@@ -33,7 +37,11 @@ module pcie_flow_ctrl_init
 );
 
 
+<<<<<<< HEAD
   localparam int PdMinCredits = MAX_PAYLOAD_SIZE >> 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
+=======
+  // localparam int PdMinCredits = MAX_PAYLOAD_SIZE / 4;  //((8 << (5 + MAX_PAYLOAD_SIZE)) / 4);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam int FcWaitPeriod = 8'h2;
   localparam int FcInitWaitPeriod = 8'h0A * 11;
 
@@ -72,7 +80,11 @@ module pcie_flow_ctrl_init
   logic                                 fc_axis_tready;
 
   // Internal state machine for link flow control
+<<<<<<< HEAD
   flow_control_state_e                  curr_state;
+=======
+  (* syn_keep = "true", mark_debug = "true" *)  flow_control_state_e                  curr_state;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   flow_control_state_e                  next_state;
   dllp_fc_t                             dll_packet_c;
   dllp_fc_t                             dll_packet_r;
@@ -156,7 +168,11 @@ module pcie_flow_ctrl_init
       ST_IDLE: begin
         if (start_flow_control_i && (fc_axis_tready)) begin
           seq_count_c = seq_count_r >= FcInitWaitPeriod ? FcInitWaitPeriod : seq_count_r + 1'b1;
+<<<<<<< HEAD
           if (fc1_values_stored_i) begin
+=======
+          if (fc1_values_stored_i || first_feature_exchange_dllp_received_i) begin
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
             seq_count_c = '0;
             fc2_count_c = '0;
             //build dllp packet
@@ -192,7 +208,11 @@ module pcie_flow_ctrl_init
         seq_count_c = seq_count_r >= FcWaitPeriod ? FcWaitPeriod : seq_count_r + 1'b1;
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
           seq_count_c    = '0;
+<<<<<<< HEAD
           fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, HdrMinCredits);
+=======
+          fc_axis_tdata  = send_fc_init(InitFC1_NP, '0, HdrMinCredits, PdMinCredits);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -217,7 +237,11 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
           //wait for 10us
+<<<<<<< HEAD
           fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, HdrMinCredits, PdMinCredits);
+=======
+          fc_axis_tdata  = send_fc_init(InitFC1_Cpl, '0, '0, '0);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -285,7 +309,11 @@ module pcie_flow_ctrl_init
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
           //wait for 10us
+<<<<<<< HEAD
           fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, HdrMinCredits);
+=======
+          fc_axis_tdata  = send_fc_init(InitFC2_NP, '0, HdrMinCredits, PdMinCredits);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
           // fc_axis_tdata = dll_packet_c;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -311,7 +339,11 @@ module pcie_flow_ctrl_init
         //wait for 10us
         if (fc_axis_tready && (seq_count_r >= FcWaitPeriod)) begin
 
+<<<<<<< HEAD
           fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, HdrMinCredits, PdMinCredits);
+=======
+          fc_axis_tdata  = send_fc_init(InitFC2_Cpl, '0, '0, '0);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
           dllp_lcrc_c    = crc_out;
           fc_axis_tkeep  = '1;
           fc_axis_tvalid = '1;
@@ -380,7 +412,11 @@ module pcie_flow_ctrl_init
         fc_axis_tkeep = '1;
         fc_axis_tvalid = '1;
         //build dllp fc update for crc
+<<<<<<< HEAD
         fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, HdrMinCredits, HdrMinCredits);
+=======
+        fc_axis_tdata = send_fc_init(UpdateFC_NP, '0, HdrMinCredits, PdMinCredits);
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
         //done with dllp
         if (fc_axis_tready) begin
           next_state = ST_UPDATE_NP_CRC;

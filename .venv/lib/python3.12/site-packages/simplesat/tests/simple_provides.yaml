@@ -1,0 +1,11 @@
+
+packages:
+  - zumba 1.8.1-1; provides (dance)
+
+request:
+  - operation: "install"
+    requirement: "dance"
+
+transaction:
+  - kind: "install"
+    package: "zumba 1.8.1-1"

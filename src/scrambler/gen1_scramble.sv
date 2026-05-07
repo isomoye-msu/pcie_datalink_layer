@@ -217,6 +217,7 @@ module gen1_scramble
             // end
             //check if comma
             if (Q.data[1][byte_idx*8+:8] == COM) begin
+<<<<<<< HEAD
               D.scramble_reset[byte_idx+1] = '1;
               D.byte_cnt = (pipe_width_i >> 3) - (byte_idx);
               for (int d_idx = 0; d_idx < 4; d_idx++) begin
@@ -224,6 +225,31 @@ module gen1_scramble
                   D.disable_scrambling[d_idx] = '1;
                   // D.stop_scrambling[idx]    = '1;
                 end
+=======
+              logic is_skp_os;
+              is_skp_os = '0;
+              if (byte_idx < (pipe_width_i >> 3) - 1) begin
+                int next_idx;
+                next_idx = (byte_idx == 3) ? 0 : byte_idx + 1;
+                if (Q.data_k[1][next_idx] && Q.data[1][next_idx*8+:8] == SKP) is_skp_os = '1;
+              end else begin
+                if (Q.data_k[0][0] && Q.data[0][0+:8] == SKP) is_skp_os = '1;
+              end
+              
+              if (!is_skp_os) begin
+                D.scramble_reset[byte_idx+1] = '1;
+                D.byte_cnt = (pipe_width_i >> 3) - (byte_idx);
+                for (int d_idx = 0; d_idx < 4; d_idx++) begin
+                  if (d_idx >= byte_idx) begin
+                    D.disable_scrambling[d_idx] = '1;
+                    // D.stop_scrambling[idx]    = '1;
+                  end
+                end
+              end else begin
+                D.skp_os[byte_idx] = '1;
+                D.disable_scrambling[byte_idx] = '1;
+                D.lfsr_in = lfsr_out[byte_idx];
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
               end
               // D.scramble_reset[byte_idx] = '1;
               // D.byte_cnt                 = byte_idx;

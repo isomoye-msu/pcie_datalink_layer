@@ -1,0 +1,13 @@
+
+from {% if skip_lib_copy %}peakrdl_python.{% else %}.{% endif %}lib import {% if asyncoutput %}Async{% else %}Normal{% endif %}CallbackSet{% if legacy_block_access %}Legacy{% endif %}
+
+from .reg_model.{{top_node.inst_name}} import {{top_node.inst_name}}_cls
+from .sim.{{top_node.inst_name}} import {{top_node.inst_name}}_simulator_cls
+
+if __name__ == '__main__':
+
+    sim = {{top_node.inst_name}}_simulator_cls(address=0)
+
+    # create an instance of the class
+    reg_model = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}Async{% else %}Normal{% endif %}CallbackSet{% if legacy_block_access %}Legacy{% endif %}(read_callback=sim.read,
+                                                                       write_callback=sim.write))

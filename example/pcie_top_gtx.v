@@ -126,7 +126,11 @@ IBUFDS_GTE2 refclk_ibuf (.O(sys_clk), .ODIV2(), .I(sys_clk_p), .CEB(1'b0), .IB(s
   localparam STRB_WIDTH = DATA_WIDTH / 8;
   localparam KEEP_WIDTH = STRB_WIDTH;
   localparam USER_WIDTH = 5;
+<<<<<<< HEAD
   localparam IS_ROOT_PORT = 1;
+=======
+  localparam IS_ROOT_PORT = 0;
+>>>>>>> 8ba0fb8d5f66f48c402ed48a2124c2f8b29c86e1
   localparam LINK_NUM = 0;
   localparam IS_UPSTREAM = 0;
   localparam CROSSLINK_EN = 0;

@@ -1,0 +1,49 @@
+packages:
+  - freetype 2.3.7-1
+  - freetype 2.3.11-1
+  - freetype 2.4.4-1
+  - freetype 2.4.4-4
+  - freetype 2.4.4-5
+  - freetype 2.5.3-1
+  - freetype 2.5.3-2
+  - freetype 2.5.3-3; depends (libpng ^= 1.6.12)
+  - freetype 2.5.3-4; depends (libpng ^= 1.6.12)
+  - libjpeg 7.0-2
+  - libjpeg 7.0-3
+  - libopenjpeg 2.1.0-2
+  - libpng 1.2.40-4
+  - libpng 1.2.40-5
+  - libpng 1.6.12-1
+  - libpng 1.6.12-3
+  - pil 1.1.7-3; depends (freetype ^= 2.4.4)
+  - pil 1.1.7-4; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - pil 1.1.7-10; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - pil 1.1.7-12; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - pil 1.1.7-13; depends (libjpeg ^= 7.0, freetype ^= 2.5.3)
+  - pil 1.1.7-14; depends (libjpeg ^= 7.0, freetype ^= 2.5.3)
+  - pil_remove 1.0.0-1
+  - pil_remove 1.0.0-2
+  - pillow 2.8.1-1; depends (libjpeg ^= 7.0, freetype ^= 2.5.3, pil_remove ^= 1.0.0); conflicts (pil)
+  - pillow 2.9.0-1; depends (libjpeg ^= 7.0, freetype ^= 2.5.3, pil_remove ^= 1.0.0); conflicts (pil)
+  - pillow 2.9.0-2; depends (libjpeg ^= 7.0, freetype ^= 2.5.3, libopenjpeg ^= 2.1.0, pil_remove ^= 1.0.0); conflicts (pil)
+  - pillow 2.9.0-3; depends (libjpeg ^= 7.0, freetype ^= 2.5.3, libopenjpeg ^= 2.1.0, pil_remove ^= 1.0.0); conflicts (pil)
+
+installed:
+  - freetype 2.5.3-4
+  - libjpeg 7.0-3
+  - libpng 1.6.12-3
+  - pil 1.1.7-14
+
+request:
+  - operation: "install"
+    requirement: "pillow"
+
+transaction:
+  - kind: remove
+    package: pil 1.1.7-14
+  - kind: install
+    package: libopenjpeg 2.1.0-2
+  - kind: install
+    package: pil_remove 1.0.0-2
+  - kind: install
+    package: pillow 2.9.0-3
