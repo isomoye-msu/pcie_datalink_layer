@@ -1,0 +1,2031 @@
+packages:
+  - abstract_rendering 0.5.1-1
+  - agw 0.9.1-1
+  - amqp 1.4.5-1
+  - anyjson 0.3.3-2
+  - AppInst 2.0.4-1
+  - appinst 2.1.0-1
+  - appinst 2.1.1-1
+  - appinst 2.1.2-1
+  - AppTools 3.4.1-1; depends (configobj)
+  - apptools 4.0.0-1; depends (configobj)
+  - apptools 4.0.1-1; depends (configobj)
+  - apptools 4.1.0-1; depends (configobj)
+  - apptools 4.2.0-1; depends (configobj)
+  - apptools 4.2.0-2; depends (configobj, envisage ^= 4.3.0, traitsui ^= 4.3.0)
+  - apptools 4.2.0-4; depends (configobj, envisage ^= 4.4.0, traitsui ^= 4.4.0)
+  - apptools 4.2.1-1; depends (configobj, envisage ^= 4.4.0, traitsui ^= 4.4.0)
+  - apptools 4.2.1-2; depends (envisage ^= 4.4.0, configobj ^= 5.0.5, traitsui ^= 4.4.0)
+  - apptools 4.2.1-3; depends (envisage ^= 4.4.0, configobj ^= 5.0.6, traitsui ^= 4.4.0)
+  - argcomplete 0.8.1-1
+  - argcomplete 0.8.3-1
+  - astropy 0.2.4-1; depends (numpy ^= 1.7.1)
+  - astropy 0.2.4-2; depends (numpy ^= 1.8.0)
+  - astropy 0.3.0-1; depends (numpy ^= 1.8.0)
+  - astropy 0.3.2-1; depends (numpy ^= 1.8.0)
+  - astropy 0.3.2-2; depends (numpy ^= 1.8.1)
+  - astropy 0.4.1-1; depends (numpy ^= 1.8.1)
+  - astropy 0.4.2-1; depends (numpy ^= 1.8.1)
+  - atom 0.3.5-1
+  - atom 0.3.8-1
+  - atom 0.3.9-1
+  - basemap 1.0-2; depends (numpy ^= 1.5.1, matplotlib ^= 1.0.1)
+  - basemap 1.0-3; depends (matplotlib ^= 1.0.1, numpy ^= 1.6.0)
+  - basemap 1.0.1-1; depends (matplotlib ^= 1.0.1, numpy ^= 1.6.0)
+  - basemap 1.0.1-2; depends (numpy ^= 1.6.1, matplotlib ^= 1.0.1)
+  - basemap 1.0.1-3; depends (matplotlib ^= 1.1.0, numpy ^= 1.6.1)
+  - basemap 1.0.2-1; depends (matplotlib ^= 1.1.0, numpy ^= 1.6.1)
+  - basemap 1.0.6-1; depends (numpy ^= 1.6.1, matplotlib ^= 1.2.0)
+  - basemap 1.0.6-2; depends (numpy ^= 1.6.1, matplotlib ^= 1.2.0)
+  - basemap 1.0.6-3; depends (numpy ^= 1.7.1, matplotlib ^= 1.2.0)
+  - basemap 1.0.6-4; depends (numpy ^= 1.7.1, matplotlib ^= 1.2.1)
+  - basemap 1.0.6-5; depends (numpy ^= 1.7.1, matplotlib ^= 1.3.0)
+  - basemap 1.0.6-6; depends (numpy ^= 1.7.1, matplotlib ^= 1.3.1)
+  - basemap 1.0.6-7; depends (numpy ^= 1.8.0, matplotlib ^= 1.3.1)
+  - basemap 1.0.7-1; depends (numpy ^= 1.8.0, matplotlib ^= 1.3.1)
+  - basemap 1.0.7-2; depends (numpy ^= 1.8.1, matplotlib ^= 1.3.1)
+  - basemap 1.0.7-3; depends (matplotlib ^= 1.4.0, numpy ^= 1.8.1)
+  - basemap 1.0.7-4; depends (geos ^= 3.4.2, numpy ^= 1.8.1, matplotlib ^= 1.4.0)
+  - basemap 1.0.7-5; depends (geos ^= 3.4.2, numpy ^= 1.8.1, matplotlib ^= 1.4.2)
+  - basemap_ld 1.0.1-1; depends (basemap ^= 1.0.1)
+  - basemap_ld 1.0.2-1; depends (basemap ^= 1.0.2)
+  - basemap_ld 1.0.6-1; depends (basemap ^= 1.0.6)
+  - basemap_ld 1.0.7-1; depends (basemap ^= 1.0.7)
+  - bcolz 0.7.1-1; depends (numpy ^= 1.8.1)
+  - bcolz 0.7.2-1; depends (numpy ^= 1.8.1)
+  - bcrypt 1.0.2-1; depends (cffi ^= 0.8.6)
+  - beautifulsoup4 4.3.2-1; depends (html5lib ^= 0.999, lxml ^= 3.4.0)
+  - beautifulsoup4 4.3.2-2; depends (html5lib ^= 0.999, lxml ^= 3.4.1)
+  - Biggus 0.7.0-1; depends (pep8 ^= 1.5.7, numpy ^= 1.8.1)
+  - billiard 3.3.0.18-1
+  - biopython 1.56-1; depends (numpy ^= 1.5.1)
+  - biopython 1.57-1; depends (numpy ^= 1.5.1)
+  - biopython 1.57-2; depends (numpy ^= 1.6.0)
+  - biopython 1.57-3; depends (numpy ^= 1.6.1)
+  - biopython 1.58-1; depends (numpy)
+  - biopython 1.59-1; depends (numpy)
+  - biopython 1.59-2; depends (numpy)
+  - biopython 1.59-3; depends (numpy)
+  - biopython 1.62.0-1; depends (numpy ^= 1.8.0)
+  - biopython 1.64.0-1; depends (numpy ^= 1.8.0)
+  - biopython 1.64.0-2; depends (numpy ^= 1.8.1)
+  - bitarray 0.3.5-3
+  - bitarray 0.5.0-1
+  - bitarray 0.5.1-1
+  - bitarray 0.5.2-1
+  - bitarray 0.6.0-1
+  - bitarray 0.7.0-1
+  - bitarray 0.8.0-1
+  - bitarray 0.8.1-1
+  - blist 1.3.4-1
+  - blist 1.3.6-1
+  - BlockCanvas 3.2.1-1
+  - blockcanvas 4.0.0-1
+  - blockcanvas 4.0.1-1
+  - blockcanvas 4.0.3-1
+  - blosc 1.2.3-1; depends (numpy ^= 1.8.0, libblosc ^= 1.3.5)
+  - blosc 1.2.3-2; depends (numpy ^= 1.8.1, libblosc ^= 1.3.5)
+  - blz 0.6.2-1; depends (numexpr ^= 2.2.2, libblosc ^= 1.3.5)
+  - blz 0.6.2-4; depends (libblosc ^= 1.3.5, numexpr ^= 2.4.0)
+  - bokeh 0.6.1-2; depends (pyzmq ^= 14.3.1, flask ^= 0.10.1, pandas ^= 0.15.0, tornado
+    ^= 4.0.2, gevent ^= 1.0.1)
+  - bokeh 0.6.1-4; depends (flask ^= 0.10.1, pandas ^= 0.15.1, tornado ^= 4.0.2, pyzmq
+    ^= 14.4.1, gevent ^= 1.0.1)
+  - bokeh 0.6.1-5; depends (flask ^= 0.10.1, pandas ^= 0.15.1, tornado ^= 4.0.2, pyzmq
+    ^= 14.4.1, gevent ^= 1.0.1)
+  - bokeh 0.6.1-6; depends (pandas ^= 0.15.2, flask ^= 0.10.1, pyzmq ^= 14.4.1, tornado
+    ^= 4.0.2, gevent ^= 1.0.1)
+  - bokeh 0.6.1-7; depends (pandas ^= 0.15.2, flask ^= 0.10.1, pyzmq ^= 14.4.1, tornado
+    ^= 4.0.2, gevent ^= 1.0.1)
+  - boto 2.19.0-1; depends (rsa ^= 3.1.2, lxml ^= 3.2.3, PyYAML ^= 3.10, keyring ^=
+    0.9.2, paramiko ^= 1.10.1, requests ^= 1.2.3)
+  - boto 2.19.0-2; depends (PyYAML ^= 3.10, lxml ^= 3.3.5, keyring ^= 3.7.0, rsa ^=
+    3.1.2, paramiko ^= 1.10.1, requests ^= 2.2.1)
+  - boto 2.29.1-1; depends (requests ^= 2.3.0, rsa ^= 3.1.2, lxml ^= 3.3.5, keyring
+    ^= 3.7.0, PyYAML ^= 3.10, paramiko ^= 1.14.0)
+  - boto 2.32.1-1; depends (requests ^= 2.3.0, lxml ^= 3.3.5, keyring ^= 3.7.0, PyYAML
+    ^= 3.11, rsa ^= 3.1.2, paramiko ^= 1.14.0)
+  - boto 2.32.1-2; depends (lxml ^= 3.3.6, PyYAML ^= 3.11, rsa ^= 3.1.2, requests ^=
+    2.4.0, paramiko ^= 1.14.0, keyring ^= 4.0)
+  - boto 2.34.0-1; depends (PyYAML ^= 3.11, rsa ^= 3.1.2, paramiko ^= 1.15.1, requests
+    ^= 2.4.3, keyring ^= 4.0, lxml ^= 3.4.0)
+  - boto 2.34.0-2; depends (lxml ^= 3.4.1, PyYAML ^= 3.11, rsa ^= 3.1.2, requests ^=
+    2.5.0, keyring ^= 4.0, paramiko ^= 1.15.1)
+  - Bottleneck 0.6.0-2; depends (numpy ^= 1.7.1)
+  - Bottleneck 0.6.0-3; depends (numpy ^= 1.7.1)
+  - Bottleneck 0.7.0-1; depends (numpy ^= 1.7.1)
+  - Bottleneck 0.7.0-2; depends (numpy ^= 1.8.0)
+  - Bottleneck 0.7.0-4; depends (numpy ^= 1.8.0)
+  - Bottleneck 0.7.0-5; depends (numpy ^= 1.8.1)
+  - brewer2mpl 1.3.1-2
+  - brewer2mpl 1.4.0-3
+  - brood_json_schemas 0.3.0-1
+  - bsdiff4 1.0.0-1
+  - bsdiff4 1.0.1-1
+  - bsdiff4 1.1.0-1
+  - bsdiff4 1.1.1-1
+  - bsdiff4 1.1.4-1
+  - cartopy 0.10.0-1; depends (scipy ^= 0.13.3, matplotlib ^= 1.3.1, libproj ^= 4.8.0,
+    PIL ^= 1.1.7, pyshp ^= 1.2.0, Shapely ^= 1.2.17)
+  - cartopy 0.10.0-2; depends (pyshp ^= 1.2.0, scipy ^= 0.13.3, matplotlib ^= 1.3.1,
+    PIL ^= 1.1.7, Shapely ^= 1.2.17)
+  - cartopy 0.10.0-3; depends (scipy ^= 0.13.3, matplotlib ^= 1.3.1, libproj ^= 4.8.0,
+    PIL ^= 1.1.7, pyshp ^= 1.2.0, Shapely ^= 1.2.17)
+  - cartopy 0.10.0-4; depends (matplotlib ^= 1.3.1, libproj ^= 4.8.0, scipy ^= 0.14.0,
+    PIL ^= 1.1.7, pyshp ^= 1.2.0, Shapely ^= 1.2.17)
+  - cartopy 0.10.0-5; depends (matplotlib ^= 1.3.1, Shapely ^= 1.3.2, libproj ^= 4.8.0,
+    scipy ^= 0.14.0, PIL ^= 1.1.7, pyshp ^= 1.2.0)
+  - cartopy 0.10.0-8; depends (scipy ^= 0.14.0, Shapely ^= 1.3.2, libproj ^= 4.8.0,
+    matplotlib ^= 1.4.0, PIL ^= 1.1.7, pyshp ^= 1.2.0)
+  - cartopy 0.11.0-1; depends (scipy ^= 0.14.0, Shapely ^= 1.3.2, libproj ^= 4.8.0,
+    matplotlib ^= 1.4.0, PIL ^= 1.1.7, OWSLib ^= 0.8.8, pyshp ^= 1.2.0)
+  - cartopy 0.11.0-2; depends (Shapely ^= 1.4.1, matplotlib ^= 1.4.0, libproj ^= 4.8.0,
+    geos ^= 3.4.2, PIL ^= 1.1.7, OWSLib ^= 0.8.8, pyshp ^= 1.2.0, scipy ^= 0.14.0)
+  - cartopy 0.11.0-3; depends (scipy ^= 0.14.0, libproj ^= 4.8.0, geos ^= 3.4.2, matplotlib
+    ^= 1.4.2, PIL ^= 1.1.7, OWSLib ^= 0.8.8, pyshp ^= 1.2.0, Shapely ^= 1.4.1)
+  - cartopy 0.11.0-4; depends (Shapely ^= 1.5.1, scipy ^= 0.14.0, libproj ^= 4.8.0,
+    geos ^= 3.4.2, matplotlib ^= 1.4.2, PIL ^= 1.1.7, OWSLib ^= 0.8.8, pyshp ^= 1.2.0)
+  - cartopy 0.11.0-5; depends (Shapely ^= 1.5.1, libproj ^= 4.8.0, scipy ^= 0.14.1rc1,
+    geos ^= 3.4.2, matplotlib ^= 1.4.2, PIL ^= 1.1.7, OWSLib ^= 0.8.8, pyshp ^= 1.2.0)
+  - cassowarypy 0.27-1
+  - casuarius 1.0b1-1
+  - casuarius 1.0-1
+  - casuarius 1.1-1
+  - casuarius 1.1-2
+  - casuarius 1.1-3
+  - cdecimal 2.3-1
+  - celery 3.1.13-2; depends (billiard ^= 3.3.0.18, pytz ^= 2013.8.0, kombu ^= 3.0.21)
+  - celery 3.1.13-3; depends (pytz ^= 2014.9.0, billiard ^= 3.3.0.18, kombu ^= 3.0.21)
+  - cffi 0.8.2-1; depends (libffi ^= 3.0.13, pycparser ^= 2.10.0)
+  - cffi 0.8.6-1; depends (libffi ^= 3.0.13, pycparser ^= 2.10.0)
+  - Chaco 3.4.0-1; depends (numpy ^= 1.5.1, Enable ^= 3.4.0)
+  - chaco 4.0.0-1; depends (enable ^= 4.0.0, numpy ^= 1.6.0)
+  - chaco 4.0.0-2; depends (numpy ^= 1.6.1, enable ^= 4.0.0)
+  - chaco 4.0.1-1; depends (numpy ^= 1.6.1, enable ^= 4.0.0)
+  - chaco 4.1.0-1; depends (enable ^= 4.1.0, numpy ^= 1.6.1)
+  - chaco 4.2.0-1; depends (numpy ^= 1.6.1, enable ^= 4.2.0)
+  - chaco 4.3.0-1; depends (enable ^= 4.3.0, numpy ^= 1.6.1)
+  - chaco 4.3.0-2; depends (numpy ^= 1.7.1, enable ^= 4.3.0)
+  - chaco 4.3.0-3; depends (enable ^= 4.3.0, numpy ^= 1.8.0)
+  - chaco 4.4.1-1; depends (enable ^= 4.3.0, numpy ^= 1.8.0)
+  - chaco 4.4.1-2; depends (enable ^= 4.4.1, numpy ^= 1.8.0)
+  - chaco 4.4.1-3; depends (enable ^= 4.4.1, numpy ^= 1.8.1)
+  - chaco 4.5.0-1; depends (enable ^= 4.4.1, numpy ^= 1.8.1)
+  - Chameleon 2.16-1
+  - Chameleon 2.18-1
+  - Cheetah 2.4.3-2
+  - Cheetah 2.4.4-1
+  - click 2.1.0-1; depends (colorama ^= 0.3.1)
+  - click 3.3-1; depends (colorama ^= 0.3.1)
+  - clint 0.4.1-1
+  - cloud 2.1.6-1
+  - cloud 2.2.0-1
+  - cloud 2.2.2-1
+  - cloud 2.2.4-1
+  - cloud 2.3.0-1
+  - cloud 2.3.8-1
+  - cloud 2.3.9-1
+  - cloud 2.4.1-1
+  - cloud 2.4.6-1
+  - cmake 2.6.2-1
+  - cmake 2.8.1-1
+  - cmake 2.8.2-1
+  - cmake 2.8.3-1
+  - cmake 2.8.3-2
+  - cmake 3.0.2-1
+  - cmake 3.0.2-2
+  - CodeTools 3.2.0-1
+  - codetools 4.0.0-1
+  - codetools 4.1.0-1
+  - codetools 4.1.0-2; depends (traits ^= 4.3.0)
+  - codetools 4.2.0-1; depends (traits ^= 4.4.0)
+  - codetools 4.2.0-2; depends (traits ^= 4.5.0)
+  - colorama 0.3.1-1
+  - configobj 4.7.2-2
+  - configobj 5.0.5-1
+  - configobj 5.0.6-1
+  - coverage 3.4-2
+  - coverage 3.5-1
+  - coverage 3.5.1-1
+  - coverage 3.5.2-1
+  - coverage 3.7.1-1
+  - cryptography 0.6.1-1
+  - cryptography_vectors 0.6.1-1
+  - cssselect 0.9.1-1
+  - curl 7.23.1-1
+  - curl 7.25.0-1
+  - curl 7.25.0-2
+  - curl 7.25.0-3
+  - curl 7.25.0-6
+  - curl 7.37.0-1
+  - curl 7.38.0-1
+  - Cython 0.13-2
+  - Cython 0.14-1
+  - Cython 0.14.1-1
+  - Cython 0.15-1
+  - Cython 0.15.1-1
+  - Cython 0.16-1
+  - Cython 0.19.1-1
+  - Cython 0.19.2-1
+  - Cython 0.20.2-1
+  - Cython 0.21-1
+  - Cython 0.21.1-1
+  - Cython 0.21.2-1
+  - cytoolz 0.7.0-1
+  - cytoolz 0.7.1-1
+  - decorator 3.4.0-1
+  - distribute 0.6.14-2
+  - distribute 0.6.14-3
+  - distribute 0.6.15-1
+  - distribute 0.6.16-1
+  - distribute 0.6.17-1
+  - distribute 0.6.19-1
+  - distribute 0.6.24-1
+  - distribute 0.6.25-1
+  - distribute 0.6.26-1
+  - distribute 0.6.26-2
+  - distribute 0.6.49-1
+  - dnspython 1.12.0-1
+  - doclinks 7.1-1; depends (appinst)
+  - doclinks 7.1-2; depends (appinst)
+  - doclinks 7.2-1; depends (appinst)
+  - doclinks 7.2-2; depends (appinst)
+  - doclinks 7.3-1; depends (appinst)
+  - doctest_tools 1.0a3-1
+  - docutils 0.7-2
+  - docutils 0.8.1-1
+  - docutils 0.8.1-2
+  - docutils 0.11-1
+  - docutils 0.12-1
+  - drmaa 0.4b3-1
+  - ecdsa 0.11.0-1
+  - Enable 3.4.0-1; depends (numpy ^= 1.5.1, PIL ^= 1.1.7)
+  - enable 4.0.0-1; depends (numpy ^= 1.6.0, PIL ^= 1.1.7)
+  - enable 4.0.0-2; depends (numpy ^= 1.6.1, PIL ^= 1.1.7)
+  - enable 4.1.0-1; depends (numpy ^= 1.6.1, PIL ^= 1.1.7)
+  - enable 4.2.0-1; depends (numpy ^= 1.6.1, PIL ^= 1.1.7)
+  - enable 4.3.0-1; depends (numpy ^= 1.6.1, PIL ^= 1.1.7)
+  - enable 4.3.0-4; depends (numpy ^= 1.7.1, PIL ^= 1.1.7)
+  - enable 4.3.0-5; depends (traits ^= 4.3.0, numpy ^= 1.7.1, PIL ^= 1.1.7)
+  - enable 4.3.0-6; depends (traits ^= 4.3.0, numpy ^= 1.7.1, PIL ^= 1.1.7)
+  - enable 4.3.0-7; depends (numpy ^= 1.7.1, traitsui ^= 4.3.0, PIL ^= 1.1.7)
+  - enable 4.3.0-8; depends (numpy ^= 1.8.0, traitsui ^= 4.3.0, PIL ^= 1.1.7)
+  - enable 4.3.0-10; depends (numpy ^= 1.8.0, PIL ^= 1.1.7, traitsui ^= 4.4.0)
+  - enable 4.4.1-2; depends (numpy ^= 1.8.0, PIL ^= 1.1.7, traitsui ^= 4.4.0)
+  - enable 4.4.1-3; depends (numpy ^= 1.8.0, PIL ^= 1.1.7, traitsui ^= 4.4.0)
+  - enable 4.4.1-4; depends (numpy ^= 1.8.1, PIL ^= 1.1.7, traitsui ^= 4.4.0)
+  - enable 4.4.1-5; depends (numpy ^= 1.8.1, PIL ^= 1.1.7, traitsui ^= 4.4.0)
+  - enaml 0.1a0-1; depends (ply)
+  - enaml 0.1-1; depends (traits ^= 4.1.0, casuarius ^= 1.0b1, ply)
+  - enaml 0.2.0-1; depends (casuarius ^= 1.0, traits ^= 4.2.0, ply)
+  - enaml 0.6.8-1; depends (traits ^= 4.3.0, casuarius ^= 1.1, ply)
+  - enaml 0.6.8-2; depends (traits ^= 4.3.0, casuarius ^= 1.1, ply)
+  - enaml 0.6.8-3; depends (traits ^= 4.3.0, casuarius ^= 1.1, ply)
+  - enaml 0.6.8-5; depends (traits ^= 4.4.0, casuarius ^= 1.1, ply)
+  - enaml 0.8.9-1; depends (atom ^= 0.3.5, casuarius ^= 1.1, ply ^= 3.4)
+  - enaml 0.9.4-1; depends (kiwisolver ^= 0.1.2, atom ^= 0.3.8, ply ^= 3.4)
+  - enaml 0.9.5-1; depends (kiwisolver ^= 0.1.2, ply ^= 3.4, atom ^= 0.3.9)
+  - enaml 0.9.8-1; depends (kiwisolver ^= 0.1.2, ply ^= 3.4, atom ^= 0.3.9)
+  - enaml 0.9.8-2; depends (kiwisolver ^= 0.1.3, ply ^= 3.4, atom ^= 0.3.9)
+  - encore 0.1-1
+  - encore 0.2-2
+  - encore 0.3-1
+  - encore 0.4.0-1
+  - encore 0.5.1-1
+  - encore 0.5.1-3
+  - encore 0.5.1-4
+  - encore 0.5.1-5
+  - encore 0.6.0-1
+  - endist 1.2.2-1; depends (Cheetah, distribute)
+  - endist 1.2.3-1; depends (Cheetah, distribute)
+  - Enstaller 4.3.0-1
+  - Enstaller 4.3.1-1
+  - Enstaller 4.3.2-1
+  - Enstaller 4.3.3-1
+  - Enstaller 4.3.4-1
+  - enstaller 4.4.0-1
+  - enstaller 4.4.1-1
+  - enstaller 4.5.0-1
+  - enstaller 4.5.1-1
+  - enstaller 4.5.2-1
+  - enstaller 4.5.3-1
+  - enstaller 4.5.5-1
+  - enstaller 4.5.5-2
+  - enstaller 4.5.6-1
+  - enstaller 4.6.0-1
+  - enstaller 4.6.1-2
+  - enstaller 4.6.2-1
+  - enstaller 4.6.3-1
+  - enstaller 4.6.4-1
+  - enstaller 4.6.5-1
+  - enstaller 4.7.3-1
+  - enstaller 4.8.1-1
+  - EnthoughtBase 3.1.0-1
+  - enum34 1.0.3-1
+  - enum34 1.0.4-1
+  - envisage 4.0.0-1
+  - envisage 4.1.0-1
+  - envisage 4.2.0-1
+  - envisage 4.3.0-1
+  - envisage 4.3.0-2; depends (traits ^= 4.3.0)
+  - envisage 4.4.0-1; depends (traits ^= 4.4.0)
+  - envisage 4.4.0-2; depends (traits ^= 4.5.0)
+  - EnvisageCore 3.2.0-1
+  - EnvisagePlugins 3.2.0-1; depends (EnvisageCore ^= 3.2.0, EnthoughtBase ^= 3.1.0)
+  - EPD 7.0-1; depends (pycrypto == 2.3-2, pytz == 2010o-1, PyYAML == 3.9-2, nose ==
+    1.0.0-1, EnthoughtBase == 3.1.0-1, Traits == 3.6.0-1, matplotlib == 1.0.1-1, CodeTools
+    == 3.2.0-1, ETSDevTools == 3.1.1-1, zeromq == 2.0.10-1, TraitsGUI == 3.6.0-1, Sphinx
+    == 1.0.7-1, Enable == 3.4.0-1, html5lib == 0.90-2, grin == 1.2.1-2, AppInst == 2.0.4-1,
+    SimPy == 2.1.0-2, basemap == 1.0-2, python_dateutil == 1.5-2, scikits.learn == 0.6-1,
+    Twisted == 10.2.0-1, EnvisageCore == 3.2.0-1, xlwt == 0.7.2-3, paramiko == 1.7.6-4,
+    pyproj == 1.8.8-2, ETS == 3.6.0-1, netCDF4 == 0.9.3-2, SQLAlchemy == 0.6.6-1, TraitsBackendWX
+    == 3.6.0-1, pyaudio == 0.2.4-1, xlrd == 0.7.1-3, EnvisagePlugins == 3.2.0-1, configobj
+    == 4.7.2-2, lxml == 2.3-1, hdf5 == 1.8.5.1-2, PyOpenGL == 3.0.1-2, Pycluster ==
+    1.50-2, libxslt == 1.1.24-5, numexpr == 1.4.2-1, scipy == 0.9.0rc2-1, pyzmq == 2.0.10-2,
+    Cython == 0.14.1-1, cloud == 2.2.0-1, distribute == 0.6.14-2, Jinja2 == 2.5.5-3,
+    zope.interface == 3.6.1-2, scikits.image == 0.2.2-2, pygarrayimage == 0.0.7-4, ply
+    == 3.3-3, fwrap == 0.1.1-1, scikits.statsmodels == 0.2.0-2, pyparsing == 1.5.5-3,
+    foolscap == 0.6.1-1, pyOpenSSL == 0.11-2, libxml2 == 2.7.3-3, pyflakes == 0.4.0-2,
+    swig == 1.3.40-2, GraphCanvas == 3.0.0-1, Pygments == 1.4-1, AppTools == 3.4.1-1,
+    wxPython == 2.8.10.1-2, networkx == 1.4-1, scons == 2.0.1-2, epydoc == 3.0.1-5,
+    pandas == 0.2-2, pyserial == 2.5-2, libYAML == 0.1.3-1, h5py == 1.3.1-1, BlockCanvas
+    == 3.2.1-1, idle == 2.7.1-1, PIL == 1.1.7-3, pyhdf == 0.8.3-4, scikits.timeseries
+    == 0.91.3-2, VTK == 5.6.0-2, pydot == 1.0.2-5, ipython == 0.10.1-2, pytables ==
+    2.2.1-1, pyglet == 1.1.4-2, Mayavi == 3.4.1-1, numpy == 1.5.1-1, Chaco == 3.4.0-1,
+    MKL == 10.3-1, freetype == 2.4.4-1, docutils == 0.7-2, SciMath == 3.0.7-1, lib_netcdf4
+    == 4.1.1-1, sympy == 0.6.7-2, bitarray == 0.3.5-3, coverage == 3.4-2, TraitsBackendQt
+    == 3.6.0-1, biopython == 1.56-1, pyfits == 2.4.0-1, Reportlab == 2.5-2)
+  - EPD 7.0-2; depends (pycrypto == 2.3-2, pytz == 2010o-1, PyYAML == 3.9-2, nose ==
+    1.0.0-1, EnthoughtBase == 3.1.0-1, Traits == 3.6.0-1, matplotlib == 1.0.1-1, CodeTools
+    == 3.2.0-1, pyzmq == 2.0.10.1-1, ETSDevTools == 3.1.1-1, zeromq == 2.0.10-1, TraitsGUI
+    == 3.6.0-1, Sphinx == 1.0.7-1, Enable == 3.4.0-1, html5lib == 0.90-2, grin == 1.2.1-2,
+    AppInst == 2.0.4-1, SimPy == 2.1.0-2, basemap == 1.0-2, python_dateutil == 1.5-2,
+    scikits.learn == 0.6-1, Twisted == 10.2.0-1, EnvisageCore == 3.2.0-1, xlwt == 0.7.2-3,
+    paramiko == 1.7.6-4, pyproj == 1.8.8-2, ETS == 3.6.0-2, netCDF4 == 0.9.3-2, SQLAlchemy
+    == 0.6.6-1, TraitsBackendWX == 3.6.0-1, pyaudio == 0.2.4-1, xlrd == 0.7.1-3, EnvisagePlugins
+    == 3.2.0-1, configobj == 4.7.2-2, lxml == 2.3-1, hdf5 == 1.8.5.1-2, PyOpenGL ==
+    3.0.1-2, numpy == 1.5.1-2, Pycluster == 1.50-2, libxslt == 1.1.24-5, numexpr ==
+    1.4.2-1, scipy == 0.9.0rc2-1, Cython == 0.14.1-1, cloud == 2.2.0-1, distribute ==
+    0.6.14-2, Jinja2 == 2.5.5-3, zope.interface == 3.6.1-2, scikits.image == 0.2.2-2,
+    pygarrayimage == 0.0.7-4, ply == 3.3-3, fwrap == 0.1.1-1, scikits.statsmodels ==
+    0.2.0-2, pyparsing == 1.5.5-3, foolscap == 0.6.1-1, pyOpenSSL == 0.11-2, libxml2
+    == 2.7.3-3, pyflakes == 0.4.0-2, swig == 1.3.40-2, GraphCanvas == 3.0.0-1, Pygments
+    == 1.4-1, AppTools == 3.4.1-1, wxPython == 2.8.10.1-2, networkx == 1.4-1, scons
+    == 2.0.1-2, epydoc == 3.0.1-5, pandas == 0.2-3, pyserial == 2.5-2, libYAML == 0.1.3-1,
+    h5py == 1.3.1-1, BlockCanvas == 3.2.1-1, idle == 2.7.1-1, PIL == 1.1.7-3, pyhdf
+    == 0.8.3-4, scikits.timeseries == 0.91.3-2, VTK == 5.6.0-2, pydot == 1.0.2-5, ipython
+    == 0.10.1-2, pytables == 2.2.1-1, pyglet == 1.1.4-2, Mayavi == 3.4.1-2, Chaco ==
+    3.4.0-1, MKL == 10.3-1, freetype == 2.4.4-1, docutils == 0.7-2, SciMath == 3.0.7-1,
+    lib_netcdf4 == 4.1.1-1, sympy == 0.6.7-2, bitarray == 0.3.5-3, coverage == 3.4-2,
+    TraitsBackendQt == 3.6.0-1, biopython == 1.56-1, pyfits == 2.4.0-1, Reportlab ==
+    2.5-2)
+  - EPD 7.1-1; depends (pycrypto == 2.3-2, scikits.learn == 0.8-1, nose == 1.0.0-2,
+    ipython == 0.11rc1-1, matplotlib == 1.0.1-2, libxslt == 1.1.24-5, wxPython == 2.8.10.1-3,
+    idle == 2.7.2-1, Sphinx == 1.0.7-1, MKL == 10.3-1, html5lib == 0.90-2, grin == 1.2.1-2,
+    SimPy == 2.1.0-2, etsdevtools == 4.0.0-1, python_dateutil == 1.5-2, xlwt == 0.7.2-3,
+    mayavi == 4.0.0-1, zope.interface == 3.6.3-1, chaco == 4.0.0-1, envisage == 4.0.0-1,
+    networkx == 1.5-1, SQLAlchemy == 0.7.1-1, appinst == 2.1.0-1, pydot == 1.0.25-1,
+    pyaudio == 0.2.4-1, xlrd == 0.7.1-4, traits == 4.0.0-1, configobj == 4.7.2-2, lxml
+    == 2.3-1, hdf5 == 1.8.5.1-2, PyOpenGL == 3.0.1-2, coverage == 3.5-1, PySide == 1.0.3-2,
+    ply == 3.4-1, numexpr == 1.4.2-2, Pycluster == 1.50-3, pyparsing == 1.5.6-1, pytables
+    == 2.3b1.dev4669-1, zeromq == 2.1.7-1, biopython == 1.57-2, Cython == 0.14.1-1,
+    Jinja2 == 2.5.5-3, ets == 4.0.0-1, scikits.image == 0.2.2-3, enable == 4.0.0-1,
+    pygarrayimage == 0.0.7-4, Twisted == 11.0.0-2, Qt == 4.7.3-1, distribute == 0.6.19-1,
+    VTK == 5.6.0-2, fwrap == 0.1.1-2, PyYAML == 3.10-1, scimath == 4.0.0-1, scikits.statsmodels
+    == 0.2.0-2, blockcanvas == 4.0.0-1, apptools == 4.0.0-1, foolscap == 0.6.1-3, libxml2
+    == 2.7.3-3, libYAML == 0.1.4-1, pyflakes == 0.4.0-3, cloud == 2.2.4-1, swig == 1.3.40-2,
+    pandas == 0.3.0-2, Pygments == 1.4-1, sympy == 0.7.0-1, numpy == 1.6.0-5, paramiko
+    == 1.7.7.1-1, bitarray == 0.3.5-3, scons == 2.0.1-2, epydoc == 3.0.1-5, etsproxy
+    == 0.1.0-1, pyproj == 1.8.9-1, pyserial == 2.5-2, h5py == 1.3.1-2, MDP == 3.1-1,
+    traitsui == 4.0.0-1, netCDF4 == 0.9.5-1, PIL == 1.1.7-3, codetools == 4.0.0-1, pyhdf
+    == 0.8.3-5, scikits.timeseries == 0.91.3-3, pyzmq == 2.1.7-1, basemap == 1.0.1-1,
+    Examples == 7.1-1, pyglet == 1.1.4-2, freetype == 2.4.4-1, docutils == 0.7-2, lib_netcdf4
+    == 4.1.1-1, doclinks == 7.1-1, pytz == 2011g-1, scipy == 0.9.0-2, pyface == 4.0.0-1,
+    graphcanvas == 4.0.0-1, pyfits == 2.4.0-2, Reportlab == 2.5-2, pyOpenSSL == 0.12-1)
+  - EPD 7.1-2; depends (pycrypto == 2.3-2, scikits.learn == 0.8-2, nose == 1.0.0-2,
+    matplotlib == 1.0.1-3, libxslt == 1.1.24-5, sympy == 0.7.1-1, idle == 2.7.2-2, Sphinx
+    == 1.0.7-1, MKL == 10.3-1, html5lib == 0.90-2, grin == 1.2.1-2, SimPy == 2.1.0-2,
+    etsdevtools == 4.0.0-1, python_dateutil == 1.5-2, xlwt == 0.7.2-3, mayavi == 4.0.0-1,
+    numpy == 1.6.1-1, zope.interface == 3.6.3-1, pyzmq == 2.1.7-1, networkx == 1.5-1,
+    SQLAlchemy == 0.7.1-1, appinst == 2.1.0-1, pydot == 1.0.25-1, pyaudio == 0.2.4-1,
+    xlrd == 0.7.1-4, h5py == 2.0.0-1, configobj == 4.7.2-2, lxml == 2.3-1, hdf5 == 1.8.5.1-2,
+    PyOpenGL == 3.0.1-2, coverage == 3.5-1, ply == 3.4-1, Pycluster == 1.50-4, swig
+    == 1.3.40-2, numexpr == 1.4.2-3, pyparsing == 1.5.6-1, pytables == 2.3b1.dev4669-2,
+    pytz == 2011g-1, zeromq == 2.1.7-1, biopython == 1.57-3, Cython == 0.14.1-1, ets
+    == 4.0.0-2, Jinja2 == 2.5.5-3, scikits.image == 0.2.2-4, enable == 4.0.0-2, pygarrayimage
+    == 0.0.7-4, Qt == 4.7.3-2, Twisted == 11.0.0-2, distribute == 0.6.19-1, VTK == 5.6.0-2,
+    fwrap == 0.1.1-2, PyYAML == 3.10-1, wxPython == 2.8.10.1-3, scikits.statsmodels
+    == 0.2.0-2, blockcanvas == 4.0.0-1, scimath == 4.0.0-2, apptools == 4.0.0-1, ipython
+    == 0.11-1, foolscap == 0.6.1-3, libxml2 == 2.7.3-3, libYAML == 0.1.4-1, pyflakes
+    == 0.4.0-3, cloud == 2.2.4-1, pandas == 0.3.0-3, chaco == 4.0.0-2, Pygments == 1.4-1,
+    paramiko == 1.7.7.1-1, scipy == 0.9.0-3, scons == 2.0.1-2, epydoc == 3.0.1-5, etsproxy
+    == 0.1.0-1, pyproj == 1.8.9-1, pyserial == 2.5-2, MDP == 3.1-1, traitsui == 4.0.0-1,
+    netCDF4 == 0.9.5-2, PIL == 1.1.7-3, codetools == 4.0.0-1, pyhdf == 0.8.3-6, scikits.timeseries
+    == 0.91.3-4, envisage == 4.0.0-1, basemap == 1.0.1-2, Examples == 7.1-2, pyglet
+    == 1.1.4-2, traits == 4.0.0-2, freetype == 2.4.4-1, docutils == 0.7-2, lib_netcdf4
+    == 4.1.1-1, doclinks == 7.1-2, Reportlab == 2.5-2, bitarray == 0.3.5-3, pyface ==
+    4.0.0-1, graphcanvas == 4.0.0-1, pyfits == 2.4.0-3, PySide == 1.0.5-1, pyOpenSSL
+    == 0.12-1)
+  - EPD 7.2-1; depends (netCDF4 == 0.9.5-2, envisage == 4.1.0-1, blockcanvas == 4.0.1-1,
+    pyflakes == 0.5.0-1, coverage == 3.5.1-1, libxslt == 1.1.24-5, sympy == 0.7.1-1,
+    scikits.timeseries == 0.91.3-4, libgdal == 1.8.1-1, pyfits == 3.0.3-1, traitsui
+    == 4.1.0-1, numexpr == 2.0-1, idle == 2.7.2-2, MKL == 10.3-1, html5lib == 0.90-2,
+    grin == 1.2.1-2, scikits.statsmodels == 0.3.1-1, etsdevtools == 4.0.0-1, python_dateutil
+    == 1.5-2, apptools == 4.0.1-1, pyface == 4.1.0-1, scikit_learn == 0.9-1, xlwt ==
+    0.7.2-3, cloud == 2.3.9-1, numpy == 1.6.1-2, VTK == 5.6.0-2, nose == 1.1.2-1, mayavi
+    == 4.1.0-1, SQLAlchemy == 0.7.1-1, lxml == 2.3.2-1, appinst == 2.1.0-1, networkx
+    == 1.6-1, pydot == 1.0.25-1, pyaudio == 0.2.4-1, xlrd == 0.7.1-4, Cython == 0.15.1-1,
+    h5py == 2.0.0-1, configobj == 4.7.2-2, traits == 4.1.0-1, hdf5 == 1.8.5.1-2, PyOpenGL
+    == 3.0.1-2, enable == 4.1.0-1, tornado == 2.1.1-1, ply == 3.4-1, etsproxy == 0.1.1-1,
+    Pycluster == 1.50-4, swig == 1.3.40-2, pyparsing == 1.5.6-1, distribute == 0.6.24-1,
+    freetype == 2.4.4-1, Twisted == 11.1.0-2, pygarrayimage == 0.0.7-4, Qt == 4.7.3-2,
+    ets == 4.1.0-1, chaco == 4.1.0-1, bsdiff4 == 1.0.1-1, pyzmq == 2.1.11-1, pycrypto
+    == 2.4.1-1, scikits.image == 0.4.2-1, fwrap == 0.1.1-3, wxPython == 2.8.10.1-3,
+    zope.interface == 3.8.0-1, libxml2 == 2.7.3-3, libYAML == 0.1.4-1, ipython == 0.12-1,
+    foolscap == 0.6.2-1, PyYAML == 3.10-1, Pygments == 1.4-1, paramiko == 1.7.7.1-1,
+    scons == 2.0.1-2, epydoc == 3.0.1-6, GDAL == 1.8.1-1, pytz == 2011n-1, pyproj ==
+    1.8.9-1, matplotlib == 1.1.0-1, pandas == 0.4.3-1, pyserial == 2.6-1, MDP == 3.2-1,
+    PIL == 1.1.7-3, codetools == 4.0.0-1, pyhdf == 0.8.3-6, pytables == 2.3.1-2, basemap
+    == 1.0.1-3, scimath == 4.0.1-1, biopython == 1.58-1, Jinja2 == 2.6-1, Sphinx ==
+    1.1.2-1, scipy == 0.10.0-1, docutils == 0.8.1-1, pyglet == 1.1.4-2, Examples ==
+    7.2-1, SimPy == 2.2-1, lib_netcdf4 == 4.1.1-1, pep8 == 0.6.1-1, PySide == 1.0.5-1,
+    bitarray == 0.3.5-3, doclinks == 7.2-1, graphcanvas == 4.0.0-2, Reportlab == 2.5-2,
+    pyOpenSSL == 0.12-1)
+  - EPD 7.2-2; depends (envisage == 4.1.0-1, blockcanvas == 4.0.1-1, pyflakes == 0.5.0-1,
+    coverage == 3.5.1-1, libxslt == 1.1.24-5, sympy == 0.7.1-1, scikits.timeseries ==
+    0.91.3-4, libgdal == 1.8.1-1, pyfits == 3.0.3-1, ply == 3.4-1, numexpr == 2.0-1,
+    idle == 2.7.2-2, MKL == 10.3-1, html5lib == 0.90-2, grin == 1.2.1-2, scikits.statsmodels
+    == 0.3.1-1, etsdevtools == 4.0.0-1, python_dateutil == 1.5-2, apptools == 4.0.1-1,
+    scikit_learn == 0.9-1, xlwt == 0.7.2-3, cloud == 2.3.9-1, numpy == 1.6.1-2, VTK
+    == 5.6.0-2, nose == 1.1.2-1, mayavi == 4.1.0-1, SQLAlchemy == 0.7.1-1, lxml == 2.3.2-1,
+    appinst == 2.1.0-1, networkx == 1.6-1, pydot == 1.0.25-1, pyaudio == 0.2.4-1, xlrd
+    == 0.7.1-4, Cython == 0.15.1-1, h5py == 2.0.0-1, configobj == 4.7.2-2, traits ==
+    4.1.0-1, hdf5 == 1.8.5.1-2, PyOpenGL == 3.0.1-2, enable == 4.1.0-1, tornado == 2.1.1-1,
+    pyface == 4.1.0-1, etsproxy == 0.1.1-1, Pycluster == 1.50-4, swig == 1.3.40-2, pyparsing
+    == 1.5.6-1, distribute == 0.6.24-1, freetype == 2.4.4-1, Twisted == 11.1.0-2, pygarrayimage
+    == 0.0.7-4, Qt == 4.7.3-2, ets == 4.1.0-1, chaco == 4.1.0-1, bsdiff4 == 1.0.1-1,
+    pyzmq == 2.1.11-1, pycrypto == 2.4.1-1, scikits.image == 0.4.2-1, fwrap == 0.1.1-3,
+    wxPython == 2.8.10.1-3, zope.interface == 3.8.0-1, libxml2 == 2.7.3-3, libYAML ==
+    0.1.4-1, ipython == 0.12-1, foolscap == 0.6.2-1, GDAL == 1.8.1-2, PyYAML == 3.10-1,
+    Pygments == 1.4-1, paramiko == 1.7.7.1-1, traitsui == 4.1.0-1, PySide == 1.1.0-2,
+    scons == 2.0.1-2, epydoc == 3.0.1-6, pytz == 2011n-1, pyproj == 1.8.9-1, matplotlib
+    == 1.1.0-1, pandas == 0.6.1-1, netCDF4 == 0.9.5-2, pyserial == 2.6-1, MDP == 3.2-1,
+    PIL == 1.1.7-3, codetools == 4.0.0-1, pyhdf == 0.8.3-6, pytables == 2.3.1-2, basemap
+    == 1.0.1-3, scimath == 4.0.1-1, biopython == 1.58-1, Jinja2 == 2.6-1, Sphinx ==
+    1.1.2-1, scipy == 0.10.0-1, docutils == 0.8.1-1, pyglet == 1.1.4-2, Examples ==
+    7.2-1, SimPy == 2.2-1, lib_netcdf4 == 4.1.1-1, pep8 == 0.6.1-1, bitarray == 0.3.5-3,
+    doclinks == 7.2-2, graphcanvas == 4.0.0-2, Reportlab == 2.5-2, pyOpenSSL == 0.12-1)
+  - EPD 7.3-1; depends (curl == 7.25.0-2, pyproj == 1.9.0-1, blockcanvas == 4.0.1-1,
+    envisage == 4.2.0-1, pyflakes == 0.5.0-1, coverage == 3.5.1-1, PythonDoc == 2.7.3-1,
+    basemap == 1.0.2-1, libgdal == 1.8.1-1, scimath == 4.1.0-1, foolscap == 0.6.3-1,
+    MKL == 10.3-1, html5lib == 0.90-2, grin == 1.2.1-2, Shapely == 1.2.14-1, scikits.image
+    == 0.5.0-1, etsdevtools == 4.0.0-1, lxml == 2.3.4-1, python_dateutil == 1.5-2, mayavi
+    == 4.2.0-1, numpy == 1.6.1-2, statsmodels == 0.4.0-1, doclinks == 7.3-1, nose ==
+    1.1.2-1, encore == 0.2-2, h5py == 2.0.0-2, networkx == 1.6-1, openpyxl == 1.5.8-1,
+    xlrd == 0.7.6-1, lib_netcdf4 == 4.2-2, pyaudio == 0.2.4-1, libxml2 == 2.7.8-1, SQLAlchemy
+    == 0.7.6-1, pydot == 1.0.28-1, configobj == 4.7.2-2, numexpr == 2.0.1-1, hdf5 ==
+    1.8.9-1, scipy == 0.10.1-1, PyOpenGL == 3.0.1-2, pandas == 0.7.3-2, pyfits == 3.0.6-1,
+    ply == 3.4-1, etsproxy == 0.1.1-1, ipython == 0.12.1-2, Pycluster == 1.50-4, feedparser
+    == 5.1.1-1, pyparsing == 1.5.6-1, biopython == 1.59-1, blist == 1.3.4-1, Examples
+    == 7.3-1, jsonpickle == 0.4.0-1, pygarrayimage == 0.0.7-4, cloud == 2.4.6-1, Qt
+    == 4.7.3-2, pyzmq == 2.1.11-1, pycrypto == 2.4.1-1, traits == 4.2.0-1, sympy ==
+    0.7.1-1, tornado == 2.2-1, Cython == 0.16-1, PyYAML == 3.10-1, wxPython == 2.8.10.1-3,
+    scikit_learn == 0.11-1, zope.interface == 3.8.0-1, bsdiff4 == 1.1.1-1, libYAML ==
+    0.1.4-1, idle == 2.7.3-1, SimPy == 2.2-1, pyface == 4.2.0-1, swig == 1.3.40-2, pytz
+    == 2011n-1, zlib == 1.2.6-1, fwrap == 0.1.1-3, Pygments == 1.4-1, paramiko == 1.7.7.1-1,
+    xlwt == 0.7.3-1, keyring == 0.9-1, libxslt == 1.1.26-1, PySide == 1.1.0-3, scons
+    == 2.0.1-2, epydoc == 3.0.1-6, GDAL == 1.8.1-2, apptools == 4.1.0-1, pep8 == 1.0.1-1,
+    enaml == 0.2.0-1, matplotlib == 1.1.0-1, appinst == 2.1.1-1, enable == 4.2.0-1,
+    Twisted == 12.0.0-1, pyserial == 2.6-1, MDP == 3.2-1, PIL == 1.1.7-3, casuarius
+    == 1.0-1, codetools == 4.0.0-1, ets == 4.2.0-1, pyhdf == 0.8.3-6, scikits.timeseries
+    == 0.91.3-4, pytables == 2.3.1-4, VTK == 5.6.0-2, Jinja2 == 2.6-2, distribute ==
+    0.6.26-1, Sphinx == 1.1.2-1, docutils == 0.8.1-1, pyglet == 1.1.4-2, chaco == 4.2.0-1,
+    bitarray == 0.8.0-1, freetype == 2.4.4-1, graphcanvas == 4.0.0-3, traitsui == 4.2.0-1,
+    netCDF4 == 1.0-1, Reportlab == 2.5-2, pyOpenSSL == 0.12-1)
+  - EPD 7.3-2; depends (curl == 7.25.0-3, pyproj == 1.9.0-1, blockcanvas == 4.0.1-1,
+    envisage == 4.2.0-1, pyflakes == 0.5.0-1, coverage == 3.5.1-1, PythonDoc == 2.7.3-1,
+    basemap == 1.0.2-1, libgdal == 1.8.1-1, scimath == 4.1.0-1, foolscap == 0.6.3-1,
+    MKL == 10.3-1, html5lib == 0.90-2, grin == 1.2.1-2, Shapely == 1.2.14-1, scikits.image
+    == 0.5.0-1, etsdevtools == 4.0.0-1, lxml == 2.3.4-1, python_dateutil == 1.5-2, mayavi
+    == 4.2.0-1, numpy == 1.6.1-3, statsmodels == 0.4.0-1, doclinks == 7.3-1, nose ==
+    1.1.2-1, encore == 0.2-2, kernmagic == 0.1.0-1, h5py == 2.0.0-2, networkx == 1.6-1,
+    xlrd == 0.7.6-1, lib_netcdf4 == 4.2-2, pyaudio == 0.2.4-1, libxml2 == 2.7.8-1, SQLAlchemy
+    == 0.7.6-1, pydot == 1.0.28-1, configobj == 4.7.2-2, numexpr == 2.0.1-1, hdf5 ==
+    1.8.9-1, scipy == 0.10.1-1, PyOpenGL == 3.0.1-2, pandas == 0.7.3-2, pyfits == 3.0.6-1,
+    ply == 3.4-1, etsproxy == 0.1.1-1, Pycluster == 1.50-4, feedparser == 5.1.1-1, pyparsing
+    == 1.5.6-1, ipython == 0.12.1-3, biopython == 1.59-1, blist == 1.3.4-1, Examples
+    == 7.3-1, jsonpickle == 0.4.0-1, pygarrayimage == 0.0.7-4, cloud == 2.4.6-1, Qt
+    == 4.7.3-2, pyzmq == 2.1.11-1, pycrypto == 2.4.1-1, traits == 4.2.0-1, sympy ==
+    0.7.1-1, tornado == 2.2-1, Cython == 0.16-1, fwrap == 0.1.1-3, wxPython == 2.8.10.1-3,
+    scikit_learn == 0.11-1, zope.interface == 3.8.0-1, bsdiff4 == 1.1.1-1, libYAML ==
+    0.1.4-1, idle == 2.7.3-1, SimPy == 2.2-1, pyface == 4.2.0-1, swig == 1.3.40-2, openpyxl
+    == 1.5.8-1, zlib == 1.2.6-1, PyYAML == 3.10-1, Pygments == 1.4-1, paramiko == 1.7.7.1-1,
+    xlwt == 0.7.3-1, keyring == 0.9-1, libxslt == 1.1.26-1, PySide == 1.1.0-3, scons
+    == 2.0.1-2, appinst == 2.1.2-1, epydoc == 3.0.1-6, GDAL == 1.8.1-2, apptools ==
+    4.1.0-1, pep8 == 1.0.1-1, enaml == 0.2.0-1, matplotlib == 1.1.0-1, enable == 4.2.0-1,
+    Twisted == 12.0.0-1, pyserial == 2.6-1, MDP == 3.2-1, PIL == 1.1.7-3, casuarius
+    == 1.0-1, codetools == 4.0.0-1, ets == 4.2.0-1, pyhdf == 0.8.3-6, scikits.timeseries
+    == 0.91.3-4, pytables == 2.3.1-4, VTK == 5.6.0-2, Jinja2 == 2.6-2, distribute ==
+    0.6.26-1, Sphinx == 1.1.2-1, docutils == 0.8.1-2, pyglet == 1.1.4-2, chaco == 4.2.0-1,
+    pytz == 2011n-1, bitarray == 0.8.0-1, freetype == 2.4.4-1, graphcanvas == 4.0.0-3,
+    traitsui == 4.2.0-1, netCDF4 == 1.0-1, Reportlab == 2.5-2, pyOpenSSL == 0.12-1)
+  - EPD_free 7.3-2; depends (nose == 1.1.2-1, appinst == 2.1.2-1, Examples == 7.3-1,
+    kernmagic == 0.1.0-1, apptools == 4.1.0-1, enaml == 0.2.0-1, scipy == 0.10.1-1,
+    matplotlib == 1.1.0-1, cloud == 2.4.6-1, PythonDoc == 2.7.3-1, pyzmq == 2.1.11-1,
+    enable == 4.2.0-1, traits == 4.2.0-1, pyaudio == 0.2.4-1, PIL == 1.1.7-3, casuarius
+    == 1.0-1, tornado == 2.2-1, wxPython == 2.8.10.1-3, configobj == 4.7.2-2, Jinja2
+    == 2.6-2, distribute == 0.6.26-1, idle == 2.7.3-1, pyglet == 1.1.4-2, chaco == 4.2.0-1,
+    freetype == 2.4.4-1, pyface == 4.2.0-1, pytz == 2011n-1, ply == 3.4-1, etsproxy
+    == 0.1.1-1, python_dateutil == 1.5-2, Pygments == 1.4-1, ipython == 0.12.1-3, numpy
+    == 1.6.1-1, traitsui == 4.2.0-1)
+  - EPDDocs 1.0-1
+  - EPDIndex 1.0-1
+  - EPDIndex 1.1-1
+  - EPDIndex 1.2-1
+  - EPDTests 7.0-1
+  - EPDTests 7.1-1
+  - EPDTests 7.2-2
+  - EPDTests 7.3-1
+  - EPDTests 7.3-2
+  - epydoc 3.0.1-4; depends (docutils ^= 0.7)
+  - epydoc 3.0.1-5; depends (docutils ^= 0.7)
+  - epydoc 3.0.1-6; depends (docutils ^= 0.8.1)
+  - ETS 3.6.0-1; depends (TraitsBackendWX == 3.6.0-1, AppTools == 3.4.1-1, CodeTools
+    == 3.2.0-1, BlockCanvas == 3.2.1-1, TraitsGUI == 3.6.0-1, Enable == 3.4.0-1, EnvisageCore
+    == 3.2.0-1, Mayavi == 3.4.1-1, TraitsBackendQt == 3.6.0-1, Chaco == 3.4.0-1, GraphCanvas
+    == 3.0.0-1, EnvisagePlugins == 3.2.0-1, EnthoughtBase == 3.1.0-1, Traits == 3.6.0-1,
+    SciMath == 3.0.7-1, ETSDevTools == 3.1.1-1)
+  - ETS 3.6.0-2; depends (TraitsBackendWX == 3.6.0-1, AppTools == 3.4.1-1, CodeTools
+    == 3.2.0-1, BlockCanvas == 3.2.1-1, TraitsGUI == 3.6.0-1, TraitsBackendQt == 3.6.0-1,
+    Enable == 3.4.0-1, EnvisageCore == 3.2.0-1, Mayavi == 3.4.1-2, Chaco == 3.4.0-1,
+    GraphCanvas == 3.0.0-1, EnvisagePlugins == 3.2.0-1, EnthoughtBase == 3.1.0-1, Traits
+    == 3.6.0-1, SciMath == 3.0.7-1, ETSDevTools == 3.1.1-1)
+  - ets 4.0.0-1; depends (apptools == 4.0.0-1, envisage == 4.0.0-1, traitsui == 4.0.0-1,
+    mayavi == 4.0.0-1, etsproxy == 0.1.0-1, pyface == 4.0.0-1, etsdevtools == 4.0.0-1,
+    graphcanvas == 4.0.0-1, codetools == 4.0.0-1, traits == 4.0.0-1, scimath == 4.0.0-1,
+    enable == 4.0.0-1, blockcanvas == 4.0.0-1, chaco == 4.0.0-1)
+  - ets 4.0.0-2; depends (apptools == 4.0.0-1, envisage == 4.0.0-1, traitsui == 4.0.0-1,
+    mayavi == 4.0.0-1, etsproxy == 0.1.0-1, pyface == 4.0.0-1, graphcanvas == 4.0.0-1,
+    blockcanvas == 4.0.0-1, codetools == 4.0.0-1, traits == 4.0.0-2, chaco == 4.0.0-2,
+    etsdevtools == 4.0.0-1, enable == 4.0.0-2, scimath == 4.0.0-2)
+  - ets 4.1.0-1; depends (etsproxy == 0.1.1-1, scimath == 4.0.1-1, enable == 4.1.0-1,
+    mayavi == 4.1.0-1, traits == 4.1.0-1, apptools == 4.0.1-1, envisage == 4.1.0-1,
+    graphcanvas == 4.0.0-2, blockcanvas == 4.0.1-1, chaco == 4.1.0-1, codetools == 4.0.0-1,
+    etsdevtools == 4.0.0-1, traitsui == 4.1.0-1, pyface == 4.1.0-1)
+  - ets 4.2.0-1; depends (etsproxy == 0.1.1-1, mayavi == 4.2.0-1, chaco == 4.2.0-1,
+    encore == 0.2-2, enable == 4.2.0-1, traits == 4.2.0-1, apptools == 4.1.0-1, blockcanvas
+    == 4.0.1-1, enaml == 0.2.0-1, envisage == 4.2.0-1, codetools == 4.0.0-1, pyface
+    == 4.2.0-1, traitsui == 4.2.0-1, etsdevtools == 4.0.0-1, scimath == 4.1.0-1, graphcanvas
+    == 4.0.0-3)
+  - ets 4.3.0-1; depends (chaco == 4.3.0-1, scimath == 4.1.2-1, encore == 0.3-1, traitsui
+    == 4.3.0-1, etsproxy == 0.1.2-1, graphcanvas == 4.0.2-1, mayavi == 4.3.0-1, pyface
+    == 4.3.0-1, traits == 4.3.0-1, blockcanvas == 4.0.3-1, apptools == 4.2.0-1, enaml
+    == 0.6.8-1, casuarius == 1.1-1, enable == 4.3.0-1, etsdevtools == 4.0.2-1, codetools
+    == 4.1.0-1, envisage == 4.3.0-1)
+  - ets 4.3.0-3; depends (chaco == 4.3.0-2, encore == 0.3-1, scimath == 4.1.2-2, etsdevtools
+    == 4.0.2-1, etsproxy == 0.1.2-1, pyface == 4.3.0-2, graphcanvas == 4.0.2-1, traitsui
+    == 4.3.0-2, mayavi == 4.3.0-3, apptools == 4.2.0-2, traits == 4.3.0-2, casuarius
+    == 1.1-1, enaml == 0.6.8-2, envisage == 4.3.0-2, codetools == 4.1.0-2, enable ==
+    4.3.0-5, blockcanvas == 4.0.3-1)
+  - ets 4.3.0-5; depends (chaco == 4.3.0-3, etsdevtools == 4.0.2-1, graphcanvas == 4.0.2-2,
+    etsproxy == 0.1.2-1, encore == 0.4.0-1, traitsui == 4.3.0-2, pyface == 4.3.0-2,
+    enable == 4.3.0-8, apptools == 4.2.0-2, traits == 4.3.0-3, mayavi == 4.3.0-4, casuarius
+    == 1.1-2, enaml == 0.6.8-3, envisage == 4.3.0-2, codetools == 4.1.0-2, scimath ==
+    4.1.2-3, blockcanvas == 4.0.3-1)
+  - ets 4.4.1-1; depends (traitsui == 4.4.0-1, codetools == 4.2.0-1, enable == 4.3.0-10,
+    envisage == 4.4.0-1, graphcanvas == 4.0.2-2, etsdevtools == 4.0.2-1, etsproxy ==
+    0.1.2-1, encore == 0.4.0-1, apptools == 4.2.0-4, mayavi == 4.3.0-5, blockcanvas
+    == 4.0.3-1, scimath == 4.1.2-3, casuarius == 1.1-3, enaml == 0.6.8-5, pyface ==
+    4.4.0-1, chaco == 4.4.1-1, traits == 4.4.0-1)
+  - ets 4.4.2-1; depends (codetools == 4.2.0-2, etsdevtools == 4.0.2-1, enable == 4.4.1-2,
+    encore == 0.5.1-1, pyface == 4.4.0-2, etsproxy == 0.1.2-1, envisage == 4.4.0-2,
+    graphcanvas == 4.0.2-3, traits == 4.5.0-1, mayavi == 4.3.1-1, traitsui == 4.4.0-2,
+    blockcanvas == 4.0.3-1, scimath == 4.1.2-3, apptools == 4.2.1-1, chaco == 4.4.1-2)
+  - ets 4.4.3-1; depends (enable == 4.4.1-5, codetools == 4.2.0-2, graphcanvas == 4.0.2-5,
+    envisage == 4.4.0-2, traitsui == 4.4.0-2, pyface == 4.4.0-2, etsproxy == 0.1.2-1,
+    encore == 0.5.1-4, mayavi == 4.3.1-2, scimath == 4.1.2-4, blockcanvas == 4.0.3-1,
+    apptools == 4.2.1-3, chaco == 4.5.0-1, etsdevtools == 4.0.2-1, traits == 4.5.0-1)
+  - ets 4.4.3-2; depends (enable == 4.4.1-5, codetools == 4.2.0-2, graphcanvas == 4.0.2-5,
+    envisage == 4.4.0-2, traitsui == 4.4.0-2, pyface == 4.4.0-2, etsproxy == 0.1.2-1,
+    encore == 0.5.1-5, mayavi == 4.3.1-2, scimath == 4.1.2-4, blockcanvas == 4.0.3-1,
+    apptools == 4.2.1-3, chaco == 4.5.0-1, etsdevtools == 4.0.2-1, traits == 4.5.0-1)
+  - ets 4.4.4-1; depends (enable == 4.4.1-5, encore == 0.6.0-1, graphcanvas == 4.0.2-5,
+    envisage == 4.4.0-2, traitsui == 4.4.0-2, pyface == 4.4.0-2, etsproxy == 0.1.2-1,
+    codetools == 4.2.0-2, mayavi == 4.3.1-2, scimath == 4.1.2-4, blockcanvas == 4.0.3-1,
+    apptools == 4.2.1-3, chaco == 4.5.0-1, etsdevtools == 4.0.2-1, traits == 4.5.0-1)
+  - ETSDevTools 3.1.1-1
+  - etsdevtools 4.0.0-1
+  - etsdevtools 4.0.2-1
+  - etsproxy 0.1.0-1
+  - etsproxy 0.1.1-1
+  - etsproxy 0.1.2-1
+  - Examples 7.1-1; depends (appinst)
+  - Examples 7.1-2; depends (appinst)
+  - Examples 7.2-1; depends (appinst)
+  - Examples 7.3-1; depends (appinst)
+  - execnet 1.2.0-1
+  - expat 2.0.1-1
+  - expat 2.0.1-2
+  - expat 2.0.1-3
+  - fabric 1.10.0-1; depends (paramiko ^= 1.15.1)
+  - fastnumpy 1.0-2; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - fastnumpy 1.0-3; depends (numpy ^= 1.6.1, MKL ^= 10.3)
+  - fastnumpy 1.0-5; depends (numpy ^= 1.7.1, MKL ^= 10.3)
+  - fastnumpy 1.0-6; depends (numpy ^= 1.8.0, MKL ^= 10.3)
+  - fastnumpy 1.0-7; depends (numpy ^= 1.8.1, MKL ^= 10.3)
+  - faulthandler 2.3-1
+  - faulthandler 2.4-1
+  - feedparser 5.1-1
+  - feedparser 5.1.1-1
+  - feedparser 5.1.3-1
+  - fiona 1.0.2-1; depends (libgdal ^= 1.10.1, libpng ^= 1.2.40, six ^= 1.3.0)
+  - fiona 1.0.2-2; depends (libgdal ^= 1.10.1, six ^= 1.4.1, libpng ^= 1.2.40)
+  - fiona 1.0.3-1; depends (libgdal ^= 1.10.1, six ^= 1.4.1, libpng ^= 1.2.40)
+  - fiona 1.0.3-2; depends (libgdal ^= 1.10.1, six ^= 1.4.1, libpng ^= 1.2.40)
+  - fiona 1.0.3-3; depends (libpng ^= 1.2.40, libgdal ^= 1.11.0, six ^= 1.4.1)
+  - fiona 1.0.3-4; depends (six ^= 1.7.2, libpng ^= 1.2.40, libgdal ^= 1.11.0)
+  - fiona 1.1.5-1; depends (six ^= 1.7.2, libpng ^= 1.2.40, libgdal ^= 1.11.0)
+  - fiona 1.1.5-2; depends (six ^= 1.7.2, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.1.5-3; depends (six ^= 1.7.2, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.1.5-4; depends (six ^= 1.7.3, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.2.0-5; depends (six ^= 1.7.3, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.2.0-6; depends (six ^= 1.7.3, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.2.0-7; depends (six ^= 1.8.0, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - fiona 1.4.8-1; depends (six ^= 1.8.0, libgdal ^= 1.11.0, libpng ^= 1.6.12)
+  - FiPy 2.1-2; depends (distribute, pysparse ^= 1.2.dev213)
+  - FiPy 3.1-1; depends (distribute ^= 0.6.49, pysparse ^= 1.2.dev213)
+  - flake8 2.0.0-1; depends (mccabe ^= 0.2.1, pyflakes ^= 0.7.3, pep8 ^= 1.4.6)
+  - flake8 2.0.0-2; depends (mccabe ^= 0.2.1, pyflakes ^= 0.7.3, pep8 ^= 1.4.6)
+  - flake8 2.1.0-1; depends (mccabe ^= 0.2.1, pep8 ^= 1.5.7, pyflakes ^= 0.8.1)
+  - flake8 2.2.3-1; depends (mccabe ^= 0.2.1, pep8 ^= 1.5.7, pyflakes ^= 0.8.1)
+  - flake8 2.2.5-1; depends (mccabe ^= 0.2.1, pep8 ^= 1.5.7, pyflakes ^= 0.8.1)
+  - flask 0.10.1-1; depends (werkzeug ^= 0.9.4, itsdangerous ^= 0.23.0, Jinja2 ^= 2.6)
+  - flask 0.10.1-2; depends (werkzeug ^= 0.9.4, itsdangerous ^= 0.23.0, Jinja2 ^= 2.7.1)
+  - flask 0.10.1-3; depends (Jinja2 ^= 2.7.3, itsdangerous ^= 0.23.0, werkzeug ^= 0.9.4)
+  - flask 0.10.1-4; depends (werkzeug ^= 0.9.6, Jinja2 ^= 2.7.3, itsdangerous ^= 0.24.0)
+  - flask_compress 1.0.2-1; depends (flask ^= 0.10.1)
+  - foolscap 0.5.1-3; depends (pyOpenSSL ^= 0.11, Twisted ^= 10.2.0)
+  - foolscap 0.6.1-1; depends (pyOpenSSL ^= 0.11, Twisted ^= 10.2.0)
+  - foolscap 0.6.1-2; depends (pyOpenSSL ^= 0.11, Twisted ^= 11.0.0)
+  - foolscap 0.6.1-3; depends (Twisted ^= 11.0.0, pyOpenSSL ^= 0.12)
+  - foolscap 0.6.2-1; depends (Twisted ^= 11.1.0, pyOpenSSL ^= 0.12)
+  - foolscap 0.6.3-1; depends (Twisted ^= 12.0.0, pyOpenSSL ^= 0.12)
+  - foolscap 0.6.3-3; depends (Twisted ^= 12.0.0, pyOpenSSL ^= 0.13.1)
+  - foolscap 0.6.3-4; depends (Twisted ^= 14.0.0, pyOpenSSL ^= 0.13.1)
+  - foolscap 0.7.0-1; depends (Twisted ^= 14.0.2, pyOpenSSL ^= 0.13.1)
+  - foolscap 0.7.0-3; depends (pyOpenSSL ^= 0.14, Twisted ^= 14.0.2)
+  - freeglut 2.4.0-2
+  - freeglut 2.6.0-1
+  - freeglut 2.8.1-1
+  - freetype 2.3.7-1
+  - freetype 2.3.11-1
+  - freetype 2.4.4-1
+  - freetype 2.4.4-4
+  - freetype 2.4.4-5
+  - freetype 2.5.3-1
+  - freetype 2.5.3-2
+  - freetype 2.5.3-3; depends (libpng ^= 1.6.12)
+  - freetype 2.5.3-4; depends (libpng ^= 1.6.12)
+  - future 0.13.1-1
+  - future 0.14.1-1
+  - future 0.14.2-1
+  - futures 2.1.4-1
+  - futures 2.1.4-2
+  - futures 2.1.6-1
+  - futures 2.2.0-1
+  - fwrap 0.1.1-1; depends (Cython ^= 0.14.1, numpy ^= 1.5.1)
+  - fwrap 0.1.1-2; depends (Cython ^= 0.14.1, numpy)
+  - fwrap 0.1.1-3; depends (Cython, numpy)
+  - fwrap 0.1.1-4; depends (Cython, numpy)
+  - fwrap 0.1.1-5; depends (Cython, numpy)
+  - fwrap 0.1.1-6; depends (Cython, numpy)
+  - fwrap 0.1.1-8; depends (Cython, numpy)
+  - fwrap 0.1.1-9; depends (Cython, numpy)
+  - fwrap 0.1.1-10; depends (Cython, numpy)
+  - fwrap 0.1.1-11; depends (Cython, numpy)
+  - fwrap 0.1.1-12; depends (Cython, numpy)
+  - GDAL 1.7.1-1; depends (numpy, libgdal ^= 1.7.2)
+  - GDAL 1.8.1-1; depends (numpy ^= 1.6.1, libgdal ^= 1.8.1)
+  - GDAL 1.8.1-2; depends (numpy ^= 1.6.1, libgdal ^= 1.8.1)
+  - GDAL 1.9.0-3; depends (numpy ^= 1.7.1, libgdal ^= 1.9.0)
+  - GDAL 1.10.0-1; depends (numpy ^= 1.7.1, libgdal ^= 1.10.0)
+  - GDAL 1.10.0-2; depends (numpy ^= 1.7.1, libgdal ^= 1.10.1)
+  - GDAL 1.10.0-3; depends (libgdal ^= 1.10.1, numpy ^= 1.8.0)
+  - GDAL 1.10.0-4; depends (libgdal ^= 1.10.1, numpy ^= 1.8.0)
+  - GDAL 1.10.0-5; depends (numpy ^= 1.8.0, libgdal ^= 1.11.0)
+  - GDAL 1.10.0-6; depends (numpy ^= 1.8.0, libgdal ^= 1.11.0)
+  - GDAL 1.11.0-1; depends (numpy ^= 1.8.0, libgdal ^= 1.11.0)
+  - GDAL 1.11.0-2; depends (numpy ^= 1.8.0, libgdal ^= 1.11.0)
+  - GDAL 1.11.0-3; depends (numpy ^= 1.8.1, libgdal ^= 1.11.0)
+  - GDAL 1.11.0-4; depends (numpy ^= 1.8.1, libgdal ^= 1.11.0)
+  - GDAL 1.11.0-5; depends (numpy ^= 1.8.1, libgdal ^= 1.11.0)
+  - GDAL 1.11.1-1; depends (numpy ^= 1.8.1, libgdal ^= 1.11.0)
+  - gdata 2.0.18-1
+  - geojson 1.0.8-1
+  - geos 3.4.2-1
+  - gevent 0.13.8-1; depends (libevent ^= 2.0.21, greenlet ^= 0.4.1)
+  - gevent 1.0.0-1; depends (greenlet ^= 0.4.2)
+  - gevent 1.0.1-1; depends (greenlet ^= 0.4.2)
+  - gevent 1.0.1-2; depends (greenlet ^= 0.4.4)
+  - gevent 1.0.1-3; depends (greenlet ^= 0.4.4)
+  - gevent_websocket 0.9.3-1
+  - glib 2.36.1-1; depends (libffi ^= 3.0.13, libxml2 ^= 2.7.8)
+  - glib 2.36.1-2; depends (libffi ^= 3.0.13, libxml2 ^= 2.9.2)
+  - gmp 5.0.0-1
+  - gmp 5.0.1-1
+  - gmpy 1.11-1; depends (gmp ^= 5.0.0)
+  - gmpy 1.11-2; depends (gmp ^= 5.0.1)
+  - gmpy 1.11-3; depends (gmp ^= 5.0.1)
+  - gnureadline 6.2.5-1; depends (libncurses ^= 5.9)
+  - googlecl 0.9.12-1
+  - GraphCanvas 3.0.0-1; depends (networkx ^= 1.4, Enable ^= 3.4.0)
+  - graphcanvas 4.0.0-1; depends (networkx ^= 1.5, enable ^= 4.0.0)
+  - graphcanvas 4.0.0-2; depends (enable ^= 4.1.0, networkx ^= 1.6)
+  - graphcanvas 4.0.0-3; depends (networkx ^= 1.6, enable ^= 4.2.0)
+  - graphcanvas 4.0.2-1; depends (enable ^= 4.3.0, networkx ^= 1.6)
+  - graphcanvas 4.0.2-2; depends (networkx ^= 1.8.1, enable ^= 4.3.0)
+  - graphcanvas 4.0.2-3; depends (enable ^= 4.4.1, networkx ^= 1.8.1)
+  - graphcanvas 4.0.2-4; depends (enable ^= 4.4.1, networkx ^= 1.9)
+  - graphcanvas 4.0.2-5; depends (enable ^= 4.4.1, networkx ^= 1.9.1)
+  - greenlet 0.4.1-1
+  - greenlet 0.4.2-1
+  - greenlet 0.4.4-1
+  - greenlet 0.4.4-2
+  - grib_api 1.9.9-1
+  - grin 1.2.1-2
+  - gst_plugins_base 0.10.36-2; depends (libtheora ^= 1.1.1, gstreamer ^= 0.10.36)
+  - gstreamer 0.10.36-1; depends (libxml2 ^= 2.7.8, glib ^= 2.36.1)
+  - gstreamer 0.10.36-2; depends (libxml2 ^= 2.7.8, glib ^= 2.36.1)
+  - gstreamer 0.10.36-3; depends (libxml2 ^= 2.9.2, glib ^= 2.36.1)
+  - gunicorn 18.0-1; depends (gevent ^= 1.0.0, greenlet ^= 0.4.2)
+  - gunicorn 19.1.0-1; depends (gevent ^= 1.0.1, greenlet ^= 0.4.2)
+  - gunicorn 19.1.1-1; depends (gevent ^= 1.0.1, greenlet ^= 0.4.4)
+  - h5py 1.3.1-1; depends (numpy ^= 1.5.1)
+  - h5py 1.3.1-2; depends (numpy ^= 1.6.0)
+  - h5py 2.0.0-1; depends (numpy ^= 1.6.1, hdf5 ^= 1.8.5.1)
+  - h5py 2.0.0-2; depends (hdf5 ^= 1.8.9, numpy ^= 1.6.1)
+  - h5py 2.1.3-2; depends (hdf5 ^= 1.8.9, numpy ^= 1.7.1)
+  - h5py 2.2.0-1; depends (numpy ^= 1.7.1, hdf5 ^= 1.8.11)
+  - h5py 2.2.0-2; depends (numpy ^= 1.8.0, hdf5 ^= 1.8.11)
+  - h5py 2.2.1-1; depends (numpy ^= 1.8.0, hdf5 ^= 1.8.11)
+  - h5py 2.3.0-1; depends (numpy ^= 1.8.0, hdf5 ^= 1.8.11)
+  - h5py 2.3.0-2; depends (numpy ^= 1.8.1, hdf5 ^= 1.8.11)
+  - h5py 2.3.1-1; depends (numpy ^= 1.8.1, hdf5 ^= 1.8.11)
+  - haas 0.6.0-1; depends (stevedore ^= 1.1.0, enum34 ^= 1.0.4)
+  - hatcher 0.4.2-1; depends (okonomiyaki ^= 0.3.3, PyYAML ^= 3.11, click ^= 3.3, tabulate
+    ^= 0.7.3, clint ^= 0.4.1, requests ^= 2.5.0, six ^= 1.8.0)
+  - HDF4 4.2r3-1
+  - hdf5 1.8.1-1
+  - hdf5 1.8.3-1
+  - hdf5 1.8.4-1
+  - hdf5 1.8.5.1-1
+  - hdf5 1.8.5.1-2
+  - hdf5 1.8.9-1
+  - hdf5 1.8.9-4
+  - hdf5 1.8.11-1
+  - hello_world 1.0-1
+  - html5lib 0.90-2
+  - html5lib 0.95-1
+  - html5lib 0.999-1
+  - htmltemplate 1.5.0-1
+  - htmltemplate 1.5.0-2
+  - idle 2.7.1-1; depends (appinst)
+  - idle 2.7.2-1; depends (appinst)
+  - idle 2.7.2-2; depends (appinst)
+  - idle 2.7.3-1; depends (appinst)
+  - ipython 0.10.1-2; depends (appinst)
+  - ipython 0.10.2-1; depends (appinst)
+  - ipython 0.10.2-2; depends (appinst)
+  - ipython 0.11rc1-1; depends (appinst)
+  - ipython 0.11rc4-1; depends (appinst)
+  - ipython 0.11-1; depends (appinst)
+  - ipython 0.12rc1-1; depends (appinst)
+  - ipython 0.12-1; depends (appinst)
+  - ipython 0.12-2; depends (appinst)
+  - ipython 0.12.1-1; depends (appinst)
+  - ipython 0.12.1-2; depends (appinst)
+  - ipython 0.12.1-3; depends (appinst)
+  - ipython 0.13.1-1; depends (appinst)
+  - ipython 0.13.1-2; depends (appinst)
+  - ipython 1.0.0-1; depends (pyzmq ^= 2.2.0, appinst, tornado ^= 2.2, Pygments ^= 1.6.0,
+    Jinja2 ^= 2.6)
+  - ipython 1.0.0-2; depends (pyzmq ^= 2.2.0, appinst, tornado ^= 2.2, Pygments ^= 1.6.0,
+    Jinja2 ^= 2.6)
+  - ipython 1.1.0-1; depends (pyzmq ^= 2.2.0, appinst, tornado ^= 2.2, Pygments ^= 1.6.0,
+    Jinja2 ^= 2.6)
+  - ipython 1.1.0-2; depends (pyzmq ^= 2.2.0, appinst, Pygments ^= 1.6.0, Jinja2 ^=
+    2.6, tornado ^= 3.1.1)
+  - ipython 1.1.0-3; depends (pyzmq ^= 2.2.0, appinst, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 1.1.0-6; depends (pyzmq ^= 2.2.0, appinst, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 1.2.1-2; depends (pyzmq ^= 2.2.0, appinst, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 1.2.1-3; depends (appinst, pyzmq ^= 14.1.1, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 2.0.0-1; depends (appinst, pyzmq ^= 14.1.1, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 2.1.0-1; depends (appinst, pyzmq ^= 14.1.1, Pygments ^= 1.6.0, Jinja2 ^=
+    2.7.1, tornado ^= 3.1.1)
+  - ipython 2.1.0-2; depends (appinst, pyzmq ^= 14.1.1, Jinja2 ^= 2.7.3, Pygments ^=
+    1.6.0, tornado ^= 3.1.1)
+  - ipython 2.1.0-3; depends (tornado ^= 3.2.2, appinst, pyzmq ^= 14.1.1, Jinja2 ^=
+    2.7.3, Pygments ^= 1.6.0)
+  - ipython 2.1.0-6; depends (pyzmq ^= 14.3.1, tornado ^= 3.2.2, appinst, Jinja2 ^=
+    2.7.3, Pygments ^= 1.6.0)
+  - ipython 2.2.0-1; depends (pyzmq ^= 14.3.1, tornado ^= 3.2.2, appinst, Jinja2 ^=
+    2.7.3, Pygments ^= 1.6.0)
+  - ipython 2.2.0-2; depends (pyzmq ^= 14.3.1, appinst, Jinja2 ^= 2.7.3, Pygments ^=
+    1.6.0, tornado ^= 4.0.1)
+  - ipython 2.2.0-3; depends (pyzmq ^= 14.3.1, tornado ^= 4.0.2, appinst, Jinja2 ^=
+    2.7.3, Pygments ^= 1.6.0)
+  - ipython 2.3.0-1; depends (pyzmq ^= 14.3.1, tornado ^= 4.0.2, appinst, Jinja2 ^=
+    2.7.3, Pygments ^= 1.6.0)
+  - ipython 2.3.1-1; depends (pyzmq ^= 14.3.1, tornado ^= 4.0.2, appinst, Jinja2 ^=
+    2.7.3, Pygments ^= 2.0.1)
+  - ipython 2.3.1-2; depends (tornado ^= 4.0.2, appinst, pyzmq ^= 14.4.1, Jinja2 ^=
+    2.7.3, Pygments ^= 2.0.1)
+  - iris 1.6.1-1; depends (numpy ^= 1.8.0, libudunits ^= 2.2.11, scipy ^= 0.14.0, matplotlib
+    ^= 1.3.1, GDAL ^= 1.10.0, pandas ^= 0.14.0, pygrib ^= 1.9.2, pyke ^= 1.1.1, PIL
+    ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.0.7, cartopy ^= 0.10.0, Shapely ^= 1.2.17)
+  - iris 1.6.1-2; depends (numpy ^= 1.8.0, libudunits ^= 2.2.11, scipy ^= 0.14.0, GDAL
+    ^= 1.11.0, matplotlib ^= 1.3.1, pandas ^= 0.14.0, pygrib ^= 1.9.2, pyke ^= 1.1.1,
+    PIL ^= 1.1.7, expat ^= 2.0.1, Shapely ^= 1.2.17, cartopy ^= 0.10.0, netCDF4 ^= 1.1.0)
+  - iris 1.6.1-3; depends (numpy ^= 1.8.0, libudunits ^= 2.2.11, GDAL ^= 1.11.0, matplotlib
+    ^= 1.3.1, pandas ^= 0.14.0, scipy ^= 0.14.0, pyke ^= 1.1.1, PIL ^= 1.1.7, expat
+    ^= 2.0.1, Shapely ^= 1.2.17, cartopy ^= 0.10.0, pygrib ^= 1.9.9, netCDF4 ^= 1.1.0)
+  - iris 1.6.1-4; depends (numpy ^= 1.8.0, libudunits ^= 2.2.11, GDAL ^= 1.11.0, matplotlib
+    ^= 1.3.1, pandas ^= 0.14.0, scipy ^= 0.14.0, pyke ^= 1.1.1, PIL ^= 1.1.7, expat
+    ^= 2.0.1, cartopy ^= 0.10.0, pygrib ^= 1.9.9, netCDF4 ^= 1.1.0, Shapely ^= 1.3.2)
+  - iris 1.6.1-6; depends (numpy ^= 1.8.0, libudunits ^= 2.2.11, GDAL ^= 1.11.0, matplotlib
+    ^= 1.3.1, pandas ^= 0.14.1, Shapely ^= 1.3.2, scipy ^= 0.14.0, pyke ^= 1.1.1, PIL
+    ^= 1.1.7, expat ^= 2.0.1, cartopy ^= 0.10.0, pygrib ^= 1.9.9, netCDF4 ^= 1.1.0)
+  - iris 1.6.1-8; depends (numpy ^= 1.8.1, libudunits ^= 2.2.11, scipy ^= 0.14.0, GDAL
+    ^= 1.11.0, Shapely ^= 1.3.2, pandas ^= 0.14.1, matplotlib ^= 1.4.0, pyke ^= 1.1.1,
+    PIL ^= 1.1.7, expat ^= 2.0.1, cartopy ^= 0.10.0, pygrib ^= 1.9.9, netCDF4 ^= 1.1.0)
+  - iris 1.6.1-9; depends (numpy ^= 1.8.1, libudunits ^= 2.2.11, scipy ^= 0.14.0, GDAL
+    ^= 1.11.0, Shapely ^= 1.3.2, pandas ^= 0.14.1, matplotlib ^= 1.4.0, pyke ^= 1.1.1,
+    PIL ^= 1.1.7, expat ^= 2.0.1, cartopy ^= 0.10.0, netCDF4 ^= 1.1.1, pygrib ^= 1.9.9)
+  - iris 1.7.1-1; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, scipy
+    ^= 0.14.0, GDAL ^= 1.11.0, Shapely ^= 1.3.2, pandas ^= 0.14.1, matplotlib ^= 1.4.0,
+    pyke ^= 1.1.1, cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1,
+    pygrib ^= 1.9.9)
+  - iris 1.7.1-2; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, scipy
+    ^= 0.14.0, GDAL ^= 1.11.0, pandas ^= 0.14.1, matplotlib ^= 1.4.0, pyke ^= 1.1.1,
+    cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, Shapely ^= 1.4.1,
+    pygrib ^= 1.9.9)
+  - iris 1.7.1-3; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, scipy
+    ^= 0.14.0, GDAL ^= 1.11.0, pyke ^= 1.1.1, matplotlib ^= 1.4.0, pandas ^= 0.15.0,
+    cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, Shapely ^= 1.4.1,
+    pygrib ^= 1.9.9)
+  - iris 1.7.1-4; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, GDAL
+    ^= 1.11.0, pyke ^= 1.1.1, scipy ^= 0.14.0, pandas ^= 0.15.0, matplotlib ^= 1.4.2,
+    cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, Shapely ^= 1.4.1,
+    pygrib ^= 1.9.9)
+  - iris 1.7.1-5; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, GDAL
+    ^= 1.11.1, pyke ^= 1.1.1, scipy ^= 0.14.0, pandas ^= 0.15.0, matplotlib ^= 1.4.2,
+    cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, Shapely ^= 1.4.1,
+    pygrib ^= 1.9.9)
+  - iris 1.7.1-7; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, GDAL
+    ^= 1.11.1, Shapely ^= 1.5.1, pandas ^= 0.15.1, scipy ^= 0.14.0, pyke ^= 1.1.1, matplotlib
+    ^= 1.4.2, cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, pygrib
+    ^= 1.9.9)
+  - iris 1.7.1-8; depends (numpy ^= 1.8.1, Biggus ^= 0.7.0, libudunits ^= 2.2.11, GDAL
+    ^= 1.11.1, Shapely ^= 1.5.1, pandas ^= 0.15.2, scipy ^= 0.14.0, pyke ^= 1.1.1, matplotlib
+    ^= 1.4.2, cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, pygrib
+    ^= 1.9.9)
+  - iris 1.7.3-1; depends (libudunits ^= 2.2.17, numpy ^= 1.8.1, Shapely ^= 1.5.1, Biggus
+    ^= 0.7.0, GDAL ^= 1.11.1, pandas ^= 0.15.2, scipy ^= 0.14.0, pyke ^= 1.1.1, matplotlib
+    ^= 1.4.2, cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, pygrib
+    ^= 1.9.9)
+  - iris 1.7.3-2; depends (libudunits ^= 2.2.17, numpy ^= 1.8.1, Shapely ^= 1.5.1, Biggus
+    ^= 0.7.0, GDAL ^= 1.11.1, scipy ^= 0.14.1rc1, pandas ^= 0.15.2, pyke ^= 1.1.1, matplotlib
+    ^= 1.4.2, cartopy ^= 0.11.0, PIL ^= 1.1.7, expat ^= 2.0.1, netCDF4 ^= 1.1.1, pygrib
+    ^= 1.9.9)
+  - iso8601 0.1.10-1
+  - itsdangerous 0.23.0-1
+  - itsdangerous 0.24.0-1
+  - jasper 1.9-1
+  - jdcal 1.0.0-1
+  - Jinja2 2.5.5-2; depends (Pygments ^= 1.3.1)
+  - Jinja2 2.5.5-3; depends (Pygments ^= 1.4)
+  - Jinja2 2.6-1; depends (Pygments ^= 1.4)
+  - Jinja2 2.6-2
+  - Jinja2 2.7.1-1; depends (MarkupSafe ^= 0.18)
+  - Jinja2 2.7.3-1; depends (MarkupSafe ^= 0.18)
+  - Jinja2 2.7.3-2; depends (MarkupSafe ^= 0.23)
+  - jsonpickle 0.3.1-1
+  - jsonpickle 0.4.0-1
+  - jsonschema 2.4.0-1
+  - kernmagic 0.1.0-1; depends (ipython ^= 0.12.1)
+  - kernmagic 0.2.0-1; depends (ipython ^= 0.13.1)
+  - kernmagic 0.2.0-2; depends (ipython ^= 1.0.0)
+  - keyring 0.5.1-1
+  - keyring 0.6.2-1
+  - keyring 0.7.1-1
+  - keyring 0.9-1
+  - keyring 0.9.2-1
+  - keyring 3.7.0-1
+  - keyring 4.0-1
+  - keyring 4.0-3
+  - kiwisolver 0.1.2-1
+  - kiwisolver 0.1.3-1
+  - kombu 3.0.21-2; depends (amqp ^= 1.4.5, anyjson ^= 0.3.3)
+  - larry 0.4.0-2; depends (h5py ^= 1.3.1, numpy ^= 1.5.1)
+  - larry 0.4.0-3; depends (h5py ^= 1.3.1, numpy ^= 1.6.0)
+  - larry 0.6.0-3; depends (numpy ^= 1.7.1, h5py ^= 2.1.3, Bottleneck ^= 0.6.0)
+  - larry 0.6.0-4; depends (numpy ^= 1.7.1, Bottleneck ^= 0.7.0, h5py ^= 2.2.0)
+  - larry 0.6.0-5; depends (Bottleneck ^= 0.7.0, numpy ^= 1.8.0, h5py ^= 2.2.0)
+  - larry 0.6.0-6; depends (Bottleneck ^= 0.7.0, numpy ^= 1.8.0, h5py ^= 2.2.1)
+  - larry 0.6.0-8; depends (Bottleneck ^= 0.7.0, h5py ^= 2.3.0, numpy ^= 1.8.1)
+  - larry 0.6.0-9; depends (Bottleneck ^= 0.7.0, numpy ^= 1.8.1, h5py ^= 2.3.1)
+  - lib_netcdf3 3.6.2-6
+  - lib_netcdf4 4.0-1
+  - lib_netcdf4 4.0-3
+  - lib_netcdf4 4.0.1-1
+  - lib_netcdf4 4.1.1-1
+  - lib_netcdf4 4.1.1-2; depends (curl ^= 7.25.0)
+  - lib_netcdf4 4.2-1; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - lib_netcdf4 4.2-2; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - lib_netcdf4 4.3.0-1; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - lib_netcdf4 4.3.0-2; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - lib_netcdf4 4.3.0-3; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - lib_netcdf4 4.3.0-4; depends (curl ^= 7.25.0, hdf5 ^= 1.8.11)
+  - lib_netcdf4 4.3.2-1; depends (hdf5 ^= 1.8.11, curl ^= 7.37.0)
+  - lib_netcdf4 4.3.2-2; depends (hdf5 ^= 1.8.11, curl ^= 7.38.0)
+  - libblosc 1.3.5-1
+  - libevent 2.0.21-1
+  - libffi 3.0.13-1
+  - libffi 3.0.13-2
+  - libgdal 1.7.2-1; depends (expat ^= 2.0.1)
+  - libgdal 1.8.1-1
+  - libgdal 1.9.0-2
+  - libgdal 1.10.0-1; depends (hdf5 ^= 1.8.9, curl ^= 7.25.0)
+  - libgdal 1.10.0-2; depends (hdf5 ^= 1.8.9, libxml2 ^= 2.7.8, curl ^= 7.25.0, expat
+    ^= 2.0.1)
+  - libgdal 1.10.1-1; depends (hdf5 ^= 1.8.9, libxml2 ^= 2.7.8, curl ^= 7.25.0, expat
+    ^= 2.0.1)
+  - libgdal 1.10.1-2; depends (libxml2 ^= 2.7.8, curl ^= 7.25.0, hdf5 ^= 1.8.11, expat
+    ^= 2.0.1)
+  - libgdal 1.10.1-4; depends (libxml2 ^= 2.7.8, curl ^= 7.25.0, hdf5 ^= 1.8.11, expat
+    ^= 2.0.1)
+  - libgdal 1.11.0-1; depends (lib_netcdf4 ^= 4.3.0, libxml2 ^= 2.7.8, curl ^= 7.25.0,
+    hdf5 ^= 1.8.11, expat ^= 2.0.1)
+  - libgdal 1.11.0-2; depends (lib_netcdf4 ^= 4.3.0, libxml2 ^= 2.7.8, curl ^= 7.25.0,
+    hdf5 ^= 1.8.11, expat ^= 2.0.1)
+  - libgdal 1.11.0-3; depends (lib_netcdf4 ^= 4.3.0, libxml2 ^= 2.7.8, curl ^= 7.25.0,
+    hdf5 ^= 1.8.11, expat ^= 2.0.1)
+  - libgdal 1.11.0-4; depends (libxml2 ^= 2.7.8, lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11,
+    expat ^= 2.0.1, curl ^= 7.37.0)
+  - libgdal 1.11.0-5; depends (libxml2 ^= 2.7.8, lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11,
+    curl ^= 7.38.0, expat ^= 2.0.1)
+  - libgdal 1.11.0-6; depends (lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11, libxml2 ^= 2.9.2,
+    curl ^= 7.38.0, expat ^= 2.0.1)
+  - libgdal 1.11.0-7; depends (lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11, curl ^= 7.38.0,
+    libxml2 ^= 2.9.2, expat ^= 2.0.1, libpng ^= 1.6.12)
+  - libgfortran 3.0.0-1
+  - libgfortran 3.0.0-2
+  - libgnomevfs 2.0-1
+  - libjpeg 7.0-2
+  - libjpeg 7.0-3
+  - libncurses 5.9-1
+  - libpng 1.2.40-4
+  - libpng 1.2.40-5
+  - libpng 1.6.12-1
+  - libpng 1.6.12-3
+  - libproj 4.8.0-1
+  - libproj 4.8.0-2
+  - libtheora 1.1.1-1
+  - libudunits 2.2.11-1; depends (expat ^= 2.0.1)
+  - libudunits 2.2.17-2; depends (expat ^= 2.0.1)
+  - libxml2 2.6.32-1
+  - libxml2 2.7.3-1
+  - libxml2 2.7.3-3
+  - libxml2 2.7.8-1; depends (zlib ^= 1.2.6)
+  - libxml2 2.7.8-3
+  - libxml2 2.7.8-4
+  - libxml2 2.9.2-1
+  - libxml2 2.9.2-2
+  - libxslt 1.1.24-1; depends (libxml2 ^= 2.6.32)
+  - libxslt 1.1.24-3; depends (libxml2 ^= 2.7.3)
+  - libxslt 1.1.24-5; depends (libxml2 ^= 2.7.3)
+  - libxslt 1.1.26-1; depends (libxml2 ^= 2.7.8)
+  - libxslt 1.1.26-3; depends (libxml2 ^= 2.7.8)
+  - libxslt 1.1.28-1; depends (libxml2 ^= 2.9.2)
+  - libxslt 1.1.28-2; depends (libxml2 ^= 2.9.2)
+  - libYAML 0.1.3-1
+  - libYAML 0.1.4-1
+  - line_profiler 1.0-1
+  - llvm 3.2-1
+  - llvm 3.3-1
+  - llvmmath 0.1.0-1; depends (numpy ^= 1.7.1, llvmpy ^= 0.11.3)
+  - llvmmath 0.1.1-1; depends (numpy ^= 1.7.1, llvmpy ^= 0.11.3)
+  - llvmmath 0.1.1-2; depends (numpy ^= 1.7.1, llvmpy ^= 0.12.0)
+  - llvmmath 0.1.1-3; depends (numpy ^= 1.8.0, llvmpy ^= 0.12.0)
+  - llvmmath 0.1.1-4; depends (numpy ^= 1.8.0, llvmpy ^= 0.12.1)
+  - llvmmath 0.1.1-5; depends (llvmpy ^= 0.12.6, numpy ^= 1.8.0)
+  - llvmmath 0.1.1-6; depends (llvmpy ^= 0.12.6, numpy ^= 1.8.1)
+  - llvmmath 0.1.2-1; depends (llvmpy ^= 0.12.7, numpy ^= 1.8.1)
+  - llvmpy 0.11.3-1
+  - llvmpy 0.12.0-1
+  - llvmpy 0.12.1-1
+  - llvmpy 0.12.6-1
+  - llvmpy 0.12.7-1
+  - lxml 2.2.8-2; depends (libxml2 ^= 2.7.3, libxslt ^= 1.1.24)
+  - lxml 2.3-1; depends (libxml2 ^= 2.7.3, libxslt ^= 1.1.24)
+  - lxml 2.3.1-1; depends (libxml2 ^= 2.7.3, libxslt ^= 1.1.24)
+  - lxml 2.3.2-1; depends (libxml2 ^= 2.7.3, libxslt ^= 1.1.24)
+  - lxml 2.3.3-1; depends (libxml2 ^= 2.7.3, libxslt ^= 1.1.24)
+  - lxml 2.3.3-2; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 2.3.4-1; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 2.3.4-4; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 2.3.4-6; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 3.2.3-1; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 3.3.5-1; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 3.3.6-1; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 3.4.0-1; depends (libxslt ^= 1.1.26, libxml2 ^= 2.7.8)
+  - lxml 3.4.0-2; depends (libxslt ^= 1.1.28, libxml2 ^= 2.9.2)
+  - lxml 3.4.1-1; depends (libxslt ^= 1.1.28, libxml2 ^= 2.9.2)
+  - MarkupSafe 0.18-1
+  - MarkupSafe 0.18-2
+  - MarkupSafe 0.23-1
+  - matplotlib 1.0.0-2; depends (configobj, wxPython ^= 2.8.10.1, pytz, numpy ^= 1.5.1,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.0.1-1; depends (configobj, wxPython ^= 2.8.10.1, pytz, numpy ^= 1.5.1,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.0.1-2; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.6.0, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.0.1-3; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.6.1, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.1.0-1; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.6.1, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.1.0-2; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.6.1, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.2.0-4; depends (configobj, python_dateutil, pytz, numpy ^= 1.6.1, wxPython
+    ^= 2.8.10.1)
+  - matplotlib 1.2.0-7; depends (configobj, numpy ^= 1.7.1, wxPython ^= 2.8.10.1, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.2.1-1; depends (configobj, numpy ^= 1.7.1, wxPython ^= 2.8.10.1, pytz,
+    python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.3.0-1; depends (configobj, numpy ^= 1.7.1, wxPython ^= 2.8.10.1, pyparsing
+    ^= 1.5.6, pytz, python_dateutil, tornado ^= 2.2, freetype ^= 2.4.4)
+  - matplotlib 1.3.0-2; depends (configobj, numpy ^= 1.7.1, wxPython ^= 2.8.10.1, pyparsing
+    ^= 1.5.6, tornado ^= 3.1.1, pytz, python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.3.1-1; depends (configobj, numpy ^= 1.7.1, wxPython ^= 2.8.10.1, pyparsing
+    ^= 1.5.6, tornado ^= 3.1.1, pytz, python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.3.1-2; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing
+    ^= 1.5.6, tornado ^= 3.1.1, pytz, python_dateutil, freetype ^= 2.4.4)
+  - matplotlib 1.3.1-3; depends (configobj, wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing
+    ^= 1.5.6, tornado ^= 3.1.1, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, freetype
+    ^= 2.4.4)
+  - matplotlib 1.3.1-4; depends (wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2, tornado ^= 3.1.1, configobj ^= 5.0.5, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.4.4)
+  - matplotlib 1.3.1-5; depends (wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2, tornado ^= 3.1.1, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, freetype ^=
+    2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.3.1-6; depends (wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2, tornado ^= 3.1.1, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, freetype ^=
+    2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.3.1-7; depends (wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2, python_dateutil ^= 2.2.0, tornado ^= 3.2.2, pytz ^= 2013.8.0, freetype ^=
+    2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.3.1-8; depends (wxPython ^= 2.8.10.1, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, tornado ^= 3.2.2, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.3.1-9; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, wxPython ^= 2.8.10.1,
+    libpng ^= 1.6.12, python_dateutil ^= 2.2.0, tornado ^= 3.2.2, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.4.0-1; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, wxPython ^= 2.8.10.1,
+    tornado ^= 4.0.1, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.5)
+  - matplotlib 1.4.0-2; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, wxPython ^= 2.8.10.1,
+    tornado ^= 4.0.1, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.6)
+  - matplotlib 1.4.0-3; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, tornado ^= 4.0.2,
+    wxPython ^= 2.8.10.1, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.6)
+  - matplotlib 1.4.0-4; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, tornado ^= 4.0.2,
+    wxPython ^= 2.8.10.1, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.6)
+  - matplotlib 1.4.2-1; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, tornado ^= 4.0.2,
+    wxPython ^= 2.8.10.1, libpng ^= 1.6.12, python_dateutil ^= 2.2.0, pytz ^= 2013.8.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.6)
+  - matplotlib 1.4.2-2; depends (numpy ^= 1.8.1, pyparsing ^= 2.0.2, tornado ^= 4.0.2,
+    wxPython ^= 2.8.10.1, pytz ^= 2014.9.0, libpng ^= 1.6.12, python_dateutil ^= 2.2.0,
+    freetype ^= 2.5.3, configobj ^= 5.0.6)
+  - Mayavi 3.4.1-1; depends (appinst, VTK ^= 5.6.0, TraitsGUI ^= 3.6.0, Traits ^= 3.6.0,
+    AppTools ^= 3.4.1, EnvisagePlugins ^= 3.2.0, EnthoughtBase ^= 3.1.0)
+  - Mayavi 3.4.1-2; depends (appinst, VTK ^= 5.6.0, TraitsGUI ^= 3.6.0, Traits ^= 3.6.0,
+    AppTools ^= 3.4.1, EnvisagePlugins ^= 3.2.0, EnthoughtBase ^= 3.1.0)
+  - mayavi 4.0.0-1; depends (envisage ^= 4.0.0, appinst, traitsui ^= 4.0.0, apptools
+    ^= 4.0.0, VTK ^= 5.6.0)
+  - mayavi 4.1.0-1; depends (envisage ^= 4.1.0, appinst, VTK ^= 5.6.0, apptools ^= 4.0.1,
+    traitsui ^= 4.1.0)
+  - mayavi 4.2.0-1; depends (apptools ^= 4.1.0, appinst, VTK ^= 5.6.0, envisage ^= 4.2.0,
+    traitsui ^= 4.2.0)
+  - mayavi 4.3.0-1; depends (appinst, envisage ^= 4.3.0, traitsui ^= 4.3.0, apptools
+    ^= 4.2.0, VTK ^= 5.6.0)
+  - mayavi 4.3.0-3; depends (appinst, envisage ^= 4.3.0, traitsui ^= 4.3.0, apptools
+    ^= 4.2.0, VTK ^= 5.6.0)
+  - mayavi 4.3.0-4; depends (appinst, envisage ^= 4.3.0, traitsui ^= 4.3.0, apptools
+    ^= 4.2.0, VTK ^= 5.6.0)
+  - mayavi 4.3.0-5; depends (envisage ^= 4.4.0, appinst, VTK ^= 5.6.0, apptools ^= 4.2.0,
+    traitsui ^= 4.4.0)
+  - mayavi 4.3.1-1; depends (envisage ^= 4.4.0, VTK ^= 5.10.1, appinst, traitsui ^=
+    4.4.0, apptools ^= 4.2.1)
+  - mayavi 4.3.1-2; depends (envisage ^= 4.4.0, VTK ^= 5.10.1, appinst, traitsui ^=
+    4.4.0, apptools ^= 4.2.1)
+  - mccabe 0.2.1-1
+  - mccabe 0.2.1-2
+  - MDP 3.1-1; depends (numpy)
+  - MDP 3.2-1; depends (numpy)
+  - MDP 3.3-1; depends (numpy ^= 1.6.1)
+  - MDP 3.3-2; depends (numpy ^= 1.7.1)
+  - MDP 3.3-3; depends (numpy ^= 1.7.1)
+  - MDP 3.3-4; depends (numpy ^= 1.8.0)
+  - MDP 3.3-6; depends (numpy ^= 1.8.1)
+  - MDP 3.3-7; depends (numpy ^= 1.8.1)
+  - meld3 0.6.10-1
+  - meld3 1.0.0-1
+  - memory_profiler 0.30-1; depends (psutil ^= 1.2.1)
+  - memory_profiler 0.31.0-1; depends (psutil ^= 2.1.1)
+  - Meta 0.4.2.dev-1
+  - Meta 0.4.2.dev-2
+  - Meta 0.4.2.dev2-1
+  - MKL 10.2-1
+  - MKL 10.2-2
+  - MKL 10.3-1
+  - mlab 1.1.4-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - mlab 1.1.4-2; depends (numpy ^= 1.8.1, scipy ^= 0.14.1rc1)
+  - mock 1.0.1-1
+  - mpi4py 1.2.1-2; depends (mpich2 ^= 1.1)
+  - mpi4py 1.2.2-1; depends (mpich2 ^= 1.4.1)
+  - mpich2 1.0.7-2
+  - mpich2 1.1-1
+  - mpich2 1.4.1-1
+  - msgpack 0.3.0-1
+  - msgpack 0.3.0-2
+  - msgpack 0.4.0-1
+  - multimethods 1.0.0-1
+  - multipledispatch 0.4.7-1
+  - ndg_httpsclient 0.3.2-1; depends (pyasn1 ^= 0.1.7, pyOpenSSL ^= 0.13.1)
+  - ndg_httpsclient 0.3.2-2; depends (pyOpenSSL ^= 0.14, pyasn1 ^= 0.1.7)
+  - netcdf 3.6.2-6
+  - netcdf 4.0-1
+  - netCDF4 0.9.3-2; depends (lib_netcdf4 == 4.1.1-1, hdf5 ^= 1.8.5.1, numpy ^= 1.5.1)
+  - netCDF4 0.9.4-1; depends (lib_netcdf4 == 4.1.1-1, hdf5 ^= 1.8.5.1, numpy ^= 1.6.0)
+  - netCDF4 0.9.5-1; depends (lib_netcdf4 == 4.1.1-1, hdf5 ^= 1.8.5.1, numpy ^= 1.6.0)
+  - netCDF4 0.9.5-2; depends (numpy ^= 1.6.1, lib_netcdf4 == 4.1.1-1, hdf5 ^= 1.8.5.1)
+  - netCDF4 0.9.8-1; depends (numpy ^= 1.6.1, lib_netcdf4 == 4.1.1-1, hdf5 ^= 1.8.5.1)
+  - netCDF4 0.9.9-1; depends (lib_netcdf4 == 4.1.1-2, numpy ^= 1.6.1, hdf5 ^= 1.8.5.1)
+  - netCDF4 1.0-1; depends (hdf5 ^= 1.8.9, numpy ^= 1.6.1, lib_netcdf4 ^= 4.2)
+  - netCDF4 1.0-4; depends (lib_netcdf4 ^= 4.3.0, hdf5 ^= 1.8.9, numpy ^= 1.7.1)
+  - netCDF4 1.0.5-1; depends (lib_netcdf4 ^= 4.3.0, numpy ^= 1.7.1, hdf5 ^= 1.8.11)
+  - netCDF4 1.0.5-2; depends (lib_netcdf4 ^= 4.3.0, numpy ^= 1.8.0, hdf5 ^= 1.8.11)
+  - netCDF4 1.0.7-1; depends (lib_netcdf4 ^= 4.3.0, numpy ^= 1.8.0, hdf5 ^= 1.8.11)
+  - netCDF4 1.1.0-1; depends (numpy ^= 1.8.0, lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11)
+  - netCDF4 1.1.0-2; depends (lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11, numpy ^= 1.8.1)
+  - netCDF4 1.1.1-1; depends (lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11, numpy ^= 1.8.1)
+  - netCDF4 1.1.1-2; depends (lib_netcdf4 ^= 4.3.2, hdf5 ^= 1.8.11, numpy ^= 1.8.1)
+  - networkx 1.3-2; depends (numpy)
+  - networkx 1.4-1; depends (numpy)
+  - networkx 1.5-1; depends (numpy)
+  - networkx 1.6-1; depends (numpy)
+  - networkx 1.6-2; depends (numpy)
+  - networkx 1.8.1-1; depends (numpy)
+  - networkx 1.8.1-2; depends (numpy)
+  - networkx 1.8.1-3; depends (numpy)
+  - networkx 1.9-1; depends (numpy, decorator ^= 3.4.0)
+  - networkx 1.9.1-1; depends (numpy ^= 1.8.1, decorator ^= 3.4.0)
+  - nltk 2.0.1rc1-1; depends (PyYAML ^= 3.9)
+  - nltk 2.0.1rc1-2; depends (PyYAML)
+  - nltk 2.0.1-1; depends (PyYAML, numpy)
+  - nltk 2.0.1-2; depends (PyYAML, numpy)
+  - nltk 2.0.1-3; depends (PyYAML, numpy)
+  - nltk 2.0.1-4; depends (PyYAML, numpy)
+  - nltk 3.0.0b1-1; depends (PyYAML, numpy)
+  - nltk 3.0.0b2-2; depends (PyYAML, numpy)
+  - nltk 3.0.0-1; depends (PyYAML, numpy)
+  - nose 0.11.4-2
+  - nose 1.0.0-1
+  - nose 1.0.0-2
+  - nose 1.1.2-1
+  - nose 1.2.1-1
+  - nose 1.3.0-1
+  - nose 1.3.3-1
+  - nose 1.3.4-1
+  - numba 0.9.0-1; depends (numpy ^= 1.7.1, llvmpy ^= 0.11.3, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.0)
+  - numba 0.9.0-2; depends (numpy ^= 1.7.1, llvmpy ^= 0.11.3, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.0)
+  - numba 0.10.0-1; depends (numpy ^= 1.7.1, llvmpy ^= 0.11.3, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.1)
+  - numba 0.10.2-1; depends (numpy ^= 1.7.1, Meta ^= 0.4.2.dev, llvmpy ^= 0.12.0, llvmmath
+    ^= 0.1.1)
+  - numba 0.10.2-3; depends (numpy ^= 1.8.0, Meta ^= 0.4.2.dev, llvmpy ^= 0.12.0, llvmmath
+    ^= 0.1.1)
+  - numba 0.11.1-1; depends (numpy ^= 1.8.0, llvmpy ^= 0.12.1, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.1)
+  - numba 0.13.0-1; depends (numpy ^= 1.8.0, llvmpy ^= 0.12.1, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.1)
+  - numba 0.13.2-1; depends (llvmpy ^= 0.12.6, numpy ^= 1.8.0, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.1)
+  - numba 0.13.2-4; depends (llvmpy ^= 0.12.6, numpy ^= 1.8.1, Meta ^= 0.4.2.dev, llvmmath
+    ^= 0.1.1)
+  - numba 0.13.4-1; depends (llvmpy ^= 0.12.7, numpy ^= 1.8.1, llvmmath ^= 0.1.2, Meta
+    ^= 0.4.2.dev)
+  - numba 0.14.0-1; depends (llvmpy ^= 0.12.7, numpy ^= 1.8.1, llvmmath ^= 0.1.2, Meta
+    ^= 0.4.2.dev)
+  - numba 0.14.0-2; depends (llvmpy ^= 0.12.7, numpy ^= 1.8.1, Meta ^= 0.4.2.dev2, llvmmath
+    ^= 0.1.2)
+  - numba 0.15.1-1; depends (llvmpy ^= 0.12.7, numpy ^= 1.8.1, Meta ^= 0.4.2.dev2, llvmmath
+    ^= 0.1.2)
+  - numexpr 1.4.1-2; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - numexpr 1.4.2-1; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - numexpr 1.4.2-2; depends (numpy ^= 1.6.0, MKL ^= 10.3)
+  - numexpr 1.4.2-3; depends (numpy ^= 1.6.1, MKL ^= 10.3)
+  - numexpr 2.0-1; depends (numpy ^= 1.6.1, MKL ^= 10.3)
+  - numexpr 2.0.1-1; depends (numpy ^= 1.6.1, MKL ^= 10.3)
+  - numexpr 2.0.1-3; depends (numpy ^= 1.7.1, MKL ^= 10.3)
+  - numexpr 2.2.2-1; depends (numpy ^= 1.7.1, MKL ^= 10.3)
+  - numexpr 2.2.2-2; depends (numpy ^= 1.8.0, MKL ^= 10.3)
+  - numexpr 2.4.0-1; depends (numpy ^= 1.8.0, MKL ^= 10.3)
+  - numexpr 2.4.0-2; depends (numpy ^= 1.8.1, MKL ^= 10.3)
+  - numpy 1.5.1-1; depends (MKL == 10.3-1)
+  - numpy 1.5.1-2; depends (MKL == 10.3-1)
+  - numpy 1.6.0b2-1; depends (MKL == 10.3-1)
+  - numpy 1.6.0-1; depends (MKL == 10.3-1)
+  - numpy 1.6.0-1
+  - numpy 1.6.0-2; depends (MKL == 10.3-1)
+  - numpy 1.6.0-3; depends (MKL == 10.3-1)
+  - numpy 1.6.0-4; depends (MKL == 10.3-1)
+  - numpy 1.6.0-5; depends (MKL == 10.3-1)
+  - numpy 1.6.1-1; depends (MKL == 10.3-1)
+  - numpy 1.6.1-2; depends (MKL == 10.3-1)
+  - numpy 1.6.1-3; depends (MKL == 10.3-1)
+  - numpy 1.6.1-5; depends (MKL == 10.3-1)
+  - numpy 1.7.1-1; depends (MKL == 10.3-1)
+  - numpy 1.7.1-2; depends (MKL == 10.3-1)
+  - numpy 1.7.1-3; depends (MKL == 10.3-1)
+  - numpy 1.8.0-1; depends (MKL == 10.3-1)
+  - numpy 1.8.0-2; depends (MKL == 10.3-1)
+  - numpy 1.8.0-3; depends (MKL == 10.3-1)
+  - numpy 1.8.1-1; depends (MKL == 10.3-1)
+  - numpydoc 0.5-1; depends (numpy ^= 1.8.1, matplotlib ^= 1.4.2, Sphinx ^= 1.2.3)
+  - okonomiyaki 0.2.1-1
+  - okonomiyaki 0.3.1-1
+  - okonomiyaki 0.3.2-1
+  - okonomiyaki 0.3.3-1
+  - opencv 2.4.5-2; depends (numpy ^= 1.7.1)
+  - opencv 2.4.5-3; depends (numpy ^= 1.8.0)
+  - opencv 2.4.5-4; depends (numpy ^= 1.8.0, libpng ^= 1.6.12)
+  - opencv 2.4.5-5; depends (numpy ^= 1.8.1, libpng ^= 1.6.12)
+  - opencv 2.4.9-1; depends (numpy ^= 1.8.1, libpng ^= 1.6.12)
+  - OpenOpt 0.28-2; depends (numpy)
+  - openpyxl 1.5.8-1
+  - openpyxl 1.8.5-1
+  - openpyxl 2.0.3-1; depends (jdcal ^= 1.0.0)
+  - OWSLib 0.8.8-1; depends (python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, lxml ^= 3.3.6)
+  - OWSLib 0.8.8-2; depends (python_dateutil ^= 2.2.0, lxml ^= 3.4.0, pytz ^= 2013.8.0)
+  - OWSLib 0.8.8-3; depends (python_dateutil ^= 2.2.0, pytz ^= 2014.9.0, lxml ^= 3.4.0)
+  - OWSLib 0.8.8-4; depends (python_dateutil ^= 2.2.0, pytz ^= 2014.9.0, lxml ^= 3.4.1)
+  - pandas 0.2-2; depends (python_dateutil, numpy ^= 1.5.1, scikits.statsmodels)
+  - pandas 0.2-3; depends (python_dateutil, numpy ^= 1.5.1, scikits.statsmodels)
+  - pandas 0.3.0-1; depends (python_dateutil, numpy ^= 1.5.1, scikits.statsmodels)
+  - pandas 0.3.0-2; depends (python_dateutil, numpy ^= 1.6.0, scikits.statsmodels)
+  - pandas 0.3.0-3; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.4.3-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.6.1-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.7.0-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.7.1-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.7.2-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.7.3-1; depends (python_dateutil, numpy ^= 1.6.1, scikits.statsmodels)
+  - pandas 0.7.3-2; depends (statsmodels, python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.8.0rc2-1; depends (statsmodels, python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.9.0-1; depends (statsmodels, python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.9.1-1; depends (python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.10.0-1; depends (python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.10.1-1; depends (python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.11.0-1; depends (python_dateutil, numpy ^= 1.6.1)
+  - pandas 0.11.0-2; depends (numpy ^= 1.7.1, python_dateutil)
+  - pandas 0.11.0-3; depends (numpy ^= 1.7.1, python_dateutil)
+  - pandas 0.12.0-1; depends (numpy ^= 1.7.1, python_dateutil)
+  - pandas 0.12.0-2; depends (numpy ^= 1.7.1, python_dateutil, pytz ^= 2011n)
+  - pandas 0.12.0-3; depends (python_dateutil, numpy ^= 1.8.0, pytz ^= 2011n)
+  - pandas 0.12.0-4; depends (python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, numpy ^= 1.8.0)
+  - pandas 0.13.1-1; depends (python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, numpy ^= 1.8.0)
+  - pandas 0.14.0-1; depends (python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, numpy ^= 1.8.0)
+  - pandas 0.14.1-1; depends (python_dateutil ^= 2.2.0, pytz ^= 2013.8.0, numpy ^= 1.8.0)
+  - pandas 0.14.1-2; depends (python_dateutil ^= 2.2.0, numpy ^= 1.8.1, pytz ^= 2013.8.0)
+  - pandas 0.14.1-3; depends (python_dateutil ^= 2.2.0, distribute ^= 0.6.49, numpy
+    ^= 1.8.1, pytz ^= 2013.8.0)
+  - pandas 0.15.0-1; depends (python_dateutil ^= 2.2.0, distribute ^= 0.6.49, numpy
+    ^= 1.8.1, pytz ^= 2013.8.0)
+  - pandas 0.15.0-2; depends (python_dateutil ^= 2.2.0, distribute ^= 0.6.49, numpy
+    ^= 1.8.1, pytz ^= 2014.9.0)
+  - pandas 0.15.1-1; depends (python_dateutil ^= 2.2.0, distribute ^= 0.6.49, numpy
+    ^= 1.8.1, pytz ^= 2014.9.0)
+  - pandas 0.15.2-1; depends (python_dateutil ^= 2.2.0, distribute ^= 0.6.49, numpy
+    ^= 1.8.1, pytz ^= 2014.9.0)
+  - pandasql 0.3.1-1; depends (pandas ^= 0.12.0, sqlparse ^= 0.1.8)
+  - pandasql 0.3.1-2; depends (sqlparse ^= 0.1.8, pandas ^= 0.13.1)
+  - pandasql 0.4.3-1; depends (sqlparse ^= 0.1.11, pandas ^= 0.14.0)
+  - pandasql 0.4.3-2; depends (sqlparse ^= 0.1.11, pandas ^= 0.14.1)
+  - pandasql 0.6.1-1; depends (pandas ^= 0.14.1)
+  - pandasql 0.6.1-2; depends (pandas ^= 0.15.0)
+  - pandasql 0.6.1-3; depends (pandas ^= 0.15.1)
+  - pandasql 0.6.1-4; depends (pandas ^= 0.15.2)
+  - paramiko 1.7.6-4; depends (pycrypto)
+  - paramiko 1.7.7.1-1; depends (pycrypto)
+  - paramiko 1.10.1-2; depends (pycrypto ^= 2.6.1)
+  - paramiko 1.14.0-1; depends (pycrypto ^= 2.6.1, ecdsa ^= 0.11.0)
+  - paramiko 1.15.1-1; depends (pycrypto ^= 2.6.1, ecdsa ^= 0.11.0)
+  - passlib 1.6.2-1; depends (bcrypt ^= 1.0.2)
+  - paste 1.7.5.1-1
+  - pastedeploy 1.5.2-1; depends (paste ^= 1.7.5.1)
+  - patchelf 0.8-1
+  - patsy 0.2.0-1
+  - patsy 0.3.0-1
+  - pbr 0.10.0-1
+  - pep8 0.6.1-1
+  - pep8 1.0.1-1
+  - pep8 1.4.6-1
+  - pep8 1.4.6-2
+  - pep8 1.5.7-1
+  - PIL 1.1.7-3; depends (freetype ^= 2.4.4)
+  - PIL 1.1.7-4; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - PIL 1.1.7-10; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - PIL 1.1.7-12; depends (libjpeg ^= 7.0, freetype ^= 2.4.4)
+  - PIL 1.1.7-13; depends (libjpeg ^= 7.0, freetype ^= 2.5.3)
+  - PIL 1.1.7-14; depends (libjpeg ^= 7.0, freetype ^= 2.5.3)
+  - pip 1.5.6-1
+  - plotly 1.3.0-1; depends (six ^= 1.8.0, matplotlib ^= 1.4.0, requests ^= 2.4.3)
+  - plotly 1.3.0-2; depends (six ^= 1.8.0, requests ^= 2.4.3, matplotlib ^= 1.4.2)
+  - plotly 1.3.0-3; depends (six ^= 1.8.0, matplotlib ^= 1.4.2, requests ^= 2.5.0)
+  - plotly 1.4.14-1; depends (six ^= 1.8.0, matplotlib ^= 1.4.2, requests ^= 2.5.0)
+  - ply 3.3-3
+  - ply 3.4-1
+  - portaudio 19-4
+  - pretend 1.0.8-1
+  - prettyplotlib 0.1.3-2; depends (matplotlib ^= 1.3.1, brewer2mpl ^= 1.3.1)
+  - prettyplotlib 0.1.7-1; depends (matplotlib ^= 1.3.1, brewer2mpl ^= 1.4.0)
+  - prettyplotlib 0.1.7-2; depends (matplotlib ^= 1.4.0, brewer2mpl ^= 1.4.0)
+  - prettyplotlib 0.1.7-3; depends (matplotlib ^= 1.4.2, brewer2mpl ^= 1.4.0)
+  - progressbar 2.3-1
+  - protobuf 2.4.0a0-1
+  - protobuf 2.4.1-1
+  - protobuf 2.4.1-2
+  - protobuf_python 2.4.1-1; depends (protobuf ^= 2.4.1)
+  - psutil 0.2.0-1
+  - psutil 0.2.1-1
+  - psutil 0.4.1-1
+  - psutil 1.0.1-1
+  - psutil 1.2.1-2
+  - psutil 2.1.1-1
+  - py 1.4.14-1
+  - py 1.4.18-1
+  - py 1.4.20-1
+  - py 1.4.24-1
+  - py 1.4.25-1
+  - py 1.4.25-2
+  - py 1.4.26-1
+  - pyamg 2.1.0-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - pyamg 2.1.0-2; depends (numpy ^= 1.8.1, scipy ^= 0.14.1rc1)
+  - pyasn1 0.1.7-2
+  - pyaudio 0.2.4-1
+  - pyaudio 0.2.4-3
+  - Pycluster 1.50-2; depends (numpy ^= 1.5.1)
+  - Pycluster 1.50-3; depends (numpy ^= 1.6.0)
+  - Pycluster 1.50-4; depends (numpy ^= 1.6.1)
+  - Pycluster 1.50-5; depends (numpy ^= 1.7.1)
+  - Pycluster 1.50-6; depends (numpy ^= 1.8.0)
+  - Pycluster 1.50-7; depends (numpy ^= 1.8.1)
+  - pycparser 2.10.0-1
+  - pycrypto 2.3-2
+  - pycrypto 2.4.1-1
+  - pycrypto 2.6.1-1
+  - pycurl 7.19.5-1; depends (curl ^= 7.38.0)
+  - pydot 1.0.2-5; depends (pyparsing ^= 1.5.5)
+  - pydot 1.0.25-1; depends (pyparsing ^= 1.5.5)
+  - pydot 1.0.28-1; depends (pyparsing)
+  - pydot 1.0.28-2; depends (pyparsing ^= 2.0.2)
+  - pyephem 3.7.3.4-2
+  - pyephem 3.7.4.1-1
+  - pyephem 3.7.5.1-1
+  - pyephem 3.7.5.3-1
+  - pyface 4.0.0-1
+  - pyface 4.1.0-1
+  - pyface 4.2.0-1
+  - pyface 4.3.0-1
+  - pyface 4.3.0-2; depends (traits ^= 4.3.0)
+  - pyface 4.4.0-1; depends (traits ^= 4.4.0)
+  - pyface 4.4.0-2; depends (traits ^= 4.5.0)
+  - pyfits 2.4.0-1; depends (numpy ^= 1.5.1)
+  - pyfits 2.4.0-2; depends (numpy ^= 1.6.0)
+  - pyfits 2.4.0-3; depends (numpy ^= 1.6.1)
+  - pyfits 3.0.3-1; depends (numpy ^= 1.6.1)
+  - pyfits 3.0.6-1; depends (numpy ^= 1.6.1)
+  - pyfits 3.0.6-2; depends (numpy ^= 1.7.1)
+  - pyfits 3.0.6-3; depends (numpy ^= 1.8.0)
+  - pyfits 3.0.6-4; depends (numpy ^= 1.8.1)
+  - pyfits 3.3-1; depends (numpy ^= 1.8.1)
+  - pyflakes 0.4.0-2
+  - pyflakes 0.4.0-3
+  - pyflakes 0.5.0-1
+  - pyflakes 0.7.3-1
+  - pyflakes 0.7.3-2
+  - pyflakes 0.8.1-1
+  - pygarrayimage 0.0.7-4; depends (PIL, numpy, pyglet)
+  - pygarrayimage 0.0.7-5; depends (PIL, numpy, pyglet)
+  - pygarrayimage 0.0.7-6; depends (PIL, numpy, pyglet)
+  - pygarrayimage 0.0.7-7; depends (PIL, numpy, pyglet)
+  - pyglet 1.1.4-2
+  - Pygments 1.3.1-2
+  - Pygments 1.4-1
+  - Pygments 1.6.0-1
+  - Pygments 2.0.1-1
+  - pygrib 1.9.1-1; depends (pyproj ^= 1.8.9, numpy ^= 1.6.1)
+  - pygrib 1.9.2-1; depends (pyproj ^= 1.8.9, numpy ^= 1.6.1)
+  - pygrib 1.9.2-2; depends (numpy ^= 1.7.1, pyproj ^= 1.9.3)
+  - pygrib 1.9.2-3; depends (numpy ^= 1.8.0, pyproj ^= 1.9.3)
+  - pygrib 1.9.9-1; depends (numpy ^= 1.8.0, pyproj ^= 1.9.3)
+  - pygrib 1.9.9-3; depends (numpy ^= 1.8.1, pyproj ^= 1.9.3, libpng ^= 1.6.12)
+  - pyhdf 0.8.3-4; depends (numpy ^= 1.5.1)
+  - pyhdf 0.8.3-5; depends (numpy ^= 1.6.0)
+  - pyhdf 0.8.3-6; depends (numpy ^= 1.6.1)
+  - pyhdf 0.8.3-8; depends (numpy ^= 1.7.1)
+  - pyhdf 0.8.3-11; depends (numpy ^= 1.8.0)
+  - pyhdf 0.8.3-12; depends (numpy ^= 1.8.1)
+  - pyke 1.1.1-1; depends (htmltemplate ^= 1.5.0, doctest_tools ^= 1.0a3)
+  - pylint 0.23.0-1; depends (logilab_common, logilab_astng)
+  - pylint 0.24.0-1; depends (logilab_common, logilab_astng)
+  - pylint 0.25.0-1; depends (logilab_common, logilab_astng)
+  - pylint 0.25.1-1; depends (logilab_common, logilab_astng)
+  - pymc 2.1b0-1; depends (numpy ^= 1.5.1)
+  - pymc 2.1b0-2; depends (numpy ^= 1.6.0)
+  - pymc 2.1b0-3; depends (numpy)
+  - pymc 2.2.0-2; depends (numpy ^= 1.7.1)
+  - pymc 2.2.0-3; depends (numpy ^= 1.8.0)
+  - pymc 2.3.2-1; depends (numpy ^= 1.8.0)
+  - pymc 2.3.2-3; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - pymc 2.3.3-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - pymc 2.3.3-2; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - pymc 2.3.3-3; depends (numpy ^= 1.8.1, scipy ^= 0.14.1rc1)
+  - pymongo 2.7.2-1
+  - PyMySQL 0.6.2-1
+  - pyodbc 2.1.8-1
+  - pyodbc 3.0.6-1
+  - pyodbc 3.0.7-1
+  - PyOpenGL 3.0.1-2
+  - PyOpenGL 3.1.0-1
+  - pyOpenSSL 0.11-2
+  - pyOpenSSL 0.12-1
+  - pyOpenSSL 0.13-1
+  - pyOpenSSL 0.13.1-1
+  - pyOpenSSL 0.14-1; depends (six ^= 1.8.0, cryptography ^= 0.6.1)
+  - pyparsing 1.5.5-3
+  - pyparsing 1.5.6-1
+  - pyparsing 2.0.2-1
+  - pyproj 1.8.8-2
+  - pyproj 1.8.9-1
+  - pyproj 1.9.0-1
+  - pyproj 1.9.3-1
+  - PyQt 4.10.3-1; depends (sip ^= 4.15.3, Qt ^= 4.8.5)
+  - PyQt 4.11.0-1; depends (sip ^= 4.16.1)
+  - pysal 1.7.0-1; depends (scipy ^= 0.13.3, numpy ^= 1.8.0)
+  - pysal 1.7.0-2; depends (scipy ^= 0.14.0, numpy ^= 1.8.0)
+  - pysal 1.7.0-3; depends (scipy ^= 0.14.0, numpy ^= 1.8.1)
+  - pysal 1.7.0-4; depends (numpy ^= 1.8.1, scipy ^= 0.14.1rc1)
+  - pyserial 2.5-2
+  - pyserial 2.6-1
+  - pyserial 2.7-1
+  - pyshp 1.2.0-1
+  - pyside 1.0.0rc1-1; depends (Qt ^= 4.7.1)
+  - pyside 1.0.2-1; depends (Qt ^= 4.7.2)
+  - PySide 1.0.3-2; depends (Qt ^= 4.7.3)
+  - PySide 1.0.5-1; depends (Qt ^= 4.7.3)
+  - PySide 1.0.7-1; depends (Qt ^= 4.7.3)
+  - PySide 1.1.0-2; depends (Qt ^= 4.7.3)
+  - PySide 1.1.0-3; depends (Qt ^= 4.7.3)
+  - PySide 1.2.1-1; depends (shiboken ^= 1.2.1, Qt ^= 4.8.5)
+  - PySide 1.2.1-2; depends (shiboken ^= 1.2.1, Qt ^= 4.8.5)
+  - PySide 1.2.2-1; depends (shiboken ^= 1.2.2, Qt ^= 4.8.5)
+  - pysparse 1.2.dev203-2; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - pysparse 1.2.dev213-1; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - pysparse 1.2.dev213-5; depends (numpy, MKL ^= 10.3)
+  - pysparse 1.2.dev213-6; depends (numpy, MKL ^= 10.3)
+  - pysparse 1.2.dev213-7; depends (numpy, MKL ^= 10.3)
+  - pytables 2.2.1-1; depends (numpy ^= 1.5.1, hdf5 ^= 1.8.5.1, numexpr ^= 1.4.2)
+  - pytables 2.2.1-2; depends (hdf5 ^= 1.8.5.1, numpy ^= 1.6.0, numexpr ^= 1.4.2)
+  - pytables 2.3b1.dev4669-1; depends (hdf5 ^= 1.8.5.1, numpy ^= 1.6.0, numexpr ^= 1.4.2)
+  - pytables 2.3b1.dev4669-2; depends (numpy ^= 1.6.1, hdf5 ^= 1.8.5.1, numexpr ^= 1.4.2)
+  - pytables 2.3-1; depends (numpy ^= 1.6.1, hdf5 ^= 1.8.5.1, numexpr ^= 1.4.2)
+  - pytables 2.3.1-1; depends (numpy ^= 1.6.1, hdf5 ^= 1.8.5.1, numexpr ^= 1.4.2)
+  - pytables 2.3.1-2; depends (numpy ^= 1.6.1, numexpr ^= 2.0, hdf5 ^= 1.8.5.1)
+  - pytables 2.3.1-3; depends (numpy ^= 1.6.1, numexpr ^= 2.0.1, hdf5 ^= 1.8.5.1)
+  - pytables 2.3.1-4; depends (hdf5 ^= 1.8.9, numexpr ^= 2.0.1, numpy ^= 1.6.1)
+  - pytables 2.3.1-6; depends (hdf5 ^= 1.8.9, numexpr ^= 2.0.1, numpy ^= 1.7.1)
+  - pytables 2.4.0-1; depends (hdf5 ^= 1.8.9, numexpr ^= 2.0.1, numpy ^= 1.7.1)
+  - pytables 2.4.0-2; depends (hdf5 ^= 1.8.9, numexpr ^= 2.0.1, numpy ^= 1.7.1)
+  - pytables 2.4.0-3; depends (numexpr ^= 2.0.1, numpy ^= 1.7.1, hdf5 ^= 1.8.11)
+  - pytables 2.4.0-4; depends (numpy ^= 1.7.1, numexpr ^= 2.2.2, hdf5 ^= 1.8.11)
+  - pytables 2.4.0-5; depends (numpy ^= 1.8.0, numexpr ^= 2.2.2, hdf5 ^= 1.8.11)
+  - pytables 3.1.1-1; depends (numpy ^= 1.8.0, hdf5 ^= 1.8.11, numexpr ^= 2.4.0)
+  - pytables 3.1.1-3; depends (numpy ^= 1.8.1, hdf5 ^= 1.8.11, numexpr ^= 2.4.0)
+  - pytables 3.1.1-4; depends (numpy ^= 1.8.1, hdf5 ^= 1.8.11, numexpr ^= 2.4.0)
+  - pytest 2.3.5-1; depends (py)
+  - pytest 2.4.2-1; depends (py ^= 1.4.18)
+  - pytest 2.5.2-1; depends (py ^= 1.4.20)
+  - pytest 2.6.2-2; depends (py ^= 1.4.24)
+  - pytest 2.6.3-1; depends (py ^= 1.4.25)
+  - pytest 2.6.3-2; depends (py ^= 1.4.25)
+  - pytest 2.6.4-1; depends (py ^= 1.4.26)
+  - python_dateutil 1.5-2
+  - python_dateutil 2.2.0-1; depends (six ^= 1.3.0)
+  - python_dateutil 2.2.0-2; depends (six ^= 1.4.1)
+  - python_dateutil 2.2.0-3; depends (six ^= 1.7.2)
+  - python_dateutil 2.2.0-4; depends (six ^= 1.7.3)
+  - python_dateutil 2.2.0-5; depends (six ^= 1.8.0)
+  - python_sybase 0.39-1
+  - PythonDoc 2.7.3-1; depends (appinst)
+  - pytz 2010o-1
+  - pytz 2011e-1
+  - pytz 2011g-1
+  - pytz 2011k-1
+  - pytz 2011n-1
+  - pytz 2013.8.0-1
+  - pytz 2014.9.0-1
+  - PyVISA 1.3-3
+  - PyVISA 1.6.1-1; depends (enum34 ^= 1.0.3)
+  - PyVISA 1.6.1-2; depends (enum34 ^= 1.0.4)
+  - PyYAML 3.9-2; depends (libYAML ^= 0.1.3)
+  - PyYAML 3.10-1; depends (libYAML ^= 0.1.4)
+  - PyYAML 3.11-1; depends (libYAML ^= 0.1.4)
+  - pyzmq 2.0.10-2; depends (zeromq ^= 2.0.10)
+  - pyzmq 2.0.10.1-1; depends (zeromq ^= 2.0.10)
+  - pyzmq 2.0.10.1-2; depends (zeromq ^= 2.0.10)
+  - pyzmq 2.1.1-1; depends (zeromq ^= 2.1.1)
+  - pyzmq 2.1.4-1; depends (zeromq ^= 2.1.4)
+  - pyzmq 2.1.7-1; depends (zeromq ^= 2.1.7)
+  - pyzmq 2.1.9-1
+  - pyzmq 2.1.10-1
+  - pyzmq 2.1.11-1
+  - pyzmq 2.2.0-1
+  - pyzmq 2.2.0-2
+  - pyzmq 2.2.0-3
+  - pyzmq 2.2.0-4
+  - pyzmq 14.1.1-1; depends (zeromq ^= 3.2.4)
+  - pyzmq 14.3.1-1; depends (zeromq ^= 4.0.4)
+  - pyzmq 14.4.1-1; depends (zeromq ^= 4.0.4)
+  - Qt 4.7.1-1
+  - Qt 4.7.2-1
+  - Qt 4.7.3-1
+  - Qt 4.7.3-2
+  - Qt 4.8.5-6; depends (gst_plugins_base ^= 0.10.36)
+  - Qt 4.8.5-9; depends (gst_plugins_base ^= 0.10.36)
+  - Qt 4.8.5-10; depends (gst_plugins_base ^= 0.10.36)
+  - queuelib 1.2.2-1
+  - redis 2.6.16-1
+  - redis_py 2.8.0-1
+  - redis_py 2.10.3-1
+  - Reportlab 2.5-2; depends (freetype ^= 2.4.4)
+  - Reportlab 3.1.8-1; depends (freetype ^= 2.4.4)
+  - requests 1.2.3-1
+  - requests 2.2.1-1
+  - requests 2.3.0-1
+  - requests 2.4.0-1
+  - requests 2.4.1-1
+  - requests 2.4.3-1
+  - requests 2.5.0-1
+  - requests 2.5.1-1
+  - responses 0.3.0-1; depends (requests ^= 2.5.0)
+  - rsa 3.1.2-2; depends (pyasn1 ^= 0.1.7)
+  - ScientificPython 2.9.0-2; depends (lib_netcdf3 ^= 3.6.2, numpy ^= 1.5.1)
+  - ScientificPython 2.9.0-3; depends (lib_netcdf3 ^= 3.6.2, numpy ^= 1.6.0)
+  - ScientificPython 2.9.0-6; depends (lib_netcdf4 ^= 4.3.0, numpy ^= 1.7.1)
+  - ScientificPython 2.9.0-8; depends (lib_netcdf4 ^= 4.3.0, numpy ^= 1.8.0)
+  - ScientificPython 2.9.0-10; depends (lib_netcdf4 ^= 4.3.2, numpy ^= 1.8.1)
+  - ScientificPython 2.9.0-11; depends (lib_netcdf4 ^= 4.3.2, numpy ^= 1.8.1)
+  - scikit_learn 0.9-1; depends (scipy, numpy ^= 1.6.1, MKL ^= 10.3)
+  - scikit_learn 0.10-1; depends (scipy, numpy ^= 1.6.1, MKL ^= 10.3)
+  - scikit_learn 0.11-1; depends (scipy, numpy ^= 1.6.1, MKL ^= 10.3)
+  - scikit_learn 0.13.1-1; depends (scipy, numpy ^= 1.6.1, MKL ^= 10.3)
+  - scikit_learn 0.13.1-4; depends (numpy ^= 1.7.1, scipy, MKL ^= 10.3)
+  - scikit_learn 0.14.1-1; depends (numpy ^= 1.7.1, scipy, MKL ^= 10.3)
+  - scikit_learn 0.14.1-2; depends (numpy ^= 1.7.1, scipy ^= 0.13.0, MKL ^= 10.3)
+  - scikit_learn 0.14.1-3; depends (scipy ^= 0.13.0, numpy ^= 1.8.0, MKL ^= 10.3)
+  - scikit_learn 0.14.1-4; depends (scipy ^= 0.13.2, numpy ^= 1.8.0, MKL ^= 10.3)
+  - scikit_learn 0.14.1-5; depends (scipy ^= 0.13.3, numpy ^= 1.8.0, MKL ^= 10.3)
+  - scikit_learn 0.14.1-6; depends (scipy ^= 0.14.0, numpy ^= 1.8.0, MKL ^= 10.3)
+  - scikit_learn 0.15.0-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.0, MKL ^= 10.3)
+  - scikit_learn 0.15.0-2; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, MKL ^= 10.3)
+  - scikit_learn 0.15.1-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, MKL ^= 10.3)
+  - scikit_learn 0.15.2-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, MKL ^= 10.3)
+  - scikit_learn 0.15.2-2; depends (numpy ^= 1.8.1, scipy ^= 0.14.1rc1, MKL ^= 10.3)
+  - scikits.image 0.2.2-2; depends (numpy ^= 1.5.1, PIL)
+  - scikits.image 0.2.2-3; depends (PIL, numpy ^= 1.6.0)
+  - scikits.image 0.2.2-4; depends (PIL, numpy)
+  - scikits.image 0.3.1-1; depends (PIL, numpy)
+  - scikits.image 0.4.2-1; depends (PIL, numpy)
+  - scikits.image 0.5.0-1; depends (PIL, numpy)
+  - scikits.image 0.8.2-1; depends (PIL, numpy ^= 1.6.1, scipy ^= 0.12.0)
+  - scikits.image 0.8.2-2; depends (numpy ^= 1.7.1, PIL, scipy ^= 0.12.0)
+  - scikits.image 0.8.2-3; depends (numpy ^= 1.7.1, PIL, scipy ^= 0.12.0)
+  - scikits.image 0.8.2-4; depends (numpy ^= 1.7.1, scipy ^= 0.13.0, PIL)
+  - scikits.image 0.9.3-1; depends (scipy ^= 0.13.0, numpy ^= 1.8.0, PIL)
+  - scikits.image 0.9.3-3; depends (scipy ^= 0.13.2, numpy ^= 1.8.0, PIL)
+  - scikits.image 0.9.3-4; depends (scipy ^= 0.13.3, numpy ^= 1.8.0, PIL)
+  - scikits.image 0.9.3-5; depends (scipy ^= 0.14.0, numpy ^= 1.8.0, PIL)
+  - scikits.image 0.10.0-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.0, PIL)
+  - scikits.image 0.10.0-3; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, PIL)
+  - scikits.image 0.10.1-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, PIL)
+  - scikits.image 0.10.1-3; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, PIL)
+  - scikits.image 0.10.1-4; depends (numpy ^= 1.8.1, PIL, scipy ^= 0.14.1rc1)
+  - scikits.learn 0.6-1; depends (numpy ^= 1.5.1)
+  - scikits.learn 0.7.1-1; depends (numpy ^= 1.5.1, MKL ^= 10.3)
+  - scikits.learn 0.7.1-2; depends (scipy, numpy ^= 1.6.0, MKL ^= 10.3)
+  - scikits.learn 0.8-1; depends (scipy, numpy ^= 1.6.0, MKL ^= 10.3)
+  - scikits.learn 0.8-2; depends (scipy, numpy ^= 1.6.1, MKL ^= 10.3)
+  - scikits.rsformats 0.1-6; depends (pyhdf ^= 0.8.3, pyparsing, numpy ^= 1.5.1)
+  - scikits.rsformats 0.1-7; depends (pyhdf ^= 0.8.3, pyparsing, numpy ^= 1.6.0)
+  - scikits.rsformats 0.1-9; depends (numpy ^= 1.7.1, pyparsing, pyhdf ^= 0.8.3)
+  - scikits.rsformats 0.1-10; depends (pyhdf ^= 0.8.3, pyparsing, numpy ^= 1.8.0)
+  - scikits.rsformats 0.1-11; depends (pyhdf ^= 0.8.3, numpy ^= 1.8.0, pyparsing ^=
+    2.0.2)
+  - scikits.rsformats 0.1-12; depends (pyhdf ^= 0.8.3, numpy ^= 1.8.1, pyparsing ^=
+    2.0.2)
+  - scikits.statsmodels 0.2.0-2
+  - scikits.statsmodels 0.3.0-1
+  - scikits.statsmodels 0.3.1-1
+  - scikits.timeseries 0.91.3-2; depends (numpy ^= 1.5.1)
+  - scikits.timeseries 0.91.3-3; depends (numpy ^= 1.6.0)
+  - scikits.timeseries 0.91.3-4; depends (numpy ^= 1.6.1)
+  - scikits.timeseries 0.91.3-5; depends (numpy ^= 1.7.1)
+  - scikits.timeseries 0.91.3-6; depends (numpy ^= 1.8.0)
+  - scikits.timeseries 0.91.3-7; depends (numpy ^= 1.8.1)
+  - SciMath 3.0.7-1; depends (numpy ^= 1.5.1)
+  - scimath 4.0.0-1; depends (numpy ^= 1.6.0)
+  - scimath 4.0.0-2; depends (numpy ^= 1.6.1)
+  - scimath 4.0.1-1; depends (numpy ^= 1.6.1)
+  - scimath 4.1.0-1; depends (numpy ^= 1.6.1)
+  - scimath 4.1.2-1; depends (numpy ^= 1.6.1)
+  - scimath 4.1.2-2; depends (numpy ^= 1.7.1)
+  - scimath 4.1.2-3; depends (numpy ^= 1.8.0)
+  - scimath 4.1.2-4; depends (numpy ^= 1.8.1)
+  - scipy 0.9.0rc2-1; depends (numpy ^= 1.5.1)
+  - scipy 0.9.0-1; depends (numpy ^= 1.5.1)
+  - scipy 0.9.0-2; depends (numpy ^= 1.6.0)
+  - scipy 0.9.0-3; depends (numpy ^= 1.6.1)
+  - scipy 0.10.0-1; depends (numpy ^= 1.6.1)
+  - scipy 0.10.1-1; depends (numpy ^= 1.6.1)
+  - scipy 0.11.0-1; depends (numpy ^= 1.6.1)
+  - scipy 0.12.0-1; depends (numpy ^= 1.6.1)
+  - scipy 0.12.0-2; depends (numpy ^= 1.7.1)
+  - scipy 0.13.0-1; depends (numpy ^= 1.7.1, libgfortran ^= 3.0.0)
+  - scipy 0.13.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+  - scipy 0.13.2-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+  - scipy 0.13.3-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+  - scipy 0.14.0-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+  - scipy 0.14.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+  - scipy 0.14.0-3; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0)
+  - scipy 0.14.1rc1-1; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0, MKL ^= 10.3)
+  - scons 2.0.1-2
+  - scons 2.3.3-1
+  - Scrapy 0.24.4-2; depends (pyOpenSSL ^= 0.14, w3lib ^= 1.10.0, Twisted ^= 14.0.2,
+    lxml ^= 3.4.0, cffi ^= 0.8.6, cssselect ^= 0.9.1, six ^= 1.8.0, queuelib ^= 1.2.2)
+  - Scrapy 0.24.4-3; depends (pyOpenSSL ^= 0.14, w3lib ^= 1.10.0, Twisted ^= 14.0.2,
+    lxml ^= 3.4.1, cffi ^= 0.8.6, cssselect ^= 0.9.1, six ^= 1.8.0, queuelib ^= 1.2.2)
+  - seaborn 0.4.0-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, matplotlib ^= 1.4.2,
+    pandas ^= 0.15.0)
+  - seaborn 0.5.0-1; depends (scipy ^= 0.14.0, numpy ^= 1.8.1, matplotlib ^= 1.4.2,
+    pandas ^= 0.15.0)
+  - seaborn 0.5.0-3; depends (pandas ^= 0.15.2, scipy ^= 0.14.0, numpy ^= 1.8.1, matplotlib
+    ^= 1.4.2)
+  - seaborn 0.5.1-1; depends (pandas ^= 0.15.2, scipy ^= 0.14.0, numpy ^= 1.8.1, matplotlib
+    ^= 1.4.2)
+  - seaborn 0.5.1-2; depends (pandas ^= 0.15.2, numpy ^= 1.8.1, matplotlib ^= 1.4.2,
+    scipy ^= 0.14.1rc1)
+  - sfepy 2010.2-4; depends (pyparsing ^= 2.0.2)
+  - sfepy 2014.4-1; depends (sympy ^= 0.7.6, numpy ^= 1.8.1, pyparsing ^= 2.0.2, scipy
+    ^= 0.14.1rc1, pytables ^= 3.1.1, matplotlib ^= 1.4.2, mayavi ^= 4.3.1)
+  - Shapely 1.2.14-1; depends (basemap ^= 1.0.2)
+  - Shapely 1.2.17-1; depends (basemap ^= 1.0.6)
+  - Shapely 1.2.17-2; depends (basemap ^= 1.0.7)
+  - Shapely 1.3.2-1; depends (basemap ^= 1.0.7)
+  - Shapely 1.4.1-1; depends (geos ^= 3.4.2)
+  - Shapely 1.5.1-1; depends (geos ^= 3.4.2)
+  - shiboken 1.2.1-1; depends (libxslt ^= 1.1.26, Qt ^= 4.8.5)
+  - shiboken 1.2.1-3; depends (libxslt ^= 1.1.26, Qt ^= 4.8.5)
+  - shiboken 1.2.2-1; depends (libxslt ^= 1.1.26, Qt ^= 4.8.5)
+  - shiboken 1.2.2-2; depends (Qt ^= 4.8.5, libxslt ^= 1.1.28)
+  - SimPy 2.1.0-2; depends (numpy)
+  - SimPy 2.2-1; depends (numpy)
+  - SimPy 2.2-2; depends (numpy)
+  - SimPy 2.2-3; depends (numpy)
+  - simpy 3.0.2-1
+  - simpy 3.0.5-1
+  - sip 4.15.3-1
+  - sip 4.16.1-1
+  - six 1.3.0-1
+  - six 1.4.1-1
+  - six 1.7.2-1
+  - six 1.7.3-1
+  - six 1.8.0-1
+  - six 1.8.0-2
+  - Sphinx 1.0.5-1; depends (Jinja2 ^= 2.5.5, docutils ^= 0.7)
+  - Sphinx 1.0.7-1; depends (Jinja2 ^= 2.5.5, docutils ^= 0.7)
+  - Sphinx 1.1-1; depends (Jinja2 ^= 2.6, docutils ^= 0.8.1)
+  - Sphinx 1.1.2-1; depends (Jinja2 ^= 2.6, docutils ^= 0.8.1)
+  - Sphinx 1.1.2-3; depends (Jinja2 ^= 2.7.1, docutils ^= 0.11)
+  - Sphinx 1.1.3-1; depends (Jinja2 ^= 2.7.1, docutils ^= 0.11)
+  - Sphinx 1.2.2-1; depends (Jinja2 ^= 2.7.1, docutils ^= 0.11)
+  - Sphinx 1.2.2-2; depends (Jinja2 ^= 2.7.3, docutils ^= 0.11)
+  - Sphinx 1.2.2-3; depends (Jinja2 ^= 2.7.3, docutils ^= 0.12)
+  - Sphinx 1.2.3-1; depends (Jinja2 ^= 2.7.3, docutils ^= 0.12)
+  - SQLAlchemy 0.6.5-1
+  - SQLAlchemy 0.6.6-1
+  - SQLAlchemy 0.7.0-1
+  - SQLAlchemy 0.7.1-1
+  - SQLAlchemy 0.7.4-1
+  - SQLAlchemy 0.7.5-1
+  - SQLAlchemy 0.7.6-1
+  - SQLAlchemy 0.8.2-1
+  - SQLAlchemy 0.8.3-1
+  - SQLAlchemy 0.9.4-1
+  - SQLAlchemy 0.9.7-1
+  - SQLAlchemy 0.9.8-1
+  - sqlparse 0.1.8-1
+  - sqlparse 0.1.11-1
+  - sqlparse 0.1.12-1
+  - sqlparse 0.1.14-1
+  - ssl_match_hostname 3.4.0.2-1
+  - statsmodels 0.4.0-1; depends (scipy)
+  - statsmodels 0.4.3-1; depends (scipy)
+  - statsmodels 0.4.3-2; depends (scipy)
+  - statsmodels 0.4.3-3; depends (pandas ^= 0.12.0, scipy)
+  - statsmodels 0.5.0-1; depends (pandas ^= 0.12.0, patsy ^= 0.2.0, scipy)
+  - statsmodels 0.5.0-2; depends (pandas ^= 0.12.0, patsy ^= 0.2.0, scipy ^= 0.13.0)
+  - statsmodels 0.5.0-4; depends (scipy ^= 0.13.2, pandas ^= 0.12.0, patsy ^= 0.2.0)
+  - statsmodels 0.5.0-5; depends (scipy ^= 0.13.2, patsy ^= 0.2.0, pandas ^= 0.13.1)
+  - statsmodels 0.5.0-6; depends (scipy ^= 0.13.3, patsy ^= 0.2.0, pandas ^= 0.13.1)
+  - statsmodels 0.5.0-7; depends (scipy ^= 0.14.0, patsy ^= 0.2.0, pandas ^= 0.13.1)
+  - statsmodels 0.5.0-8; depends (scipy ^= 0.14.0, patsy ^= 0.2.0, pandas ^= 0.14.0)
+  - statsmodels 0.5.0-10; depends (scipy ^= 0.14.0, patsy ^= 0.2.0, pandas ^= 0.14.1)
+  - statsmodels 0.5.0-11; depends (scipy ^= 0.14.0, pandas ^= 0.14.1, patsy ^= 0.3.0)
+  - statsmodels 0.6.0rc1-1; depends (scipy ^= 0.14.0, pandas ^= 0.15.0, patsy ^= 0.3.0)
+  - statsmodels 0.6.0-1; depends (scipy ^= 0.14.0, pandas ^= 0.15.0, patsy ^= 0.3.0)
+  - statsmodels 0.6.0-2; depends (scipy ^= 0.14.0, pandas ^= 0.15.1, patsy ^= 0.3.0)
+  - statsmodels 0.6.1-1; depends (scipy ^= 0.14.0, pandas ^= 0.15.1, patsy ^= 0.3.0)
+  - statsmodels 0.6.1-2; depends (pandas ^= 0.15.2, scipy ^= 0.14.0, patsy ^= 0.3.0)
+  - statsmodels 0.6.1-3; depends (pandas ^= 0.15.2, scipy ^= 0.14.1rc1, patsy ^= 0.3.0)
+  - stevedore 1.1.0-1
+  - supervisor 3.0-1; depends (meld3 ^= 0.6.10)
+  - supervisor 3.1.2-1; depends (meld3 ^= 1.0.0)
+  - swig 1.3.36-3
+  - swig 1.3.39-1
+  - swig 1.3.40-1
+  - swig 1.3.40-2
+  - swig 2.0.12-1
+  - swig 3.0.2-1
+  - sympy 0.6.7-2; depends (pyglet)
+  - sympy 0.7.0-1; depends (pyglet)
+  - sympy 0.7.1-1; depends (pyglet)
+  - sympy 0.7.2-1; depends (pyglet)
+  - sympy 0.7.3-1; depends (pyglet)
+  - sympy 0.7.5-1; depends (pyglet)
+  - sympy 0.7.6-1; depends (pyglet)
+  - tabulate 0.7.3-1
+  - toolz 0.7.0-1
+  - toolz 0.7.1-1
+  - tornado 2.1-1
+  - tornado 2.1.1-1
+  - tornado 2.2-1
+  - tornado 3.1.1-1
+  - tornado 3.2.2-1; depends (ssl_match_hostname ^= 3.4.0.2)
+  - tornado 4.0.1-1; depends (ssl_match_hostname ^= 3.4.0.2)
+  - tornado 4.0.2-1; depends (ssl_match_hostname ^= 3.4.0.2)
+  - tornado 4.0.2-2; depends (ssl_match_hostname ^= 3.4.0.2)
+  - Traits 3.6.0-1; depends (numpy ^= 1.5.1)
+  - traits 4.0.0-1; depends (numpy ^= 1.6.0)
+  - traits 4.0.0-2; depends (numpy ^= 1.6.1)
+  - traits 4.1.0-1; depends (numpy ^= 1.6.1)
+  - traits 4.2.0-1; depends (numpy ^= 1.6.1)
+  - traits 4.3.0-1; depends (numpy ^= 1.6.1)
+  - traits 4.3.0-2; depends (numpy ^= 1.7.1)
+  - traits 4.3.0-3; depends (numpy ^= 1.8.0)
+  - traits 4.4.0-1; depends (numpy ^= 1.8.0)
+  - traits 4.4.0-2
+  - traits 4.5.0-1
+  - traits_enaml 0.2.0-1; depends (traitsui ^= 4.4.0, enaml ^= 0.8.9)
+  - traits_enaml 0.2.1-1; depends (traitsui ^= 4.4.0, enaml ^= 0.9.4)
+  - traits_enaml 0.2.1-2; depends (enaml ^= 0.9.5, traitsui ^= 4.4.0)
+  - traits_enaml 0.2.1-3; depends (enaml ^= 0.9.5, traitsui ^= 4.4.0)
+  - traits_enaml 0.2.1-4; depends (enaml ^= 0.9.8, traitsui ^= 4.4.0)
+  - TraitsBackendQt 3.6.0-1
+  - TraitsBackendWX 3.6.0-1; depends (wxPython ^= 2.8.10.1, Traits ^= 3.6.0)
+  - TraitsGUI 3.6.0-1
+  - traitsui 4.0.0-1
+  - traitsui 4.1.0-1
+  - traitsui 4.2.0-1
+  - traitsui 4.3.0-1
+  - traitsui 4.3.0-2; depends (traits ^= 4.3.0, pyface ^= 4.3.0)
+  - traitsui 4.4.0-1; depends (pyface ^= 4.4.0, traits ^= 4.4.0)
+  - traitsui 4.4.0-2; depends (pyface ^= 4.4.0, traits ^= 4.5.0)
+  - Twisted 10.2.0-1; depends (pyOpenSSL ^= 0.11, zope.interface ^= 3.6.1)
+  - Twisted 11.0.0-1; depends (pyOpenSSL ^= 0.11, zope.interface ^= 3.6.1)
+  - Twisted 11.0.0-2; depends (zope.interface ^= 3.6.3, pyOpenSSL ^= 0.12)
+  - Twisted 11.1.0-2; depends (zope.interface ^= 3.8.0, pyOpenSSL ^= 0.12)
+  - Twisted 12.0.0-1; depends (zope.interface ^= 3.8.0, pyOpenSSL ^= 0.12)
+  - Twisted 12.0.0-3; depends (zope.interface ^= 3.8.0, pyOpenSSL ^= 0.13.1)
+  - Twisted 14.0.0-1; depends (zope.interface ^= 4.1.1, pyOpenSSL ^= 0.13.1)
+  - Twisted 14.0.2-1; depends (zope.interface ^= 4.1.1, pyOpenSSL ^= 0.13.1)
+  - Twisted 14.0.2-3; depends (pyOpenSSL ^= 0.14, zope.interface ^= 4.1.1)
+  - ujson 1.33.0-1
+  - unittest2 0.8.0-1
+  - unixODBC 2.3.0-1
+  - venusian 1.0-1
+  - VTK 5.6.0-2
+  - VTK 5.6.0-6
+  - VTK 5.10.1-1
+  - VTK 5.10.1-2
+  - w3lib 1.10.0-1; depends (six ^= 1.8.0)
+  - werkzeug 0.9.4-1
+  - werkzeug 0.9.6-1
+  - Whoosh 1.6.2-1
+  - Whoosh 2.5.6-1
+  - Whoosh 2.5.7-1
+  - WhooshDoc 1.0-6; depends (epydoc ^= 3.0.1, pyparsing ^= 1.5.5, Whoosh ^= 1.6.2,
+    EPDIndex ^= 1.2)
+  - WhooshDoc 1.0-7
+  - wxPython 2.8.10.1-2
+  - wxPython 2.8.10.1-3
+  - wxPython 2.8.10.1-7
+  - xlrd 0.7.1-3
+  - xlrd 0.7.1-4
+  - xlrd 0.7.2-1
+  - xlrd 0.7.3-1
+  - xlrd 0.7.6-1
+  - xlrd 0.7.9-1
+  - xlrd 0.9.2-1
+  - xlrd 0.9.3-1
+  - xlsxwriter 0.5.5-1
+  - xlsxwriter 0.5.7-1
+  - xlsxwriter 0.6.4-1
+  - xlutils 1.7.1-1; depends (xlwt ^= 0.7.5, xlrd ^= 0.9.3)
+  - xlwings 0.2.3-2; depends (numpy ^= 1.8.1, pandas ^= 0.15.1)
+  - xlwt 0.7.2-3
+  - xlwt 0.7.3-1
+  - xlwt 0.7.4-1
+  - xlwt 0.7.5-1
+  - zeromq 2.0.7-1
+  - zeromq 2.0.8-1
+  - zeromq 2.0.10-1
+  - zeromq 2.1.1-1
+  - zeromq 2.1.4-1
+  - zeromq 2.1.7-1
+  - zeromq 2.1.9-1
+  - zeromq 2.1.10-1
+  - zeromq 2.1.11-1
+  - zeromq 3.2.0-1
+  - zeromq 3.2.4-1
+  - zeromq 4.0.4-1
+  - zlib 1.2.6-1
+  - zope.deprecation 4.1.1-1
+  - zope.interface 3.6.1-2
+  - zope.interface 3.6.3-1
+  - zope.interface 3.8.0-1
+  - zope.interface 4.1.1-1
+
+installed:
+  - Cython 0.16-1
+  - Examples 7.3-1
+  - GDAL 1.8.1-2
+  - Jinja2 2.6-2
+  - MDP 3.2-1
+  - MKL 10.3-1
+  - PIL 1.1.7-3
+  - PyOpenGL 3.0.1-2
+  - PySide 1.1.0-3
+  - PyYAML 3.10-1
+  - Pycluster 1.50-4
+  - Pygments 1.4-1
+  - PythonDoc 2.7.3-1
+  - Qt 4.7.3-2
+  - Reportlab 2.5-2
+  - SQLAlchemy 0.7.6-1
+  - Shapely 1.2.14-1
+  - SimPy 2.2-1
+  - Sphinx 1.1.2-1
+  - Twisted 12.0.0-1
+  - VTK 5.6.0-2
+  - appinst 2.1.2-1
+  - apptools 4.1.0-1
+  - basemap 1.0.2-1
+  - biopython 1.59-1
+  - bitarray 0.8.0-1
+  - blist 1.3.4-1
+  - blockcanvas 4.0.1-1
+  - bsdiff4 1.1.1-1
+  - casuarius 1.0-1
+  - chaco 4.2.0-1
+  - cloud 2.4.6-1
+  - codetools 4.0.0-1
+  - configobj 4.7.2-2
+  - coverage 3.5.1-1
+  - curl 7.25.0-3
+  - distribute 0.6.26-1
+  - doclinks 7.3-1
+  - docutils 0.8.1-2
+  - enable 4.2.0-1
+  - enaml 0.2.0-1
+  - encore 0.2-2
+  - envisage 4.2.0-1
+  - epydoc 3.0.1-6
+  - etsdevtools 4.0.0-1
+  - etsproxy 0.1.1-1
+  - feedparser 5.1.1-1
+  - foolscap 0.6.3-1
+  - freetype 2.4.4-1
+  - fwrap 0.1.1-3
+  - graphcanvas 4.0.0-3
+  - grin 1.2.1-2
+  - h5py 2.0.0-2
+  - hdf5 1.8.9-1
+  - html5lib 0.90-2
+  - idle 2.7.3-1
+  - ipython 0.12.1-3
+  - jsonpickle 0.4.0-1
+  - kernmagic 0.1.0-1
+  - keyring 0.9-1
+  - libYAML 0.1.4-1
+  - lib_netcdf4 4.2-2
+  - libgdal 1.8.1-1
+  - libxml2 2.7.8-1
+  - libxslt 1.1.26-1
+  - lxml 2.3.4-1
+  - matplotlib 1.1.0-1
+  - mayavi 4.2.0-1
+  - netCDF4 1.0-1
+  - networkx 1.6-1
+  - nose 1.1.2-1
+  - numexpr 2.0.1-1
+  - numpy 1.6.1-3
+  - openpyxl 1.5.8-1
+  - pandas 0.7.3-2
+  - paramiko 1.7.7.1-1
+  - pep8 1.0.1-1
+  - ply 3.4-1
+  - pyOpenSSL 0.12-1
+  - pyaudio 0.2.4-1
+  - pycrypto 2.4.1-1
+  - pydot 1.0.28-1
+  - pyface 4.2.0-1
+  - pyfits 3.0.6-1
+  - pyflakes 0.5.0-1
+  - pygarrayimage 0.0.7-4
+  - pyglet 1.1.4-2
+  - pyhdf 0.8.3-6
+  - pyparsing 1.5.6-1
+  - pyproj 1.9.0-1
+  - pyserial 2.6-1
+  - pytables 2.3.1-4
+  - python_dateutil 1.5-2
+  - pytz 2011n-1
+  - pyzmq 2.1.11-1
+  - scikit_learn 0.11-1
+  - scikits.image 0.5.0-1
+  - scikits.timeseries 0.91.3-4
+  - scimath 4.1.0-1
+  - scipy 0.10.1-1
+  - scons 2.0.1-2
+  - statsmodels 0.4.0-1
+  - swig 1.3.40-2
+  - sympy 0.7.1-1
+  - tornado 2.2-1
+  - traits 4.2.0-1
+  - traitsui 4.2.0-1
+  - wxPython 2.8.10.1-3
+  - xlrd 0.7.6-1
+  - xlwt 0.7.3-1
+  - zlib 1.2.6-1
+  - zope.interface 3.8.0-1
+
+
+request:
+  - operation: "install"
+    requirement: "EPD"
+  - operation: "install"
+    requirement: "numpy > 1.8.0"
+
+
+failure:
+  requirements: ['EPD', 'numpy > 1.8.0-0']
+  raw: |
+      Conflicting requirements:
+      Requirements: 'EPD' <- 'numpy == 1.6.0-5'
+          EPD-7.1-1 requires (+numpy-1.6.0-5)
+      Requirements: 'EPD' <- 'SimPy == 2.1.0-2' <- 'numpy' <- 'numpy'
+          Can only install one of: (+numpy-1.8.1-1 | +numpy-1.6.0-5)
+      Requirements: 'numpy > 1.8.0-0'
+          Install command rule (+numpy-1.8.0-1 | +numpy-1.8.0-2 | +numpy-1.8.0-3 | +numpy-1.8.1-1)

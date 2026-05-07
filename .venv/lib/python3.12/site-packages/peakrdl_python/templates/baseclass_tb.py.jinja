@@ -1,0 +1,148 @@
+{#
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{% include "header_tb.py.jinja" with context %}
+from array import array as Array
+{% if asyncoutput %}
+import sys
+import asyncio
+if sys.version_info < (3, 8):
+    import asynctest  # type: ignore[import]
+else:
+    import unittest
+{% else %}
+import unittest
+{% endif %}
+import random
+{% if legacy_enum_type %}
+from enum import IntEnum
+{% endif %}
+
+
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import RegisterWriteVerifyError
+{% if asyncoutput %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import AsyncCallbackSet, AsyncCallbackSetLegacy
+{% else %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import NormalCallbackSet, NormalCallbackSetLegacy
+{% endif %}
+
+
+from ..reg_model.{{top_node.inst_name}} import {{top_node.inst_name}}_cls
+{% if asyncoutput %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_read as read_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_write as write_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_read_block{% if legacy_block_access %}_legacy{% endif %} as read_block_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_write_block{% if legacy_block_access %}_legacy{% endif %} as write_block_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_read_block{% if not legacy_block_access %}_legacy{% endif %} as read_block_addr_space_alt
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import async_dummy_write_block{% if not legacy_block_access %}_legacy{% endif %} as write_block_addr_space_alt
+{% else %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_read as read_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_write as write_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_read_block{% if legacy_block_access %}_legacy{% endif %} as read_block_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_write_block{% if legacy_block_access %}_legacy{% endif %} as write_block_addr_space
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_read_block{% if not legacy_block_access %}_legacy{% endif %} as read_block_addr_space_alt
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}sim_lib.dummy_callbacks import dummy_write_block{% if not legacy_block_access %}_legacy{% endif %} as write_block_addr_space_alt
+{% endif %}
+
+{% if not legacy_enum_type %}
+from {% if skip_lib_copy %}peakrdl_python.{% else %}..{% endif %}lib import SystemRDLEnum, SystemRDLEnumEntry
+{% endif %}
+
+{% if asyncoutput %}async {% endif %}def read_callback(addr: int, width: int, accesswidth: int) -> int:
+    return {% if asyncoutput %}await {% endif %}read_addr_space(addr=addr, width=width, accesswidth=accesswidth)
+
+{% if asyncoutput %}async {%endif %}def read_block_callback(addr: int, width: int, accesswidth: int, length: int) -> {% if legacy_block_access %}Array{% else %}list[int]{% endif %}:
+    return {% if asyncoutput %}await {% endif %}read_block_addr_space(addr=addr, width=width, accesswidth=accesswidth, length=length)
+
+{% if asyncoutput %}async {%endif %}def read_block_callback_alt(addr: int, width: int, accesswidth: int, length: int) -> {% if not legacy_block_access %}Array{% else %}list[int]{% endif %}:
+    return {% if asyncoutput %}await {% endif %}read_block_addr_space_alt(addr=addr, width=width, accesswidth=accesswidth, length=length)
+
+{% if asyncoutput %}async {%endif %}def write_callback(addr: int, width: int, accesswidth: int,  data: int) -> None:
+    {% if asyncoutput %}await {% endif %}write_addr_space(addr=addr, width=width, accesswidth=accesswidth, data=data)
+
+{% if asyncoutput %}async {%endif %}def write_block_callback(addr: int, width: int, accesswidth: int,  data: {% if legacy_block_access %}Array{% else %}list[int]{% endif %}) -> None:
+    {% if asyncoutput %}await {% endif %}write_block_addr_space(addr=addr, width=width, accesswidth=accesswidth, data=data)
+
+{% if asyncoutput %}async {%endif %}def write_block_callback_alt(addr: int, width: int, accesswidth: int,  data: {% if not legacy_block_access %}Array{% else %}list[int]{% endif %}) -> None:
+    {% if asyncoutput %}await {% endif %}write_block_addr_space_alt(addr=addr, width=width, accesswidth=accesswidth, data=data)
+
+def random_enum_reg_value(enum_class: type[{% if legacy_enum_type %}IntEnum{% else %}SystemRDLEnum{% endif %}]) -> {% if legacy_enum_type %}IntEnum{% else %}SystemRDLEnum{% endif %}:
+    return random.choice(list(enum_class))
+
+{% if asyncoutput %}
+if sys.version_info < (3, 8):
+    TestCaseBase = asynctest.TestCase
+else:
+    TestCaseBase = unittest.IsolatedAsyncioTestCase
+{% else %}
+TestCaseBase = unittest.TestCase
+{% endif %}
+
+class {{top_node.inst_name}}_TestCase(TestCaseBase): # type: ignore[valid-type,misc]
+
+    def setUp(self) -> None:
+        self.dut = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}AsyncCallbackSet{% else %}NormalCallbackSet{% endif %}{% if legacy_block_access %}Legacy{% endif %}(read_callback=read_callback,
+                                                          write_callback=write_callback))
+
+    @staticmethod
+    def _reverse_bits(value: int, number_bits: int) -> int:
+        """
+
+        Args:
+            value: value to reverse
+            number_bits: number of bits used in the value
+
+        Returns:
+            reversed valued
+        """
+        result = 0
+        for i in range(number_bits):
+            if (value >> i) & 1:
+                result |= 1 << (number_bits - 1 - i)
+        return result
+
+class {{top_node.inst_name}}_TestCase_BlockAccess(TestCaseBase): # type: ignore[valid-type,misc]
+
+    def setUp(self) -> None:
+        self.dut = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}AsyncCallbackSet{% else %}NormalCallbackSet{% endif %}{% if legacy_block_access %}Legacy{% endif %}(read_callback=read_callback,
+                                                          write_callback=write_callback,
+                                                          read_block_callback=read_block_callback,
+                                                          write_block_callback=write_block_callback))
+
+class {{top_node.inst_name}}_TestCase_AltBlockAccess(TestCaseBase): # type: ignore[valid-type,misc]
+    """
+    Based test to use with the alternative call backs, this allow the legacy output API to be tested
+    with the new callbacks and visa versa.
+    """
+
+    def setUp(self) -> None:
+        self.dut = {{top_node.inst_name}}_cls(callbacks={% if asyncoutput %}AsyncCallbackSet{% else %}NormalCallbackSet{% endif %}{% if not legacy_block_access %}Legacy{% endif %}(
+                                                          read_callback=read_callback,
+                                                          write_callback=write_callback,
+                                                          read_block_callback=read_block_callback_alt,
+                                                          write_block_callback=write_block_callback_alt))
+
+
+
+
+if __name__ == '__main__':
+    pass
+
+
+
+

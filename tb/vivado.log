@@ -1,0 +1,72 @@
+#-----------------------------------------------------------
+# Vivado v2024.2 (64-bit)
+# SW Build 5239630 on Fri Nov 08 22:34:34 MST 2024
+# IP Build 5239520 on Sun Nov 10 16:12:51 MST 2024
+# SharedData Build 5239561 on Fri Nov 08 14:39:27 MST 2024
+# Start of session at: Tue Dec  2 13:31:56 2025
+# Process ID         : 920850
+# Current directory  : /home/isomoye/projects/pcie_datalink_layer/tb
+# Command line       : vivado openPCIe_Sim/openPCIe_Sim.xpr
+# Log file           : /home/isomoye/projects/pcie_datalink_layer/tb/vivado.log
+# Journal file       : /home/isomoye/projects/pcie_datalink_layer/tb/vivado.jou
+# Running On         : halo-Precision-7960-Tower
+# Platform           : Ubuntu
+# Operating System   : Ubuntu 24.04.3 LTS
+# Processor Detail   : Intel(R) Xeon(R) w7-3445
+# CPU Frequency      : 1185.741 MHz
+# CPU Physical cores : 20
+# CPU Logical cores  : 40
+# Host memory        : 32842 MB
+# Swap memory        : 8589 MB
+# Total Virtual      : 41432 MB
+# Available Virtual  : 14295 MB
+#-----------------------------------------------------------
+start_gui
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at /tools/Xilinx/Vivado/2024.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu208ld/production/2.0/board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at /tools/Xilinx/Vivado/2024.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu216ld/production/2.0/board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at /tools/Xilinx/Vivado/2024.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670ld/1.0/board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+open_project openPCIe_Sim/openPCIe_Sim.xpr
+INFO: [Project 1-313] Project file moved from '/tools/C/research/pcie/copy-pcie/tb/openPCIe_Sim' since last save.
+WARNING: [filemgmt 56-3] Board Part Repository Path: Could not find the directory '/home/MSUCAP/idris.somoye/.Xilinx/Vivado/2022.1/xhub/board_store/xilinx_board_store'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/EP_MEM.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/EP_MEM.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP_MEM_ACCESS.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_EP_MEM_ACCESS.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_RX_ENGINE.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_RX_ENGINE.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TO_CTRL.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TO_CTRL.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TX_ENGINE.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/PIO_TX_ENGINE.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_7x_0_pipe_clock.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_7x_0_pipe_clock.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_7x_0_support.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_7x_0_support.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_app_7x.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_app_7x.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_2_1_ep_7x.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_2_1_ep_7x.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/hierarchy.txt', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/hierarchy.txt'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_7x_ep_x1g1.xdc', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_7x_ep_x1g1.xdc'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/board_common.vh', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/board_common.vh'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_cfg.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_cfg.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_expect_tasks.vh', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_expect_tasks.vh'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_com.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_com.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_pl.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_pl.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_rx.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_rx.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sample_tests1.vh', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sample_tests1.vh'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/tests.vh', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/tests.vh'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_tx.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pci_exp_usrapp_tx.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_2_1_rport_7x.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_2_1_rport_7x.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_axi_trn_bridge.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/pcie_axi_trn_bridge.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen_ds.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/sys_clk_gen_ds.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_2_1_rport_7x.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xilinx_pcie_2_1_rport_7x.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/board.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/board.v'.
+CRITICAL WARNING: [Project 1-311] Could not find the file '/home/isomoye/projects/pcie_datalink_layer/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xil_sig2pipe.v', nor could it be found using path '/tools/C/research/pcie/copy-pcie/tb/vivado_sim/pcie_7x_0_ex/pcie_7x_0_ex/imports/xil_sig2pipe.v'.
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2024.2/data/ip'.
+WARNING: [IP_Flow 19-2162] IP 'pcie_7x_0' is locked:
+* IP definition '7 Series Integrated Block for PCI Express (3.3)' for IP 'pcie_7x_0' (customized with software release 2022.1) has a different revision in the IP Catalog.
+WARNING: [IP_Flow 19-2162] IP 'clk_wiz_0' is locked:
+* IP definition 'Clocking Wizard (6.0)' for IP 'clk_wiz_0' (customized with software release 2022.1) has a different revision in the IP Catalog.
+update_compile_order -fileset sources_1
+update_compile_order -fileset sim_1
+update_compile_order -fileset sources_1
+report_ip_status -name ip_status 

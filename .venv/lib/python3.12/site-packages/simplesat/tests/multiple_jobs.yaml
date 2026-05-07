@@ -1,0 +1,97 @@
+packages:
+    - zlib 1.2.6-1
+    - configobj 4.7.2-2
+    - configobj 5.0.5-1
+    - configobj 5.0.6-1
+    - MKL 10.2-1
+    - MKL 10.3-1
+    - MKL 10.2-2
+    - PIL 1.1.7-13; depends (libjpeg ^= 7.0, freetype ^= 2.5.3)
+    - htmltemplate 1.5.0-1
+    - htmltemplate 1.5.0-2
+    - libxml2 2.6.32-1
+    - libxml2 2.9.2-1
+    - libxml2 2.9.2-2
+    - freetype 2.5.3-1
+    - freetype 2.5.3-2
+    - freetype 2.4.4-1
+    - freetype 2.5.3-4; depends (libpng ^= 1.6.12)
+    - freetype 2.4.4-5
+    - freetype 2.5.3-3; depends (libpng ^= 1.6.12)
+    - freetype 2.3.11-1
+    - freetype 2.4.4-4
+    - freetype 2.3.7-1
+    - libpng 1.6.12-1
+    - libpng 1.6.12-2
+    - libjpeg 7.0-3
+    - numpy 1.7.1-3; depends (MKL == 10.3-1)
+    - numpy 1.8.0-1; depends (MKL == 10.3-1)
+    - numpy 1.8.1-1; depends (MKL == 10.3-1)
+    - numpy 1.7.1-1; depends (MKL == 10.3-1)
+    - numpy 1.6.1-2; depends (MKL == 10.3-1)
+    - numpy 1.6.0-5; depends (MKL == 10.3-1)
+    - numpy 1.8.0-3; depends (MKL == 10.3-1)
+    - numpy 1.5.1-2; depends (MKL == 10.3-1)
+    - numpy 1.6.0-1; depends (MKL == 10.3-1)
+    - numpy 1.6.1-5; depends (MKL == 10.3-1)
+    - numpy 1.6.0-1
+    - numpy 1.6.0-3; depends (MKL == 10.3-1)
+    - numpy 1.5.1-1; depends (MKL == 10.3-1)
+    - numpy 1.6.1-3; depends (MKL == 10.3-1)
+    - numpy 1.7.1-2; depends (MKL == 10.3-1)
+    - numpy 1.6.0-2; depends (MKL == 10.3-1)
+    - numpy 1.8.0-2; depends (MKL == 10.3-1)
+    - numpy 1.6.1-1; depends (MKL == 10.3-1)
+    - numpy 1.6.0b2-1; depends (MKL == 10.3-1)
+    - numpy 1.6.0-4; depends (MKL == 10.3-1)
+    - scipy 0.10.1-1; depends (numpy ^= 1.6.1)
+    - scipy 0.12.0-1; depends (numpy ^= 1.6.1)
+    - scipy 0.13.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.13.3-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.14.0-3; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0)
+    - scipy 0.9.0-3; depends (numpy ^= 1.6.1)
+    - scipy 0.9.0rc2-1; depends (numpy ^= 1.5.1)
+    - scipy 0.12.0-2; depends (numpy ^= 1.7.1)
+    - scipy 0.14.1rc1-1; depends (numpy ^= 1.8.1, libgfortran ^= 3.0.0, MKL ^= 10.3)
+    - scipy 0.13.0-1; depends (numpy ^= 1.7.1, libgfortran ^= 3.0.0)
+    - scipy 0.14.0-2; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.9.0-2; depends (numpy ^= 1.6.0)
+    - scipy 0.14.0-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.13.2-1; depends (numpy ^= 1.8.0, libgfortran ^= 3.0.0)
+    - scipy 0.9.0-1; depends (numpy ^= 1.5.1)
+    - scipy 0.10.0-1; depends (numpy ^= 1.6.1)
+    - scipy 0.11.0-1; depends (numpy ^= 1.6.1)
+    - libgfortran 3.0.0-1
+
+request:
+    - operation: "install"
+      requirement: "scipy"
+    - operation: "remove"
+      requirement: "PIL"
+    - operation: "remove"
+      requirement: "htmltemplate"
+    - operation: "install"
+      requirement: "libxml2"
+
+installed:
+    - htmltemplate 1.5.0-1
+    - MKL 10.3-1
+    - PIL 1.1.7-13
+    - freetype 2.5.3-4
+    - libjpeg 7.0-3
+
+transaction:
+    - kind: "remove"
+      package: "PIL 1.1.7-13"
+    - kind: "remove"
+      package: "htmltemplate 1.5.0-1"
+    - kind: "install"
+      package: "libgfortran 3.0.0-1"
+    - kind: "install"
+      package: "libpng 1.6.12-2"
+    - kind: "install"
+      package: "libxml2 2.9.2-2"
+    - kind: "install"
+      package: "numpy 1.8.1-1"
+    - kind: "install"
+      package: "scipy 0.14.1rc1-1"

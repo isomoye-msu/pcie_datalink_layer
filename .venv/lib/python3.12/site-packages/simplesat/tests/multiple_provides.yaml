@@ -1,0 +1,16 @@
+
+packages:
+  - meta 1.0-1;
+  - pil 1.0-1; provides (imaging)
+  - pillow 2.0-1; provides (imaging); conflicts (pil)
+  - pilfer 3.0-1; provides (imaging); conflicts (pil, pillow); install_requires (meta == 1.0-1)
+
+request:
+  - operation: "install"
+    requirement: "imaging"
+
+transaction:
+  - kind: install
+    package: meta 1.0-1
+  - kind: install
+    package: pilfer 3.0-1

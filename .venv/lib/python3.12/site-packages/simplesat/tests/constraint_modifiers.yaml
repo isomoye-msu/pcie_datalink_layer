@@ -1,0 +1,55 @@
+packages:
+  - A 0.0.1-1;
+  - A 1.0.0-1;
+  - A 2.0.0-1;
+  - A 2.1.0-1;
+  - B 1.0.0-1; depends (A ^= 1.0, A != 2.1.0-1)
+  - B 2.0.0-1; depends (A != 2.1.0-1)
+  - C 1.0.0-1; depends (B > 2.0.0-1)
+  - D 1.0.0-1;
+  - E 1.0.0-1; depends (C > 2.0, D < 1.0)
+
+installed:
+  - A 0.0.1-1
+
+modifiers:
+  allow_newer:
+    - A
+  allow_older:
+    - B
+  allow_any:
+    - C
+    - D
+
+request:
+  - operation: "install"
+    requirement: "B ^= 1.0.0"
+  - operation: "install"
+    requirement: "E"
+
+transaction:
+  - kind: "remove"
+    package: "A 0.0.1-1"
+  - kind: "install"
+    package: "A 2.0.0-1"
+  - kind: "install"
+    package: "D 1.0.0-1"
+  - kind: "install"
+    package: "B 1.0.0-1"
+  - kind: "install"
+    package: "C 1.0.0-1"
+  - kind: "install"
+    package: "E 1.0.0-1"
+
+pretty_transaction:
+  - kind: "update"
+    from: "A 0.0.1-1"
+    to: "A 2.0.0-1"
+  - kind: "install"
+    package: "D 1.0.0-1"
+  - kind: "install"
+    package: "B 1.0.0-1"
+  - kind: "install"
+    package: "C 1.0.0-1"
+  - kind: "install"
+    package: "E 1.0.0-1"

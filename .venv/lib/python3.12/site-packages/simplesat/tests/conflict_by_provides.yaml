@@ -1,0 +1,23 @@
+
+packages:
+  - zumba 1.8.1-1; provides (dance)
+  - ballet 3.2.0-1; provides (dance)
+  - white_tornado 6.6.6-1; conflicts (dance)
+
+request:
+  - operation: "install"
+    requirement: "ballet"
+  - operation: "install"
+    requirement: "white_tornado"
+
+
+failure:
+  requirements: ['ballet', 'white_tornado']
+  raw: |
+    Conflicting requirements:
+    Requirements: 'ballet'
+        Install command rule (+ballet-3.2.0-1)
+    Requirements: 'white_tornado' <- 'dance'
+        white_tornado-6.6.6-1 conflicts with +ballet-3.2.0-1
+    Requirements: 'white_tornado'
+        Install command rule (+white_tornado-6.6.6-1)

@@ -1,0 +1,47 @@
+peakrdl-python is a tool to generate Python Register Access Layer (RAL) from SystemRDL
+Copyright (C) 2021 - 2023
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#}
+
+{%- macro udp_property_dict_entry(name, value) %}
+    {% if isinstance(value, systemrdlUserStruct) %}
+    '{{name}}' : {
+        {% for sub_name, sub_value in value.members.items() %}
+        {{udp_property_dict_entry(sub_name, sub_value)|indent(4)}}
+        {% endfor %}
+                },
+    {% elif isinstance(value, systemrdlUserEnum) %}
+    '{{name}}' : {{ type(value).type_name + '_property_enumcls.' + value.name.upper() }} ,
+    {% elif isinstance(value, str) %}
+    '{{name}}' : "{{ value }}" ,
+    {% else %}
+    '{{name}}' : {{ value }} ,
+    {% endif %}
+{% endmacro %}
+
+{%- macro udp_property(node) %}
+
+    {% set property_list = get_properties_to_include(node,udp_to_include) %}
+    {% if property_list %}
+    @property
+    def udp(self) -> UDPStruct:
+        return {
+            {% for property_name in property_list %}
+            {{udp_property_dict_entry(property_name, node.get_property(property_name))}}
+            {% endfor %}
+               }
+
+    {% endif %}
+{%- endmacro %}

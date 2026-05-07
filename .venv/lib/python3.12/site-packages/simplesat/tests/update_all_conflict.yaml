@@ -1,0 +1,35 @@
+packages:
+    - MKL 10.2-1
+    - MKL 10.3-1
+    - MKL 10.3-2
+    - numpy 1.7.1-1; depends (MKL == 10.2-1)
+    - numpy 1.8.1-1; depends (MKL == 10.3-1)
+    - numpy 1.9.2-1; depends (MKL == 10.3-1)
+    - numpy 1.9.2-2; depends (MKL == 10.3-2)
+    - pandas 0.12.5-3; depends (numpy == 1.8.1-1)
+    - pandas 0.18.0-1; depends (numpy == 1.9.2-1)
+
+request:
+    - operation: "update_all"
+
+marked:
+  - numpy
+  - pandas
+
+installed:
+  - MKL 10.3-1
+  - numpy 1.8.1-1
+  - pandas 0.12.5-3
+
+failure:
+  requirements: ['numpy', 'pandas']
+  raw: |
+    Conflicting requirements:
+    Requirements: 'numpy'
+        Update to latest command rule (+numpy-1.9.2-2)
+    Requirements: 'numpy' <- 'numpy'
+        Can only install one of: (+numpy-1.9.2-2 | +numpy-1.9.2-1)
+    Requirements: 'pandas' <- 'numpy == 1.9.2-1'
+        pandas-0.18.0-1 requires (+numpy-1.9.2-1)
+    Requirements: 'pandas'
+        Update to latest command rule (+pandas-0.18.0-1)

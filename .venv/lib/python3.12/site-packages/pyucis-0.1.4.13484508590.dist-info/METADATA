@@ -1,0 +1,26 @@
+Metadata-Version: 2.2
+Name: pyucis
+Version: 0.1.4.13484508590
+Summary: PyUCIS provides a Python API for manipulating UCIS coverage data.
+Home-page: https://github.com/fvutils/pyucis
+Author: Matthew Ballance
+Author-email: matt.ballance@gmail.com
+License: Apache 2.0
+Keywords: SystemVerilog,Verilog,RTL,Coverage
+License-File: LICENSE
+Requires-Dist: lxml
+Requires-Dist: python-jsonschema-objects
+Requires-Dist: jsonschema
+Requires-Dist: pyyaml
+Dynamic: author
+Dynamic: author-email
+Dynamic: description
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license
+Dynamic: requires-dist
+Dynamic: summary
+
+
+  Python library for interacting with verification coverage data
+  

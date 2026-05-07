@@ -1,0 +1,2 @@
+[peakrdl.exporters]
+python = peakrdl_python.__peakrdl__:Exporter

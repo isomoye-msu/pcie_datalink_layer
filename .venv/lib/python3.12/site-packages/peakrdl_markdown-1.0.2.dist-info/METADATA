@@ -1,0 +1,69 @@
+Metadata-Version: 2.1
+Name: peakrdl_markdown
+Version: 1.0.2
+Summary: Export Markdown description from the systemrdl-compiler register model
+Home-page: https://github.com/SystemRDL/PeakRDL-Markdown
+License: GPL-3.0-only
+Author: Marek Pikuła
+Author-email: marek@serenitycode.dev
+Maintainer: Marek Pikuła
+Maintainer-email: marek@serenitycode.dev
+Requires-Python: >=3.6.0,<4.0.0
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)
+Requires-Dist: gitpython (>=3.1.41,<4.0.0) ; python_version >= "3.7"
+Requires-Dist: jinja2 (>=3.1.4,<4.0.0) ; python_version >= "3.7"
+Requires-Dist: peakrdl (>=1.1.0,<2.0.0)
+Requires-Dist: py-markdown-table (>=0.3.3,<0.4.0)
+Requires-Dist: pygments (>=2.15.0,<3.0.0) ; python_version >= "3.7"
+Requires-Dist: setuptools (>=65.5.1,<66.0.0) ; python_version >= "3.7"
+Requires-Dist: systemrdl-compiler (>=1.25.0,<2.0.0)
+Project-URL: Documentation, https://peakrdl-markdown.readthedocs.io
+Project-URL: Repository, https://github.com/SystemRDL/PeakRDL-Markdown
+Description-Content-Type: text/markdown
+
+# PeakRDL-Markdown
+
+[![Documentation Status](https://readthedocs.org/projects/peakrdl-markdown/badge/?version=latest)](http://peakrdl-markdown.readthedocs.io)
+[![build](https://github.com/SystemRDL/PeakRDL-Markdown/workflows/build/badge.svg)](https://github.com/SystemRDL/PeakRDL-Markdown/actions?query=workflow%3Abuild+branch%3Amain)
+[![Coverage Status](https://coveralls.io/repos/github/SystemRDL/PeakRDL-Markdown/badge.svg?branch=main)](https://coveralls.io/github/SystemRDL/PeakRDL-Markdown?branch=main)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/peakrdl-markdown.svg)](https://pypi.org/project/peakrdl-markdown)
+
+This package implements Markdown exporter for the PeakRDL toolchain.
+
+- **Export:** Convert compiled SystemRDL input into Markdown description.
+
+For the command line tool, see the [PeakRDL
+project](https://peakrdl.readthedocs.io).
+
+## Usage
+
+PeakRDL project provides a standard CLI interface. It can be installed directly
+via pip:
+
+```shell
+$ pip install peakrdl-markdown
+```
+
+Then this package can be used with the following command:
+
+```shell
+$ peakrdl markdown input_file.rdl -o output_file.md
+```
+
+## Documentation
+
+See the [PeakRDL-Markdown
+Documentation](http://peakrdl-markdown.readthedocs.io) for more details.
+

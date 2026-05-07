@@ -1,0 +1,18 @@
+packages:
+    - MKL 10.2-1
+    - MKL 10.3-1
+    - numpy 1.6.1-1; depends (MKL == 10.2-1)
+    - numpy 1.7.1-1; depends (MKL == 10.3-1)
+    - numpy 1.8.1-1; depends (MKL == 10.3-1)
+
+installed:
+    - MKL 10.2-1
+    - numpy 1.6.1-1
+
+request:
+    - operation: "remove"
+      requirement: "numpy"
+
+transaction:
+  - kind: "remove"
+    package: "numpy 1.6.1-1"
