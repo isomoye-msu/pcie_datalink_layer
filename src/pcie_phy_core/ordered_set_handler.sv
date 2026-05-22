@@ -32,7 +32,8 @@ module ordered_set_handler
     output logic                     idle_valid_o,
     output logic                     ts1_valid_o,
     output logic                     ts2_valid_o,
-    output logic                     eieos_valid_o
+    output logic                     eieos_valid_o,
+    output logic                     polarity_inverted_o
 
 
 );
@@ -54,7 +55,7 @@ module ordered_set_handler
   } os_decode_state_e;
 
 
-  os_decode_state_e                   curr_state;
+  os_decode_state_e curr_state;
   os_decode_state_e                   next_state;
 
   logic              [           7:0] axis_pkt_cnt_c;
@@ -72,6 +73,8 @@ module ordered_set_handler
   logic                               ts1_valid;
   logic                               ts2_valid;
   logic                               eieos_valid;
+  logic                               polarity_inverted_c;
+  logic                               polarity_inverted_r;
 
 
   logic              [           7:0] skp0_c;
@@ -108,11 +111,13 @@ module ordered_set_handler
       ts1_valid_o         <= '0;
       ts2_valid_o         <= '0;
       eieos_valid_o       <= '0;
+      polarity_inverted_o <= '0;
       ordered_set_r       <= '0;
       idle_valid_o        <= '0;
       ts1_valid_o         <= '0;
       ts2_valid_o         <= '0;
       eieos_valid_o       <= '0;
+      polarity_inverted_r <= '0;
       axis_pkt_cnt_r      <= '0;
       skp0_r              <= '0;
       skp1_r              <= '0;
@@ -126,6 +131,7 @@ module ordered_set_handler
       ts1_valid_o         <= ts1_valid;
       ts2_valid_o         <= ts2_valid;
       eieos_valid_o       <= eieos_valid;
+      polarity_inverted_o <= polarity_inverted_c;
       axis_pkt_cnt_r      <= axis_pkt_cnt_c;
       skp0_r              <= skp0_c;
       skp1_r              <= skp1_c;
@@ -168,6 +174,7 @@ module ordered_set_handler
     word_index          = axis_pkt_cnt_r * byte_shift;
     packets_per_words   = MaxWordsPerOrderedSet - ((byte_shift) << 2);
     data_store_c        = data_store_r;
+    ordered_set_out_c   = ordered_set_out_r;
     // for (int i = 0; i < MaxBytesPerPacket; i++) begin
     //   if ((pipe_width_i >> 3) == (1 << i)) begin
     //     packets_per_words = MaxBytesPerPacket >> i;
@@ -206,7 +213,13 @@ module ordered_set_handler
             for (int i = 0; i < 4; i++) begin
               if (i < byte_shift) begin
                 if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                  ordered_set_c[31:0] = data_in_i >> 8 * i;
+                  for (int j = 0; j < 4; j++) begin
+                    if (i + j < byte_shift) begin
+                      int sum_idx;
+                      sum_idx = (i + j) % 4; // Bounded for synthesis
+                      ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                    end
+                  end
                   next_state = ST_RX_GEN1;
                   axis_pkt_cnt_c = byte_shift - i;
                 end else if ((!data_k_in_i[i]) && data_in_i[i*8+:8] == '0) begin
@@ -270,7 +283,13 @@ module ordered_set_handler
                 next_state          = ST_IDLE;
               end
               if ((data_k_in_i[i]) && data_in_i[i*8+:8] == COM) begin
-                ordered_set_c[7:0] = data_in_i >> 8 * i;
+                for (int j = 0; j < 4; j++) begin
+                  if (i + j < byte_shift) begin
+                    int sum_idx;
+                    sum_idx = (i + j) % 4; // Bounded for synthesis
+                    ordered_set_c[j*8+:8] = data_in_i[sum_idx*8+:8];
+                  end
+                end
                 next_state = ST_RX_GEN1;
                 axis_pkt_cnt_c = byte_shift - i;
               end
@@ -344,9 +363,10 @@ module ordered_set_handler
   //this block exists to allow the state machine to return to idle and recieve
   //new packets
   always_comb begin : check_ordered_set
-    ts1_valid   = '0;
-    ts2_valid   = '0;
-    eieos_valid = '0;
+    ts1_valid           = '0;
+    ts2_valid           = '0;
+    eieos_valid         = '0;
+    polarity_inverted_c = '0;
     // idle_valid_c = '0;
     // buffered_ordered_set_c = buffered_ordered_set_r;
     if (check_ordered_set_r) begin
@@ -357,10 +377,21 @@ module ordered_set_handler
       // idle_valid_c = '1;
       //data rate based checks
       if (curr_data_rate_i < gen3) begin
-        if (ordered_set_r[8*7+:8] != TS1) begin
+        if (ordered_set_out_r[8*6+:8] == TS1 && ordered_set_out_r[8*7+:8] == TS1 && ordered_set_out_r[8*8+:8] == TS1 && ordered_set_out_r[8*9+:8] == TS1) begin
+          ts1_valid = '1;
+        end else if (ordered_set_out_r[8*6+:8] == TS1_INV && ordered_set_out_r[8*7+:8] == TS1_INV && ordered_set_out_r[8*8+:8] == TS1_INV && ordered_set_out_r[8*9+:8] == TS1_INV) begin
+          ts1_valid           = '1;
+          polarity_inverted_c = '1;
+        end else begin
           ts1_valid = '0;
         end
-        if (ordered_set_r[8*7+:8] != TS2) begin
+
+        if (ordered_set_out_r[8*6+:8] == TS2 && ordered_set_out_r[8*7+:8] == TS2 && ordered_set_out_r[8*8+:8] == TS2 && ordered_set_out_r[8*9+:8] == TS2) begin
+          ts2_valid = '1;
+        end else if (ordered_set_out_r[8*6+:8] == TS2_INV && ordered_set_out_r[8*7+:8] == TS2_INV && ordered_set_out_r[8*8+:8] == TS2_INV && ordered_set_out_r[8*9+:8] == TS2_INV) begin
+          ts2_valid           = '1;
+          polarity_inverted_c = '1;
+        end else begin
           ts2_valid = '0;
         end
         // //check for TS1 or TS2

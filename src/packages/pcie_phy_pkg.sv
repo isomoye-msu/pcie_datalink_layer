@@ -29,6 +29,8 @@ package pcie_phy_pkg;
   typedef enum logic [7:0] {
             TS1      = 8'h4A,
             TS2      = 8'h45,
+            TS1_INV  = 8'hB5,
+            TS2_INV  = 8'hBA,
             SDS      = 8'hE1,
             PAD_     = 8'hf7,  // K23.7
             SDS_BODY = 8'h55,
@@ -407,7 +409,7 @@ package pcie_phy_pkg;
       temp_os.n_fts      = '1;//8'h04;
       temp_os.ts_s6      =  ts_symbol6_union_t'(TSOS_);
       temp_os.ts_s7      =  ts_symbol6_union_t'(TSOS_);
-      temp_os.ts_s7      =  ts_symbol6_union_t'(TSOS_);
+
       temp_os.ts_s8      =  ts_symbol6_union_t'(TSOS_);
       temp_os.ts_s9      =  ts_symbol6_union_t'(TSOS_);
       for (int tsos_i = 0; tsos_i < 6; tsos_i++)
