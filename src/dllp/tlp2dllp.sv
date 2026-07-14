@@ -572,6 +572,9 @@ module tlp2dllp
       end
       ST_TLP_LAST: begin
         crc_in_c            = '1;
+        // Commit the completed TLP to retry management before advancing the
+        // 12-bit sequence number. This pulse was previously never asserted.
+        dllp_valid_o        = '1;
         next_transmit_seq_c = next_transmit_seq_r + 1'b1;
         next_state          = ST_IDLE;
       end

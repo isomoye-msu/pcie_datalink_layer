@@ -23,7 +23,9 @@ module pcie_datalink_layer
     parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
     parameter int RETRY_TLP_SIZE = 3,
-    parameter int MAX_PAYLOAD_SIZE = 256
+    parameter int MAX_PAYLOAD_SIZE = 256,
+    parameter int REPLAY_TIMER_CYCLES = 16'hAA0,
+    parameter int MAX_REPLAY_ATTEMPTS = 2
 ) (
     input  logic                  clk_i,              // Clock signal
     input  logic                  rst_i,              // Reset signal
@@ -212,7 +214,9 @@ module pcie_datalink_layer
       .USER_WIDTH(USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .S_COUNT(S_COUNT),
-      .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
+      .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
+      .REPLAY_TIMER_CYCLES(REPLAY_TIMER_CYCLES),
+      .MAX_REPLAY_ATTEMPTS(MAX_REPLAY_ATTEMPTS)
   ) dllp_transmit_inst (
       .clk_i         (clk_i),
       .rst_i         (rst_i || soft_reset),

@@ -14,6 +14,8 @@ module retry_management
     parameter int MAX_PAYLOAD_SIZE = 256,
     parameter int RAM_DATA_WIDTH   = 32,              // width of the data
     parameter int RETRY_TLP_SIZE   = 3,               // Width of AXI stream interfaces in bits
+    parameter int REPLAY_TIMER_CYCLES = 16'hAA0,
+    parameter int MAX_REPLAY_ATTEMPTS = 2,
 
     parameter int RAM_ADDR_WIDTH = $clog2(RAM_DATA_WIDTH)  // number of address bits
 ) (
@@ -37,7 +39,6 @@ module retry_management
 
   //maxbytesper tlp
   localparam int MaxTlpHdrSizeDW = 4;
-  localparam int RetryTimer = 16'hAA0;
   localparam int MaxBytesPerTLP = MAX_PAYLOAD_SIZE;
   localparam int MaxTlpTotalSizeDW = MaxTlpHdrSizeDW + MaxBytesPerTLP + 1;
 
@@ -58,17 +59,25 @@ module retry_management
   logic [               7:0]       next_retry_index_r;
   logic [RETRY_TLP_SIZE-1:0]       retry_valid_c;
   logic [RETRY_TLP_SIZE-1:0]       retry_valid_r;
-  logic                            free_retry_c;
-  logic                            free_retry_r;
   logic [RETRY_TLP_SIZE-1:0]       retrys_c;
   logic [RETRY_TLP_SIZE-1:0]       retrys_r;
-  logic [RETRY_TLP_SIZE-1:0]       retry_index_flag;
+  logic                            next_index_found;
   //sequence number signals
-  logic [              11:0]       store_seq_c;
-  logic [              11:0]       store_seq_r;
-  logic [              11:0]       seq_num_out;
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_c;
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_r;
+
+  // Outstanding windows are smaller than half of the 12-bit sequence space,
+  // so this modulo comparison remains unambiguous across 0xfff -> 0x000.
+  function automatic logic seq_acked(
+      input logic [11:0] sequence_number,
+      input logic [11:0] ack_number
+  );
+    logic [11:0] distance;
+    begin
+      distance = ack_number - sequence_number;
+      seq_acked = !distance[11];
+    end
+  endfunction
 
   //main  sequential block
   always_ff @(posedge clk_i) begin : main_sequential_block
@@ -77,68 +86,47 @@ module retry_management
       error_r            <= '0;
       next_retry_index_r <= '0;
       retry_valid_r      <= '0;
-      store_seq_r        <= '0;
-      free_retry_r       <= '0;
+      ack_seq_mem_r      <= '0;
     end else begin
       retrys_r           <= retrys_c;
       error_r            <= error_c;
       next_retry_index_r <= next_retry_index_c;
       retry_valid_r      <= retry_valid_c;
-      store_seq_r        <= store_seq_c;
-      free_retry_r       <= free_retry_c;
+      ack_seq_mem_r      <= ack_seq_mem_c;
     end
-    //non-resetable
-    ack_seq_mem_r <= ack_seq_mem_c;
   end
 
   //retry tracking combo block
   always_comb begin : retry_tracking_combo
     retrys_c           = retrys_r;
     next_retry_index_c = next_retry_index_r;
-    retry_index_flag   = '0;
+    next_index_found   = '0;
     for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
       ack_seq_mem_c[i] = ack_seq_mem_r[i];
     end
-    if (free_retry_r) begin  //check if incoming acked seq
+
+    // Apply an ACK before allocating a TLP arriving on the same cycle.  This
+    // permits a just-acknowledged FIFO slot to be reused without a bubble.
+    if (ack_nack_vld_i && ack_nack_i) begin
       for (int i = 0; i < RETRY_TLP_SIZE; i++) begin  //free retry
-        if (ack_seq_mem_r[i] == store_seq_r) begin
+        if (retrys_r[i] && seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
           retrys_c[i] = '0;
         end
       end
-    end else begin
-      if (tx_valid_i) begin  //wait for dllp layer to send a tlp
-        ack_seq_mem_c[next_retry_index_r] = tx_seq_num_i;
-        retrys_c[next_retry_index_r]      = '1;
-        for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
-          //check if there's a free retry fifo
-          if (!retrys_r[i] && (i != next_retry_index_r)) begin
-            retry_index_flag[i] = 1'b0;
-            //select lowest available index checking all indexes before
-            //this unrolled loop index
-            for (int j = 1; j < RETRY_TLP_SIZE; j++) begin
-              if (!retrys_r[j] && (j != next_retry_index_r) && (j < i)) begin
-                retry_index_flag[i] = 1'b1;
-              end
-            end
-            //this check ensures that either the zero index
-            //or the lowest index is selected
-            if (!retry_index_flag || i == 0) begin
-              next_retry_index_c = i;
-            end
-          end
-        end
-      end
     end
-  end
 
-  //retry free combo block
-  always_comb begin : retry_free_combo
-    free_retry_c = '0;
-    store_seq_c  = store_seq_r;
-    //check if tlp is acked or nacked
-    if (ack_nack_vld_i && ack_nack_i) begin
-      free_retry_c = '1;
-      store_seq_c  = ack_seq_num_i;
+    if (tx_valid_i && !retrys_c[next_retry_index_r]) begin
+      ack_seq_mem_c[next_retry_index_r] = tx_seq_num_i;
+      retrys_c[next_retry_index_r]      = '1;
+    end
+
+    // Select a bounded free slot.  Searching from zero also guarantees a
+    // deterministic wrap to slot zero after the last slot is consumed.
+    for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
+      if (!retrys_c[i] && !next_index_found) begin
+        next_retry_index_c = i;
+        next_index_found   = '1;
+      end
     end
   end
 
@@ -146,7 +134,9 @@ module retry_management
   //retry generate loop
   for (genvar i = 0; i < RETRY_TLP_SIZE; i++) begin : gen_retry_counters
     retry_st_e curr_state, next_state;
-    logic [1:0] replay_cnt_c, replay_cnt_r;
+    localparam int REPLAY_COUNT_WIDTH =
+        (MAX_REPLAY_ATTEMPTS < 2) ? 1 : $clog2(MAX_REPLAY_ATTEMPTS + 1);
+    logic [REPLAY_COUNT_WIDTH-1:0] replay_cnt_c, replay_cnt_r;
     logic [31:0] retry_timer_c, retry_timer_r;
     //main sequential block
     always @(posedge clk_i) begin : retry_buffer_seq
@@ -171,32 +161,53 @@ module retry_management
         ST_RETRY_IDLE: begin
           //wait for tlp send at this retry index
           if (retrys_r[i]) begin
-            next_state = ST_CNT_RETRY;
+            retry_timer_c = '0;
+            if (ack_nack_vld_i && ack_nack_i &&
+                seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
+              retry_valid_c[i] = '0;
+            end else if (ack_nack_vld_i && !ack_nack_i) begin
+              retry_valid_c[i] = '1;
+              next_state       = ST_REPLAY;
+            end else begin
+              next_state = ST_CNT_RETRY;
+            end
           end
         end
         ST_CNT_RETRY: begin
-          //timer counter increment
-          retry_timer_c = retry_timer_r + 1'b1;
           if (!retrys_r[i]) begin  //check if tlp acked
             replay_cnt_c  = '0;
             retry_timer_c = '0;
             next_state    = ST_RETRY_IDLE;
-          end  //check if timeout reached
-          else if (retry_timer_r >= RetryTimer) begin
-            replay_cnt_c  = replay_cnt_r + 1'b1;
+          end else if (ack_nack_vld_i && ack_nack_i &&
+                       seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
+            replay_cnt_c     = '0;
+            retry_timer_c    = '0;
+            retry_valid_c[i] = '0;
+            next_state       = ST_RETRY_IDLE;
+          end else if (ack_nack_vld_i && !ack_nack_i) begin
+            // NAK wins if it arrives on the timeout boundary.
             retry_timer_c = '0;
-            if (replay_cnt_r == '1) begin
-              //have a fit
+            retry_valid_c[i] = '1;
+            next_state       = ST_REPLAY;
+          end else if (REPLAY_TIMER_CYCLES == 0 ||
+                       retry_timer_r == REPLAY_TIMER_CYCLES - 1) begin
+            retry_timer_c = '0;
+            if (replay_cnt_r >= MAX_REPLAY_ATTEMPTS) begin
               next_state = ST_RETRY_ERR;
             end else begin
+              replay_cnt_c     = replay_cnt_r + 1'b1;
               next_state       = ST_REPLAY;
               retry_valid_c[i] = '1;
             end
+          end else begin
+            retry_timer_c = retry_timer_r + 1'b1;
           end
         end
         ST_REPLAY: begin
           //check if late ack
-          if (!retrys_r[i]) begin
+          if (!retrys_r[i] ||
+              (ack_nack_vld_i && ack_nack_i &&
+               seq_acked(ack_seq_mem_r[i], ack_seq_num_i))) begin
             replay_cnt_c     = '0;
             retry_timer_c    = '0;
             retry_valid_c[i] = '0;
@@ -212,7 +223,9 @@ module retry_management
         end
         ST_WAIT_REPLAY: begin
           //wait for an ack..
-          if (!retrys_r[i]) begin
+          if (!retrys_r[i] ||
+              (ack_nack_vld_i && ack_nack_i &&
+               seq_acked(ack_seq_mem_r[i], ack_seq_num_i))) begin
             replay_cnt_c  = '0;
             retry_timer_c = '0;
             next_state    = ST_RETRY_IDLE;
@@ -226,6 +239,13 @@ module retry_management
         end
         ST_RETRY_ERR: begin
           error_c[i] = '1;
+          if (!retrys_r[i]) begin
+            error_c[i]       = '0;
+            replay_cnt_c     = '0;
+            retry_timer_c    = '0;
+            retry_valid_c[i] = '0;
+            next_state       = ST_RETRY_IDLE;
+          end
         end
         default: begin
         end
@@ -235,7 +255,7 @@ module retry_management
 
 
   assign retry_err_o       = (error_r != '0);
-  assign retry_available_o = (retrys_r != '1);
+  assign retry_available_o = !(&retrys_r);
   assign retry_index_o     = next_retry_index_r;
   assign retry_valid_o     = retry_valid_r;
 

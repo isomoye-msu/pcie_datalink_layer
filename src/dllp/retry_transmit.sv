@@ -118,7 +118,8 @@ module retry_transmit
     m_axis_tlast     = '0;
     m_axis_tuser     = '0;
     retry_complete_o = '0;
-    retry_ack_c      = retry_ack_r;
+    // Acknowledgement is a pulse for each accepted replay request.
+    retry_ack_c      = '0;
     retry_index_c    = retry_index_r;
     mutex_flag       = '0;
     case (tlp_curr_state)
@@ -134,7 +135,7 @@ module retry_transmit
                   mutex_flag[i] = 1'b1;
                 end
               end
-              if (!mutex_flag || i == 0) begin
+              if (!mutex_flag[i]) begin
                 retry_ack_c[i] = '1;
                 retry_index_c  = i;
               end

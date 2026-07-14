@@ -80,10 +80,10 @@ module dllp2tlp
   logic                                  tlp_nullified_c;
   logic                                  tlp_nullified_r;
   //transmit sequence logic
-  logic                 [          15:0] next_transmit_seq_c;
-  logic                 [          15:0] next_transmit_seq_r;
-  logic                 [          15:0] next_expected_seq_num_c;
-  logic                 [          15:0] next_expected_seq_num_r;
+  logic                 [          11:0] next_transmit_seq_c;
+  logic                 [          11:0] next_transmit_seq_r;
+  logic                 [          11:0] next_expected_seq_num_c;
+  logic                 [          11:0] next_expected_seq_num_r;
   logic                 [          11:0] ackd_transmit_seq_c;
   logic                 [          15:0] ackd_transmit_seq_r;
   //crc helper signals
@@ -164,6 +164,17 @@ module dllp2tlp
   logic                 [           7:0] cplh_credits_consumed_r;
   logic                 [          11:0] cpld_credits_consumed_c;
   logic                 [          11:0] cpld_credits_consumed_r;
+
+  function automatic logic keep_is_contiguous(
+      input logic [KEEP_WIDTH-1:0] keep
+  );
+    logic [KEEP_WIDTH:0] extended_keep;
+    begin
+      extended_keep = {1'b0, keep};
+      keep_is_contiguous = (keep != '0) &&
+                           ((extended_keep & (extended_keep + 1'b1)) == '0);
+    end
+  endfunction
 
   //main sequential block
   always_ff @(posedge clk_i) begin : main_seq
@@ -290,9 +301,20 @@ module dllp2tlp
     case (curr_state)
       ST_IDLE: begin
         skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE) && s_axis_tvalid;
-        if (skid_axis_tready && skid_axis_tvalid && !skid_axis_tlast) begin
+        if (skid_axis_tready && skid_axis_tvalid) begin
           //store incoming sequence number
-          next_transmit_seq_c = {skid_axis_tdata[7:0], skid_axis_tdata[15:8]};
+          next_transmit_seq_c = {skid_axis_tdata[3:0], skid_axis_tdata[15:8]};
+          // Clear packet-local error state. Reserved sequence bits mark this
+          // frame bad but must not poison a later valid TLP.
+          tlp_nullified_c = |skid_axis_tdata[7:4] ||
+                            (skid_axis_tkeep != {KEEP_WIDTH{1'b1}});
+          if (skid_axis_tlast) begin
+            // A complete link TLP cannot contain sequence, header and LCRC in
+            // one beat. Consume the truncated frame and request a replay.
+            tlp_nullified_c = '1;
+            fc_start_c      = '1;
+            next_state      = ST_SEND_ACK;
+          end else begin
           tlp_axis_tdata      = skid_axis_tdata[15:0];
           crc_byte_select     = 2'b11;
           crc_calculated_c    = crc_output_16;
@@ -307,12 +329,16 @@ module dllp2tlp
           word_count_c        = '0;
           //state control
           next_state          = ST_CHECK_TLP_TYPE;
+          end
         end
       end
       ST_CHECK_TLP_TYPE: begin
         skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
         crc_byte_select  = 2'b11;
         if (skid_axis_tready) begin
+          if (skid_axis_tkeep != {KEEP_WIDTH{1'b1}} || skid_axis_tlast) begin
+            tlp_nullified_c = '1;
+          end
           crc_calculated_c = crc_output_32;
           //shift data_in to account for seq_num offset
           tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
@@ -335,14 +361,26 @@ module dllp2tlp
           end else if (tlp_dw0.byte0 inside {CplD, CplDLk}) begin
             tlp_is_cpld_c = '1;
           end
-          //next state
-          next_state = ST_TLP_STREAM;
+          if (skid_axis_tlast) begin
+            // Close and mark the partially buffered frame so FRAME_FIFO drops
+            // it, then emit a NAK for the truncated packet.
+            tlp_axis_tlast = '1;
+            tlp_axis_tuser = '1;
+            fc_start_c     = '1;
+            next_state     = ST_SEND_ACK;
+          end else begin
+            next_state = ST_TLP_STREAM;
+          end
         end
       end
       ST_TLP_STREAM: begin
         skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
         crc_byte_select  = 2'b11;
         if (tlp_axis_tready && s_axis_tvalid) begin
+          if ((!s_axis_tlast && skid_axis_tkeep != {KEEP_WIDTH{1'b1}}) ||
+              (s_axis_tlast && !keep_is_contiguous(skid_axis_tkeep))) begin
+            tlp_nullified_c = '1;
+          end
           crc_calculated_c = crc_output_32;
           tlp_axis_tdata   = {skid_axis_tdata[15:0], pipeline_axis_tdata[31:16]};
           tlp_axis_tkeep   = skid_axis_tkeep;
@@ -435,7 +473,8 @@ module dllp2tlp
         //   end
         // endcase
         //check crc
-        if ((lcrc32d32 == crc_from_tlp_r) && (next_expected_seq_num_r == next_transmit_seq_r)) begin
+        if (!tlp_nullified_r && (lcrc32d32 == crc_from_tlp_r) &&
+            (next_expected_seq_num_r == next_transmit_seq_r)) begin
           if (tlp_is_nph_r) begin
             nph_credits_consumed_c = nph_credits_consumed_r + 8'h1;
           end else if (tlp_is_npd_r) begin
@@ -465,7 +504,9 @@ module dllp2tlp
         fc_start_c = '1;
         if (start_flow_control_ack_i) begin
           if (!tlp_nullified_r) begin
-            next_expected_seq_num_c = next_expected_seq_num_r + 32'h1;
+            // Twelve-bit arithmetic provides the required 0xfff -> 0x000
+            // rollover without widening into the reserved sequence bits.
+            next_expected_seq_num_c = next_expected_seq_num_r + 12'h001;
           end
           tlp_is_nph_c     = '0;
           tlp_is_pd_c      = '0;
@@ -650,7 +691,7 @@ module dllp2tlp
   );
 
   //output assignments
-  assign next_transmit_seq_o    = next_transmit_seq_r;
+  assign next_transmit_seq_o    = {4'b0000, next_transmit_seq_r};
   assign tlp_nullified_o        = tlp_nullified_r;
   assign ph_credits_consumed_o  = ph_credits_consumed_r;
   assign pd_credits_consumed_o  = pd_credits_consumed_r;
