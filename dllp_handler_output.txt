@@ -1,0 +1,773 @@
+vcs -full64 -sverilog -timescale=1ns/1ps -debug_access+all -kdb -lca +v2k -top tb_dllp_handler src/packages/pcie_datalink_pkg.sv src/crc/pcie_dllp_crc8.v src/crc/pcie_datalink_crc.sv src/verilog-axis/rtl/axis_register.v src/dllp/dllp_handler.sv tb/dllp/tb_dllp_handler.sv -o simv -l compile.log
+                         Chronologic VCS (TM)
+       Version X-2025.06-SP1_Full64 -- Fri Jul 10 13:19:50 2026
+
+                    Copyright (c) 1991 - 2025 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+
+Warning-[LCA_FEATURES_ENABLED] Usage warning
+  LCA features enabled by '-lca' argument on the command line.  For more 
+  information regarding list of LCA features please refer to Chapter "LCA 
+  features" in the VCS Release Notes
+
+Parsing design file 'src/packages/pcie_datalink_pkg.sv'
+Parsing design file 'src/crc/pcie_dllp_crc8.v'
+Parsing design file 'src/crc/pcie_datalink_crc.sv'
+Parsing design file 'src/verilog-axis/rtl/axis_register.v'
+Parsing design file 'src/dllp/dllp_handler.sv'
+Parsing design file 'tb/dllp/tb_dllp_handler.sv'
+Top Level Modules:
+       tb_dllp_handler
+TimeScale is 1 ns / 1 ps
+Starting vcs inline pass...
+5 modules and 0 UDP read.
+recompiling package pcie_datalink_pkg
+recompiling module pcie_dllp_crc8
+recompiling module pcie_datalink_crc
+recompiling module dllp_handler
+recompiling module tb_dllp_handler
+All of 5 modules done
+make[1]: Entering directory '/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/csrc'
+make[1]: Leaving directory '/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/csrc'
+make[1]: Entering directory '/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/csrc'
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+if [ -x ../simv ]; then chmod a-x ../simv; fi
+g++  -o ../simv      -rdynamic  -Wl,-rpath='$ORIGIN'/simv.daidir -Wl,-rpath=./simv.daidir -Wl,-rpath=/eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib -L/eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1   objs/amcQw_d.o  _710502_archive_1.so  SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o            -lvirsim -lerrorinf -lsnpsmalloc -lvfs      -lvcsnew -ldistsimclient -lsimprofile -luclinative /eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib/vcs_tls.o   -Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive       _vcs_pli_stub_.o   /eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib/vcs_save_restore_new.o /eda/installed_tools/verdi/X-2025.06/share/PLI/VCS/LINUX64/pli.a -ldl  -lc -lm -lpthread -ldl 
+../simv up to date
+make[1]: Leaving directory '/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/csrc'
+CPU time: .672 seconds to compile + .331 seconds to elab + .280 seconds to link
+Verdi KDB elaboration done and the database successfully generated
+./simv -l sim.log
+Info: [VCS_SAVE_RESTORE_INFO] ASLR (Address Space Layout Randomization) is detected on the machine. To enable $save functionality, ASLR will be switched off and simv re-executed.
+Please use '-no_save' simv switch to avoid re-execution or '-suppress=ASLR_DETECTED_INFO' to suppress this message.
+Chronologic VCS simulator copyright 1991-2025
+Contains Synopsys proprietary information.
+Compiler version X-2025.06-SP1_Full64; Runtime version X-2025.06-SP1_Full64;  Jul 10 13:19 2026
+[60000] PASS reset seq_num_vld_o                           value=0x0
+[60000] PASS reset seq_num_acknack_o                       value=0x0
+[60000] PASS reset fc1_values_stored_o                     value=0x0
+[60000] PASS reset fc2_values_stored_o                     value=0x0
+[60000] PASS reset first_feature_exchange                  value=0x0
+[60000] PASS reset tx_fc_ph_o                              value=0x0
+[60000] PASS reset tx_fc_pd_o                              value=0x0
+[60000] PASS reset tx_fc_nph_o                             value=0x0
+[60000] PASS reset tx_fc_npd_o                             value=0x0
+[60000] PASS reset tx_fc_cplh_o                            value=0x0
+[60000] PASS reset tx_fc_cpld_o                            value=0x0
+[168000] PASS no seq pulse during phy_link_up_i low
+[240000] PASS seq_num_o                                     value=0x0
+[240000] PASS seq_num_acknack_o                             value=0x1
+[352000] PASS seq_num_vld_o pulse observed
+[392000] PASS seq_num_o                                     value=0x5a5
+[392000] PASS seq_num_acknack_o                             value=0x1
+[504000] PASS seq_num_vld_o pulse observed
+[544000] PASS seq_num_o                                     value=0xfff
+[544000] PASS seq_num_acknack_o                             value=0x1
+[656000] PASS seq_num_vld_o pulse observed
+[696000] PASS seq_num_o                                     value=0x321
+[696000] PASS seq_num_acknack_o                             value=0x0
+[808000] PASS seq_num_vld_o pulse observed
+[848000] PASS seq_num_o                                     value=0xffe
+[848000] PASS seq_num_acknack_o                             value=0x0
+[960000] PASS seq_num_vld_o pulse observed
+[1080000] PASS no seq pulse during bad DLLP CRC
+[1200000] PASS no seq pulse during s_axis_tuser[0] low
+[1200000] PASS feature latch initially low                   value=0x0
+[1276000] PASS feature latch after Feature_Exchange          value=0x1
+[1368000] PASS no seq pulse during unsupported PM_Enter_L1
+[1368000] PASS feature latch remains high                    value=0x1
+[1444000] PASS fc1 incomplete after InitFC1_P                value=0x0
+[1444000] PASS after InitFC1_P tx_fc_ph_o                    value=0x11
+[1444000] PASS after InitFC1_P tx_fc_pd_o                    value=0x111
+[1444000] PASS after InitFC1_P tx_fc_nph_o                   value=0x0
+[1444000] PASS after InitFC1_P tx_fc_npd_o                   value=0x0
+[1444000] PASS after InitFC1_P tx_fc_cplh_o                  value=0x0
+[1444000] PASS after InitFC1_P tx_fc_cpld_o                  value=0x0
+[1524000] PASS fc1 incomplete after InitFC1_P + NP           value=0x0
+[1524000] PASS after InitFC1_NP tx_fc_ph_o                   value=0x11
+[1524000] PASS after InitFC1_NP tx_fc_pd_o                   value=0x111
+[1524000] PASS after InitFC1_NP tx_fc_nph_o                  value=0x22
+[1524000] PASS after InitFC1_NP tx_fc_npd_o                  value=0x222
+[1524000] PASS after InitFC1_NP tx_fc_cplh_o                 value=0x0
+[1524000] PASS after InitFC1_NP tx_fc_cpld_o                 value=0x0
+[1604000] PASS fc1 complete after P + NP + Cpl               value=0x1
+[1604000] PASS after InitFC1_Cpl tx_fc_ph_o                  value=0x11
+[1604000] PASS after InitFC1_Cpl tx_fc_pd_o                  value=0x111
+[1604000] PASS after InitFC1_Cpl tx_fc_nph_o                 value=0x22
+[1604000] PASS after InitFC1_Cpl tx_fc_npd_o                 value=0x222
+[1604000] PASS after InitFC1_Cpl tx_fc_cplh_o                value=0x33
+[1604000] PASS after InitFC1_Cpl tx_fc_cpld_o                value=0x333
+[1684000] PASS fc2 incomplete after InitFC2_P                value=0x0
+[1764000] PASS fc2 incomplete after InitFC2_P + NP           value=0x0
+[1844000] PASS fc2 complete after P + NP + Cpl               value=0x1
+[1844000] PASS after InitFC2_Cpl tx_fc_ph_o                  value=0x44
+[1844000] PASS after InitFC2_Cpl tx_fc_pd_o                  value=0x444
+[1844000] PASS after InitFC2_Cpl tx_fc_nph_o                 value=0x55
+[1844000] PASS after InitFC2_Cpl tx_fc_npd_o                 value=0x555
+[1844000] PASS after InitFC2_Cpl tx_fc_cplh_o                value=0x66
+[1844000] PASS after InitFC2_Cpl tx_fc_cpld_o                value=0x666
+[2000000] PASS update_fc_o pulse observed
+[2000000] PASS after UpdateFC_P tx_fc_ph_o                   value=0xaa
+[2000000] PASS after UpdateFC_P tx_fc_pd_o                   value=0xaaa
+[2000000] PASS after UpdateFC_P tx_fc_nph_o                  value=0x55
+[2000000] PASS after UpdateFC_P tx_fc_npd_o                  value=0x555
+[2000000] PASS after UpdateFC_P tx_fc_cplh_o                 value=0x66
+[2000000] PASS after UpdateFC_P tx_fc_cpld_o                 value=0x666
+[2152000] PASS update_fc_o pulse observed
+[2152000] PASS after UpdateFC_NP tx_fc_ph_o                  value=0xaa
+[2152000] PASS after UpdateFC_NP tx_fc_pd_o                  value=0xaaa
+[2152000] PASS after UpdateFC_NP tx_fc_nph_o                 value=0xbb
+[2152000] PASS after UpdateFC_NP tx_fc_npd_o                 value=0xbbb
+[2152000] PASS after UpdateFC_NP tx_fc_cplh_o                value=0x66
+[2152000] PASS after UpdateFC_NP tx_fc_cpld_o                value=0x666
+[2304000] PASS update_fc_o pulse observed
+[2304000] PASS after UpdateFC_Cpl tx_fc_ph_o                 value=0xaa
+[2304000] PASS after UpdateFC_Cpl tx_fc_pd_o                 value=0xaaa
+[2304000] PASS after UpdateFC_Cpl tx_fc_nph_o                value=0xbb
+[2304000] PASS after UpdateFC_Cpl tx_fc_npd_o                value=0xbbb
+[2304000] PASS after UpdateFC_Cpl tx_fc_cplh_o               value=0xcc
+[2304000] PASS after UpdateFC_Cpl tx_fc_cpld_o               value=0xccc
+[2424000] PASS no update_fc_o pulse during bad CRC UpdateFC_P
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_ph_o           value=0xaa
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_pd_o           value=0xaaa
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_nph_o          value=0xbb
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_npd_o          value=0xbbb
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_cplh_o         value=0xcc
+[2424000] PASS after bad CRC UpdateFC_P tx_fc_cpld_o         value=0xccc
+[2576000] PASS update_fc_o pulse observed
+[2576000] PASS UpdateFC_P min hdr                            value=0x0
+[2576000] PASS UpdateFC_P min data                           value=0x0
+[2728000] PASS update_fc_o pulse observed
+[2728000] PASS UpdateFC_P max hdr                            value=0xff
+[2728000] PASS UpdateFC_P max data                           value=0xfff
+[2768000] PASS seq_num_o                                     value=0xa5a
+[2768000] PASS seq_num_acknack_o                             value=0x0
+[2880000] PASS seq_num_vld_o pulse observed
+[2920000] PASS seq_num_o                                     value=0xa5b
+[2920000] PASS seq_num_acknack_o                             value=0x1
+[3032000] PASS seq_num_vld_o pulse observed
+[3072000] PASS seq_num_o                                     value=0xa58
+[3072000] PASS seq_num_acknack_o                             value=0x0
+[3184000] PASS seq_num_vld_o pulse observed
+[3224000] PASS seq_num_o                                     value=0xa59
+[3224000] PASS seq_num_acknack_o                             value=0x1
+[3336000] PASS seq_num_vld_o pulse observed
+[3376000] PASS seq_num_o                                     value=0xa5e
+[3376000] PASS seq_num_acknack_o                             value=0x0
+[3488000] PASS seq_num_vld_o pulse observed
+[3528000] PASS seq_num_o                                     value=0xa5f
+[3528000] PASS seq_num_acknack_o                             value=0x1
+[3640000] PASS seq_num_vld_o pulse observed
+[3680000] PASS seq_num_o                                     value=0xa5c
+[3680000] PASS seq_num_acknack_o                             value=0x0
+[3792000] PASS seq_num_vld_o pulse observed
+[3832000] PASS seq_num_o                                     value=0xa5d
+[3832000] PASS seq_num_acknack_o                             value=0x1
+[3944000] PASS seq_num_vld_o pulse observed
+[3984000] PASS seq_num_o                                     value=0xa52
+[3984000] PASS seq_num_acknack_o                             value=0x0
+[4096000] PASS seq_num_vld_o pulse observed
+[4136000] PASS seq_num_o                                     value=0xa53
+[4136000] PASS seq_num_acknack_o                             value=0x1
+[4248000] PASS seq_num_vld_o pulse observed
+[4288000] PASS seq_num_o                                     value=0xa50
+[4288000] PASS seq_num_acknack_o                             value=0x0
+[4400000] PASS seq_num_vld_o pulse observed
+[4440000] PASS seq_num_o                                     value=0xa51
+[4440000] PASS seq_num_acknack_o                             value=0x1
+[4552000] PASS seq_num_vld_o pulse observed
+[4592000] PASS seq_num_o                                     value=0xa56
+[4592000] PASS seq_num_acknack_o                             value=0x0
+[4704000] PASS seq_num_vld_o pulse observed
+[4744000] PASS seq_num_o                                     value=0xa57
+[4744000] PASS seq_num_acknack_o                             value=0x1
+[4856000] PASS seq_num_vld_o pulse observed
+[4896000] PASS seq_num_o                                     value=0xa54
+[4896000] PASS seq_num_acknack_o                             value=0x0
+[5008000] PASS seq_num_vld_o pulse observed
+[5048000] PASS seq_num_o                                     value=0xa55
+[5048000] PASS seq_num_acknack_o                             value=0x1
+[5160000] PASS seq_num_vld_o pulse observed
+[5200000] PASS seq_num_o                                     value=0xa4a
+[5200000] PASS seq_num_acknack_o                             value=0x0
+[5312000] PASS seq_num_vld_o pulse observed
+[5352000] PASS seq_num_o                                     value=0xa4b
+[5352000] PASS seq_num_acknack_o                             value=0x1
+[5464000] PASS seq_num_vld_o pulse observed
+[5504000] PASS seq_num_o                                     value=0xa48
+[5504000] PASS seq_num_acknack_o                             value=0x0
+[5616000] PASS seq_num_vld_o pulse observed
+[5656000] PASS seq_num_o                                     value=0xa49
+[5656000] PASS seq_num_acknack_o                             value=0x1
+[5768000] PASS seq_num_vld_o pulse observed
+[5808000] PASS seq_num_o                                     value=0xa4e
+[5808000] PASS seq_num_acknack_o                             value=0x0
+[5920000] PASS seq_num_vld_o pulse observed
+[5960000] PASS seq_num_o                                     value=0xa4f
+[5960000] PASS seq_num_acknack_o                             value=0x1
+[6072000] PASS seq_num_vld_o pulse observed
+[6112000] PASS seq_num_o                                     value=0xa4c
+[6112000] PASS seq_num_acknack_o                             value=0x0
+[6224000] PASS seq_num_vld_o pulse observed
+[6264000] PASS seq_num_o                                     value=0xa4d
+[6264000] PASS seq_num_acknack_o                             value=0x1
+[6376000] PASS seq_num_vld_o pulse observed
+[6416000] PASS seq_num_o                                     value=0xa42
+[6416000] PASS seq_num_acknack_o                             value=0x0
+[6528000] PASS seq_num_vld_o pulse observed
+[6568000] PASS seq_num_o                                     value=0xa43
+[6568000] PASS seq_num_acknack_o                             value=0x1
+[6680000] PASS seq_num_vld_o pulse observed
+[6720000] PASS seq_num_o                                     value=0xa40
+[6720000] PASS seq_num_acknack_o                             value=0x0
+[6832000] PASS seq_num_vld_o pulse observed
+[6872000] PASS seq_num_o                                     value=0xa41
+[6872000] PASS seq_num_acknack_o                             value=0x1
+[6984000] PASS seq_num_vld_o pulse observed
+[7024000] PASS seq_num_o                                     value=0xa46
+[7024000] PASS seq_num_acknack_o                             value=0x0
+[7136000] PASS seq_num_vld_o pulse observed
+[7176000] PASS seq_num_o                                     value=0xa47
+[7176000] PASS seq_num_acknack_o                             value=0x1
+[7288000] PASS seq_num_vld_o pulse observed
+[7328000] PASS seq_num_o                                     value=0xa44
+[7328000] PASS seq_num_acknack_o                             value=0x0
+[7440000] PASS seq_num_vld_o pulse observed
+[7480000] PASS seq_num_o                                     value=0xa45
+[7480000] PASS seq_num_acknack_o                             value=0x1
+[7592000] PASS seq_num_vld_o pulse observed
+[7632000] PASS seq_num_o                                     value=0xa7a
+[7632000] PASS seq_num_acknack_o                             value=0x0
+[7744000] PASS seq_num_vld_o pulse observed
+[7784000] PASS seq_num_o                                     value=0xa7b
+[7784000] PASS seq_num_acknack_o                             value=0x1
+[7896000] PASS seq_num_vld_o pulse observed
+[7936000] PASS seq_num_o                                     value=0xa78
+[7936000] PASS seq_num_acknack_o                             value=0x0
+[8048000] PASS seq_num_vld_o pulse observed
+[8088000] PASS seq_num_o                                     value=0xa79
+[8088000] PASS seq_num_acknack_o                             value=0x1
+[8200000] PASS seq_num_vld_o pulse observed
+[8240000] PASS seq_num_o                                     value=0xa7e
+[8240000] PASS seq_num_acknack_o                             value=0x0
+[8352000] PASS seq_num_vld_o pulse observed
+[8392000] PASS seq_num_o                                     value=0xa7f
+[8392000] PASS seq_num_acknack_o                             value=0x1
+[8504000] PASS seq_num_vld_o pulse observed
+[8544000] PASS seq_num_o                                     value=0xa7c
+[8544000] PASS seq_num_acknack_o                             value=0x0
+[8656000] PASS seq_num_vld_o pulse observed
+[8696000] PASS seq_num_o                                     value=0xa7d
+[8696000] PASS seq_num_acknack_o                             value=0x1
+[8808000] PASS seq_num_vld_o pulse observed
+[8848000] PASS seq_num_o                                     value=0xa72
+[8848000] PASS seq_num_acknack_o                             value=0x0
+[8960000] PASS seq_num_vld_o pulse observed
+[9000000] PASS seq_num_o                                     value=0xa73
+[9000000] PASS seq_num_acknack_o                             value=0x1
+[9112000] PASS seq_num_vld_o pulse observed
+[9152000] PASS seq_num_o                                     value=0xa70
+[9152000] PASS seq_num_acknack_o                             value=0x0
+[9264000] PASS seq_num_vld_o pulse observed
+[9304000] PASS seq_num_o                                     value=0xa71
+[9304000] PASS seq_num_acknack_o                             value=0x1
+[9416000] PASS seq_num_vld_o pulse observed
+[9456000] PASS seq_num_o                                     value=0xa76
+[9456000] PASS seq_num_acknack_o                             value=0x0
+[9568000] PASS seq_num_vld_o pulse observed
+[9608000] PASS seq_num_o                                     value=0xa77
+[9608000] PASS seq_num_acknack_o                             value=0x1
+[9720000] PASS seq_num_vld_o pulse observed
+[9760000] PASS seq_num_o                                     value=0xa74
+[9760000] PASS seq_num_acknack_o                             value=0x0
+[9872000] PASS seq_num_vld_o pulse observed
+[9912000] PASS seq_num_o                                     value=0xa75
+[9912000] PASS seq_num_acknack_o                             value=0x1
+[10024000] PASS seq_num_vld_o pulse observed
+[10064000] PASS seq_num_o                                     value=0xa6a
+[10064000] PASS seq_num_acknack_o                             value=0x0
+[10176000] PASS seq_num_vld_o pulse observed
+[10216000] PASS seq_num_o                                     value=0xa6b
+[10216000] PASS seq_num_acknack_o                             value=0x1
+[10328000] PASS seq_num_vld_o pulse observed
+[10368000] PASS seq_num_o                                     value=0xa68
+[10368000] PASS seq_num_acknack_o                             value=0x0
+[10480000] PASS seq_num_vld_o pulse observed
+[10520000] PASS seq_num_o                                     value=0xa69
+[10520000] PASS seq_num_acknack_o                             value=0x1
+[10632000] PASS seq_num_vld_o pulse observed
+[10672000] PASS seq_num_o                                     value=0xa6e
+[10672000] PASS seq_num_acknack_o                             value=0x0
+[10784000] PASS seq_num_vld_o pulse observed
+[10824000] PASS seq_num_o                                     value=0xa6f
+[10824000] PASS seq_num_acknack_o                             value=0x1
+[10936000] PASS seq_num_vld_o pulse observed
+[10976000] PASS seq_num_o                                     value=0xa6c
+[10976000] PASS seq_num_acknack_o                             value=0x0
+[11088000] PASS seq_num_vld_o pulse observed
+[11128000] PASS seq_num_o                                     value=0xa6d
+[11128000] PASS seq_num_acknack_o                             value=0x1
+[11240000] PASS seq_num_vld_o pulse observed
+[11280000] PASS seq_num_o                                     value=0xa62
+[11280000] PASS seq_num_acknack_o                             value=0x0
+[11392000] PASS seq_num_vld_o pulse observed
+[11432000] PASS seq_num_o                                     value=0xa63
+[11432000] PASS seq_num_acknack_o                             value=0x1
+[11544000] PASS seq_num_vld_o pulse observed
+[11584000] PASS seq_num_o                                     value=0xa60
+[11584000] PASS seq_num_acknack_o                             value=0x0
+[11696000] PASS seq_num_vld_o pulse observed
+[11736000] PASS seq_num_o                                     value=0xa61
+[11736000] PASS seq_num_acknack_o                             value=0x1
+[11848000] PASS seq_num_vld_o pulse observed
+[11888000] PASS seq_num_o                                     value=0xa66
+[11888000] PASS seq_num_acknack_o                             value=0x0
+[12000000] PASS seq_num_vld_o pulse observed
+[12040000] PASS seq_num_o                                     value=0xa67
+[12040000] PASS seq_num_acknack_o                             value=0x1
+[12152000] PASS seq_num_vld_o pulse observed
+[12192000] PASS seq_num_o                                     value=0xa64
+[12192000] PASS seq_num_acknack_o                             value=0x0
+[12304000] PASS seq_num_vld_o pulse observed
+[12344000] PASS seq_num_o                                     value=0xa65
+[12344000] PASS seq_num_acknack_o                             value=0x1
+[12456000] PASS seq_num_vld_o pulse observed
+[12480000] PASS saturated Gen1 burst seq_num_o                value=0x3c0
+[12480000] PASS saturated Gen1 burst acknack                  value=0x0
+[12504000] PASS saturated Gen1 burst seq_num_o                value=0x3c1
+[12504000] PASS saturated Gen1 burst acknack                  value=0x1
+[12528000] PASS saturated Gen1 burst seq_num_o                value=0x3c2
+[12528000] PASS saturated Gen1 burst acknack                  value=0x0
+[12552000] PASS saturated Gen1 burst seq_num_o                value=0x3c3
+[12552000] PASS saturated Gen1 burst acknack                  value=0x1
+[12576000] PASS saturated Gen1 burst seq_num_o                value=0x3c4
+[12576000] PASS saturated Gen1 burst acknack                  value=0x0
+[12600000] PASS saturated Gen1 burst seq_num_o                value=0x3c5
+[12600000] PASS saturated Gen1 burst acknack                  value=0x1
+[12624000] PASS saturated Gen1 burst seq_num_o                value=0x3c6
+[12624000] PASS saturated Gen1 burst acknack                  value=0x0
+[12648000] PASS saturated Gen1 burst seq_num_o                value=0x3c7
+[12648000] PASS saturated Gen1 burst acknack                  value=0x1
+[12672000] PASS saturated Gen1 burst seq_num_o                value=0x3c8
+[12672000] PASS saturated Gen1 burst acknack                  value=0x0
+[12696000] PASS saturated Gen1 burst seq_num_o                value=0x3c9
+[12696000] PASS saturated Gen1 burst acknack                  value=0x1
+[12720000] PASS saturated Gen1 burst seq_num_o                value=0x3ca
+[12720000] PASS saturated Gen1 burst acknack                  value=0x0
+[12744000] PASS saturated Gen1 burst seq_num_o                value=0x3cb
+[12744000] PASS saturated Gen1 burst acknack                  value=0x1
+[12768000] PASS saturated Gen1 burst seq_num_o                value=0x3cc
+[12768000] PASS saturated Gen1 burst acknack                  value=0x0
+[12792000] PASS saturated Gen1 burst seq_num_o                value=0x3cd
+[12792000] PASS saturated Gen1 burst acknack                  value=0x1
+[12816000] PASS saturated Gen1 burst seq_num_o                value=0x3ce
+[12816000] PASS saturated Gen1 burst acknack                  value=0x0
+[12840000] PASS saturated Gen1 burst seq_num_o                value=0x3cf
+[12840000] PASS saturated Gen1 burst acknack                  value=0x1
+[12864000] PASS saturated Gen1 burst seq_num_o                value=0x3d0
+[12864000] PASS saturated Gen1 burst acknack                  value=0x0
+[12888000] PASS saturated Gen1 burst seq_num_o                value=0x3d1
+[12888000] PASS saturated Gen1 burst acknack                  value=0x1
+[12912000] PASS saturated Gen1 burst seq_num_o                value=0x3d2
+[12912000] PASS saturated Gen1 burst acknack                  value=0x0
+[12936000] PASS saturated Gen1 burst seq_num_o                value=0x3d3
+[12936000] PASS saturated Gen1 burst acknack                  value=0x1
+[12960000] PASS saturated Gen1 burst seq_num_o                value=0x3d4
+[12960000] PASS saturated Gen1 burst acknack                  value=0x0
+[12984000] PASS saturated Gen1 burst seq_num_o                value=0x3d5
+[12984000] PASS saturated Gen1 burst acknack                  value=0x1
+[13008000] PASS saturated Gen1 burst seq_num_o                value=0x3d6
+[13008000] PASS saturated Gen1 burst acknack                  value=0x0
+[13032000] PASS saturated Gen1 burst seq_num_o                value=0x3d7
+[13032000] PASS saturated Gen1 burst acknack                  value=0x1
+[13056000] PASS saturated Gen1 burst seq_num_o                value=0x3d8
+[13056000] PASS saturated Gen1 burst acknack                  value=0x0
+[13080000] PASS saturated Gen1 burst seq_num_o                value=0x3d9
+[13080000] PASS saturated Gen1 burst acknack                  value=0x1
+[13104000] PASS saturated Gen1 burst seq_num_o                value=0x3da
+[13104000] PASS saturated Gen1 burst acknack                  value=0x0
+[13128000] PASS saturated Gen1 burst seq_num_o                value=0x3db
+[13128000] PASS saturated Gen1 burst acknack                  value=0x1
+[13152000] PASS saturated Gen1 burst seq_num_o                value=0x3dc
+[13152000] PASS saturated Gen1 burst acknack                  value=0x0
+[13176000] PASS saturated Gen1 burst seq_num_o                value=0x3dd
+[13176000] PASS saturated Gen1 burst acknack                  value=0x1
+[13200000] PASS saturated Gen1 burst seq_num_o                value=0x3de
+[13200000] PASS saturated Gen1 burst acknack                  value=0x0
+[13224000] PASS saturated Gen1 burst seq_num_o                value=0x3df
+[13224000] PASS saturated Gen1 burst acknack                  value=0x1
+[13248000] PASS saturated Gen1 burst seq_num_o                value=0x3e0
+[13248000] PASS saturated Gen1 burst acknack                  value=0x0
+[13272000] PASS saturated Gen1 burst seq_num_o                value=0x3e1
+[13272000] PASS saturated Gen1 burst acknack                  value=0x1
+[13296000] PASS saturated Gen1 burst seq_num_o                value=0x3e2
+[13296000] PASS saturated Gen1 burst acknack                  value=0x0
+[13320000] PASS saturated Gen1 burst seq_num_o                value=0x3e3
+[13320000] PASS saturated Gen1 burst acknack                  value=0x1
+[13344000] PASS saturated Gen1 burst seq_num_o                value=0x3e4
+[13344000] PASS saturated Gen1 burst acknack                  value=0x0
+[13368000] PASS saturated Gen1 burst seq_num_o                value=0x3e5
+[13368000] PASS saturated Gen1 burst acknack                  value=0x1
+[13392000] PASS saturated Gen1 burst seq_num_o                value=0x3e6
+[13392000] PASS saturated Gen1 burst acknack                  value=0x0
+[13416000] PASS saturated Gen1 burst seq_num_o                value=0x3e7
+[13416000] PASS saturated Gen1 burst acknack                  value=0x1
+[13440000] PASS saturated Gen1 burst seq_num_o                value=0x3e8
+[13440000] PASS saturated Gen1 burst acknack                  value=0x0
+[13464000] PASS saturated Gen1 burst seq_num_o                value=0x3e9
+[13464000] PASS saturated Gen1 burst acknack                  value=0x1
+[13488000] PASS saturated Gen1 burst seq_num_o                value=0x3ea
+[13488000] PASS saturated Gen1 burst acknack                  value=0x0
+[13512000] PASS saturated Gen1 burst seq_num_o                value=0x3eb
+[13512000] PASS saturated Gen1 burst acknack                  value=0x1
+[13536000] PASS saturated Gen1 burst seq_num_o                value=0x3ec
+[13536000] PASS saturated Gen1 burst acknack                  value=0x0
+[13560000] PASS saturated Gen1 burst seq_num_o                value=0x3ed
+[13560000] PASS saturated Gen1 burst acknack                  value=0x1
+[13584000] PASS saturated Gen1 burst seq_num_o                value=0x3ee
+[13584000] PASS saturated Gen1 burst acknack                  value=0x0
+[13608000] PASS saturated Gen1 burst seq_num_o                value=0x3ef
+[13608000] PASS saturated Gen1 burst acknack                  value=0x1
+[13632000] PASS saturated Gen1 burst seq_num_o                value=0x3f0
+[13632000] PASS saturated Gen1 burst acknack                  value=0x0
+[13656000] PASS saturated Gen1 burst seq_num_o                value=0x3f1
+[13656000] PASS saturated Gen1 burst acknack                  value=0x1
+[13680000] PASS saturated Gen1 burst seq_num_o                value=0x3f2
+[13680000] PASS saturated Gen1 burst acknack                  value=0x0
+[13704000] PASS saturated Gen1 burst seq_num_o                value=0x3f3
+[13704000] PASS saturated Gen1 burst acknack                  value=0x1
+[13728000] PASS saturated Gen1 burst seq_num_o                value=0x3f4
+[13728000] PASS saturated Gen1 burst acknack                  value=0x0
+[13752000] PASS saturated Gen1 burst seq_num_o                value=0x3f5
+[13752000] PASS saturated Gen1 burst acknack                  value=0x1
+[13776000] PASS saturated Gen1 burst seq_num_o                value=0x3f6
+[13776000] PASS saturated Gen1 burst acknack                  value=0x0
+[13800000] PASS saturated Gen1 burst seq_num_o                value=0x3f7
+[13800000] PASS saturated Gen1 burst acknack                  value=0x1
+[13824000] PASS saturated Gen1 burst seq_num_o                value=0x3f8
+[13824000] PASS saturated Gen1 burst acknack                  value=0x0
+[13848000] PASS saturated Gen1 burst seq_num_o                value=0x3f9
+[13848000] PASS saturated Gen1 burst acknack                  value=0x1
+[13872000] PASS saturated Gen1 burst seq_num_o                value=0x3fa
+[13872000] PASS saturated Gen1 burst acknack                  value=0x0
+[13896000] PASS saturated Gen1 burst seq_num_o                value=0x3fb
+[13896000] PASS saturated Gen1 burst acknack                  value=0x1
+[13920000] PASS saturated Gen1 burst seq_num_o                value=0x3fc
+[13920000] PASS saturated Gen1 burst acknack                  value=0x0
+[13944000] PASS saturated Gen1 burst seq_num_o                value=0x3fd
+[13944000] PASS saturated Gen1 burst acknack                  value=0x1
+[13968000] PASS saturated Gen1 burst seq_num_o                value=0x3fe
+[13968000] PASS saturated Gen1 burst acknack                  value=0x0
+[13992000] PASS saturated Gen1 burst seq_num_o                value=0x3ff
+[13992000] PASS saturated Gen1 burst acknack                  value=0x1
+[14016000] PASS saturated Gen1 burst seq_num_o                value=0x380
+[14016000] PASS saturated Gen1 burst acknack                  value=0x0
+[14040000] PASS saturated Gen1 burst seq_num_o                value=0x381
+[14040000] PASS saturated Gen1 burst acknack                  value=0x1
+[14064000] PASS saturated Gen1 burst seq_num_o                value=0x382
+[14064000] PASS saturated Gen1 burst acknack                  value=0x0
+[14088000] PASS saturated Gen1 burst seq_num_o                value=0x383
+[14088000] PASS saturated Gen1 burst acknack                  value=0x1
+[14112000] PASS saturated Gen1 burst seq_num_o                value=0x384
+[14112000] PASS saturated Gen1 burst acknack                  value=0x0
+[14136000] PASS saturated Gen1 burst seq_num_o                value=0x385
+[14136000] PASS saturated Gen1 burst acknack                  value=0x1
+[14160000] PASS saturated Gen1 burst seq_num_o                value=0x386
+[14160000] PASS saturated Gen1 burst acknack                  value=0x0
+[14184000] PASS saturated Gen1 burst seq_num_o                value=0x387
+[14184000] PASS saturated Gen1 burst acknack                  value=0x1
+[14208000] PASS saturated Gen1 burst seq_num_o                value=0x388
+[14208000] PASS saturated Gen1 burst acknack                  value=0x0
+[14232000] PASS saturated Gen1 burst seq_num_o                value=0x389
+[14232000] PASS saturated Gen1 burst acknack                  value=0x1
+[14256000] PASS saturated Gen1 burst seq_num_o                value=0x38a
+[14256000] PASS saturated Gen1 burst acknack                  value=0x0
+[14280000] PASS saturated Gen1 burst seq_num_o                value=0x38b
+[14280000] PASS saturated Gen1 burst acknack                  value=0x1
+[14304000] PASS saturated Gen1 burst seq_num_o                value=0x38c
+[14304000] PASS saturated Gen1 burst acknack                  value=0x0
+[14328000] PASS saturated Gen1 burst seq_num_o                value=0x38d
+[14328000] PASS saturated Gen1 burst acknack                  value=0x1
+[14352000] PASS saturated Gen1 burst seq_num_o                value=0x38e
+[14352000] PASS saturated Gen1 burst acknack                  value=0x0
+[14376000] PASS saturated Gen1 burst seq_num_o                value=0x38f
+[14376000] PASS saturated Gen1 burst acknack                  value=0x1
+[14400000] PASS saturated Gen1 burst seq_num_o                value=0x390
+[14400000] PASS saturated Gen1 burst acknack                  value=0x0
+[14424000] PASS saturated Gen1 burst seq_num_o                value=0x391
+[14424000] PASS saturated Gen1 burst acknack                  value=0x1
+[14448000] PASS saturated Gen1 burst seq_num_o                value=0x392
+[14448000] PASS saturated Gen1 burst acknack                  value=0x0
+[14472000] PASS saturated Gen1 burst seq_num_o                value=0x393
+[14472000] PASS saturated Gen1 burst acknack                  value=0x1
+[14496000] PASS saturated Gen1 burst seq_num_o                value=0x394
+[14496000] PASS saturated Gen1 burst acknack                  value=0x0
+[14520000] PASS saturated Gen1 burst seq_num_o                value=0x395
+[14520000] PASS saturated Gen1 burst acknack                  value=0x1
+[14544000] PASS saturated Gen1 burst seq_num_o                value=0x396
+[14544000] PASS saturated Gen1 burst acknack                  value=0x0
+[14568000] PASS saturated Gen1 burst seq_num_o                value=0x397
+[14568000] PASS saturated Gen1 burst acknack                  value=0x1
+[14592000] PASS saturated Gen1 burst seq_num_o                value=0x398
+[14592000] PASS saturated Gen1 burst acknack                  value=0x0
+[14616000] PASS saturated Gen1 burst seq_num_o                value=0x399
+[14616000] PASS saturated Gen1 burst acknack                  value=0x1
+[14640000] PASS saturated Gen1 burst seq_num_o                value=0x39a
+[14640000] PASS saturated Gen1 burst acknack                  value=0x0
+[14664000] PASS saturated Gen1 burst seq_num_o                value=0x39b
+[14664000] PASS saturated Gen1 burst acknack                  value=0x1
+[14688000] PASS saturated Gen1 burst seq_num_o                value=0x39c
+[14688000] PASS saturated Gen1 burst acknack                  value=0x0
+[14712000] PASS saturated Gen1 burst seq_num_o                value=0x39d
+[14712000] PASS saturated Gen1 burst acknack                  value=0x1
+[14736000] PASS saturated Gen1 burst seq_num_o                value=0x39e
+[14736000] PASS saturated Gen1 burst acknack                  value=0x0
+[14760000] PASS saturated Gen1 burst seq_num_o                value=0x39f
+[14760000] PASS saturated Gen1 burst acknack                  value=0x1
+[14784000] PASS saturated Gen1 burst seq_num_o                value=0x3a0
+[14784000] PASS saturated Gen1 burst acknack                  value=0x0
+[14808000] PASS saturated Gen1 burst seq_num_o                value=0x3a1
+[14808000] PASS saturated Gen1 burst acknack                  value=0x1
+[14832000] PASS saturated Gen1 burst seq_num_o                value=0x3a2
+[14832000] PASS saturated Gen1 burst acknack                  value=0x0
+[14856000] PASS saturated Gen1 burst seq_num_o                value=0x3a3
+[14856000] PASS saturated Gen1 burst acknack                  value=0x1
+[14880000] PASS saturated Gen1 burst seq_num_o                value=0x3a4
+[14880000] PASS saturated Gen1 burst acknack                  value=0x0
+[14904000] PASS saturated Gen1 burst seq_num_o                value=0x3a5
+[14904000] PASS saturated Gen1 burst acknack                  value=0x1
+[14928000] PASS saturated Gen1 burst seq_num_o                value=0x3a6
+[14928000] PASS saturated Gen1 burst acknack                  value=0x0
+[14952000] PASS saturated Gen1 burst seq_num_o                value=0x3a7
+[14952000] PASS saturated Gen1 burst acknack                  value=0x1
+[14976000] PASS saturated Gen1 burst seq_num_o                value=0x3a8
+[14976000] PASS saturated Gen1 burst acknack                  value=0x0
+[15000000] PASS saturated Gen1 burst seq_num_o                value=0x3a9
+[15000000] PASS saturated Gen1 burst acknack                  value=0x1
+[15024000] PASS saturated Gen1 burst seq_num_o                value=0x3aa
+[15024000] PASS saturated Gen1 burst acknack                  value=0x0
+[15048000] PASS saturated Gen1 burst seq_num_o                value=0x3ab
+[15048000] PASS saturated Gen1 burst acknack                  value=0x1
+[15072000] PASS saturated Gen1 burst seq_num_o                value=0x3ac
+[15072000] PASS saturated Gen1 burst acknack                  value=0x0
+[15096000] PASS saturated Gen1 burst seq_num_o                value=0x3ad
+[15096000] PASS saturated Gen1 burst acknack                  value=0x1
+[15120000] PASS saturated Gen1 burst seq_num_o                value=0x3ae
+[15120000] PASS saturated Gen1 burst acknack                  value=0x0
+[15144000] PASS saturated Gen1 burst seq_num_o                value=0x3af
+[15144000] PASS saturated Gen1 burst acknack                  value=0x1
+[15168000] PASS saturated Gen1 burst seq_num_o                value=0x3b0
+[15168000] PASS saturated Gen1 burst acknack                  value=0x0
+[15192000] PASS saturated Gen1 burst seq_num_o                value=0x3b1
+[15192000] PASS saturated Gen1 burst acknack                  value=0x1
+[15216000] PASS saturated Gen1 burst seq_num_o                value=0x3b2
+[15216000] PASS saturated Gen1 burst acknack                  value=0x0
+[15240000] PASS saturated Gen1 burst seq_num_o                value=0x3b3
+[15240000] PASS saturated Gen1 burst acknack                  value=0x1
+[15264000] PASS saturated Gen1 burst seq_num_o                value=0x3b4
+[15264000] PASS saturated Gen1 burst acknack                  value=0x0
+[15288000] PASS saturated Gen1 burst seq_num_o                value=0x3b5
+[15288000] PASS saturated Gen1 burst acknack                  value=0x1
+[15312000] PASS saturated Gen1 burst seq_num_o                value=0x3b6
+[15312000] PASS saturated Gen1 burst acknack                  value=0x0
+[15336000] PASS saturated Gen1 burst seq_num_o                value=0x3b7
+[15336000] PASS saturated Gen1 burst acknack                  value=0x1
+[15360000] PASS saturated Gen1 burst seq_num_o                value=0x3b8
+[15360000] PASS saturated Gen1 burst acknack                  value=0x0
+[15384000] PASS saturated Gen1 burst seq_num_o                value=0x3b9
+[15384000] PASS saturated Gen1 burst acknack                  value=0x1
+[15408000] PASS saturated Gen1 burst seq_num_o                value=0x3ba
+[15408000] PASS saturated Gen1 burst acknack                  value=0x0
+[15432000] PASS saturated Gen1 burst seq_num_o                value=0x3bb
+[15432000] PASS saturated Gen1 burst acknack                  value=0x1
+[15456000] PASS saturated Gen1 burst seq_num_o                value=0x3bc
+[15456000] PASS saturated Gen1 burst acknack                  value=0x0
+[15480000] PASS saturated Gen1 burst seq_num_o                value=0x3bd
+[15480000] PASS saturated Gen1 burst acknack                  value=0x1
+[15504000] PASS saturated Gen1 burst seq_num_o                value=0x3be
+[15504000] PASS saturated Gen1 burst acknack                  value=0x0
+[15528000] PASS saturated Gen1 burst seq_num_o                value=0x3bf
+[15528000] PASS saturated Gen1 burst acknack                  value=0x1
+[15528000] PASS saturated Gen1 burst timeout                  value=0x0
+[15528000] PASS saturated Gen1 burst DLLP count               value=0x80
+[15528000] PASS saturated Gen1 burst accepted words           value=0x100
+[15528000] PASS saturated Gen1 AXIS payload rate 335958005 B/s >= 250000000 B/s
+[15528000] INFO saturated Gen1 burst accepted_words=256 stall_cycles=126
+[15592000] PASS no seq pulse during after saturated Gen1 burst
+[15744000] PASS update_fc_o pulse observed
+[15744000] PASS overload UpdateFC_P hdr                       value=0x10
+[15744000] PASS overload UpdateFC_P data                      value=0x100
+[15896000] PASS update_fc_o pulse observed
+[15896000] PASS overload UpdateFC_NP hdr                      value=0x40
+[15896000] PASS overload UpdateFC_NP data                     value=0x500
+[16048000] PASS update_fc_o pulse observed
+[16048000] PASS overload UpdateFC_Cpl hdr                     value=0x80
+[16048000] PASS overload UpdateFC_Cpl data                    value=0x900
+[16200000] PASS update_fc_o pulse observed
+[16200000] PASS overload UpdateFC_P hdr                       value=0x11
+[16200000] PASS overload UpdateFC_P data                      value=0x101
+[16352000] PASS update_fc_o pulse observed
+[16352000] PASS overload UpdateFC_NP hdr                      value=0x41
+[16352000] PASS overload UpdateFC_NP data                     value=0x501
+[16504000] PASS update_fc_o pulse observed
+[16504000] PASS overload UpdateFC_Cpl hdr                     value=0x81
+[16504000] PASS overload UpdateFC_Cpl data                    value=0x901
+[16656000] PASS update_fc_o pulse observed
+[16656000] PASS overload UpdateFC_P hdr                       value=0x12
+[16656000] PASS overload UpdateFC_P data                      value=0x102
+[16808000] PASS update_fc_o pulse observed
+[16808000] PASS overload UpdateFC_NP hdr                      value=0x42
+[16808000] PASS overload UpdateFC_NP data                     value=0x502
+[16960000] PASS update_fc_o pulse observed
+[16960000] PASS overload UpdateFC_Cpl hdr                     value=0x82
+[16960000] PASS overload UpdateFC_Cpl data                    value=0x902
+[17112000] PASS update_fc_o pulse observed
+[17112000] PASS overload UpdateFC_P hdr                       value=0x13
+[17112000] PASS overload UpdateFC_P data                      value=0x103
+[17264000] PASS update_fc_o pulse observed
+[17264000] PASS overload UpdateFC_NP hdr                      value=0x43
+[17264000] PASS overload UpdateFC_NP data                     value=0x503
+[17416000] PASS update_fc_o pulse observed
+[17416000] PASS overload UpdateFC_Cpl hdr                     value=0x83
+[17416000] PASS overload UpdateFC_Cpl data                    value=0x903
+[17568000] PASS update_fc_o pulse observed
+[17568000] PASS overload UpdateFC_P hdr                       value=0x14
+[17568000] PASS overload UpdateFC_P data                      value=0x104
+[17720000] PASS update_fc_o pulse observed
+[17720000] PASS overload UpdateFC_NP hdr                      value=0x44
+[17720000] PASS overload UpdateFC_NP data                     value=0x504
+[17872000] PASS update_fc_o pulse observed
+[17872000] PASS overload UpdateFC_Cpl hdr                     value=0x84
+[17872000] PASS overload UpdateFC_Cpl data                    value=0x904
+[18024000] PASS update_fc_o pulse observed
+[18024000] PASS overload UpdateFC_P hdr                       value=0x15
+[18024000] PASS overload UpdateFC_P data                      value=0x105
+[18176000] PASS update_fc_o pulse observed
+[18176000] PASS overload UpdateFC_NP hdr                      value=0x45
+[18176000] PASS overload UpdateFC_NP data                     value=0x505
+[18328000] PASS update_fc_o pulse observed
+[18328000] PASS overload UpdateFC_Cpl hdr                     value=0x85
+[18328000] PASS overload UpdateFC_Cpl data                    value=0x905
+[18480000] PASS update_fc_o pulse observed
+[18480000] PASS overload UpdateFC_P hdr                       value=0x16
+[18480000] PASS overload UpdateFC_P data                      value=0x106
+[18632000] PASS update_fc_o pulse observed
+[18632000] PASS overload UpdateFC_NP hdr                      value=0x46
+[18632000] PASS overload UpdateFC_NP data                     value=0x506
+[18784000] PASS update_fc_o pulse observed
+[18784000] PASS overload UpdateFC_Cpl hdr                     value=0x86
+[18784000] PASS overload UpdateFC_Cpl data                    value=0x906
+[18936000] PASS update_fc_o pulse observed
+[18936000] PASS overload UpdateFC_P hdr                       value=0x17
+[18936000] PASS overload UpdateFC_P data                      value=0x107
+[19088000] PASS update_fc_o pulse observed
+[19088000] PASS overload UpdateFC_NP hdr                      value=0x47
+[19088000] PASS overload UpdateFC_NP data                     value=0x507
+[19240000] PASS update_fc_o pulse observed
+[19240000] PASS overload UpdateFC_Cpl hdr                     value=0x87
+[19240000] PASS overload UpdateFC_Cpl data                    value=0x907
+[19392000] PASS update_fc_o pulse observed
+[19392000] PASS overload UpdateFC_P hdr                       value=0x18
+[19392000] PASS overload UpdateFC_P data                      value=0x108
+[19544000] PASS update_fc_o pulse observed
+[19544000] PASS overload UpdateFC_NP hdr                      value=0x48
+[19544000] PASS overload UpdateFC_NP data                     value=0x508
+[19696000] PASS update_fc_o pulse observed
+[19696000] PASS overload UpdateFC_Cpl hdr                     value=0x88
+[19696000] PASS overload UpdateFC_Cpl data                    value=0x908
+[19848000] PASS update_fc_o pulse observed
+[19848000] PASS overload UpdateFC_P hdr                       value=0x19
+[19848000] PASS overload UpdateFC_P data                      value=0x109
+[20000000] PASS update_fc_o pulse observed
+[20000000] PASS overload UpdateFC_NP hdr                      value=0x49
+[20000000] PASS overload UpdateFC_NP data                     value=0x509
+[20152000] PASS update_fc_o pulse observed
+[20152000] PASS overload UpdateFC_Cpl hdr                     value=0x89
+[20152000] PASS overload UpdateFC_Cpl data                    value=0x909
+[20304000] PASS update_fc_o pulse observed
+[20304000] PASS overload UpdateFC_P hdr                       value=0x1a
+[20304000] PASS overload UpdateFC_P data                      value=0x10a
+[20456000] PASS update_fc_o pulse observed
+[20456000] PASS overload UpdateFC_NP hdr                      value=0x4a
+[20456000] PASS overload UpdateFC_NP data                     value=0x50a
+[20608000] PASS update_fc_o pulse observed
+[20608000] PASS overload UpdateFC_Cpl hdr                     value=0x8a
+[20608000] PASS overload UpdateFC_Cpl data                    value=0x90a
+[20760000] PASS update_fc_o pulse observed
+[20760000] PASS overload UpdateFC_P hdr                       value=0x1b
+[20760000] PASS overload UpdateFC_P data                      value=0x10b
+[20912000] PASS update_fc_o pulse observed
+[20912000] PASS overload UpdateFC_NP hdr                      value=0x4b
+[20912000] PASS overload UpdateFC_NP data                     value=0x50b
+[21064000] PASS update_fc_o pulse observed
+[21064000] PASS overload UpdateFC_Cpl hdr                     value=0x8b
+[21064000] PASS overload UpdateFC_Cpl data                    value=0x90b
+[21216000] PASS update_fc_o pulse observed
+[21216000] PASS overload UpdateFC_P hdr                       value=0x1c
+[21216000] PASS overload UpdateFC_P data                      value=0x10c
+[21368000] PASS update_fc_o pulse observed
+[21368000] PASS overload UpdateFC_NP hdr                      value=0x4c
+[21368000] PASS overload UpdateFC_NP data                     value=0x50c
+[21520000] PASS update_fc_o pulse observed
+[21520000] PASS overload UpdateFC_Cpl hdr                     value=0x8c
+[21520000] PASS overload UpdateFC_Cpl data                    value=0x90c
+[21672000] PASS update_fc_o pulse observed
+[21672000] PASS overload UpdateFC_P hdr                       value=0x1d
+[21672000] PASS overload UpdateFC_P data                      value=0x10d
+[21824000] PASS update_fc_o pulse observed
+[21824000] PASS overload UpdateFC_NP hdr                      value=0x4d
+[21824000] PASS overload UpdateFC_NP data                     value=0x50d
+[21976000] PASS update_fc_o pulse observed
+[21976000] PASS overload UpdateFC_Cpl hdr                     value=0x8d
+[21976000] PASS overload UpdateFC_Cpl data                    value=0x90d
+[22128000] PASS update_fc_o pulse observed
+[22128000] PASS overload UpdateFC_P hdr                       value=0x1e
+[22128000] PASS overload UpdateFC_P data                      value=0x10e
+[22280000] PASS update_fc_o pulse observed
+[22280000] PASS overload UpdateFC_NP hdr                      value=0x4e
+[22280000] PASS overload UpdateFC_NP data                     value=0x50e
+[22432000] PASS update_fc_o pulse observed
+[22432000] PASS overload UpdateFC_Cpl hdr                     value=0x8e
+[22432000] PASS overload UpdateFC_Cpl data                    value=0x90e
+[22584000] PASS update_fc_o pulse observed
+[22584000] PASS overload UpdateFC_P hdr                       value=0x1f
+[22584000] PASS overload UpdateFC_P data                      value=0x10f
+[22736000] PASS update_fc_o pulse observed
+[22736000] PASS overload UpdateFC_NP hdr                      value=0x4f
+[22736000] PASS overload UpdateFC_NP data                     value=0x50f
+[22888000] PASS update_fc_o pulse observed
+[22888000] PASS overload UpdateFC_Cpl hdr                     value=0x8f
+[22888000] PASS overload UpdateFC_Cpl data                    value=0x90f
+[22948000] PASS post-reset fc1 clear                          value=0x0
+[22948000] PASS post-reset fc2 clear                          value=0x0
+[22948000] PASS post-reset feature clear                      value=0x0
+[22948000] PASS post-reset tx_fc_ph_o                         value=0x0
+[22948000] PASS post-reset tx_fc_pd_o                         value=0x0
+[22948000] PASS post-reset tx_fc_nph_o                        value=0x0
+[22948000] PASS post-reset tx_fc_npd_o                        value=0x0
+[22948000] PASS post-reset tx_fc_cplh_o                       value=0x0
+[22948000] PASS post-reset tx_fc_cpld_o                       value=0x0
+============================================================
+dllp_handler test complete: tests=759 errors=0
+============================================================
+RESULT: PASS
+$finish called from file "tb/dllp/tb_dllp_handler.sv", line 800.
+$finish at simulation time             22948000
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 22948000 ps
+CPU Time:      0.260 seconds;       Data structure size:   0.0Mb
+Fri Jul 10 13:19:52 2026

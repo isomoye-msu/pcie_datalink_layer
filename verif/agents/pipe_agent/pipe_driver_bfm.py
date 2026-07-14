@@ -146,7 +146,11 @@ class pipe_driver_bfm():
         self.dut.phy_rxstatus.value    = 0
         self.dut.phy_phystatus_rst.value = 0
         # self.dut.phy_rxstandby   = 0
-        self.dut.phy_rxelecidle.value  = 0
+        # A receiver starts in electrical idle.  Detect.Quiet requires a
+        # sampled 1 -> 0 transition before the LTSSM can enter Detect.Active.
+        self.dut.phy_rxelecidle.value = (
+            1 << int(self.dut.MAX_NUM_LANES)
+        ) - 1
         await RisingEdge(self.dut.clk_i)
         while(self.dut.rst_i == 0x1):
             await RisingEdge(self.dut.rst_i)
@@ -168,14 +172,33 @@ class pipe_driver_bfm():
         
 
     async def detect(self):
+        all_lanes_idle = (1 << int(self.dut.MAX_NUM_LANES)) - 1
+
+        # Do not sample DUT outputs until reset has completed; they may still
+        # contain unresolved values when this coroutine is first scheduled.
+        await FallingEdge(self.dut.rst_i)
+        await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
         while True:
+            # Model the far-end receiver leaving electrical idle.  The DUT
+            # asserts phy_txelecidle in Detect.Quiet and looks for this
+            # transition in the pipe_rx_usr_clk_i domain before it asserts
+            # phy_txdetectrx in Detect.Active.
+            while int(self.dut.phy_txelecidle.value) != all_lanes_idle:
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
+            self.dut.phy_rxelecidle.value = all_lanes_idle
+            for _ in range(2):
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            self.dut.phy_rxelecidle.value = 0
+
             while not self.dut.phy_txdetectrx == 0x1:
-                await RisingEdge(self.dut.clk_i)
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # for i in range(len(self.dut.phy_txdetectrx)):
                     # if(self.dut.phy_txdetectrx[i] == 0x1):
                         # break
             # assert 1 == 0
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             
             phy_status = 0x0
             phy_rxstatus = 0x0
@@ -198,7 +221,13 @@ class pipe_driver_bfm():
             self.dut.phy_rxstatus.value = phy_rxstatus
             # self.dut.phy_rxstatus.value = phy_rxstatus
             
-            await RisingEdge(self.dut.clk_i)
+            # phy_phystatus and phy_rxstatus are sampled in the
+            # pipe_rx_usr_clk_i domain.  Keep the receiver-detection result
+            # asserted long enough for both lane_status and the LTSSM's
+            # registered phystatus input to observe it.
+            for _ in range(3):
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
             self.dut.phy_phystatus.value = 0
             self.dut.phy_rxstatus.value = 0
 
@@ -206,7 +235,7 @@ class pipe_driver_bfm():
             #     self.dut.phy_phystatus.value[i] = 0x0
             # for i in range(int(self.dut.MAX_NUM_LANES)-1):
             #     self.dut.phy_rxstatus.value[i*3:(i*3)+3] = 0
-            await RisingEdge(self.dut.clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
             cocotb.start_soon(self.rolling_idle_data())
             
     async def polling(self):

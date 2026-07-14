@@ -1,0 +1,11 @@
+{"vcs1":{"timestamp_begin":1783714790.700553017, "rt":0.59, "ut":0.45, "st":0.16}}
+{"vcselab":{"timestamp_begin":1783714791.367153097, "rt":0.33, "ut":0.22, "st":0.08}}
+{"link":{"timestamp_begin":1783714791.752069189, "rt":0.21, "ut":0.15, "st":0.06}}
+{"SNPS_VCS_INTERNAL_ROOT_START_TIME": 1783714790.147517574}
+{"VCS_COMP_START_TIME": 1783714790.147517574}
+{"VCS_COMP_END_TIME": 1783714792.083949056}
+{"elabcom":{"timestamp_begin":1783714790.935419413,"rt":0.07, "ut":0.03, "st":0.03}}
+{"VCS_USER_OPTIONS": "-full64 -sverilog -timescale=1ns/1ps -debug_access+all -kdb -lca +v2k -top tb_dllp_handler src/packages/pcie_datalink_pkg.sv src/crc/pcie_dllp_crc8.v src/crc/pcie_datalink_crc.sv src/verilog-axis/rtl/axis_register.v src/dllp/dllp_handler.sv tb/dllp/tb_dllp_handler.sv -o simv -l compile.log"}
+{"kdb": {"elabcom_name":"<Kdbresolver>", "log_dir":"simv.daidir/kdbresolverLog"}}
+{"vcs1": {"peak_mem": 499996}}
+{"vcselab": {"peak_mem": 261292}}

@@ -108,7 +108,10 @@ module pcie_ltssm_downstream
   localparam int SixUsTimeOut = (6 * (10 ** 3)) / ClockPeriodNs;
   localparam int EigthHundredNanoSecondTimeOut = (800) / ClockPeriodNs;
   localparam int TwentyNanoSeconds = 20* (10 **0)/ ClockPeriodNs;  //(20 * (10** -9)); //)) / int'((1 / (CLK_RATE * $pow(10, 6))));
-  localparam int MinTS1sPolling = 1024;  //24;  //1024
+  // PCIe requires 1024 transmitted TS1s.  The cocotb link-up test uses the
+  // fast-simulation mode so the same state transition can be exercised
+  // inside its 25 us timeout.
+  localparam int MinTS1sPolling = SIM_FAST_LINK ? 24 : 1024;
 
   typedef enum logic [19:0] {
     ST_IDLE                           = 20'b00000000000000000000,
@@ -1610,7 +1613,7 @@ module pcie_ltssm_downstream
               if ((ordered_set_i[lane].link_num == PAD) && (ordered_set_i[lane].lane_num == PAD)) begin
                 ts1_cnt_c = (ts1_cnt >= 8'h8) ? 8'h8 : ts1_cnt + 1;
               end else begin
-                ts1_cnt_c <= ts1_cnt >= 8'h8 ? 8'h8 : '0;
+                ts1_cnt_c = ts1_cnt >= 8'h8 ? 8'h8 : '0;
               end
             end else if (ts2_valid_i[lane]) begin
               single_ts2_received_c = '1;

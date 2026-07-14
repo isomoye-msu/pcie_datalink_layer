@@ -380,7 +380,7 @@ module pcie_datalink_layer
   end
 
 
-  assign bus_num_o               = '0;
+//   assign bus_num_o               = '0;
   assign ext_tag_enable_o        = '0;
   assign rcb_128b_o              = '0;
   assign max_read_request_size_o = '0;

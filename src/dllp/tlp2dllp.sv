@@ -386,7 +386,7 @@ module tlp2dllp
         has_ph_credit = '0;
         has_pd_credit = '0;
         data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
-        data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
+        data_credits_required = data_length == '0 ? 16'd256 : (data_length + 16'd3) >> 2;
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
@@ -471,7 +471,7 @@ module tlp2dllp
         has_cplh_credit = '0;
         has_cpld_credit = '0;
         data_length = {tlp_dw0.byte2.Length1, tlp_dw0.byte3.Length0};
-        data_credits_required = data_length >> 2 == '0 ? 1'b1 : data_length >> 2;
+        data_credits_required = data_length == '0 ? 16'd256 : (data_length + 16'd3) >> 2;
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]

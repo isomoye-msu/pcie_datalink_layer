@@ -1,0 +1,3 @@
+Command Line: /eda/installed_tools/vcs/X-2025.06-SP1/linux64/bin/elabcom -simflow -KDBRESOLVER -simvdaidir simv.daidir -saveLevel -enable_vfsXCmp -enable_smXCmp -ssz -ssv -ssy -q -logdir simv.daidir/kdbresolverLog -elabcom_partial_load
+uname(Linux ssrl0.ece.uw.edu 4.18.0-553.81.1.el8_10.x86_64 #1 SMP Mon Oct 27 11:29:19 EDT 2025 x86_64)
+au time 0.085190 0.058339 0.034252 delta 107040768 107040768 total 380882944 380882944

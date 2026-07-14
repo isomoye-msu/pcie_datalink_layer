@@ -269,5 +269,3 @@ class pcie_enumeration_seq(pipe_base_seq, crv.Randomized):
     async def handle_tlp(self, tlp):
         await self.dev.upstream_port.other.ext_recv(tlp)
 
-
-

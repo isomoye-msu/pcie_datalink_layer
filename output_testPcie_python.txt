@@ -1,0 +1,179 @@
+2026-07-13 12:33:12,547 INFO     cocotb.tb: PCIe Data Link Layer relaxed functional test starting
+2026-07-13 12:33:12,547 INFO     cocotb.tb: Random seed: 0x50434945
+2026-07-13 12:33:12,547 INFO     cocotb.tb: Python test log: output_testPcie_python.txt
+2026-07-13 12:33:12,547 INFO     cocotb.tb: CLOCK_PERIOD_NS=8
+2026-07-13 12:33:12,547 INFO     cocotb.tb: AXIS_SEND_TIMEOUT_US=500
+2026-07-13 12:33:12,547 INFO     cocotb.tb: AXIS_RECV_TIMEOUT_US=500
+2026-07-13 12:33:12,547 INFO     cocotb.tb: FC_DRIVER_TIMEOUT_US=1000
+2026-07-13 12:33:12,547 INFO     cocotb.tb: FC_INITIALIZED_TIMEOUT_US=2000
+2026-07-13 12:33:12,547 INFO     cocotb.tb: Applying reset
+2026-07-13 12:33:12,689 INFO     cocotb.tb: Reset released
+2026-07-13 12:33:12,689 INFO     cocotb.tb: PHASE 1: link-up and flow-control initialization
+2026-07-13 12:33:12,689 INFO     cocotb.tb: Starting m_phy_axis monitor
+2026-07-13 12:33:12,701 INFO     cocotb.tb: Sending incoming INIT_FC1_P: 4000410052cc
+2026-07-13 12:33:12,754 INFO     cocotb.tb: Sending incoming INIT_FC1_NP: 50004100b9ab
+2026-07-13 12:33:12,798 INFO     cocotb.tb: Sending incoming INIT_FC1_CPL: 600041008403
+2026-07-13 12:33:12,798 INFO     cocotb.tb: Sending incoming INIT_FC2_P first: c000410028b3
+2026-07-13 12:33:12,804 INFO     cocotb.tb: m_phy_axis frame 1: length=6 data=40040040f88e
+2026-07-13 12:33:12,804 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,806 INFO     cocotb.tb: m_phy_axis frame 2: length=6 data=5004004013e9
+2026-07-13 12:33:12,806 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,807 INFO     cocotb.tb: Sending incoming INIT_FC2_P repeated: c000410028b3
+2026-07-13 12:33:12,808 INFO     cocotb.tb: m_phy_axis frame 3: length=6 data=60000000d892
+2026-07-13 12:33:12,809 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,811 INFO     cocotb.tb: m_phy_axis frame 4: length=6 data=40040040f88e
+2026-07-13 12:33:12,812 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,814 INFO     cocotb.tb: m_phy_axis frame 5: length=6 data=5004004013e9
+2026-07-13 12:33:12,814 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,815 INFO     cocotb.tb: m_phy_axis frame 6: length=6 data=60000000d892
+2026-07-13 12:33:12,816 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,817 INFO     cocotb.tb: Sending incoming INIT_FC2_NP: d0004100c3d4
+2026-07-13 12:33:12,819 INFO     cocotb.tb: m_phy_axis frame 7: length=6 data=40040040f88e
+2026-07-13 12:33:12,819 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,821 INFO     cocotb.tb: m_phy_axis frame 8: length=6 data=5004004013e9
+2026-07-13 12:33:12,821 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,823 INFO     cocotb.tb: m_phy_axis frame 9: length=6 data=60000000d892
+2026-07-13 12:33:12,823 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,825 INFO     cocotb.tb: m_phy_axis frame 10: length=6 data=40040040f88e
+2026-07-13 12:33:12,825 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,827 INFO     cocotb.tb: m_phy_axis frame 11: length=6 data=5004004013e9
+2026-07-13 12:33:12,827 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,829 INFO     cocotb.tb: m_phy_axis frame 12: length=6 data=60000000d892
+2026-07-13 12:33:12,829 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,832 INFO     cocotb.tb: m_phy_axis frame 13: length=6 data=40040040f88e
+2026-07-13 12:33:12,832 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,834 INFO     cocotb.tb: m_phy_axis frame 14: length=6 data=5004004013e9
+2026-07-13 12:33:12,834 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,835 INFO     cocotb.tb: m_phy_axis frame 15: length=6 data=60000000d892
+2026-07-13 12:33:12,836 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,838 INFO     cocotb.tb: m_phy_axis frame 16: length=6 data=40040040f88e
+2026-07-13 12:33:12,838 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=64, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,841 INFO     cocotb.tb: m_phy_axis frame 17: length=6 data=5004004013e9
+2026-07-13 12:33:12,841 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=80, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,843 INFO     cocotb.tb: m_phy_axis frame 18: length=6 data=60000000d892
+2026-07-13 12:33:12,843 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=96, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,847 INFO     cocotb.tb: m_phy_axis frame 19: length=6 data=c004004082f1
+2026-07-13 12:33:12,847 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,849 INFO     cocotb.tb: m_phy_axis frame 20: length=6 data=d00400406996
+2026-07-13 12:33:12,849 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,852 INFO     cocotb.tb: m_phy_axis frame 21: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,852 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,855 INFO     cocotb.tb: m_phy_axis frame 22: length=6 data=c004004082f1
+2026-07-13 12:33:12,855 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,858 INFO     cocotb.tb: m_phy_axis frame 23: length=6 data=d00400406996
+2026-07-13 12:33:12,858 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,860 INFO     cocotb.tb: m_phy_axis frame 24: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,860 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,863 INFO     cocotb.tb: m_phy_axis frame 25: length=6 data=c004004082f1
+2026-07-13 12:33:12,864 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,866 INFO     cocotb.tb: m_phy_axis frame 26: length=6 data=d00400406996
+2026-07-13 12:33:12,866 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,868 INFO     cocotb.tb: m_phy_axis frame 27: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,868 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,871 INFO     cocotb.tb: m_phy_axis frame 28: length=6 data=c004004082f1
+2026-07-13 12:33:12,871 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,873 INFO     cocotb.tb: m_phy_axis frame 29: length=6 data=d00400406996
+2026-07-13 12:33:12,873 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,875 INFO     cocotb.tb: m_phy_axis frame 30: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,875 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,877 INFO     cocotb.tb: m_phy_axis frame 31: length=6 data=c004004082f1
+2026-07-13 12:33:12,877 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,879 INFO     cocotb.tb: m_phy_axis frame 32: length=6 data=d00400406996
+2026-07-13 12:33:12,879 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,881 INFO     cocotb.tb: m_phy_axis frame 33: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,882 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,884 INFO     cocotb.tb: m_phy_axis frame 34: length=6 data=c004004082f1
+2026-07-13 12:33:12,884 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,886 INFO     cocotb.tb: m_phy_axis frame 35: length=6 data=d00400406996
+2026-07-13 12:33:12,886 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,888 INFO     cocotb.tb: m_phy_axis frame 36: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,888 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,890 INFO     cocotb.tb: m_phy_axis frame 37: length=6 data=c004004082f1
+2026-07-13 12:33:12,890 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,892 INFO     cocotb.tb: m_phy_axis frame 38: length=6 data=d00400406996
+2026-07-13 12:33:12,892 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,894 INFO     cocotb.tb: m_phy_axis frame 39: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,894 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,896 INFO     cocotb.tb: m_phy_axis frame 40: length=6 data=c004004082f1
+2026-07-13 12:33:12,897 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,898 INFO     cocotb.tb: m_phy_axis frame 41: length=6 data=d00400406996
+2026-07-13 12:33:12,898 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,900 INFO     cocotb.tb: m_phy_axis frame 42: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,900 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,903 INFO     cocotb.tb: m_phy_axis frame 43: length=6 data=c004004082f1
+2026-07-13 12:33:12,903 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,904 INFO     cocotb.tb: m_phy_axis frame 44: length=6 data=d00400406996
+2026-07-13 12:33:12,904 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,906 INFO     cocotb.tb: m_phy_axis frame 45: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,906 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,909 INFO     cocotb.tb: m_phy_axis frame 46: length=6 data=c004004082f1
+2026-07-13 12:33:12,909 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=192, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,910 INFO     cocotb.tb: Sending incoming INIT_FC2_CPL: e0004100fe7c
+2026-07-13 12:33:12,913 INFO     cocotb.tb: m_phy_axis frame 47: length=6 data=d00400406996
+2026-07-13 12:33:12,913 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=208, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,915 INFO     cocotb.tb: Flow-control initialization completed
+2026-07-13 12:33:12,915 INFO     cocotb.tb: m_phy_axis frame 48: length=6 data=e0000000a2ed
+2026-07-13 12:33:12,915 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=224, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,917 INFO     cocotb.tb: m_phy_axis frame 49: length=6 data=800400403fce
+2026-07-13 12:33:12,917 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,918 INFO     cocotb.tb: m_phy_axis frame 50: length=6 data=90040040d4a9
+2026-07-13 12:33:12,918 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,945 INFO     cocotb.tb: Observed 50 outgoing frame(s) during initialization
+2026-07-13 12:33:12,945 INFO     cocotb.tb: PHASE 2: transaction-layer TLP transmitted to PHY
+2026-07-13 12:33:12,955 INFO     cocotb.tb: m_phy_axis frame 51: length=30 data=000040000003010001ff000000040102030405060708090a0b0c21179249
+2026-07-13 12:33:12,955 INFO     cocotb.tb: Outgoing TLP path passed: raw_tlp_bytes=24 link_packet_bytes=30
+2026-07-13 12:33:12,956 INFO     cocotb.tb: PHASE 3: valid incoming TLP receive path
+2026-07-13 12:33:12,964 INFO     cocotb.tb: m_phy_axis frame 52: length=6 data=00000000b362
+2026-07-13 12:33:12,964 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=0, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,966 INFO     cocotb.tb: m_phy_axis frame 53: length=6 data=8004404172bb
+2026-07-13 12:33:12,966 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=17, data_scale=0, data_fc=65, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,967 INFO     cocotb.tb: Incoming TLP sequence 0 passed (16 bytes)
+2026-07-13 12:33:12,968 INFO     cocotb.tb: m_phy_axis frame 54: length=6 data=90040040d4a9
+2026-07-13 12:33:12,969 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,991 INFO     cocotb.tb: m_phy_axis frame 55: length=6 data=000000011279
+2026-07-13 12:33:12,992 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=0, seq=1, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,994 INFO     cocotb.tb: m_phy_axis frame 56: length=6 data=80048042a524
+2026-07-13 12:33:12,994 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=18, data_scale=0, data_fc=66, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,996 INFO     cocotb.tb: m_phy_axis frame 57: length=6 data=90040040d4a9
+2026-07-13 12:33:12,996 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:12,997 INFO     cocotb.tb: Incoming TLP sequence 1 passed (28 bytes)
+2026-07-13 12:33:13,019 INFO     cocotb.tb: m_phy_axis frame 58: length=6 data=00000002f155
+2026-07-13 12:33:13,019 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=0, seq=2, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,020 INFO     cocotb.tb: m_phy_axis frame 59: length=6 data=8004c0448f13
+2026-07-13 12:33:13,021 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,022 INFO     cocotb.tb: m_phy_axis frame 60: length=6 data=90040040d4a9
+2026-07-13 12:33:13,022 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,024 INFO     cocotb.tb: Incoming TLP sequence 2 passed (44 bytes)
+2026-07-13 12:33:13,035 INFO     cocotb.tb: PHASE 4: malformed incoming TLP rejection
+2026-07-13 12:33:13,040 INFO     cocotb.tb: m_phy_axis frame 61: length=6 data=100000005805
+2026-07-13 12:33:13,040 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=16, seq=0, vc=0, hdr_scale=0, hdr_fc=0, data_scale=0, data_fc=0, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,298 INFO     cocotb.tb: m_phy_axis frame 62: length=6 data=8004c0448f13
+2026-07-13 12:33:13,298 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,299 INFO     cocotb.tb: m_phy_axis frame 63: length=6 data=90040040d4a9
+2026-07-13 12:33:13,299 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,554 INFO     cocotb.tb: m_phy_axis frame 64: length=6 data=8004c0448f13
+2026-07-13 12:33:13,554 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,555 INFO     cocotb.tb: m_phy_axis frame 65: length=6 data=90040040d4a9
+2026-07-13 12:33:13,555 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,799 INFO     cocotb.tb: m_phy_axis frame 66: length=6 data=8004c0448f13
+2026-07-13 12:33:13,799 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:13,800 INFO     cocotb.tb: m_phy_axis frame 67: length=6 data=90040040d4a9
+2026-07-13 12:33:13,800 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,033 INFO     cocotb.tb: m_phy_axis frame 68: length=6 data=8004c0448f13
+2026-07-13 12:33:14,033 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,034 INFO     cocotb.tb: m_phy_axis frame 69: length=6 data=90040040d4a9
+2026-07-13 12:33:14,034 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,269 INFO     cocotb.tb: m_phy_axis frame 70: length=6 data=8004c0448f13
+2026-07-13 12:33:14,269 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,271 INFO     cocotb.tb: m_phy_axis frame 71: length=6 data=90040040d4a9
+2026-07-13 12:33:14,271 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,502 INFO     cocotb.tb: m_phy_axis frame 72: length=6 data=8004c0448f13
+2026-07-13 12:33:14,503 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,504 INFO     cocotb.tb: m_phy_axis frame 73: length=6 data=90040040d4a9
+2026-07-13 12:33:14,504 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=144, seq=0, vc=0, hdr_scale=0, hdr_fc=16, data_scale=0, data_fc=64, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,558 INFO     cocotb.tb: Malformed incoming TLP was correctly withheld from m_tlp_axis
+2026-07-13 12:33:14,746 INFO     cocotb.tb: m_phy_axis frame 74: length=6 data=8004c0448f13
+2026-07-13 12:33:14,746 INFO     cocotb.tb: Decoded outgoing DLLP: Dllp(type=128, seq=0, vc=0, hdr_scale=0, hdr_fc=19, data_scale=0, data_fc=68, feature_support=0, feature_ack=False)
+2026-07-13 12:33:14,746 INFO     cocotb.tb: Stopped m_phy_axis monitor after 74 frame(s)
+2026-07-13 12:33:14,746 INFO     cocotb.tb: TEST SUMMARY: FC frames sent=7, outgoing TLPs verified=1, incoming TLPs verified=3, malformed TLPs rejected=1
+2026-07-13 12:33:14,746 INFO     cocotb.tb: PCIe Data Link Layer relaxed functional test PASSED

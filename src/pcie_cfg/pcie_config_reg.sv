@@ -150,21 +150,25 @@ module pcie_config_reg (
 
 
     // AXI4-Lite Response Logic
-    struct {
-        logic is_wr;
-        logic err;
-        logic [31:0] rdata;
-    } axil_resp_buffer[2];
+    // Split response buffer struct into separate arrays to avoid Verilator
+    // limitation with non-blocking assignments to compound array elements
+    logic axil_resp_is_wr[2];
+    logic axil_resp_err[2];
+    logic [31:0] axil_resp_rdata[2];
 
     logic [1:0] axil_resp_wptr;
     logic [1:0] axil_resp_rptr;
 
+
+// Check the following errors
+
+
     always_ff @(posedge clk) begin
         if(rst) begin
             for(int i=0; i<2; i++) begin
-                axil_resp_buffer[i].is_wr <= '0;
-                axil_resp_buffer[i].err <= '0;
-                axil_resp_buffer[i].rdata <= '0;
+                axil_resp_is_wr[i] <= '0;
+                axil_resp_err[i] <= '0;
+                axil_resp_rdata[i] <= '0;
             end
             axil_resp_wptr <= '0;
             axil_resp_rptr <= '0;
@@ -172,13 +176,13 @@ module pcie_config_reg (
             // Store responses in buffer until AXI response channel accepts them
             if(cpuif_rd_ack || cpuif_wr_ack) begin
                 if(cpuif_rd_ack) begin
-                    axil_resp_buffer[axil_resp_wptr[0:0]].is_wr <= '0;
-                    axil_resp_buffer[axil_resp_wptr[0:0]].err <= cpuif_rd_err;
-                    axil_resp_buffer[axil_resp_wptr[0:0]].rdata <= cpuif_rd_data;
+                    axil_resp_is_wr[axil_resp_wptr[0:0]] <= '0;
+                    axil_resp_err[axil_resp_wptr[0:0]] <= cpuif_rd_err;
+                    axil_resp_rdata[axil_resp_wptr[0:0]] <= cpuif_rd_data;
 
                 end else if(cpuif_wr_ack) begin
-                    axil_resp_buffer[axil_resp_wptr[0:0]].is_wr <= '1;
-                    axil_resp_buffer[axil_resp_wptr[0:0]].err <= cpuif_wr_err;
+                    axil_resp_is_wr[axil_resp_wptr[0:0]] <= '1;
+                    axil_resp_err[axil_resp_wptr[0:0]] <= cpuif_wr_err;
                 end
                 axil_resp_wptr <= axil_resp_wptr + 1'b1;
             end
@@ -195,7 +199,7 @@ module pcie_config_reg (
         s_axil_bvalid = '0;
         s_axil_rvalid = '0;
         if(axil_resp_rptr != axil_resp_wptr) begin
-            if(axil_resp_buffer[axil_resp_rptr[0:0]].is_wr) begin
+            if(axil_resp_is_wr[axil_resp_rptr[0:0]]) begin
                 s_axil_bvalid = '1;
                 if(s_axil_bready) axil_resp_acked = '1;
             end else begin
@@ -204,8 +208,8 @@ module pcie_config_reg (
             end
         end
 
-        s_axil_rdata = axil_resp_buffer[axil_resp_rptr[0:0]].rdata;
-        if(axil_resp_buffer[axil_resp_rptr[0:0]].err) begin
+        s_axil_rdata = axil_resp_rdata[axil_resp_rptr[0:0]];
+        if(axil_resp_err[axil_resp_rptr[0:0]]) begin
             s_axil_bresp = 2'b10;
             s_axil_rresp = 2'b10;
         end else begin

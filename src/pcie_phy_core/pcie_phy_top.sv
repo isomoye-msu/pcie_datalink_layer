@@ -15,7 +15,8 @@ module pcie_phy_top
     parameter int LINK_NUM      = 0,
     parameter int IS_UPSTREAM   = 0,               //downstream by default
     parameter int CROSSLINK_EN  = 0,               //crosslink not supported
-    parameter int UPCONFIG_EN   = 0                //upconfig not supported
+    parameter int UPCONFIG_EN   = 0,               //upconfig not supported
+    parameter int SIM_FAST_LINK = 0                //shorten training only in simulation
 ) (
     input  logic                                    clk_i,              //! 100MHz clock signal
     input  logic                                    rst_i,              //! Reset signal
@@ -297,7 +298,8 @@ module pcie_phy_top
       .MAX_NUM_LANES(MAX_NUM_LANES),
       .DATA_WIDTH   (DATA_WIDTH),
       .KEEP_WIDTH   (KEEP_WIDTH),
-      .USER_WIDTH   (USER_WIDTH)
+      .USER_WIDTH   (USER_WIDTH),
+      .SIM_FAST_LINK(SIM_FAST_LINK)
   ) pcie_ltssm_downstream_inst (
       .clk_i              (pipe_rx_usr_clk_i),
       .rst_i              (rst_i || phy_phystatus_rst),

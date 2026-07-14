@@ -1197,17 +1197,21 @@ class pipe_monitor_bfm():
         await self.build_connect_finished_e.wait()
 
         while True:
-            while not all( LogicArray(self.dut.phy_txelecidle.value)[i] for i in range(self.dut.phy_txelecidle.value)):
-                await RisingEdge(self.dut.clk_i)
+            while not all(LogicArray(self.dut.phy_txelecidle.value)[i]
+                          for i in range(len(self.dut.phy_txelecidle.value))):
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
                 # uvm_root().logger.info(self.name + " " + "waiting3")
             self.proxy.notify_TxElecIdle_and_RxStandby_asserted()
-            while not all( not LogicArray(self.dut.phy_txelecidle.value)[i] for i in range(self.dut.phy_txelecidle.value)):
-                await RisingEdge(self.dut.clk_i)
-            await RisingEdge(self.dut.clk_i)
+            while not all(not LogicArray(self.dut.phy_txelecidle.value)[i]
+                          for i in range(len(self.dut.phy_txelecidle.value))):
+                await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
 
 
 
 
+    '''
+    # fusesoc fails at waiting3, due to an erroneous log
     async def polling_state_start(self):
         uvm_root().logger.info(self.name + " " + "waiting")
         flag = 0
@@ -1232,9 +1236,63 @@ class pipe_monitor_bfm():
             await RisingEdge(self.dut.clk_i)
             uvm_root().logger.info(self.name + " " + "waiting2")
 
-        while self.dut.phy_txelecidle.value != 0:
-            await RisingEdge(self.dut.clk_i)
-            uvm_root().logger.info(self.name + " " + "waiting3")
+        # while self.dut.phy_txelecidle.value != 0:
+        #     await RisingEdge(self.dut.clk_i)
+        #     uvm_root().logger.info(self.name + " " + "waiting3")
+
+
+        self.proxy.DUT_polling_state_start()'''
+
+    async def polling_state_start(self):
+        uvm_root().logger.info(self.name + " " + "waiting")
+
+        flag = 0
+        while flag == 0:
+            flag = 1
+
+            for i in range(len(self.dut.phy_phystatus.value)):
+                if LogicArray(self.dut.phy_phystatus.value)[i] == 0:
+                    flag = 0
+                    print(
+                        f"phystatus: "
+                        f"{LogicArray(self.dut.phy_phystatus.value)[i]}"
+                    )
+
+            uvm_root().logger.info(self.name + " " + "waiting1")
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
+        await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
+        while self.dut.phy_phystatus.value != 0:
+            print(f"phystatus: {self.dut.phy_phystatus.value}")
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+            uvm_root().logger.info(self.name + " " + "waiting2")
+
+        wait_cycles = 0
+        max_wait_cycles = 10000
+        while int(self.dut.phy_txelecidle.value) != 0:
+            if wait_cycles % 256 == 0:
+                uvm_root().logger.info(
+                    f"{self.name} waiting3: "
+                    f"phy_txelecidle={self.dut.phy_txelecidle.value.binstr}, "
+                    f"phy_phystatus={self.dut.phy_phystatus.value.binstr}, "
+                    f"ltssm_debug_state={self.dut.ltssm_debug_state.value.binstr}"
+                )
+
+            if wait_cycles >= max_wait_cycles:
+                raise AssertionError(
+                    f"Timed out waiting for the LTSSM to leave electrical idle: "
+                    f"phy_txelecidle={self.dut.phy_txelecidle.value.binstr}, "
+                    f"phy_phystatus={self.dut.phy_phystatus.value.binstr}, "
+                    f"ltssm_debug_state={self.dut.ltssm_debug_state.value.binstr}"
+                )
+
+            wait_cycles += 1
+            await RisingEdge(self.dut.pipe_rx_usr_clk_i)
+
+        uvm_root().logger.info(
+            f"{self.name}: phy_txelecidle reached zero"
+        )
 
         self.proxy.DUT_polling_state_start()
 

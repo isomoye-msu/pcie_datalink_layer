@@ -441,19 +441,19 @@ module dllp2tlp
           end else if (tlp_is_npd_r) begin
             nph_credits_consumed_c = nph_credits_consumed_r + 8'h1;
             npd_credits_consumed_c = npd_credits_consumed_r +
-          (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
+          (word_count_r == '0 ? 12'd256 : (word_count_r + 16'd3) >> 2);
           end else if (tlp_is_ph_r) begin
             ph_credits_consumed_c = ph_credits_consumed_r + 8'h1;
           end else if (tlp_is_pd_r) begin
             ph_credits_consumed_c = ph_credits_consumed_r + 8'h1;
             pd_credits_consumed_c = pd_credits_consumed_r +
-          (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
+          (word_count_r == '0 ? 12'd256 : (word_count_r + 16'd3) >> 2);
           end else if (tlp_is_cplh_r) begin
             cplh_credits_consumed_c = cplh_credits_consumed_r + 8'h1;
           end else if (tlp_is_cpld_r) begin
             cplh_credits_consumed_c = cplh_credits_consumed_r + 8'h1;
             cpld_credits_consumed_c = cpld_credits_consumed_r +
-          (word_count_r >> 2 == '0 ? 1'b1 : word_count_r >> 2);
+          (word_count_r == '0 ? 12'd256 : (word_count_r + 16'd3) >> 2);
           end
         end else begin
           //send nack... retry
