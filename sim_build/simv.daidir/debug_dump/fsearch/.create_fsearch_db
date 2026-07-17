@@ -1,9 +1,0 @@
-#!/bin/sh -h 
-PYTHONHOME=/eda/installed_tools/vcs/X-2025.06-SP1/etc/search/pyh
-export PYTHONHOME
-PYTHONPATH=/eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib/pylib27
-export PYTHONPATH
-LD_LIBRARY_PATH=/eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib:/eda/installed_tools/vcs/X-2025.06-SP1/linux64/lib/pylib27
-export LD_LIBRARY_PATH
-/eda/installed_tools/vcs/X-2025.06-SP1/linux64/bin/vcsfind_create_index.exe  -z  "/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/sim_build/simv.daidir/debug_dump/fsearch/./idents_tapi.xml.gz" "/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/sim_build/simv.daidir/debug_dump/fsearch/./idents_RR0YS4.xml.gz" -o "/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/sim_build/simv.daidir/debug_dump/fsearch/fsearch.db_tmp"
-\mv "/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/sim_build/simv.daidir/debug_dump/fsearch/fsearch.db_tmp" "/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/sim_build/simv.daidir/debug_dump/fsearch/fsearch.db"

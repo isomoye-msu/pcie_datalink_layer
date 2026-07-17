@@ -1,0 +1,26 @@
+CAPI=2:
+
+name: ::tlp_core:1.0.0
+
+filesets:
+  rtl:
+    files:
+      - tlp_pkg.sv
+      - tlp_classifier.sv
+      - tlp_bar_decoder.sv
+      - tlp_config_decoder.sv
+      - tlp_parser.sv
+      - tlp_payload_formatter.sv
+      - tlp_request_tracker.sv
+      - tlp_requester.sv
+      - tlp_completion_generator.sv
+      - tlp_control.sv
+      - tlp_generator.sv
+      - tlp_layer.sv
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - rtl
+    toplevel: tlp_layer
