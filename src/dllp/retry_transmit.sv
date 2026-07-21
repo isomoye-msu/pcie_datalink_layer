@@ -130,7 +130,7 @@ module retry_transmit
           for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
             mutex_flag[i] = 1'b0;
             if (retry_valid_i[i]) begin
-              for (int j = 1; j < RETRY_TLP_SIZE; j++) begin
+              for (int j = 0; j < RETRY_TLP_SIZE; j++) begin
                 if (retry_valid_i[j] && j < i) begin
                   mutex_flag[i] = 1'b1;
                 end

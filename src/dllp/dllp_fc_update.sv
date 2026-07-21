@@ -41,8 +41,9 @@ module dllp_fc_update
   // localparam int PdMinCredits = ((8 << (5 + MAX_PAYLOAD_SIZE)) / 4 / 4);
   // localparam int HdrMinCredits = 8'h040;
   localparam int ClockPeriodNs = ((10 ** 3) / CLK_RATE);
-  localparam int TwoMsTimeOut = (2 * (10 ** 4)) / ClockPeriodNs;
+  localparam int TwoMsTimeOut = 2_000_000 / ClockPeriodNs;
   localparam int FcWaitPeriod = TwoMsTimeOut;
+  localparam int TimerWidth = $clog2(FcWaitPeriod + 1);
   // localparam int TwoMsTimeOut = (CLK_RATE * (2 ** 5));  //32'h000B8D80;  //temp value
 
   typedef enum logic [4:0] {
@@ -73,12 +74,17 @@ module dllp_fc_update
   dllp_fc_t                          dll_packet_r;
   logic             [          15:0] dllp_lcrc_c;
   logic             [          15:0] dllp_lcrc_r;
-  logic             [          15:0] timer_c;
-  logic             [          15:0] timer_r;
+  logic             [TimerWidth-1:0] timer_c;
+  logic             [TimerWidth-1:0] timer_r;
   logic             [          15:0] crc_out;
   logic             [          15:0] crc_reversed;
   logic                              start_ack_c;
   logic                              start_ack_r;
+  logic             [          11:0] ack_nak_seq_c;
+  logic             [          11:0] ack_nak_seq_r;
+  logic                              ack_nak_is_nak_c;
+  logic                              ack_nak_is_nak_r;
+  logic             [DATA_WIDTH-1:0] ack_nak_payload;
 
   //crc byteswap
   always_comb begin : byteswap
@@ -98,14 +104,27 @@ module dllp_fc_update
       timer_r <= '0;
       dllp_lcrc_r <= '0;
       start_ack_r <= '0;
+      ack_nak_seq_r <= '0;
+      ack_nak_is_nak_r <= '0;
     end else begin
       curr_state <= next_state;
       dll_packet_r <= dll_packet_c;
       timer_r <= timer_c;
       dllp_lcrc_r <= dllp_lcrc_c;
       start_ack_r <= start_ack_c;
+      ack_nak_seq_r <= ack_nak_seq_c;
+      ack_nak_is_nak_r <= ack_nak_is_nak_c;
 
     end
+  end
+
+  always_comb begin : ack_nak_payload_pack
+    ack_nak_payload        = '0;
+    ack_nak_payload[7:0]   = ack_nak_is_nak_r ? Nak : Ack;
+    ack_nak_payload[15:8]  = 8'h00;
+    ack_nak_payload[19:16] = ack_nak_seq_r[11:8];
+    ack_nak_payload[23:20] = 4'h0;
+    ack_nak_payload[31:24] = ack_nak_seq_r[7:0];
   end
 
 
@@ -114,6 +133,8 @@ module dllp_fc_update
     dll_packet_c   = dll_packet_r;
     timer_c        = timer_r;
     start_ack_c    = '0;
+    ack_nak_seq_c = ack_nak_seq_r;
+    ack_nak_is_nak_c = ack_nak_is_nak_r;
     //axis flow control defaults
     fc_axis_tdata  = '0;
     fc_axis_tkeep  = '0;
@@ -126,8 +147,10 @@ module dllp_fc_update
       ST_IDLE: begin
         timer_c = (timer_r >= FcWaitPeriod) ? FcWaitPeriod : timer_r + 1;
         if (start_flow_control_i) begin
-          next_state = ST_SEND_ACK;
-          timer_c    = '0;
+          next_state       = ST_SEND_ACK;
+          timer_c          = '0;
+          ack_nak_seq_c    = next_transmit_seq_i[11:0];
+          ack_nak_is_nak_c = tlp_nullified_i;
         end else if ((timer_r >= FcWaitPeriod) && (link_status_i == DL_ACTIVE)) begin
           timer_c    = '0;
           next_state = ST_UPDATE_P;
@@ -135,7 +158,7 @@ module dllp_fc_update
       end
       ST_SEND_ACK: begin
         //build axis master output
-        fc_axis_tdata  = set_ack_nack(tlp_nullified_i ? Nak : Ack, next_transmit_seq_i[11:0]);
+        fc_axis_tdata  = ack_nak_payload;
         dllp_lcrc_c    = crc_out;
         fc_axis_tkeep  = '1;
         fc_axis_tvalid = '1;
@@ -150,11 +173,10 @@ module dllp_fc_update
         fc_axis_tvalid = '1;
         fc_axis_tlast  = '1;
         if (fc_axis_tready) begin
-          next_state = ST_UPDATE_P;
-          if (tlp_nullified_i) begin
-            start_ack_c = '1;
-            next_state  = ST_WAIT_LOW;
-          end
+          // ACK and NAK complete identically.  Periodic UpdateFC traffic is a
+          // separate transaction and must not acknowledge this request.
+          start_ack_c = '1;
+          next_state  = ST_WAIT_LOW;
         end
       end
       ST_UPDATE_P: begin
@@ -201,10 +223,8 @@ module dllp_fc_update
         fc_axis_tlast  = '1;
         //done with dllp
         if (fc_axis_tready) begin
-          // TODO: Temporary fix to not send CPL updates if it was initialised to 0
           timer_c = '0;
-          start_ack_c = '1;
-          next_state = ST_WAIT_LOW;
+          next_state = ST_IDLE;
         end
       end
       //send np
@@ -230,17 +250,20 @@ module dllp_fc_update
         //done with dllp
         if (fc_axis_tready) begin
           timer_c = '0;
-          start_ack_c = '1;
-          next_state = ST_WAIT_LOW;
+          next_state = ST_IDLE;
         end
       end
       ST_WAIT_LOW: begin
         start_ack_c = '1;
         if (!start_flow_control_i) begin
+          start_ack_c = '0;
           next_state = ST_IDLE;
         end
       end
       default: begin
+        next_state  = ST_IDLE;
+        start_ack_c = '0;
+        timer_c     = '0;
       end
     endcase
   end

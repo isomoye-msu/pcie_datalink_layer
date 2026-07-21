@@ -261,6 +261,20 @@ package pcie_datalink_pkg;
     return temp_dllp;
   endfunction
 
+  function automatic logic [31:0] build_ack_nack_payload(input dllp_type_e dllp_type,
+                                                          input logic [11:0] seq_num);
+    logic [31:0] payload;
+    begin
+      payload        = '0;
+      payload[7:0]   = dllp_type;
+      payload[15:8]  = 8'h00;
+      payload[19:16] = seq_num[11:8];
+      payload[23:20] = 4'h0;
+      payload[31:24] = seq_num[7:0];
+      return payload;
+    end
+  endfunction
+
 
   function automatic dllp_fc_t send_fc_init(input dllp_type_e dllp_type,
                                        input logic [2:0] vcd, input logic [7:0] hdrfc,

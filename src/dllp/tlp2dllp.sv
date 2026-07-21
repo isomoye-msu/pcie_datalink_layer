@@ -145,6 +145,28 @@ module tlp2dllp
   logic                 [          11:0] cplh_credit_limit_c;
   logic                 [          11:0] cplh_credit_limit_r;
 
+  function automatic logic fc8_is_forward(
+      input logic [7:0] new_value,
+      input logic [7:0] old_value
+  );
+    logic [7:0] distance;
+    begin
+      distance = new_value - old_value;
+      fc8_is_forward = (distance == '0) || !distance[7];
+    end
+  endfunction
+
+  function automatic logic fc12_is_forward(
+      input logic [11:0] new_value,
+      input logic [11:0] old_value
+  );
+    logic [11:0] distance;
+    begin
+      distance = new_value - old_value;
+      fc12_is_forward = (distance == '0) || !distance[11];
+    end
+  endfunction
+
 
 
 
@@ -248,7 +270,9 @@ module tlp2dllp
       //store packet, because we're shifting the data to fit in
       //the seq number, we'll need to save 2 bytes of this packet
       ST_IDLE: begin
-        if (tlp_axis_tready && skid_axis_tvalid) begin
+        // Do not remove a TLP from the input buffer unless retry storage has a
+        // free slot.  Every transmitted TLP must be replayable until ACKed.
+        if (tlp_axis_tready && skid_axis_tvalid && retry_available_i) begin
           tlp_dw0  = skid_axis_tdata;
           crc_in_c = '1;
           //handle posted request
@@ -280,17 +304,9 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that nph credit is available
-        if (nph_credit_limit_r >= nph_credits_consumed_r) begin
-          if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
-            has_nph_credit         = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((nph_credits_consumed_r - nph_credit_limit_r) >= 1'b1) begin
-            nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
-            has_nph_credit         = '1;
-          end
+        if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
+          nph_credits_consumed_c = nph_credits_consumed_r + 1'b1;
+          has_nph_credit         = '1;
         end
         if (has_nph_credit) begin
           crc_in_c         = crc_out_32;
@@ -315,26 +331,12 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
-        if (nph_credit_limit_r >= nph_credits_consumed_r) begin
-          if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
-            has_nph_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((nph_credits_consumed_r - nph_credit_limit_r) >= 1'b1) begin
-            has_nph_credit = '1;
-          end
+        if ((nph_credit_limit_r - nph_credits_consumed_r) >= 1'b1) begin
+          has_nph_credit = '1;
         end
         //check that posted data credit is available
-        if (npd_credit_limit_r >= npd_credits_consumed_r) begin
-          if ((npd_credit_limit_r - npd_credits_consumed_r) >= data_credits_required) begin
-            has_npd_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((npd_credits_consumed_r - npd_credit_limit_r) >= data_credits_required) begin
-            has_npd_credit = '1;
-          end
+        if ((npd_credit_limit_r - npd_credits_consumed_r) >= data_credits_required) begin
+          has_npd_credit = '1;
         end
         //check next_state criteria
         if (has_nph_credit && has_npd_credit) begin
@@ -348,6 +350,7 @@ module tlp2dllp
       end
       ST_CHECK_CREDITS_PH: begin
         static logic has_ph_credit;
+        has_ph_credit = '0;
         //assign seq number then first 2 bytes of tlp
         tlp_axis_tdata = {
           skid_axis_tdata[15:0], next_transmit_seq_r[7:0], 4'h0, next_transmit_seq_r[11:8]
@@ -357,17 +360,9 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
-        if (ph_credit_limit_r >= ph_credits_consumed_r) begin
-          if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
-            ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
-            has_ph_credit         = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((ph_credits_consumed_r - ph_credit_limit_r) >= 1'b1) begin
-            ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
-            has_ph_credit         = '1;
-          end
+        if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
+          ph_credits_consumed_c = ph_credits_consumed_r + 1'b1;
+          has_ph_credit         = '1;
         end
         //check next_state criteria
         if (has_ph_credit) begin
@@ -396,26 +391,12 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
-        if (ph_credit_limit_r >= ph_credits_consumed_r) begin
-          if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
-            has_ph_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((ph_credits_consumed_r - ph_credit_limit_r) >= 1'b1) begin
-            has_ph_credit = '1;
-          end
+        if ((ph_credit_limit_r - ph_credits_consumed_r) >= 1'b1) begin
+          has_ph_credit = '1;
         end
         //check that posted data credit is available
-        if (pd_credit_limit_r >= pd_credits_consumed_r) begin
-          if ((pd_credit_limit_r - pd_credits_consumed_r) >= data_credits_required) begin
-            has_pd_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((pd_credits_consumed_r - pd_credit_limit_r) >= data_credits_required) begin
-            has_pd_credit = '1;
-          end
+        if ((pd_credit_limit_r - pd_credits_consumed_r) >= data_credits_required) begin
+          has_pd_credit = '1;
         end
         //check next_state criteria
         if (has_ph_credit && has_pd_credit) begin
@@ -439,21 +420,10 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that nph credit is available
-        if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
-          if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin
-            cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
-            has_cplh_credit         = '1;
-          end
-          //account for unlimited completion credit limit
-          if (cplh_credit_limit_r == '0 && cplh_credits_consumed_r == '0) begin
-            has_cplh_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((cplh_credits_consumed_r - cplh_credit_limit_r) >= 1'b1) begin
-            cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
-            has_cplh_credit         = '1;
-          end
+        if ((cplh_credit_limit_r == '0) ||
+            ((cplh_credit_limit_r[7:0] - cplh_credits_consumed_r) >= 1'b1)) begin
+          cplh_credits_consumed_c = cplh_credits_consumed_r + 1'b1;
+          has_cplh_credit         = '1;
         end
         if (has_cplh_credit) begin
           crc_in_c         = crc_out_32;
@@ -481,34 +451,14 @@ module tlp2dllp
         };
         tlp_axis_tkeep = '1;
         //check that posted header credit is available
-        if (cplh_credit_limit_r >= cplh_credits_consumed_r) begin
-          if ((cplh_credit_limit_r - cplh_credits_consumed_r) >= 1'b1) begin
-            has_cplh_credit = '1;
-          end
-          //account for unlimited completion credit limit
-          if (cplh_credit_limit_r == '0 && cplh_credits_consumed_r == '0) begin
-            has_cplh_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((cplh_credits_consumed_r - cplh_credit_limit_r) >= 1'b1) begin
-            has_cplh_credit = '1;
-          end
+        if ((cplh_credit_limit_r == '0) ||
+            ((cplh_credit_limit_r[7:0] - cplh_credits_consumed_r) >= 1'b1)) begin
+          has_cplh_credit = '1;
         end
         //check that posted data credit is available
-        if (cpld_credit_limit_r >= cpld_credits_consumed_r) begin
-          if ((cpld_credit_limit_r - cpld_credits_consumed_r) >= data_credits_required) begin
-            has_cpld_credit = '1;
-          end
-            //account for unlimited completion credit limit
-          if (cpld_credit_limit_r == '0 && cpld_credits_consumed_r == '0) begin
-            has_cpld_credit = '1;
-          end
-        end  //account for wrap around
-        else begin
-          if ((cpld_credits_consumed_r - cpld_credit_limit_r) >= data_credits_required) begin
-            has_cpld_credit = '1;
-          end
+        if ((cpld_credit_limit_r == '0) ||
+            ((cpld_credit_limit_r - cpld_credits_consumed_r) >= data_credits_required)) begin
+          has_cpld_credit = '1;
         end
         //check next_state criteria
         if (has_cplh_credit && has_cpld_credit) begin
@@ -595,17 +545,23 @@ module tlp2dllp
     //check if flow control update
     if (update_fc_i) begin
       //update ph
-      ph_credit_limit_c = tx_fc_ph_i == ph_credit_limit_r ? ph_credit_limit_r : tx_fc_ph_i;
+      if (fc8_is_forward(tx_fc_ph_i, ph_credit_limit_r))
+        ph_credit_limit_c = tx_fc_ph_i;
       //update nph
-      nph_credit_limit_c = tx_fc_nph_i == nph_credit_limit_r ? nph_credit_limit_r : tx_fc_nph_i;
+      if (fc8_is_forward(tx_fc_nph_i, nph_credit_limit_r))
+        nph_credit_limit_c = tx_fc_nph_i;
       //update pd
-      pd_credit_limit_c = tx_fc_pd_i == pd_credit_limit_r ? pd_credit_limit_r : tx_fc_pd_i;
+      if (fc12_is_forward(tx_fc_pd_i, pd_credit_limit_r))
+        pd_credit_limit_c = tx_fc_pd_i;
       //update ph
-      npd_credit_limit_c = tx_fc_npd_i == npd_credit_limit_r ? npd_credit_limit_r : tx_fc_npd_i;
+      if (fc12_is_forward(tx_fc_npd_i, npd_credit_limit_r))
+        npd_credit_limit_c = tx_fc_npd_i;
       //update cpld
-      cpld_credit_limit_c  = tx_fc_cpld_i == cpld_credit_limit_r ? cpld_credit_limit_r : tx_fc_cpld_i;
+      if (fc12_is_forward(tx_fc_cpld_i, cpld_credit_limit_r))
+        cpld_credit_limit_c = tx_fc_cpld_i;
       //update cplh
-      cplh_credit_limit_c = tx_fc_cplh_i == cplh_credit_limit_r ? cplh_credit_limit_r : tx_fc_cplh_i;
+      if (fc8_is_forward(tx_fc_cplh_i, cplh_credit_limit_r[7:0]))
+        cplh_credit_limit_c = tx_fc_cplh_i;
     end
   end : flow_contol
 

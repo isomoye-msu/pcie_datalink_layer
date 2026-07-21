@@ -317,7 +317,9 @@ module pcie_datalink_layer
       .USER_WIDTH           (USER_WIDTH),
       .LAST_ENABLE          (LAST_ENABLE),
       .ARB_TYPE_ROUND_ROBIN (ARB_TYPE_ROUND_ROBIN),
-      .ARB_LSB_HIGH_PRIORITY(ARB_LSB_HIGH_PRIORITY)
+      // Input order is {receive DLLP, flow-control DLLP, TLP}; ACK/NAK and
+      // other receive-generated DLLPs must win shared-PHY arbitration.
+      .ARB_LSB_HIGH_PRIORITY(0)
   ) arbiter_mux_inst (
       .clk          (clk_i),
       .rst          (rst_i || soft_reset),

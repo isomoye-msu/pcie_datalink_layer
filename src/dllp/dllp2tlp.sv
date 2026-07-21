@@ -63,6 +63,7 @@ module dllp2tlp
     ST_TLP_STREAM,
     ST_TLP_LAST,
     ST_CHECK_CRC,
+    ST_DRAIN_LCRC,
     ST_SEND_ACK,
     ST_SEND_ACK_CRC,
     ST_BUILD_FC_DLLP,
@@ -84,6 +85,22 @@ module dllp2tlp
   logic                 [          11:0] next_transmit_seq_r;
   logic                 [          11:0] next_expected_seq_num_c;
   logic                 [          11:0] next_expected_seq_num_r;
+  // ACK/NAK response state.  The response sequence is the last TLP that was
+  // successfully forwarded, not necessarily the sequence carried by the
+  // packet currently being checked.
+  logic                 [          11:0] response_seq_c;
+  logic                 [          11:0] response_seq_r;
+  logic                                  response_is_nak_c;
+  logic                                  response_is_nak_r;
+  // A NAK requests replay starting after the last good TLP.  Once scheduled,
+  // later malformed/future TLPs must not schedule duplicates until the missing
+  // expected TLP is accepted.
+  logic                                  nak_scheduled_c;
+  logic                                  nak_scheduled_r;
+  logic                                  advance_expected_seq_c;
+  logic                                  advance_expected_seq_r;
+  logic                                  response_required_c;
+  logic                                  response_required_r;
   logic                 [          11:0] ackd_transmit_seq_c;
   logic                 [          15:0] ackd_transmit_seq_r;
   //crc helper signals
@@ -176,12 +193,32 @@ module dllp2tlp
     end
   endfunction
 
+  // PCIe sequence arithmetic is modulo 4096.  A non-matching sequence whose
+  // backward distance from NEXT_RCV_SEQ is at most half the sequence space is
+  // a duplicate.  A larger distance identifies a future/out-of-sequence TLP.
+  function automatic logic sequence_is_duplicate(
+      input logic [11:0] received_sequence,
+      input logic [11:0] expected_sequence
+  );
+    logic [11:0] backward_distance;
+    begin
+      backward_distance = expected_sequence - received_sequence;
+      sequence_is_duplicate = (received_sequence != expected_sequence) &&
+                              (backward_distance <= 12'h800);
+    end
+  endfunction
+
   //main sequential block
   always_ff @(posedge clk_i) begin : main_seq
     if (rst_i) begin
       curr_state              <= ST_IDLE;
       next_transmit_seq_r     <= '0;
       next_expected_seq_num_r <= '0;
+      response_seq_r          <= 12'hfff;
+      response_is_nak_r       <= '0;
+      nak_scheduled_r         <= '0;
+      advance_expected_seq_r  <= '0;
+      response_required_r     <= '0;
       dllp_lcrc_r             <= '1;
       crc_calculated_r        <= '1;
       ph_credits_consumed_r   <= HdrMinCredits;
@@ -196,6 +233,11 @@ module dllp2tlp
       curr_state              <= next_state;
       next_transmit_seq_r     <= next_transmit_seq_c;
       next_expected_seq_num_r <= next_expected_seq_num_c;
+      response_seq_r          <= response_seq_c;
+      response_is_nak_r       <= response_is_nak_c;
+      nak_scheduled_r         <= nak_scheduled_c;
+      advance_expected_seq_r  <= advance_expected_seq_c;
+      response_required_r     <= response_required_c;
       dllp_lcrc_r             <= dllp_lcrc_c;
       crc_calculated_r        <= crc_calculated_c;
       ph_credits_consumed_r   <= ph_credits_consumed_c;
@@ -298,22 +340,44 @@ module dllp2tlp
     cpld_credits_consumed_c = cpld_credits_consumed_r;
     next_transmit_seq_c     = next_transmit_seq_r;
     next_expected_seq_num_c = next_expected_seq_num_r;
+    response_seq_c          = response_seq_r;
+    response_is_nak_c       = response_is_nak_r;
+    nak_scheduled_c         = nak_scheduled_r;
+    advance_expected_seq_c  = advance_expected_seq_r;
+    response_required_c     = response_required_r;
     case (curr_state)
       ST_IDLE: begin
-        skid_axis_tready = tlp_axis_tready && (link_status_i == DL_ACTIVE) && s_axis_tvalid;
+        // Do not begin another packet until the previous response handshake
+        // has returned to idle.  Otherwise a lingering ACK can acknowledge a
+        // new request, or the new packet can overwrite the prior response.
+        skid_axis_tready = tlp_axis_tready &&
+                           (link_status_i == DL_ACTIVE) &&
+                           !start_flow_control_ack_i;
         if (skid_axis_tready && skid_axis_tvalid) begin
           //store incoming sequence number
           next_transmit_seq_c = {skid_axis_tdata[3:0], skid_axis_tdata[15:8]};
+          // Do not modify the latched ACK/NAK response while a packet is only
+          // partially received.  dllp_fc_update may still be completing the
+          // preceding response handshake and requires these fields to remain
+          // stable until this packet is fully classified.
           // Clear packet-local error state. Reserved sequence bits mark this
           // frame bad but must not poison a later valid TLP.
           tlp_nullified_c = |skid_axis_tdata[7:4] ||
                             (skid_axis_tkeep != {KEEP_WIDTH{1'b1}});
           if (skid_axis_tlast) begin
             // A complete link TLP cannot contain sequence, header and LCRC in
-            // one beat. Consume the truncated frame and request a replay.
+            // one beat. Consume the truncated frame and request one replay.
             tlp_nullified_c = '1;
-            fc_start_c      = '1;
-            next_state      = ST_SEND_ACK;
+            if (!nak_scheduled_r) begin
+              response_seq_c          = next_expected_seq_num_r - 12'h001;
+              response_is_nak_c       = '1;
+              advance_expected_seq_c  = '0;
+              nak_scheduled_c         = '1;
+              fc_start_c              = '1;
+              next_state              = ST_SEND_ACK;
+            end else begin
+              next_state = ST_IDLE;
+            end
           end else begin
           tlp_axis_tdata      = skid_axis_tdata[15:0];
           crc_byte_select     = 2'b11;
@@ -333,9 +397,9 @@ module dllp2tlp
         end
       end
       ST_CHECK_TLP_TYPE: begin
-        skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
+        skid_axis_tready = tlp_axis_tready;
         crc_byte_select  = 2'b11;
-        if (skid_axis_tready) begin
+        if (skid_axis_tready && skid_axis_tvalid) begin
           if (skid_axis_tkeep != {KEEP_WIDTH{1'b1}} || skid_axis_tlast) begin
             tlp_nullified_c = '1;
           end
@@ -363,22 +427,34 @@ module dllp2tlp
           end
           if (skid_axis_tlast) begin
             // Close and mark the partially buffered frame so FRAME_FIFO drops
-            // it, then emit a NAK for the truncated packet.
+            // it, then emit a NAK unless one is already scheduled.
             tlp_axis_tlast = '1;
             tlp_axis_tuser = '1;
-            fc_start_c     = '1;
-            next_state     = ST_SEND_ACK;
+            if (!nak_scheduled_r) begin
+              response_seq_c          = next_expected_seq_num_r - 12'h001;
+              response_is_nak_c       = '1;
+              advance_expected_seq_c  = '0;
+              nak_scheduled_c         = '1;
+              fc_start_c              = '1;
+              next_state              = ST_SEND_ACK;
+            end else begin
+              next_state = ST_IDLE;
+            end
           end else begin
             next_state = ST_TLP_STREAM;
           end
         end
       end
       ST_TLP_STREAM: begin
+        // This state deliberately observes the upstream beat as one-beat
+        // look-ahead for the two-byte sequence/LCRC alignment.  The buffered
+        // beat must nevertheless participate in a real AXI handshake before
+        // any CRC or packet state is updated.
         skid_axis_tready = tlp_axis_tready && s_axis_tvalid;
         crc_byte_select  = 2'b11;
-        if (tlp_axis_tready && s_axis_tvalid) begin
+        if (skid_axis_tready && skid_axis_tvalid) begin
           if ((!s_axis_tlast && skid_axis_tkeep != {KEEP_WIDTH{1'b1}}) ||
-              (s_axis_tlast && !keep_is_contiguous(skid_axis_tkeep))) begin
+              (s_axis_tlast && !keep_is_contiguous(s_axis_tkeep))) begin
             tlp_nullified_c = '1;
           end
           crc_calculated_c = crc_output_32;
@@ -448,9 +524,10 @@ module dllp2tlp
         tlp_axis_tvalid  = '1;
         tlp_axis_tlast   = '1;
         crc_calculated_c = '1;
-        //default to dllp ack state
-        next_state       = ST_SEND_ACK;
-        fc_start_c       = '1;
+        // The last LCRC beat is observed through the upstream look-ahead path,
+        // but a buffered copy must still be consumed before another TLP starts.
+        next_state       = ST_DRAIN_LCRC;
+        fc_start_c       = '0;
         tlp_axis_tkeep = 4'b1111;
         //assign tkeep based on last keep and alignement
         // case (skid_axis_tkeep)
@@ -472,9 +549,24 @@ module dllp2tlp
         //     tlp_axis_tuser  = '1;
         //   end
         // endcase
-        //check crc
+        // Default malformed packets and bad-LCRC packets to a NAK carrying
+        // NEXT_RCV_SEQ-1.  This is the last sequence that reached the
+        // Transaction Layer and is the point after which replay must begin.
+        response_seq_c         = next_expected_seq_num_r - 12'h001;
+        response_is_nak_c      = '1;
+        advance_expected_seq_c = '0;
+        response_required_c    = '1;
+
+        // First validate packet structure and LCRC.  Sequence classification
+        // is meaningful only when those checks pass.
         if (!tlp_nullified_r && (lcrc32d32 == crc_from_tlp_r) &&
             (next_expected_seq_num_r == next_transmit_seq_r)) begin
+          // Expected packet: deliver it, acknowledge it, and advance the
+          // receive sequence only after the response generator completes.
+          response_seq_c         = next_transmit_seq_r;
+          response_is_nak_c      = '0;
+          nak_scheduled_c        = '0;
+          advance_expected_seq_c = '1;
           if (tlp_is_nph_r) begin
             nph_credits_consumed_c = nph_credits_consumed_r + 8'h1;
           end else if (tlp_is_npd_r) begin
@@ -494,20 +586,62 @@ module dllp2tlp
             cpld_credits_consumed_c = cpld_credits_consumed_r +
           (word_count_r == '0 ? 12'd256 : (word_count_r + 16'd3) >> 2);
           end
+        end else if (!tlp_nullified_r && (lcrc32d32 == crc_from_tlp_r) &&
+                     sequence_is_duplicate(next_transmit_seq_r,
+                                           next_expected_seq_num_r)) begin
+          // Duplicate/old packet: discard it but send a cumulative ACK for
+          // the last good TLP.  Do not consume credits or advance NEXT_RCV_SEQ.
+          response_seq_c         = next_expected_seq_num_r - 12'h001;
+          response_is_nak_c      = '0;
+          advance_expected_seq_c = '0;
+          tlp_axis_tuser          = '1;
+          tlp_nullified_c         = '1;
         end else begin
-          //send nack... retry
+          // Bad LCRC, malformed framing, reserved sequence bits, or a future
+          // sequence: discard and request replay after the last good TLP.
           tlp_axis_tuser  = '1;
           tlp_nullified_c = '1;
+          if (!nak_scheduled_r) begin
+            nak_scheduled_c = '1;
+          end else begin
+            // NAK already sent for this missing sequence.  Drop this frame
+            // after draining its LCRC without scheduling another response.
+            response_required_c = '0;
+          end
+        end
+      end
+      ST_DRAIN_LCRC: begin
+        // Consume the buffered final LCRC beat.  Leaving it in the input skid
+        // buffer makes ST_IDLE interpret it as a new two-byte truncated TLP.
+        skid_axis_tready = '1;
+        if (skid_axis_tvalid) begin
+          if (!skid_axis_tlast ||
+              (skid_axis_tkeep != {{(KEEP_WIDTH - 2){1'b0}}, 2'b11})) begin
+            response_seq_c         = next_expected_seq_num_r - 12'h001;
+            response_is_nak_c      = '1;
+            advance_expected_seq_c = '0;
+            nak_scheduled_c        = '1;
+          end
+          if (response_required_r) begin
+            fc_start_c = '1;
+            next_state = ST_SEND_ACK;
+          end else begin
+            fc_start_c = '0;
+            next_state = ST_IDLE;
+          end
         end
       end
       ST_SEND_ACK: begin
         fc_start_c = '1;
         if (start_flow_control_ack_i) begin
-          if (!tlp_nullified_r) begin
+          fc_start_c = '0;
+          if (advance_expected_seq_r) begin
             // Twelve-bit arithmetic provides the required 0xfff -> 0x000
             // rollover without widening into the reserved sequence bits.
             next_expected_seq_num_c = next_expected_seq_num_r + 12'h001;
           end
+          advance_expected_seq_c = '0;
+          response_required_c    = '0;
           tlp_is_nph_c     = '0;
           tlp_is_pd_c      = '0;
           tlp_is_ph_c      = '0;
@@ -691,8 +825,11 @@ module dllp2tlp
   );
 
   //output assignments
-  assign next_transmit_seq_o    = {4'b0000, next_transmit_seq_r};
-  assign tlp_nullified_o        = tlp_nullified_r;
+  // Preserve the existing port names for integration compatibility.  Their
+  // values now have the protocol-correct meanings required by dllp_fc_update:
+  // response sequence and response-is-NAK.
+  assign next_transmit_seq_o    = {4'b0000, response_seq_r};
+  assign tlp_nullified_o        = response_is_nak_r;
   assign ph_credits_consumed_o  = ph_credits_consumed_r;
   assign pd_credits_consumed_o  = pd_credits_consumed_r;
   assign nph_credits_consumed_o = nph_credits_consumed_r;

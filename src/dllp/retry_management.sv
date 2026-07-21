@@ -62,6 +62,8 @@ module retry_management
   logic [RETRY_TLP_SIZE-1:0]       retrys_c;
   logic [RETRY_TLP_SIZE-1:0]       retrys_r;
   logic                            next_index_found;
+  logic                            ack_seq_is_outstanding;
+  logic                            nack_seq_is_in_window;
   //sequence number signals
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_c;
   logic [RETRY_TLP_SIZE-1:0][11:0] ack_seq_mem_r;
@@ -76,6 +78,17 @@ module retry_management
     begin
       distance = ack_number - sequence_number;
       seq_acked = !distance[11];
+    end
+  endfunction
+
+  function automatic logic seq_after(
+      input logic [11:0] sequence_number,
+      input logic [11:0] reference_number
+  );
+    logic [11:0] distance;
+    begin
+      distance = sequence_number - reference_number;
+      seq_after = (distance != '0) && !distance[11];
     end
   endfunction
 
@@ -101,14 +114,34 @@ module retry_management
     retrys_c           = retrys_r;
     next_retry_index_c = next_retry_index_r;
     next_index_found   = '0;
+    ack_seq_is_outstanding = '0;
+    nack_seq_is_in_window = '0;
     for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
       ack_seq_mem_c[i] = ack_seq_mem_r[i];
+      if (retrys_r[i] && (ack_seq_mem_r[i] == ack_seq_num_i)) begin
+        ack_seq_is_outstanding  = ack_nack_vld_i && ack_nack_i;
+      end
+      if (retrys_r[i] && ack_nack_vld_i && !ack_nack_i &&
+          ((ack_seq_mem_r[i] == ack_seq_num_i) ||
+           seq_after(ack_seq_mem_r[i], ack_seq_num_i))) begin
+        nack_seq_is_in_window = '1;
+      end
     end
 
-    // Apply an ACK before allocating a TLP arriving on the same cycle.  This
-    // permits a just-acknowledged FIFO slot to be reused without a bubble.
-    if (ack_nack_vld_i && ack_nack_i) begin
+    // Apply only in-window ACKs before allocating a TLP arriving on the same
+    // cycle.  Erroneous future/old ACKs must not free retry entries.
+    if (ack_seq_is_outstanding) begin
       for (int i = 0; i < RETRY_TLP_SIZE; i++) begin  //free retry
+        if (retrys_r[i] && seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
+          retrys_c[i] = '0;
+        end
+      end
+    end
+
+    // NAK N acknowledges everything through N and requests replay strictly
+    // after N.  N itself need not still occupy a retry-buffer entry.
+    if (nack_seq_is_in_window) begin
+      for (int i = 0; i < RETRY_TLP_SIZE; i++) begin
         if (retrys_r[i] && seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
           retrys_c[i] = '0;
         end
@@ -162,12 +195,18 @@ module retry_management
           //wait for tlp send at this retry index
           if (retrys_r[i]) begin
             retry_timer_c = '0;
-            if (ack_nack_vld_i && ack_nack_i &&
+            if (ack_seq_is_outstanding &&
                 seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
               retry_valid_c[i] = '0;
-            end else if (ack_nack_vld_i && !ack_nack_i) begin
-              retry_valid_c[i] = '1;
-              next_state       = ST_REPLAY;
+            end else if (nack_seq_is_in_window &&
+                         seq_after(ack_seq_mem_r[i], ack_seq_num_i)) begin
+              if (replay_cnt_r >= MAX_REPLAY_ATTEMPTS) begin
+                next_state = ST_RETRY_ERR;
+              end else begin
+                replay_cnt_c     = replay_cnt_r + 1'b1;
+                retry_valid_c[i] = '1;
+                next_state       = ST_REPLAY;
+              end
             end else begin
               next_state = ST_CNT_RETRY;
             end
@@ -178,17 +217,23 @@ module retry_management
             replay_cnt_c  = '0;
             retry_timer_c = '0;
             next_state    = ST_RETRY_IDLE;
-          end else if (ack_nack_vld_i && ack_nack_i &&
+          end else if (ack_seq_is_outstanding &&
                        seq_acked(ack_seq_mem_r[i], ack_seq_num_i)) begin
             replay_cnt_c     = '0;
             retry_timer_c    = '0;
             retry_valid_c[i] = '0;
             next_state       = ST_RETRY_IDLE;
-          end else if (ack_nack_vld_i && !ack_nack_i) begin
+          end else if (nack_seq_is_in_window &&
+                       seq_after(ack_seq_mem_r[i], ack_seq_num_i)) begin
             // NAK wins if it arrives on the timeout boundary.
             retry_timer_c = '0;
-            retry_valid_c[i] = '1;
-            next_state       = ST_REPLAY;
+            if (replay_cnt_r >= MAX_REPLAY_ATTEMPTS) begin
+              next_state = ST_RETRY_ERR;
+            end else begin
+              replay_cnt_c     = replay_cnt_r + 1'b1;
+              retry_valid_c[i] = '1;
+              next_state       = ST_REPLAY;
+            end
           end else if (REPLAY_TIMER_CYCLES == 0 ||
                        retry_timer_r == REPLAY_TIMER_CYCLES - 1) begin
             retry_timer_c = '0;
@@ -206,7 +251,7 @@ module retry_management
         ST_REPLAY: begin
           //check if late ack
           if (!retrys_r[i] ||
-              (ack_nack_vld_i && ack_nack_i &&
+              (ack_seq_is_outstanding &&
                seq_acked(ack_seq_mem_r[i], ack_seq_num_i))) begin
             replay_cnt_c     = '0;
             retry_timer_c    = '0;
@@ -224,7 +269,7 @@ module retry_management
         ST_WAIT_REPLAY: begin
           //wait for an ack..
           if (!retrys_r[i] ||
-              (ack_nack_vld_i && ack_nack_i &&
+              (ack_seq_is_outstanding &&
                seq_acked(ack_seq_mem_r[i], ack_seq_num_i))) begin
             replay_cnt_c  = '0;
             retry_timer_c = '0;
@@ -248,6 +293,9 @@ module retry_management
           end
         end
         default: begin
+          retry_timer_c    = '0;
+          retry_valid_c[i] = '0;
+          next_state       = ST_RETRY_ERR;
         end
       endcase
     end

@@ -113,6 +113,10 @@ module dllp_handler
   (* syn_keep = "true", mark_debug = "true" *) logic                [          15:0] crc_reversed;
   logic                         first_feature_exchange_dllp_received_r;
   logic                         first_feature_exchange_dllp_received_c;
+  logic                         dllp_first_word_valid;
+  logic                         dllp_crc_word_valid;
+  logic                         ack_nack_fields_valid;
+  logic                         fc_fields_valid;
 
   // debug
   (* syn_keep = "true", mark_debug = "true" *)logic [15:0] dbg_lower_skid_data_dllp;
@@ -120,6 +124,14 @@ module dllp_handler
   assign fc1_values_stored_o = fc1_np_stored_r & fc1_p_stored_r & fc1_c_stored_r;
   assign fc2_values_stored_o = fc2_np_stored_r & fc2_p_stored_r & fc2_c_stored_r;
   assign dbg_lower_skid_data_dllp = skid_s_axis_tdata[15:0];
+  assign dllp_first_word_valid = (skid_s_axis_tkeep == {KEEP_WIDTH{1'b1}}) &&
+                                 !skid_s_axis_tlast;
+  assign dllp_crc_word_valid = skid_s_axis_tlast &&
+                               (skid_s_axis_tkeep == {{(KEEP_WIDTH - 2){1'b0}}, 2'b11});
+  assign ack_nack_fields_valid = (dll_packet_r.ack_nack.rsvd0 == '0) &&
+                                 (dll_packet_r.ack_nack.rsvd1 == '0);
+  assign fc_fields_valid = (dll_packet_r.flow_control.byte1.rsvd0 == '0) &&
+                           (dll_packet_r.flow_control.byte2.rsvd1 == '0);
 
 
   always_comb begin : byteswap
@@ -211,7 +223,8 @@ module dllp_handler
       ST_IDLE: begin
         if (phy_link_up_i) begin
           skid_s_axis_tready = '1;
-          if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
+          if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp] &&
+              dllp_first_word_valid) begin
             dll_packet_c = skid_s_axis_tdata;
             crc_in_c     = crc_out;
             next_state   = ST_CHECK_CRC;
@@ -221,7 +234,7 @@ module dllp_handler
       ST_CHECK_CRC: begin
         skid_s_axis_tready = '1;
         if (skid_s_axis_tvalid && skid_s_axis_tuser[UserIsDllp]) begin
-          if (crc_reversed == skid_s_axis_tdata[15:0]) begin
+          if (dllp_crc_word_valid && (crc_reversed == skid_s_axis_tdata[15:0])) begin
             //process tlp
             next_state = ST_PROCESS_DLLP;
           end
@@ -235,13 +248,17 @@ module dllp_handler
         //but this should not be a bottleneck
         casez (dll_packet_r.generic.dllp_type)
           Ack: begin
-            seq_num_o         = get_ack_nack_seq(dll_packet_r.ack_nack);
-            seq_num_vld_o     = '1;
-            seq_num_acknack_o = '1;
+            if (ack_nack_fields_valid) begin
+              seq_num_o         = get_ack_nack_seq(dll_packet_r.ack_nack);
+              seq_num_vld_o     = '1;
+              seq_num_acknack_o = '1;
+            end
           end
           Nak: begin
-            seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
-            seq_num_vld_o = '1;
+            if (ack_nack_fields_valid) begin
+              seq_num_o     = get_ack_nack_seq(dll_packet_r.ack_nack);
+              seq_num_vld_o = '1;
+            end
           end
           Feature_Exchange: begin
             first_feature_exchange_dllp_received_c = '1;
@@ -262,40 +279,58 @@ module dllp_handler
             //not implemented
           end
           InitFC1_P: begin
-            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
-            fc1_p_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
+              fc1_p_stored_c = '1;
+            end
           end
           InitFC1_NP: begin
-            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
-            fc1_np_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
+              fc1_np_stored_c = '1;
+            end
           end
           InitFC1_Cpl: begin
-            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
-            fc1_c_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
+              fc1_c_stored_c = '1;
+            end
           end
           InitFC2_P: begin
-            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
-            fc2_p_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
+              fc2_p_stored_c = '1;
+            end
           end
           InitFC2_NP: begin
-            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
-            fc2_np_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
+              fc2_np_stored_c = '1;
+            end
           end
           InitFC2_Cpl: begin
-            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
-            fc2_c_stored_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
+              fc2_c_stored_c = '1;
+            end
           end
           UpdateFC_P: begin
-            get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
-            update_fc_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_ph_c, tx_fc_pd_c, dll_packet_r.flow_control);
+              update_fc_c = '1;
+            end
           end
           UpdateFC_NP: begin
-            get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
-            update_fc_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_nph_c, tx_fc_npd_c, dll_packet_r.flow_control);
+              update_fc_c = '1;
+            end
           end
           UpdateFC_Cpl: begin
-            get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
-            update_fc_c = '1;
+            if (fc_fields_valid) begin
+              get_fc_values(tx_fc_cplh_c, tx_fc_cpld_c, dll_packet_r.flow_control);
+              update_fc_c = '1;
+            end
           end
           default: begin
           end

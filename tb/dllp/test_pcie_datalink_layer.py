@@ -73,6 +73,13 @@ MALFORMED_REJECTION_WINDOW_US = int(
     os.environ.get("PCIE_MALFORMED_REJECTION_WINDOW_US", "100")
 )
 
+# Negative checks must be much shorter than the replay timer.  Otherwise a
+# legitimate replay-timer expiration can be mistaken for an immediate response
+# to the packet that is currently under test.
+NO_RESPONSE_WINDOW_CYCLES = int(
+    os.environ.get("PCIE_NO_RESPONSE_WINDOW_CYCLES", "32")
+)
+
 BACKPRESSURE_TIMEOUT_US = int(
     os.environ.get("PCIE_BACKPRESSURE_TIMEOUT_US", str(AXIS_RECV_TIMEOUT_US))
 )
@@ -267,7 +274,7 @@ def calculate_dllp_crc(data: bytes) -> int:
 def build_fc_dllp(
     dllp_type: DllpType,
     seq: int = 0,
-    hdr_fc: int = 1,
+    hdr_fc: int = 3,
     data_fc: int = 256,
 ) -> bytes:
     """Create one flow-control DLLP including its two-byte CRC."""
@@ -289,6 +296,32 @@ def build_fc_dllp(
     crc = calculate_dllp_crc(payload)
 
     return payload + crc.to_bytes(2, "little")
+
+
+def build_ack_nak_dllp(dllp_type: DllpType, seq: int) -> bytes:
+    """Create an ACK or NAK DLLP including CRC."""
+    packet = Dllp()
+    packet.type = dllp_type
+    packet.seq = seq & 0xFFF
+    payload = bytes(packet.pack())
+    crc = calculate_dllp_crc(payload)
+    return payload + crc.to_bytes(2, "little")
+
+
+def build_raw_dllp(payload: bytes) -> bytes:
+    """Create a raw four-byte DLLP payload with matching CRC."""
+    if len(payload) != 4:
+        raise ValueError("DLLP payload must be exactly four bytes")
+
+    crc = calculate_dllp_crc(payload)
+    return payload + crc.to_bytes(2, "little")
+
+
+def corrupt_dllp_crc(frame_data: bytes) -> bytes:
+    """Flip one CRC bit while leaving the DLLP payload unchanged."""
+    data = bytearray(frame_data)
+    data[-1] ^= 0x01
+    return bytes(data)
 
 
 def check_dllp_crc(frame_data: bytes) -> Optional[bytes]:
@@ -549,6 +582,83 @@ async def wait_for_outgoing_tlp(
         ) from exc
 
 
+async def wait_for_outgoing_dllp(
+    output_queue: Queue,
+    expected_type: DllpType,
+    timeout_us: int = AXIS_RECV_TIMEOUT_US,
+) -> Dllp:
+    """Find an outgoing DLLP of the requested type and validate its CRC."""
+
+    async def finder():
+        while True:
+            frame_data = await output_queue.get()
+            payload = check_dllp_crc(frame_data)
+
+            if payload is None:
+                continue
+
+            decoded = Dllp().unpack(payload)
+
+            if decoded.type == expected_type:
+                return decoded
+
+    try:
+        return await with_timeout(finder(), timeout_us, "us")
+    except SimTimeoutError as exc:
+        raise AssertionError(
+            "No outgoing {} DLLP was observed within {} us".format(
+                expected_type.name,
+                timeout_us,
+            )
+        ) from exc
+
+
+async def assert_no_outgoing_tlp(
+    output_queue: Queue,
+    forbidden_tlp_payload: bytes,
+    window_cycles: int = NO_RESPONSE_WINDOW_CYCLES,
+) -> None:
+    """Fail if a PHY output frame containing the forbidden TLP appears."""
+
+    async def finder():
+        while True:
+            frame_data = await output_queue.get()
+            if len(frame_data) > DLLP_FRAME_BYTES and forbidden_tlp_payload in frame_data:
+                return frame_data
+
+    try:
+        frame_data = await with_timeout(
+            finder(), window_cycles * CLOCK_PERIOD_NS, "ns"
+        )
+    except SimTimeoutError:
+        return
+
+    raise AssertionError(
+        "Forbidden outgoing TLP was transmitted: {}".format(frame_data.hex())
+    )
+
+
+async def assert_no_tlp_delivered(
+    tb: TB,
+    description: str,
+    window_cycles: int = NO_RESPONSE_WINDOW_CYCLES,
+) -> None:
+    """Fail if a TLP reaches m_tlp_axis during the rejection window."""
+    try:
+        frame = await with_timeout(
+            tb.tlp_sink.recv(), window_cycles * CLOCK_PERIOD_NS, "ns"
+        )
+    except SimTimeoutError:
+        return
+
+    raise AssertionError(
+        "{} unexpectedly delivered TLP {}".format(
+            description,
+            bytes(frame.tdata).hex(),
+        )
+    )
+
+
 async def verify_malformed_tlp_is_rejected(
     tb: TB,
     malformed_data: bytes,
@@ -574,6 +684,453 @@ async def verify_malformed_tlp_is_rejected(
     raise AssertionError(
         "Malformed incoming TLP unexpectedly reached m_tlp_axis: {}".format(
             bytes(unexpected.tdata).hex()
+        )
+    )
+
+
+async def send_incoming_dllp(tb: TB, frame_data: bytes, description: str) -> None:
+    await send_frame_with_timeout(
+        tb.phy_source,
+        frame_data,
+        description,
+        tuser=PHY_USER_IS_DLLP,
+    )
+
+
+async def verify_bad_lcrc_generates_nak(
+    tb: TB,
+    output_queue: Queue,
+    sequence_number: int,
+    last_good_sequence: int,
+) -> int:
+    drain_queue(output_queue)
+
+    raw_tlp, _ = build_memory_write(payload_length=8, tag=0x31)
+    link_packet = bytearray(
+        add_sequence_and_lcrc(sequence_number=sequence_number, tlp_payload=raw_tlp)
+    )
+    link_packet[-1] ^= 0x01
+
+    await send_frame_with_timeout(
+        tb.phy_source,
+        bytes(link_packet),
+        "incoming TLP with corrupt LCRC",
+        tuser=PHY_USER_IS_TLP,
+    )
+
+    await assert_no_tlp_delivered(tb, "Bad-LCRC TLP")
+
+    nak = await wait_for_outgoing_dllp(output_queue, DllpType.NAK)
+    assert nak.seq == last_good_sequence, (
+        "Bad-LCRC NAK sequence mismatch: got {} expected {}".format(
+            nak.seq,
+            last_good_sequence,
+        )
+    )
+
+    # Replay the same TLP correctly.  A valid expected packet must clear the
+    # receiver's pending-NAK state, reach the Transaction Layer, and advance
+    # NEXT_RCV_SEQ exactly once.
+    good_link_packet = add_sequence_and_lcrc(
+        sequence_number=sequence_number,
+        tlp_payload=raw_tlp,
+    )
+    await send_frame_with_timeout(
+        tb.phy_source,
+        good_link_packet,
+        "correct replay after bad LCRC",
+        tuser=PHY_USER_IS_TLP,
+    )
+    recovered_tlp = await receive_frame_with_timeout(
+        tb.tlp_sink,
+        "replayed TLP after bad LCRC",
+    )
+    assert recovered_tlp == raw_tlp, "Correct replay was not delivered unchanged"
+
+    ack = await wait_for_outgoing_dllp(output_queue, DllpType.ACK)
+    assert ack.seq == sequence_number, (
+        "Replay ACK sequence mismatch: got {} expected {}".format(
+            ack.seq, sequence_number
+        )
+    )
+    return sequence_number
+
+
+async def verify_sequence_number_errors(
+    tb: TB,
+    output_queue: Queue,
+    last_good_sequence: int,
+) -> int:
+    """Verify PCIe modulo-4096 receive ordering, including the 2048 boundary."""
+    expected_sequence = (last_good_sequence + 1) & 0xFFF
+
+    # Per PCIe Gen1, these are duplicates, not missing/future TLPs.  They are
+    # discarded and cause a cumulative ACK for the last successfully delivered
+    # TLP.  The <= 2048 boundary is deliberate.
+    duplicate_tests = [
+        (last_good_sequence, "immediately repeated duplicate"),
+        ((last_good_sequence - 1) & 0xFFF, "older duplicate"),
+        ((expected_sequence - 0x800) & 0xFFF, "duplicate at 2048 boundary"),
+    ]
+
+    for index, (sequence_number, description) in enumerate(duplicate_tests):
+        raw_tlp, _ = build_memory_write(payload_length=8, tag=0x40 + index)
+        link_packet = add_sequence_and_lcrc(
+            sequence_number=sequence_number,
+            tlp_payload=raw_tlp,
+        )
+
+        await send_frame_with_timeout(
+            tb.phy_source,
+            link_packet,
+            description,
+            tuser=PHY_USER_IS_TLP,
+        )
+
+        await assert_no_tlp_delivered(tb, description)
+        ack = await wait_for_outgoing_dllp(output_queue, DllpType.ACK)
+        assert ack.seq == last_good_sequence, (
+            "{} cumulative ACK mismatch: got {} expected {}".format(
+                description,
+                ack.seq,
+                last_good_sequence,
+            )
+        )
+
+    async def reject_future_and_recover(
+        received_sequence: int,
+        current_expected: int,
+        current_last_good: int,
+        tag: int,
+        description: str,
+    ) -> int:
+        future_tlp, _ = build_memory_write(payload_length=8, tag=tag)
+        await send_frame_with_timeout(
+            tb.phy_source,
+            add_sequence_and_lcrc(received_sequence, future_tlp),
+            description,
+            tuser=PHY_USER_IS_TLP,
+        )
+        await assert_no_tlp_delivered(tb, description)
+        nak = await wait_for_outgoing_dllp(output_queue, DllpType.NAK)
+        assert nak.seq == current_last_good, (
+            "{} NAK mismatch: got {} expected {}".format(
+                description, nak.seq, current_last_good
+            )
+        )
+
+        # Replay begins at the actual missing sequence, clears NAK_SCHEDULED,
+        # and advances NEXT_RCV_SEQ once.
+        recovery_tlp, _ = build_memory_write(payload_length=8, tag=tag + 1)
+        await send_frame_with_timeout(
+            tb.phy_source,
+            add_sequence_and_lcrc(current_expected, recovery_tlp),
+            "recovery after {}".format(description),
+            tuser=PHY_USER_IS_TLP,
+        )
+        delivered = await receive_frame_with_timeout(
+            tb.tlp_sink, "recovery after {}".format(description)
+        )
+        assert delivered == recovery_tlp, "Recovered TLP payload changed"
+        ack = await wait_for_outgoing_dllp(output_queue, DllpType.ACK)
+        assert ack.seq == current_expected, (
+            "Recovery ACK mismatch: got {} expected {}".format(
+                ack.seq, current_expected
+            )
+        )
+        return current_expected
+
+    # A one-packet gap is the normal missing-TLP case.
+    last_good_sequence = await reject_future_and_recover(
+        received_sequence=(expected_sequence + 1) & 0xFFF,
+        current_expected=expected_sequence,
+        current_last_good=last_good_sequence,
+        tag=0x43,
+        description="one-packet sequence gap",
+    )
+
+    # Exercise the other side of the modulo-4096 half-range boundary.  A
+    # distance of 2049 is future/out-of-sequence (2048 was duplicate above).
+    expected_sequence = (last_good_sequence + 1) & 0xFFF
+    last_good_sequence = await reject_future_and_recover(
+        received_sequence=(expected_sequence + 0x7FF) & 0xFFF,
+        current_expected=expected_sequence,
+        current_last_good=last_good_sequence,
+        tag=0x45,
+        description="future TLP at 2049-distance boundary",
+    )
+
+    return last_good_sequence
+
+
+async def verify_dllp_arbitration_priority(
+    tb: TB,
+    output_queue: Queue,
+    sequence_number: int,
+    last_good_sequence: int,
+) -> int:
+    # Start backpressure only between frames so an already-selected flow-control
+    # DLLP cannot remain at the head of the arbiter during this check.
+    while not tb.phy_sink.idle():
+        await RisingEdge(tb.dut.clk_i)
+    tb.phy_sink.pause = True
+    await tb.wait_cycles(2)
+    drain_queue(output_queue)
+
+    bad_tlp, _ = build_memory_write(payload_length=8, tag=0x4A)
+    bad_link_packet = bytearray(
+        add_sequence_and_lcrc(sequence_number=sequence_number, tlp_payload=bad_tlp)
+    )
+    bad_link_packet[-1] ^= 0x01
+
+    local_tlp, _ = build_memory_write(payload_length=8, tag=0x4B)
+
+    await send_frame_with_timeout(
+        tb.phy_source,
+        bytes(bad_link_packet),
+        "bad-LCRC TLP creating pending NAK for arbitration",
+        tuser=PHY_USER_IS_TLP,
+    )
+
+    await send_frame_with_timeout(
+        tb.tlp_source,
+        local_tlp,
+        "local TLP competing with pending DLLP",
+    )
+
+    # Hold the shared PHY output stalled until both requests are pending, then
+    # release it so this checks arbitration instead of request arrival order.
+    await tb.wait_cycles(100)
+    tb.phy_sink.pause = False
+
+    try:
+        first_frame = await with_timeout(
+            output_queue.get(),
+            AXIS_RECV_TIMEOUT_US,
+            "us",
+        )
+    except SimTimeoutError as exc:
+        raise AssertionError(
+            "No PHY output was observed during DLLP arbitration"
+        ) from exc
+    payload = check_dllp_crc(first_frame)
+    assert payload is not None, (
+        "DLLP arbitration failed: first output was not a valid DLLP: {}".format(
+            first_frame.hex()
+        )
+    )
+
+    decoded = Dllp().unpack(payload)
+    assert decoded.type == DllpType.NAK, (
+        "DLLP arbitration failed: first DLLP was {}, expected NAK".format(
+            decoded.type.name
+        )
+    )
+    assert decoded.seq == last_good_sequence, (
+        "Arbitrated NAK sequence mismatch: got {} expected {}".format(
+            decoded.seq,
+            last_good_sequence,
+        )
+    )
+
+    local_packet = await wait_for_outgoing_tlp(output_queue, local_tlp)
+    local_sequence_number = int.from_bytes(local_packet[:2], "big") & 0xFFF
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.ACK, local_sequence_number),
+        "ACK for arbitration-test TLP",
+    )
+    await tb.wait_cycles(20)
+
+    # Complete receive-side recovery so the next sequence test begins from a
+    # known, protocol-valid receiver state.
+    await send_frame_with_timeout(
+        tb.phy_source,
+        add_sequence_and_lcrc(sequence_number, bad_tlp),
+        "valid replay after arbitration test",
+        tuser=PHY_USER_IS_TLP,
+    )
+    delivered = await receive_frame_with_timeout(
+        tb.tlp_sink, "valid replay after arbitration test"
+    )
+    assert delivered == bad_tlp, "Arbitration recovery TLP payload changed"
+    ack = await wait_for_outgoing_dllp(output_queue, DllpType.ACK)
+    assert ack.seq == sequence_number, (
+        "Arbitration recovery ACK mismatch: got {} expected {}".format(
+            ack.seq, sequence_number
+        )
+    )
+    return sequence_number
+
+
+async def verify_ack_nak_replay(
+    tb: TB,
+    output_queue: Queue,
+) -> None:
+    raw_tlp, _ = build_memory_write(payload_length=16, tag=0x51)
+
+    await send_frame_with_timeout(
+        tb.tlp_source,
+        raw_tlp,
+        "locally generated TLP for ACK/NAK replay testing",
+    )
+
+    first_packet = await wait_for_outgoing_tlp(output_queue, raw_tlp)
+    sequence_number = int.from_bytes(first_packet[:2], "big") & 0xFFF
+
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.NAK, (sequence_number + 3) & 0xFFF),
+        "future NAK DLLP must not request replay",
+    )
+
+    await assert_no_outgoing_tlp(output_queue, raw_tlp)
+
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.ACK, (sequence_number + 3) & 0xFFF),
+        "future ACK DLLP must not clear replay buffer entry",
+    )
+
+    last_acknowledged_sequence = (sequence_number - 1) & 0xFFF
+
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.NAK, last_acknowledged_sequence),
+        "NAK for last good sequence requesting replay of next TLP",
+    )
+
+    replay_packet = await wait_for_outgoing_tlp(output_queue, raw_tlp)
+    assert replay_packet == first_packet, (
+        "Replay retransmission changed packet contents. first={} replay={}".format(
+            first_packet.hex(),
+            replay_packet.hex(),
+        )
+    )
+
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.ACK, sequence_number),
+        "received ACK DLLP completing replay buffer entry",
+    )
+
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.NAK, last_acknowledged_sequence),
+        "stale NAK after cumulative ACK must not replay",
+    )
+
+    await assert_no_outgoing_tlp(output_queue, raw_tlp)
+
+
+async def verify_updatefc_and_credit_blocking(
+    tb: TB,
+    output_queue: Queue,
+) -> None:
+    drain_queue(output_queue)
+    blocked_tlp, _ = build_memory_write(payload_length=32, tag=0x61)
+
+    await send_frame_with_timeout(
+        tb.tlp_source,
+        blocked_tlp,
+        "TLP submitted after exhausting posted-header credits",
+        timeout_us=AXIS_SEND_TIMEOUT_US,
+    )
+
+    await assert_no_outgoing_tlp(output_queue, blocked_tlp)
+
+    # Flow-control limits are cumulative and must not be reduced to represent
+    # zero available credit.  The initial limit of three has been consumed by
+    # the phase-2, arbitration, and ACK/NAK-replay TLPs.  Advancing it to four
+    # grants exactly one additional posted-header credit.
+    await send_incoming_dllp(
+        tb,
+        build_fc_dllp(
+            dllp_type=DllpType.UPDATE_FC_P,
+            hdr_fc=4,
+            data_fc=256,
+        ),
+        "UPDATE_FC_P granting one additional posted-header credit",
+    )
+
+    released_packet = await wait_for_outgoing_tlp(output_queue, blocked_tlp)
+    released_sequence = int.from_bytes(released_packet[:2], "big") & 0xFFF
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.ACK, released_sequence),
+        "ACK for credit-released TLP",
+    )
+
+    # Keep later cumulative limits monotonic and leave enough credit for the
+    # optional backpressure transmit test.
+    for dllp_type in (
+        DllpType.UPDATE_FC_P,
+        DllpType.UPDATE_FC_NP,
+        DllpType.UPDATE_FC_CPL,
+    ):
+        await send_incoming_dllp(
+            tb,
+            build_fc_dllp(
+                dllp_type=dllp_type,
+                hdr_fc=32,
+                data_fc=256,
+            ),
+            "{} increasing cumulative credit limits".format(dllp_type.name),
+        )
+
+
+async def verify_replay_timer_timeout(tb: TB, output_queue: Queue) -> None:
+    """An unacknowledged TLP must be replayed when REPLAY_TIMER expires."""
+    raw_tlp, _ = build_memory_write(payload_length=16, tag=0x62)
+    await send_frame_with_timeout(
+        tb.tlp_source,
+        raw_tlp,
+        "TLP intentionally left unacknowledged for replay timeout",
+    )
+    first_packet = await wait_for_outgoing_tlp(output_queue, raw_tlp)
+    replay_packet = await wait_for_outgoing_tlp(output_queue, raw_tlp)
+    assert replay_packet == first_packet, (
+        "Replay-timer retransmission changed the link packet"
+    )
+
+    sequence_number = int.from_bytes(first_packet[:2], "big") & 0xFFF
+    await send_incoming_dllp(
+        tb,
+        build_ack_nak_dllp(DllpType.ACK, sequence_number),
+        "ACK after replay-timer retransmission",
+    )
+
+
+async def verify_bad_and_malformed_dllps_are_ignored(
+    tb: TB,
+    output_queue: Queue,
+) -> None:
+    drain_queue(output_queue)
+
+    malformed_frames = [
+        (
+            corrupt_dllp_crc(build_fc_dllp(DllpType.UPDATE_FC_P, hdr_fc=0xFF, data_fc=0xFFF)),
+            "bad DLLP CRC",
+        ),
+        (build_raw_dllp(bytes([0xFF, 0x00, 0x00, 0x00])), "invalid DLLP type"),
+        (
+            build_raw_dllp(bytes([int(DllpType.ACK), 0xFF, 0x0F, 0x00])),
+            "ACK DLLP with reserved fields set",
+        ),
+        (
+            build_raw_dllp(bytes([int(DllpType.UPDATE_FC_P), 0x40, 0x00, 0x01])),
+            "UpdateFC DLLP using unsupported VC bits",
+        ),
+    ]
+
+    for frame_data, description in malformed_frames:
+        await send_incoming_dllp(tb, frame_data, description)
+        await tb.wait_cycles(20)
+
+    unexpected = drain_queue(output_queue)
+    assert not unexpected, (
+        "Malformed/unsupported DLLPs modified output state: {}".format(
+            [frame.hex() for frame in unexpected]
         )
     )
 
@@ -629,6 +1186,7 @@ async def run_test(dut):
     outgoing_tlp_count = 0
     incoming_tlp_count = 0
     malformed_rejection_count = 0
+    robust_dllp_check_count = 0
 
     try:
         # ------------------------------------------------------------------
@@ -695,6 +1253,19 @@ async def run_test(dut):
             outgoing_tlp,
             timeout_us=AXIS_RECV_TIMEOUT_US,
         )
+        outgoing_sequence_number = (
+            int.from_bytes(outgoing_link_packet[:2], "big") & 0xFFF
+        )
+
+        # Retire this packet before the long receive-side negative tests.  If it
+        # remains outstanding, its replay timer expires and contaminates later
+        # arbitration/replay checks with unrelated retry traffic.
+        await send_incoming_dllp(
+            tb,
+            build_ack_nak_dllp(DllpType.ACK, outgoing_sequence_number),
+            "ACK for phase-2 locally generated TLP",
+        )
+        await tb.wait_cycles(20)
 
         assert len(outgoing_link_packet) >= len(outgoing_tlp) + 6, (
             "Outgoing link packet is too short to contain a two-byte sequence "
@@ -758,23 +1329,88 @@ async def run_test(dut):
                 len(raw_tlp),
             )
 
+            ack = await wait_for_outgoing_dllp(output_queue, DllpType.ACK)
+            assert ack.seq == sequence_number, (
+                "ACK sequence mismatch: got {} expected {}".format(
+                    ack.seq,
+                    sequence_number,
+                )
+            )
+            robust_dllp_check_count += 1
+
             await tb.wait_cycles(50)
 
         # ------------------------------------------------------------------
-        # Phase 4: malformed TLP rejection
+        # Phase 4: NAK generation and receive-side sequence checks
         # ------------------------------------------------------------------
-        tb.log.info("PHASE 4: malformed incoming TLP rejection")
+        tb.log.info("PHASE 4: Bad LCRC NAK and sequence-number error handling")
+
+        last_good_sequence = len(incoming_lengths) - 1
+
+        last_good_sequence = await verify_bad_lcrc_generates_nak(
+            tb,
+            output_queue,
+            sequence_number=(last_good_sequence + 1) & 0xFFF,
+            last_good_sequence=last_good_sequence,
+        )
+        robust_dllp_check_count += 2
+
+        last_good_sequence = await verify_dllp_arbitration_priority(
+            tb,
+            output_queue,
+            sequence_number=(last_good_sequence + 1) & 0xFFF,
+            last_good_sequence=last_good_sequence,
+        )
+        robust_dllp_check_count += 2
+
+        last_good_sequence = await verify_sequence_number_errors(
+            tb,
+            output_queue,
+            last_good_sequence=last_good_sequence,
+        )
+        robust_dllp_check_count += 7
+
+        # ------------------------------------------------------------------
+        # Phase 5: received ACK/NAK and replay behavior
+        # ------------------------------------------------------------------
+        tb.log.info("PHASE 5: received ACK/NAK and replay behavior")
+
+        await verify_ack_nak_replay(tb, output_queue)
+        robust_dllp_check_count += 1
+
+        # ------------------------------------------------------------------
+        # Phase 6: malformed TLP and malformed DLLP rejection
+        # ------------------------------------------------------------------
+        tb.log.info("PHASE 6: malformed incoming TLP and DLLP rejection")
 
         malformed_tlp, _ = build_memory_write(payload_length=8, tag=7)
 
         await verify_malformed_tlp_is_rejected(tb, malformed_tlp)
         malformed_rejection_count += 1
 
+        await verify_bad_and_malformed_dllps_are_ignored(tb, output_queue)
+        robust_dllp_check_count += 1
+
         # ------------------------------------------------------------------
-        # Phase 5: optional AXI backpressure
+        # Phase 7: UpdateFC and credit enforcement
+        # ------------------------------------------------------------------
+        tb.log.info("PHASE 7: UpdateFC DLLPs and zero-credit transmit blocking")
+
+        await verify_updatefc_and_credit_blocking(tb, output_queue)
+        robust_dllp_check_count += 1
+
+        # ------------------------------------------------------------------
+        # Phase 8: replay timer expiration
+        # ------------------------------------------------------------------
+        tb.log.info("PHASE 8: replay-timer retransmission")
+        await verify_replay_timer_timeout(tb, output_queue)
+        robust_dllp_check_count += 1
+
+        # ------------------------------------------------------------------
+        # Phase 9: optional AXI backpressure
         # ------------------------------------------------------------------
         if env_flag("PCIE_ENABLE_BACKPRESSURE"):
-            tb.log.info("PHASE 5: optional m_phy_axis backpressure")
+            tb.log.info("PHASE 9: optional m_phy_axis backpressure")
 
             tb.phy_sink.set_pause_generator(cycle_pause())
 
@@ -813,10 +1449,12 @@ async def run_test(dut):
 
     tb.log.info(
         "TEST SUMMARY: FC frames sent=%d, outgoing TLPs verified=%d, "
-        "incoming TLPs verified=%d, malformed TLPs rejected=%d",
+        "incoming TLPs verified=%d, malformed TLPs rejected=%d, "
+        "robust DLLP checks=%d",
         fc_frame_count,
         outgoing_tlp_count,
         incoming_tlp_count,
         malformed_rejection_count,
+        robust_dllp_check_count,
     )
     tb.log.info("PCIe Data Link Layer relaxed functional test PASSED")

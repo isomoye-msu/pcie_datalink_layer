@@ -1,6 +1,6 @@
 <testsuites name="results">
   <testsuite name="all" package="all">
-    <property name="random_seed" value="1783971192" />
-    <testcase name="run_test" classname="test_pcie_datalink_layer" file="/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/tb/dllp/test_pcie_datalink_layer.py" lineno="602" time="2.212987184524536" sim_time_ns="120896.001" ratio_time="54630.23095905307" />
+    <property name="random_seed" value="1784663284" />
+    <testcase name="run_test" classname="test_dll_comprehensive" file="/home/sahajoyd/Desktop/PCIE_All/pcie_datalink_layer/tb/dllp/test_dll_comprehensive.py" lineno="2296" time="46.00149202346802" sim_time_ns="1216144.001" ratio_time="26437.055571579607" />
   </testsuite>
 </testsuites>
