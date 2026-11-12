@@ -1,2 +1,12 @@
 build/*
 *.conf
+
+# Python environments
+venv/
+system-site-packages/
+
+# Vivado logs and journals
+vivado_*.log
+vivado_*.jou
+
+
