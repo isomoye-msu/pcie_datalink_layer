@@ -2,14 +2,14 @@
 
 Repository: `/home/djovel/research/recovery_pcie/pcie_datalink_layer`
 Branch: `PCIe-5GTs`
-Scope: incremental integration of `spec_updates/retry_management.sv` into the Gen1 datalink path.
+Scope: incremental integration of `spec_updates/retry_management.sv` into the Gen1 datalink path, with speed/width-parameterized replay timing for Gen2 rollout.
 
 ## Status
 
 - [x] Slice 1: repair the allocation strobe and retry gating at the TLP framing boundary.
 - [x] Slice 2: replace `src/dllp/retry_management.sv` with the new single-timer design (Gen1 timeout wired; PHY/LTSSM handshakes remain stubs).
 - [x] Slice 3: source original-TLP completion/busy before the arbiter and connect LTSSM Recovery/retrain/error handshakes; PHY symbol-level done remains an AXIS-level approximation.
-- [ ] Slice 4: parameterize the Replay Timer by negotiated speed/width for Gen2 rollout.
+- [x] Slice 4: parameterize the Replay Timer by negotiated speed/width for Gen2 rollout.
 
 `src/dllp/retry_management.sv` was not rewritten in slice 1. It was replaced in slice 2 after slice 1 was verified.
 
@@ -69,6 +69,31 @@ No behavior of `retry_management.sv`, `retry_transmit.sv`, or `axis_retry_fifo.s
 - Converted `retrain_request_o` from `clk_i` into a one-cycle `directed_speed_change_i` pulse in `pipe_rx_usr_clk_i`, also using a toggle plus `async_fifo`.
 - Limitation: no new PHY last-symbol/busy port was added in `phy_transmit.sv`; completion remains the original AXIS stream last-beat handshake, which is the closest available source without changing the PHY transmit datapath.
 
+## Slice 4 changes (2026-11-19)
+
+### `src/packages/pcie_phy_pkg.sv`
+
+- Added `pcie_phy_pkg::replay_timeout_cycles(rate_speed_e speed, logic [5:0] active_lanes, int unsigned clk_period_x10_ns, int unsigned margin_x10)`.
+- The function uses PCIe Base 2.0 Table 3-4/3-5 minimum symbol times for MPS=256: Gen1 `x1=1248`, `x2=651`, `x4=354`, `x8=321`, `x12=270`, `x16=216`, `x32=135`; Gen2 `x1=1401`, `x2=804`, `x4=507`, `x8=474`, `x12=423`, `x16=369`, `x32=288`.
+- Symbol times are 4 ns for Gen1 and 2 ns for Gen2. The default margin is `1.2x` (12/10), rounded up to whole `clk_i` cycles; unsupported speeds return `0` so the static fallback remains in force.
+
+### `src/dllp/retry_management.sv`
+
+- Added runtime input `replay_timeout_cycles_i`. A nonzero value overrides `REPLAY_TIMEOUT_CYCLES`; a zero value preserves the compile-time fallback used by existing configurations and benches.
+- The `REPLAY_TIMEOUT_CYCLES == 0` fatal now occurs only when no runtime timeout and no static timeout are configured.
+
+### `src/dllp/dllp_transmit.sv` and `src/dllp/pcie_datalink_layer.sv`
+
+- Threaded `replay_timeout_cycles_i` through `dllp_transmit` into `retry_management`.
+- Added `link_speed_i` (`pcie_phy_pkg::rate_speed_e`) and `link_width_i` (`logic [5:0]`) ports to `pcie_datalink_layer`, plus `CLK_PERIOD_X10_NS` and `REPLAY_TIMER_MARGIN_X10` parameters.
+- `pcie_datalink_layer` computes `replay_timeout_cycles_runtime` from the negotiated speed/width lookup and passes it to the replay timer.
+
+### `src/pcie_phy_core/pcie_phy_top.sv`
+
+- Crossed `{curr_data_rate, num_active_lanes_i}` from `pipe_rx_usr_clk_i` to `clk_i` through `link_config_async_fifo_inst`.
+- Derived `link_speed_100mhz` and `link_width_100mhz` from the crossed value and passed them to `pcie_datalink_layer`.
+- Passed `.CLK_PERIOD_X10_NS(10000 / CLK_RATE)` and `.REPLAY_TIMER_MARGIN_X10(12)` so the lookup tracks the top-level clock parameter.
+
 ## Verification
 
 - Lint: passed with pre-existing warnings only. Command: `verilator --lint-only -Wall -Wno-WIDTH -Wno-PINCONNECTEMPTY -Isrc/packages -Isrc/interfaces -Isrc/dllp -Isrc/verilog-axis/rtl src/packages/pcie_datalink_pkg.sv src/verilog-axis/rtl/axis_register.v src/crc/pcie_lcrc16.sv src/crc/pcie_lcrc32.sv src/dllp/tlp2dllp.sv`.
@@ -86,6 +111,13 @@ No behavior of `retry_management.sv`, `retry_transmit.sv`, or `axis_retry_fifo.s
 - Retry-manager simulation was extended in slice 3 to hold `link_retraining_i`, pulse `retrain_done_i`, and check that `retrain_request_o` remains asserted during retraining and clears on return.
 - Transmit-path lint was re-run after slice 3 and passed with pre-existing `tlp2dllp.sv` latch warnings only.
 - Targeted `pcie_phy_top` parse lint reported only unresolved submodule errors from the reduced file list; no syntax or connection errors in the new slice-3 logic.
+- Slice-4 simulation: passed. Added `tb/dllp/tb_replay_timeout_gen2.sv`, which checks lookup values `Gen1 x1=600`, `Gen2 x1=337`, `Gen2 x4=122`, `Gen2 x8=114`, verifies unsupported Gen3 returns `0`, and checks that runtime `replay_timeout_cycles_i=12` trips before the static `1000`-cycle fallback while `0` preserves the fallback.
+- Slice-4 simulation command: `verilator --binary --timing --top tb_replay_timeout_gen2 -Wno-fatal -Wno-WIDTH -Wno-UNUSEDSIGNAL -Wno-TIMESCALEMOD -Wno-INITIALDLY -Isrc/packages src/packages/pcie_datalink_pkg.sv src/packages/pcie_phy_pkg.sv src/dllp/retry_management.sv tb/dllp/tb_replay_timeout_gen2.sv && obj_dir/Vtb_replay_timeout_gen2`.
+- Observed output: `PASS: Gen2 replay timeout lookup and runtime override`.
+- All slice regressions were re-run after slice 4 and passed: `PASS: slice-1 allocation gating and strobe behavior`, `PASS: Gen1 retry manager allocation, Nak/Ack, rollover, and retrain handshake`, `PASS: slice-3 original TLP completion and retry error wiring`, and `PASS: Gen2 replay timeout lookup and runtime override`.
+- Retry-manager lint: passed. Command: `verilator --lint-only --top retry_management -Wno-fatal -Wno-WIDTH -Wno-PINCONNECTEMPTY -Wno-UNUSEDSIGNAL -Wno-DECLFILENAME -Isrc/packages src/packages/pcie_datalink_pkg.sv src/dllp/retry_management.sv`.
+- Transmit-path lint was re-run after slice 4 and passed with pre-existing `tlp2dllp.sv` latch warnings only.
+- Targeted `pcie_phy_top` parse lint was re-run after slice 4 and reported only unresolved submodule errors from the reduced file list; no syntax or connection errors in the new speed/width CDC wiring.
 - Full `pcie_datalink_layer` lint is still blocked by pre-existing unrelated missing module `pcie_dllp_crc8` in `src/crc/pcie_datalink_crc.sv`.
 - Bench observations at the transmitting Port: pending; required before any Gen2 compliance claim.
 
@@ -94,14 +126,18 @@ No behavior of `retry_management.sv`, `retry_transmit.sv`, or `axis_retry_fifo.s
 - PCI Express Base 2.0 §3.5.2.1/3.5.2.2: single `REPLAY_TIMER` and 2-bit `REPLAY_NUM`; timer started at the last symbol of a TLP transmission/retransmission and restarted only on Ack/Nak that acknowledges a TLP; `REPLAY_NUM` increments on Nak or timeout, resets on Ack, and requests retrain on `11b` to `00b` rollover; invalid Ack/Nak sequence is discarded with a DLLP error reported.
 - Table 3-4 (2.5 GT/s, unadjusted): x1 / 256 B MPS is 1248 symbol times = 4.992 us, tolerance -0%/+100%. At 100 MHz this is 500-999 cycles; at 250 MHz it is 1248-2496 cycles. The module default of 0 remains fatal; slice 2 supplies `600` for the 10.0 ns clock in `src/dllp/dllp.xdc`.
 
-## Open items after slice 3
+## Open items after slice 4
 
 - [x] Confirmed in `tb_tlp2dllp_alloc.sv` that the strobe at `tlp2dllp.sv:565` carries the current sequence number and increments once per TLP.
 - [x] Confirmed in `tb_retry_management_gen1.sv` that `REPLAY_NUM` resets on ACK, not on new-sequence NAK.
 - [x] Source original-TLP completion/busy before the arbiter instead of the post-arbiter handshake / constant-zero stubs.
 - [x] Route `link_retraining_i` and `retrain_done_i` from LTSSM Recovery/Configuration, and connect `retrain_request_o` to the LTSSM retrain request.
 - [x] Route `replay_timeout_error_o` and `dllp_protocol_error_o` to top-level output ports; integration into error-status registers remains outside this slice.
+- [x] Parameterize replay timeout from negotiated speed/width using PCIe Base 2.0 Table 3-4/3-5 values.
+- [x] Add a runtime timeout override with static fallback and a focused Gen2 regression.
+- [x] Cross negotiated rate/width from `pipe_rx_usr_clk_i` to `clk_i` before computing the timeout.
 - Export a true PHY last-symbol/busy signal from `phy_transmit.sv` if symbol-accurate replay timing is required.
+- Gen3 and above are not table-driven: the lookup returns `0` and the static `REPLAY_TIMEOUT_CYCLES` fallback remains active. This is not a Gen3+ compliance claim.
 - Confirm `retry_index_i` stays constant for all beats of a multi-beat TLP written into `retry_transmit` in a full transmit-path bench.
 - Decide how `dllp_valid_o` should behave if the retry manager deasserts `retry_available_o` mid-frame; the current framing path only checks at `ST_IDLE`.
 - Add a focused regression for sequence continuity across `4095 -> 0` and backpressure when no retry slot is free.

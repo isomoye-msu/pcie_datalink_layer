@@ -21,8 +21,8 @@
 //! * retrain_request_o asks LTSSM to retrain after REPLAY_NUM rolls over;
 //!   retrain_done_i pulses after successful retrain. If link fails and the
 //!   Data Link Layer reaches DL_Inactive, assert dl_inactive_i instead.
-//! * REPLAY_TIMEOUT_CYCLES MUST be set for actual clock, speed, width, MPS,
-//!   L0s policy, and end-to-end Port latency. Zero deliberately fails sim.
+//! * Set replay_timeout_cycles_i for actual clock, speed, width, MPS, L0s
+//!   policy, and end-to-end Port latency; REPLAY_TIMEOUT_CYCLES is the fallback.
 //!
 //! No synchronizers are included: all inputs must be synchronous to clk_i.
 module retry_management
@@ -58,12 +58,19 @@ module retry_management
     input  logic                       link_retraining_i,
     input  logic                       retrain_done_i,
     input  logic                       dl_inactive_i,
+    input  logic [              31:0]  replay_timeout_cycles_i,
     output logic                       retrain_request_o,
     output logic                       replay_timeout_error_o,
     output logic                       dllp_protocol_error_o
 );
 
     localparam int IDX_W = (RETRY_TLP_SIZE > 1) ? $clog2(RETRY_TLP_SIZE) : 1;
+
+    logic [31:0] replay_timeout_cycles;
+
+    assign replay_timeout_cycles = (replay_timeout_cycles_i != 0)
+                                   ? replay_timeout_cycles_i
+                                   : 32'(REPLAY_TIMEOUT_CYCLES);
 
     typedef enum logic [2:0] {
         RP_IDLE, RP_RUN, RP_DRAIN, RP_SELECT,
@@ -133,7 +140,7 @@ module retry_management
     initial begin
         if (RETRY_TLP_SIZE < 1 || RETRY_TLP_SIZE > 256)
             $fatal(1, "retry_management: RETRY_TLP_SIZE must be 1..256");
-        if (REPLAY_TIMEOUT_CYCLES == 0)
+        if (REPLAY_TIMEOUT_CYCLES == 0 && replay_timeout_cycles_i == 0)
             $fatal(1, "retry_management: configure REPLAY_TIMEOUT_CYCLES");
     end
 
@@ -237,8 +244,8 @@ module retry_management
                            ((state_r == RP_IDLE) || (state_r == RP_RUN));
 
     assign replay_timer_expired = timer_running_r && any_live &&
-                                  !ack_progress && !link_retraining_i &&
-                                  (replay_timer_r >= REPLAY_TIMEOUT_CYCLES);
+                                   !ack_progress && !link_retraining_i &&
+                                   (replay_timer_r >= replay_timeout_cycles);
     assign replay_trigger = (state_r == RP_RUN) &&
                             any_live_after_ack &&
                             (nak_event || replay_timer_expired);
