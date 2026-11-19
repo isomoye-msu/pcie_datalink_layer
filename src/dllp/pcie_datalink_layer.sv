@@ -23,7 +23,8 @@ module pcie_datalink_layer
     parameter int S_COUNT = 2,
     parameter int RX_FIFO_SIZE = 3,
     parameter int RETRY_TLP_SIZE = 3,
-    parameter int MAX_PAYLOAD_SIZE = 256
+    parameter int MAX_PAYLOAD_SIZE = 256,
+    parameter int unsigned REPLAY_TIMEOUT_CYCLES = 600
 ) (
     input  logic                  clk_i,              // Clock signal
     input  logic                  rst_i,              // Reset signal
@@ -76,7 +77,13 @@ module pcie_datalink_layer
     input  logic       status_error_cor_i,
     input  logic       status_error_uncor_i,
     //Control and status
-    input  logic       rx_cpl_stall_i
+    input  logic       rx_cpl_stall_i,
+    input  logic       link_retraining_i,
+    input  logic       retrain_done_i,
+    output logic       retry_err_o,
+    output logic       retrain_request_o,
+    output logic       replay_timeout_error_o,
+    output logic       dllp_protocol_error_o
 );
 
 
@@ -212,7 +219,8 @@ module pcie_datalink_layer
       .USER_WIDTH(USER_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
       .S_COUNT(S_COUNT),
-      .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
+      .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
+      .REPLAY_TIMEOUT_CYCLES(REPLAY_TIMEOUT_CYCLES)
   ) dllp_transmit_inst (
       .clk_i         (clk_i),
       .rst_i         (rst_i || soft_reset),
@@ -231,13 +239,20 @@ module pcie_datalink_layer
       .ack_nack_i    (seq_num_acknack),
       .ack_nack_vld_i(seq_num_vld),
       .ack_seq_num_i (seq_num),
+      .link_status_i (link_status),
       .tx_fc_ph_i    (tx_fc_ph),
       .tx_fc_pd_i    (tx_fc_pd),
       .tx_fc_nph_i   (tx_fc_nph),
       .tx_fc_npd_i   (tx_fc_npd),
       .tx_fc_cplh_i  (tx_fc_cplh),
       .tx_fc_cpld_i  (tx_fc_cpld),
-      .update_fc_i   (update_fc || fc_init_done)
+      .update_fc_i   (update_fc || fc_init_done),
+      .link_retraining_i(link_retraining_i),
+      .retrain_done_i   (retrain_done_i),
+      .retry_err_o      (retry_err_o),
+      .retrain_request_o(retrain_request_o),
+      .replay_timeout_error_o(replay_timeout_error_o),
+      .dllp_protocol_error_o(dllp_protocol_error_o)
   );
 
 

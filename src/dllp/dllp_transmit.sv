@@ -18,7 +18,8 @@ module dllp_transmit
     parameter int S_COUNT          = 1,
     parameter int MAX_PAYLOAD_SIZE = 256,
     // Width of AXI stream interfaces in bits
-    parameter int RETRY_TLP_SIZE   = 3
+    parameter int RETRY_TLP_SIZE   = 3,
+    parameter int unsigned REPLAY_TIMEOUT_CYCLES = 600
 ) (
     input logic clk_i,  // Clock signal
     input logic rst_i,  // Reset signal
@@ -42,6 +43,9 @@ module dllp_transmit
     input  logic                  ack_nack_i,
     input  logic                  ack_nack_vld_i,
     input  logic [          11:0] ack_seq_num_i,
+    input  pcie_dl_status_e       link_status_i,
+    input  logic                  link_retraining_i,
+    input  logic                  retrain_done_i,
     //flow control
     input  logic [           7:0] tx_fc_ph_i,
     input  logic [          11:0] tx_fc_pd_i,
@@ -49,7 +53,11 @@ module dllp_transmit
     input  logic [          11:0] tx_fc_npd_i,
     input  logic [           7:0] tx_fc_cplh_i,
     input  logic [          11:0] tx_fc_cpld_i,
-    input  logic                  update_fc_i
+    input  logic                  update_fc_i,
+    output logic                  retry_err_o,
+    output logic                  retrain_request_o,
+    output logic                  replay_timeout_error_o,
+    output logic                  dllp_protocol_error_o
 );
 
 
@@ -87,10 +95,22 @@ module dllp_transmit
   logic                      dllp_valid;
   logic                      retry_available;
   logic [               7:0] retry_index;
-  logic                      retry_err;
   logic [RETRY_TLP_SIZE-1:0] retry_valid;
   logic [RETRY_TLP_SIZE-1:0] retry_ack;
   logic [RETRY_TLP_SIZE-1:0] retry_complete;
+  logic                      original_tlp_beat;
+  logic                      original_tlp_done;
+  logic                      original_tlp_busy;
+
+  assign original_tlp_beat = m_axis_tlp2dllp_tvalid && m_axis_tlp2dllp_tready;
+  assign original_tlp_done = original_tlp_beat && m_axis_tlp2dllp_tlast;
+
+  always_ff @(posedge clk_i) begin
+    if (rst_i)
+      original_tlp_busy <= 1'b0;
+    else if (original_tlp_beat)
+      original_tlp_busy <= !m_axis_tlp2dllp_tlast;
+  end
 
   retry_management #(
       .DATA_WIDTH(DATA_WIDTH),
@@ -101,24 +121,33 @@ module dllp_transmit
       .RAM_ADDR_WIDTH(RAM_ADDR_WIDTH),
       .RAM_DATA_WIDTH(RAM_DATA_WIDTH),
       .MAX_PAYLOAD_SIZE(MAX_PAYLOAD_SIZE),
-      .RETRY_TLP_SIZE(RETRY_TLP_SIZE)
+      .RETRY_TLP_SIZE(RETRY_TLP_SIZE),
+      .REPLAY_TIMEOUT_CYCLES(REPLAY_TIMEOUT_CYCLES)
   ) retry_management_inst (
       .clk_i            (clk_i),
       .rst_i            (rst_i),
       //seq num
       .tx_seq_num_i     (ackd_transmit_seq),
       .tx_valid_i       (dllp_valid),
+      .tx_tlp_done_i    (original_tlp_done),
+      .tx_tlp_busy_i    (original_tlp_busy),
       //retry
       .retry_available_o(retry_available),
       .retry_index_o    (retry_index),
-      .retry_err_o      (retry_err),
+      .retry_err_o      (retry_err_o),
       .retry_valid_o    (retry_valid),
       .retry_ack_i      (retry_ack),
       .retry_complete_i (retry_complete),
       //ack/nack from dllp
       .ack_nack_i       (ack_nack_i),
       .ack_nack_vld_i   (ack_nack_vld_i),
-      .ack_seq_num_i    (ack_seq_num_i)
+      .ack_seq_num_i    (ack_seq_num_i),
+      .link_retraining_i(link_retraining_i),
+      .retrain_done_i   (retrain_done_i),
+      .dl_inactive_i    (link_status_i != DL_ACTIVE),
+      .retrain_request_o(retrain_request_o),
+      .replay_timeout_error_o(replay_timeout_error_o),
+      .dllp_protocol_error_o(dllp_protocol_error_o)
   );
 
   retry_transmit #(

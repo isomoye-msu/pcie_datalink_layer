@@ -248,7 +248,7 @@ module tlp2dllp
       //store packet, because we're shifting the data to fit in
       //the seq number, we'll need to save 2 bytes of this packet
       ST_IDLE: begin
-        if (tlp_axis_tready && skid_axis_tvalid) begin
+        if (retry_available_i && tlp_axis_tready && skid_axis_tvalid) begin
           tlp_dw0  = skid_axis_tdata;
           crc_in_c = '1;
           //handle posted request
@@ -562,6 +562,7 @@ module tlp2dllp
       ST_TLP_CRC_TLAST_ALIGN: begin
         skid_axis_tready = '0;
         if (tlp_axis_tready) begin  //wait for upstream ready
+          dllp_valid_o   = 1'b1;
           tlp_axis_tkeep = 4'b0011;
           tlp_axis_tvalid = '1;
           tlp_axis_tlast = '1;

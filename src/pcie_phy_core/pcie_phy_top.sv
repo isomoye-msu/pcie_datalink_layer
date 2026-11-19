@@ -93,6 +93,10 @@ module pcie_phy_top
 
 
     output logic link_up_o,
+    output logic retry_err_o,
+    output logic retrain_request_o,
+    output logic replay_timeout_error_o,
+    output logic dllp_protocol_error_o,
 
 
     //TLP AXIS inputs
@@ -160,6 +164,18 @@ module pcie_phy_top
 
   logic                                       phy_txdetectrx_detect_upper_edge_r;
   logic                                       phy_txdetectrx_detect_upper_edge;
+  logic                                       ltssm_retraining_rx;
+  logic                                       ltssm_retraining;
+  logic [                                19:0] ltssm_state_rx_d;
+  logic                                       retrain_done_toggle_rx;
+  logic                                       retrain_done_toggle_sync;
+  logic                                       retrain_done_toggle_sync_d;
+  logic                                       retrain_done;
+  logic                                       retrain_request_d;
+  logic                                       retrain_request_toggle_clk;
+  logic                                       retrain_request_toggle_rx;
+  logic                                       retrain_request_toggle_rx_d;
+  logic                                       retrain_request_pulse_rx;
 
   async_fifo #(
         .DSIZE(1),
@@ -175,6 +191,102 @@ module pcie_phy_top
       .rrst_n(!rst_i),
       .rinc('1),
       .rdata(link_up_100MHz),
+      .rempty(),
+      .arempty()
+  );
+
+  assign ltssm_retraining_rx = (ltssm_debug_state[4:0] == 5'h03) || (ltssm_debug_state[4:0] == 5'h04);
+
+  always_ff @(posedge pipe_rx_usr_clk_i) begin
+    if (rst_i) begin
+      ltssm_state_rx_d       <= 20'h0;
+      retrain_done_toggle_rx <= 1'b0;
+    end else begin
+      ltssm_state_rx_d <= ltssm_debug_state[19:0];
+      if ((ltssm_debug_state[19:0] == 20'h005) && (ltssm_state_rx_d != 20'h005))
+        retrain_done_toggle_rx <= ~retrain_done_toggle_rx;
+    end
+  end
+
+  always_ff @(posedge clk_i) begin
+    if (rst_i)
+      retrain_done_toggle_sync_d <= 1'b0;
+    else
+      retrain_done_toggle_sync_d <= retrain_done_toggle_sync;
+  end
+
+  assign retrain_done = retrain_done_toggle_sync ^ retrain_done_toggle_sync_d;
+
+  always_ff @(posedge clk_i) begin
+    if (rst_i) begin
+      retrain_request_d         <= 1'b0;
+      retrain_request_toggle_clk <= 1'b0;
+    end else begin
+      retrain_request_d <= retrain_request_o;
+      if (retrain_request_o && !retrain_request_d)
+        retrain_request_toggle_clk <= ~retrain_request_toggle_clk;
+    end
+  end
+
+  always_ff @(posedge pipe_rx_usr_clk_i) begin
+    if (rst_i)
+      retrain_request_toggle_rx_d <= 1'b0;
+    else
+      retrain_request_toggle_rx_d <= retrain_request_toggle_rx;
+  end
+
+  assign retrain_request_pulse_rx = retrain_request_toggle_rx ^ retrain_request_toggle_rx_d;
+
+  async_fifo #(
+      .DSIZE(1),
+      .ASIZE(2)
+  ) ltssm_retraining_async_fifo_inst (
+      .wclk(pipe_rx_usr_clk_i),
+      .wrst_n(!rst_i),
+      .winc(1'b1),
+      .wdata(ltssm_retraining_rx),
+      .wfull(),
+      .awfull(),
+      .rclk(clk_i),
+      .rrst_n(!rst_i),
+      .rinc(1'b1),
+      .rdata(ltssm_retraining),
+      .rempty(),
+      .arempty()
+  );
+
+  async_fifo #(
+      .DSIZE(1),
+      .ASIZE(2)
+  ) retrain_done_async_fifo_inst (
+      .wclk(pipe_rx_usr_clk_i),
+      .wrst_n(!rst_i),
+      .winc(1'b1),
+      .wdata(retrain_done_toggle_rx),
+      .wfull(),
+      .awfull(),
+      .rclk(clk_i),
+      .rrst_n(!rst_i),
+      .rinc(1'b1),
+      .rdata(retrain_done_toggle_sync),
+      .rempty(),
+      .arempty()
+  );
+
+  async_fifo #(
+      .DSIZE(1),
+      .ASIZE(2)
+  ) retrain_request_async_fifo_inst (
+      .wclk(clk_i),
+      .wrst_n(!rst_i),
+      .winc(1'b1),
+      .wdata(retrain_request_toggle_clk),
+      .wfull(),
+      .awfull(),
+      .rclk(pipe_rx_usr_clk_i),
+      .rrst_n(!rst_i),
+      .rinc(1'b1),
+      .rdata(retrain_request_toggle_rx),
       .rempty(),
       .arempty()
   );
@@ -338,7 +450,7 @@ module pcie_phy_top
       .preset_coeff_o          (),
       //   .rate_id_i(rate_id),
       .extended_synch_i        (),
-      .directed_speed_change_i ('0),
+      .directed_speed_change_i (retrain_request_pulse_rx),
       .lane_status_i           (lane_status),
       .curr_data_rate_o        (curr_data_rate),
       .data_rate_o             (),
@@ -400,7 +512,13 @@ module pcie_phy_top
       .msix_mask_o            (),
       .status_error_cor_i     (),
       .status_error_uncor_i   (),
-      .rx_cpl_stall_i         ()
+      .rx_cpl_stall_i         (),
+      .link_retraining_i      (ltssm_retraining),
+      .retrain_done_i         (retrain_done),
+      .retry_err_o            (retry_err_o),
+      .retrain_request_o      (retrain_request_o),
+      .replay_timeout_error_o (replay_timeout_error_o),
+      .dllp_protocol_error_o  (dllp_protocol_error_o)
   );
 
 endmodule
